@@ -51,6 +51,8 @@ The two sites are served from a single codebase, at
   framework
 * [django-simple-history](https://django-simple-history.readthedocs.org/en/latest/index.html),
   for recording changes to models
+* [django-hvad](http://django-hvad.readthedocs.org/en/latest/public/quickstart.html).
+  for translations of human-facing text
 
 
 # Resources
@@ -76,6 +78,7 @@ To get the list of browsers:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
+    Content-Language: en
 
     {
         "browsers": [{
@@ -83,28 +86,46 @@ To get the list of browsers:
             "slug": "chrome",
             "class": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
-            "name": {
-                "en-US": "Chrome",
-            },
+            "name": "Chrome",
             "engine": null,
             "links": {
                 "versions": ["123"],
                 "history": ["1001"]
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    },
+                    "engine": {
+                        "selected": null,
+                        "available": []
+                    }
+                }
             }
         },{
             "id": "2",
             "slug": "firefox",
             "class": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-            "name": {
-                "en-US": "Firefox",
-            },
-            "engine": {
-                "en-US": "Gecko",
-            },
+            "name": "Firefox",
+            "engine": "Gecko",
             "links": {
                 "versions": ["124"],
                 "history": ["1002"]
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    },
+                    "engine": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         }],
         "links": {
@@ -115,7 +136,7 @@ To get the list of browsers:
             "browsers.history": {
                 "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
-            }
+            },
         },
         "meta": {
             "pagination": {
@@ -141,6 +162,7 @@ To get an individual browser:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
+    Content-Language: en
 
     {
         "browsers": {
@@ -148,15 +170,23 @@ To get an individual browser:
             "slug": "firefox",
             "class": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-            "name": {
-                "en-US": "Firefox (Gecko)",
-            },
-            "engine": {
-                "en-US": "Gecko",
-            }
+            "name": "Firefox",
+            "engine": "Gecko",
             "links": {
                 "versions": ["124"],
                 "history": ["1002"]
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    },
+                    "engine": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         },
         "links": {
@@ -234,7 +264,7 @@ To get the list of browser-versions:
                 "href": "https://api.compat.mozilla.org/browsers/{browser-versions.previous}",
                 "type": "browser-versions"
             },
-            "browser-versions.previous": {
+            "browser-versions.next": {
                 "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
                 "type": "browser-versions"
             },
@@ -295,7 +325,7 @@ To get a single browser version:
                 "href": "https://api.compat.mozilla.org/browsers/{browser-versions.previous}",
                 "type": "browser-versions"
             },
-            "browser-versions.previous": {
+            "browser-versions.next": {
                 "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
                 "type": "browser-versions"
             },
@@ -325,28 +355,33 @@ To get the list of features:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
+    Content-Language: en
 
     {
         "features": [{
             "id": "276",
             "slug": "css-background-size-contain",
             "experimental": false,
-            "name": {
-                "en-US": "background-size: contain",
-            },
+            "name": "background-size: contain",
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
                 "browser-version-supports": ["1125", "1212", "1536"],
                 "history": ["456"]
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         },{
             "id": "277",
             "slug": "css-background-size-cover",
             "experimental": false,
-            "name": {
-                "en-US": "background-size: cover",
-            },
+            "name": "background-size: cover",
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
@@ -357,14 +392,21 @@ To get the list of features:
             "id": "289",
             "slug": "css-display-grid",
             "experimental": true,
-            "name": {
-                "en-US": "display: grid",
+            "name": "display: grid",
             },
             "links": {
                 "feature-set": "398",
                 "spec-sections": ["489"],
                 "browser-version-supports": ["1127", "1214", "1538"],
                 "history": ["458"]
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         }],
         "links": {
@@ -408,20 +450,27 @@ To get a specific feature:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
+    Content-Language: en
 
     {
         "features": {
             "id": "276",
             "slug": "css-background-size-contain",
             "experimental": false,
-            "name": {
-                "en-US": "background-size: contain",
-            },
+            "name": "background-size: contain",
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
                 "browser-version-supports": ["1125", "1212", "1536"],
                 "history": ["456"]
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         },
         "links": {
@@ -455,14 +504,13 @@ To get the list of feature sets:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
+    Content-Language: en
 
     {
         "feature-sets": [{
             "id": "301",
             "slug": "css",
-            "name": {
-                "en-US": "CSS",
-            },
+            "name": "CSS",
             "links": {
                 "features": [],
                 "parent": null,
@@ -471,13 +519,19 @@ To get the list of feature sets:
                 "children": ["313", "314", "315"],
                 "decendants": ["301", "313", "314", "315"],
                 "history": ["647"]
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         },{
             "id": "373",
             "slug": "css-background-size",
-            "name": {
-                "en-US": "background-size",
-            },
+            "name": "background-size",
             "links": {
                 "features": ["275", "276", "277"],
                 "parent": "301",
@@ -486,6 +540,14 @@ To get the list of feature sets:
                 "children": [],
                 "decendants": ["373"],
                 "history": ["648"]
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         }],
         "links": {
@@ -542,21 +604,28 @@ To get a single feature set:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
+    Content-Language: en
 
     {
         "feature-sets": [{
             "id": "373",
             "slug": "css-background-size",
-            "name": {
-                "en-US": "background-size",
-            },
+            "name": "background-size",
             "links": {
-                "features": ["275", "276", "277"]
+                "features": ["275", "276", "277"],
                 "parent": "301",
                 "ancestors": ["301", "373"],
                 "siblings": ["372", "373", "374", "375"],
                 "children": [],
                 "decendants": [],
+            },
+            "meta": {
+                "translations": {
+                    "name": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         }],
         "links": {
@@ -617,6 +686,7 @@ particular version of a browser.
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
+    Content-Language: en
 
     {
         "browser-version-features": [{
@@ -629,6 +699,18 @@ particular version of a browser.
                 "browser-version": "123",
                 "feature": "276",
                 "history": ["2567"]
+            },
+            "meta": {
+                "translations": {
+                    "note": {
+                        "selected": null,
+                        "available": []
+                    },
+                    "footnote": {
+                        "selected": null,
+                        "available": []
+                    }
+                }
             }
         },{
             "id": "1124",
@@ -640,6 +722,18 @@ particular version of a browser.
                 "browser-version": "124",
                 "feature": "276",
                 "history": ["2568"]
+            },
+            "meta": {
+                "translations": {
+                    "note": {
+                        "selected": null,
+                        "available": []
+                    },
+                    "footnote": {
+                        "selected": null,
+                        "available": []
+                    }
+                }
             }
         },{
             "id": "1256",
@@ -651,6 +745,18 @@ particular version of a browser.
                 "browser-version": "123",
                 "feature": "295",
                 "history": ["2568"]
+            },
+            "meta": {
+                "translations": {
+                    "note": {
+                        "selected": null,
+                        "available": []
+                    },
+                    "footnote": {
+                        "selected": null,
+                        "available": []
+                    }
+                }
             }
         },{
             "id": "1256",
@@ -662,6 +768,18 @@ particular version of a browser.
                 "browser-version": "123",
                 "feature": "295",
                 "history": ["2568"]
+            },
+            "meta": {
+                "translations": {
+                    "note": {
+                        "selected": "en",
+                        "available": ["en"]
+                    },
+                    "footnote": {
+                        "selected": "en",
+                        "available": ["en"]
+                    }
+                }
             }
         }],
         "links": {
@@ -702,6 +820,7 @@ To retrieve support for a single feature:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
+    Content-Language: en
 
     {
         "browser-version-features": {
@@ -714,6 +833,18 @@ To retrieve support for a single feature:
                 "browser-version": "123",
                 "feature": "276",
                 "history": ["2567"]
+            },
+            "meta": {
+                "translations": {
+                    "note": {
+                        "selected": null,
+                        "available": []
+                    },
+                    "footnote": {
+                        "selected": null,
+                        "available": []
+                    }
+                }
             }
         },
         "links": {
@@ -762,8 +893,6 @@ developed around March 2014.  These changes are:
     - previous - ID of previous browser version, or null if first
     - next - ID of next browser version, or null if last
 * features
-    - Features might end up being finer grained, so that a single test will
-      apply to a single feature
     - slug - human-friendly unique identifier
     - experimental - true if property is experimental.  Supports beaker icon
       on MDN, such as
@@ -784,8 +913,6 @@ developed around March 2014.  These changes are:
 # To Do
 
 * Add attribute and link reference to docs
-* Convert text to attribute with links and caching
 * Convert specs to attribute with links and caching
-* Translated text - linked objects or complex objects?  Look at packages suggested by bug
 * Power Queries - for example, feature by slug
 * Add browsers-history, browsers-versions-history, etc.
