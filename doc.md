@@ -108,6 +108,17 @@ To get the list of browsers:
                 "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions",
             }
+        },
+        "meta": {
+            "pagination": {
+                "browsers": {
+                    "prev": null,
+                    "next": "https://api.compat.mozilla.org/browsers?page=2&per_page=10",
+                    "pages": 2,
+                    "per_page": 10,
+                    "total": 14,
+                }
+            }
         }
     }
 
@@ -211,6 +222,17 @@ To get the list of browser-versions:
             "browser-versions.feature-supports": {
                 "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
                 "type": "browser-version-features"
+            }
+        },
+        "meta": {
+            "pagination": {
+                "browser-versions": {
+                    "prev": null,
+                    "next": "https://api.compat.mozilla.org/browser-versions?page=2&per_page=10",
+                    "pages": 14,
+                    "per_page": 10,
+                    "total": 134,
+                }
             }
         }
     }
@@ -327,6 +349,17 @@ To get the list of features:
                 "href": "https://api.compat.mozilla.org/browser-version-features/{features.browser-version-supports}",
                 "type": "browser-version-features"
             }
+        },
+        "meta": {
+            "pagination": {
+                "features": {
+                    "prev": null,
+                    "next": "https://api.compat.mozilla.org/features?page=2&per_page=10",
+                    "pages": 76,
+                    "per_page": 10,
+                    "total": 754,
+                }
+            }
         }
     }
 
@@ -437,6 +470,17 @@ To get the list of feature sets:
             "feature-sets.decendants": {
                 "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
                 "type": "feature-sets"
+            }
+        },
+        "meta": {
+            "pagination": {
+                "feature-sets": {
+                    "prev": null,
+                    "next": "https://api.compat.mozilla.org/feature-sets?page=2&per_page=10",
+                    "pages": 14,
+                    "per_page": 10,
+                    "total": 131,
+                }
             }
         }
     }
@@ -575,6 +619,17 @@ particular version of a browser.
                 "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
                 "type": "features"
             }
+        },
+        "meta": {
+            "pagination": {
+                "browser-version-features": {
+                    "prev": null,
+                    "next": "https://api.compat.mozilla.org/browser-version-features?page=2&per_page=10",
+                    "pages": 1057,
+                    "per_page": 10,
+                    "total": 10564,
+                }
+            }
         }
     }
 
@@ -667,5 +722,4 @@ developed around March 2014.  These changes are:
 * Convert text to attribute with links and caching
 * Convert specs to attribute with links and caching
 * Translated text - linked objects or complex objects?  Look at packages suggested by bug
-* Pagination - removed from JSON API spec?  I guess I have to roll my own again.
 * Power Queries - for example, feature by slug
