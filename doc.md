@@ -49,6 +49,8 @@ The two sites are served from a single codebase, at
 * [Django 1.6](https://docs.djangoproject.com/en/1.6/), a web framework
 * [Django REST Framework](http://www.django-rest-framework.org), an API
   framework
+* [django-simple-history](https://django-simple-history.readthedocs.org/en/latest/index.html),
+  for recording changes to models
 
 
 # Resources
@@ -86,7 +88,8 @@ To get the list of browsers:
             },
             "engine": null,
             "links": {
-                "versions": ["123"]
+                "versions": ["123"],
+                "history": ["1001"]
             }
         },{
             "id": "2",
@@ -100,13 +103,18 @@ To get the list of browsers:
                 "en-US": "Gecko",
             },
             "links": {
-                "versions": ["124"]
+                "versions": ["124"],
+                "history": ["1002"]
             }
         }],
         "links": {
-            "versions": {
+            "browsers.versions": {
                 "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions",
+                "type": "browser-versions"
+            },
+            "browsers.history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+                "type": "browsers-history"
             }
         },
         "meta": {
@@ -146,11 +154,19 @@ To get an individual browser:
             "engine": {
                 "en-US": "Gecko",
             }
+            "links": {
+                "versions": ["124"],
+                "history": ["1002"]
+            }
         },
         "links": {
-            "versions": {
+            "browsers.versions": {
                 "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
+            },
+            "browsers.history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+                "type": "browsers-history"
             }
         }
     }
@@ -181,7 +197,8 @@ To get the list of browser-versions:
                 "browser": "1",
                 "previous": null,
                 "next": "176",
-                "feature-supports": ["1125", "1126", "1127", "1128", "1129"]
+                "feature-supports": ["1125", "1126", "1127", "1128", "1129"],
+                "history": ["567"]
             }
         },{
             "id": "124",
@@ -192,7 +209,8 @@ To get the list of browser-versions:
                 "browser": "2",
                 "previous": "122",
                 "next": "176",
-                "feature-supports": ["1212", "1213", "1214", "1215", "1216"]
+                "feature-supports": ["1212", "1213", "1214", "1215", "1216"],
+                "history": ["568"]
             }
         },{
             "id": "129",
@@ -203,7 +221,8 @@ To get the list of browser-versions:
                 "browser": "2",
                 "previous": "128",
                 "next": null,
-                "feature-supports": ["1536", "1537", "1538", "1539", "1540"]
+                "feature-supports": ["1536", "1537", "1538", "1539", "1540"],
+                "history": ["569"]
             }
         }],
         "links": {
@@ -222,6 +241,10 @@ To get the list of browser-versions:
             "browser-versions.feature-supports": {
                 "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
                 "type": "browser-version-features"
+            },
+            "browser-versions.history": {
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
+                "type": "browser-versions-history"
             }
         },
         "meta": {
@@ -259,7 +282,8 @@ To get a single browser version:
                 "browser": "1",
                 "previous": null,
                 "next": "176",
-                "feature-supports": ["1125", "1126", "1127", "1128", "1129"]
+                "feature-supports": ["1125", "1126", "1127", "1128", "1129"],
+                "history": ["567"]
             }
         },
         "links": {
@@ -278,6 +302,10 @@ To get a single browser version:
             "browser-versions.feature-supports": {
                 "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
                 "type": "browser-version-features"
+            },
+            "browser-versions.history": {
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
+                "type": "browser-versions-history"
             }
         }
     }
@@ -309,7 +337,8 @@ To get the list of features:
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
-                "browser-version-supports": ["1125", "1212", "1536"]
+                "browser-version-supports": ["1125", "1212", "1536"],
+                "history": ["456"]
             }
         },{
             "id": "277",
@@ -321,7 +350,8 @@ To get the list of features:
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
-                "browser-version-supports": ["1126", "1213", "1537"]
+                "browser-version-supports": ["1126", "1213", "1537"],
+                "history": ["457"]
             }
         },{
             "id": "289",
@@ -333,7 +363,8 @@ To get the list of features:
             "links": {
                 "feature-set": "398",
                 "spec-sections": ["489"],
-                "browser-version-supports": ["1127", "1214", "1538"]
+                "browser-version-supports": ["1127", "1214", "1538"],
+                "history": ["458"]
             }
         }],
         "links": {
@@ -341,13 +372,17 @@ To get the list of features:
                 "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
                 "type": "features-sets"
             },
-            "spec-sections": {
+            "features.spec-sections": {
                 "href": "https://api.compat.mozilla.org/spec-sections/{features.spec-sections}",
                 "type": "spec-sections"
             },
-            "browser-version-supports": {
+            "features.browser-version-supports": {
                 "href": "https://api.compat.mozilla.org/browser-version-features/{features.browser-version-supports}",
                 "type": "browser-version-features"
+            },
+            "features.history": {
+                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
+                "type": "features-history"
             }
         },
         "meta": {
@@ -378,14 +413,15 @@ To get a specific feature:
         "features": {
             "id": "276",
             "slug": "css-background-size-contain",
-            "experimental": true,
+            "experimental": false,
             "name": {
                 "en-US": "background-size: contain",
             },
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
-                "browser-version-supports": ["1125", "1212", "1536"]
+                "browser-version-supports": ["1125", "1212", "1536"],
+                "history": ["456"]
             }
         },
         "links": {
@@ -393,9 +429,13 @@ To get a specific feature:
                 "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
                 "type": "features-sets"
             },
-            "spec-sections": {
+            "features.spec-sections": {
                 "href": "https://api.compat.mozilla.org/spec-sections/{features.spec-sections}",
                 "type": "spec-sections"
+            },
+            "features.history": {
+                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
+                "type": "features-history"
             }
         }
     }
@@ -430,6 +470,7 @@ To get the list of feature sets:
                 "siblings": ["300", "301", "302", "303"],
                 "children": ["313", "314", "315"],
                 "decendants": ["301", "313", "314", "315"],
+                "history": ["647"]
             }
         },{
             "id": "373",
@@ -444,6 +485,7 @@ To get the list of feature sets:
                 "siblings": ["372", "373", "374", "375"],
                 "children": [],
                 "decendants": ["373"],
+                "history": ["648"]
             }
         }],
         "links": {
@@ -470,6 +512,10 @@ To get the list of feature sets:
             "feature-sets.decendants": {
                 "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
                 "type": "feature-sets"
+            },
+            "feature-sets.history": {
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
+                "type": "feature-sets-history"
             }
         },
         "meta": {
@@ -537,6 +583,10 @@ To get a single feature set:
             "feature-sets.decendants": {
                 "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
                 "type": "feature-sets"
+            },
+            "feature-sets.history": {
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
+                "type": "feature-sets-history"
             }
         }
     }
@@ -578,6 +628,7 @@ particular version of a browser.
             "links": {
                 "browser-version": "123",
                 "feature": "276",
+                "history": ["2567"]
             }
         },{
             "id": "1124",
@@ -588,6 +639,7 @@ particular version of a browser.
             "links": {
                 "browser-version": "124",
                 "feature": "276",
+                "history": ["2568"]
             }
         },{
             "id": "1256",
@@ -598,6 +650,7 @@ particular version of a browser.
             "links": {
                 "browser-version": "123",
                 "feature": "295",
+                "history": ["2568"]
             }
         },{
             "id": "1256",
@@ -608,6 +661,7 @@ particular version of a browser.
             "links": {
                 "browser-version": "123",
                 "feature": "295",
+                "history": ["2568"]
             }
         }],
         "links": {
@@ -618,6 +672,10 @@ particular version of a browser.
             "browser-version-features.feature": {
                 "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
                 "type": "features"
+            },
+            "browser-version-features.history": {
+                "href": "https://api.compat.mozilla.org/browsers-version-features-history/{browser-version-features.history}",
+                "type": "browser-version-features-history"
             }
         },
         "meta": {
@@ -655,6 +713,7 @@ To retrieve support for a single feature:
             "links": {
                 "browser-version": "123",
                 "feature": "276",
+                "history": ["2567"]
             }
         },
         "links": {
@@ -665,6 +724,10 @@ To retrieve support for a single feature:
             "browser-version-features.feature": {
                 "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
                 "type": "features"
+            },
+            "browser-version-features.history": {
+                "href": "https://api.compat.mozilla.org/browsers-version-features-history/{browser-version-features.history}",
+                "type": "browser-version-features-history"
             }
         }
     }
@@ -699,6 +762,8 @@ developed around March 2014.  These changes are:
     - previous - ID of previous browser version, or null if first
     - next - ID of next browser version, or null if last
 * features
+    - Features might end up being finer grained, so that a single test will
+      apply to a single feature
     - slug - human-friendly unique identifier
     - experimental - true if property is experimental.  Supports beaker icon
       on MDN, such as
@@ -723,3 +788,4 @@ developed around March 2014.  These changes are:
 * Convert specs to attribute with links and caching
 * Translated text - linked objects or complex objects?  Look at packages suggested by bug
 * Power Queries - for example, feature by slug
+* Add browsers-history, browsers-versions-history, etc.
