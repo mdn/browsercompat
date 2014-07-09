@@ -53,7 +53,8 @@ The two sites are served from a single codebase, at
   for recording changes to models
 * [django-hvad](http://django-hvad.readthedocs.org/en/latest/public/quickstart.html).
   for translations of human-facing text
-
+* [django-mptt](https://github.com/django-mptt/django-mptt/), for efficiently
+  storing hierarchical data
 
 # Resources
 
@@ -61,14 +62,30 @@ Resources are simple objects supporting CRUD operations.  Read operations
 can be done anonymously.  Creating and updating require account permissions,
 and deleting requires admin account permissions.
 
+
 ## Browsers
 
 A **browser** is a brand of web client that has one or more versions.  This
-follows most user's understanding of browsers, i.e., `firefox` represents
+follows most users' understanding of browsers, i.e., `firefox` represents
 desktop Firefox, `safari` represents desktop Safari, and `firefox-mobile`
 represents Firefox Mobile.
 
-To get the list of browsers:
+The **browsers** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **slug** *(write-once)* - Unique, human-friendly slug
+    - **class** - String, must be one of "desktop" or "mobile"
+    - **icon** - Protocol-less path to representative icon
+    - **name** *(localized)* - Browser name
+    - **engine** *(localized)* - Browser engine, or null if not version tracked
+* **links**
+    - **versions** *(many)* - Associated **browser-versions**
+    - **history-current** *(one)* - Current **browsers-history**
+    - **history** *(many)* - Associated **browsers-history** in time order
+      (most recent first)
+
+To get the list of **browsers**:
 
 
     GET /browsers HTTP/1.1
@@ -90,6 +107,7 @@ To get the list of browsers:
             "engine": null,
             "links": {
                 "versions": ["123"],
+                "history-current": "1001",
                 "history": ["1001"]
             },
             "meta": {
@@ -113,6 +131,7 @@ To get the list of browsers:
             "engine": "Gecko",
             "links": {
                 "versions": ["124"],
+                "history-current": "1002",
                 "history": ["1002"]
             },
             "meta": {
@@ -133,10 +152,14 @@ To get the list of browsers:
                 "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
+            "browsers.history-current": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+                "type": "browsers-history"
+            },
             "browsers.history": {
                 "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
-            },
+            }
         },
         "meta": {
             "pagination": {
@@ -152,7 +175,7 @@ To get the list of browsers:
     }
 
 
-To get an individual browser:
+To get a single **browser**:
 
 
     GET /browsers/2 HTTP/1.1
@@ -174,6 +197,7 @@ To get an individual browser:
             "engine": "Gecko",
             "links": {
                 "versions": ["124"],
+                "history-current": "1002",
                 "history": ["1002"]
             },
             "meta": {
@@ -194,6 +218,10 @@ To get an individual browser:
                 "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
+            "browsers.history-current": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+                "type": "browsers-history"
+            }
             "browsers.history": {
                 "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
@@ -201,12 +229,30 @@ To get an individual browser:
         }
     }
 
-
 ## Browser Versions
 
 A **browser-version** is a specific release of a Browser.
 
-To get the list of browser-versions:
+The **browser-versions** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **version** *(write-once)* - Version of browser
+    - **engine-version** *(write-once)* - Version of browser engine, or null
+      if not tracked
+    - **current** - true if this version is recommended for download, false if
+      this has been replaced by a new version
+* **links**
+    - **previous** *(one or null)* - The previous **browser-version**, or null
+      if first version
+    - **next** *(one or null)* - The next **browser-version**, or null if most
+      recent version
+    - **browser-version-features** *(many)* - Associated **browser-version-features**
+    - **history-current** *(one)* - Current **browsers-versions-history**
+    - **history** *(many)* - Associated **browser-versions-history**, in time
+      order (most recent first)
+
+To get the list of **browser-versions**:
 
 
     GET /browser-versions HTTP/1.1
@@ -221,37 +267,40 @@ To get the list of browser-versions:
         "browser-versions": [{
             "id": "123",
             "version": "1.0",
-            "engine_version": null,
+            "engine-version": null,
             "current": false,
             "links": {
                 "browser": "1",
                 "previous": null,
                 "next": "176",
-                "feature-supports": ["1125", "1126", "1127", "1128", "1129"],
+                "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
+                "history-current": "567",
                 "history": ["567"]
             }
         },{
             "id": "124",
             "version": "18.0",
-            "engine_version": "18.0",
+            "engine-version": "18.0",
             "current": false,
             "links": {
                 "browser": "2",
                 "previous": "122",
                 "next": "176",
-                "feature-supports": ["1212", "1213", "1214", "1215", "1216"],
+                "browser-version-features": ["1212", "1213", "1214", "1215", "1216"],
+                "history-current": "568",
                 "history": ["568"]
             }
         },{
             "id": "129",
             "version": "30.0",
-            "engine_version": "30.0",
+            "engine-version": "30.0",
             "current": true,
             "links": {
                 "browser": "2",
                 "previous": "128",
                 "next": null,
-                "feature-supports": ["1536", "1537", "1538", "1539", "1540"],
+                "browser-version-features": ["1536", "1537", "1538", "1539", "1540"],
+                "history-current": "569",
                 "history": ["569"]
             }
         }],
@@ -268,9 +317,13 @@ To get the list of browser-versions:
                 "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
                 "type": "browser-versions"
             },
-            "browser-versions.feature-supports": {
+            "browser-versions.browser-version-features": {
                 "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
                 "type": "browser-version-features"
+            },
+            "browser-versions.history-current": {
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history-current}",
+                "type": "browser-versions-history"
             },
             "browser-versions.history": {
                 "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
@@ -291,7 +344,7 @@ To get the list of browser-versions:
     }
 
 
-To get a single browser version:
+To get a single **browser-version**:
 
 
     GET /browser-versions/123 HTTP/1.1
@@ -306,13 +359,14 @@ To get a single browser version:
         "browser-versions": {
             "id": "123",
             "version": "1.0",
-            "engine_version": null,
+            "engine-version": null,
             "current": false,
             "links": {
                 "browser": "1",
                 "previous": null,
                 "next": "176",
-                "feature-supports": ["1125", "1126", "1127", "1128", "1129"],
+                "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
+                "history-current": "567",
                 "history": ["567"]
             }
         },
@@ -329,9 +383,13 @@ To get a single browser version:
                 "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
                 "type": "browser-versions"
             },
-            "browser-versions.feature-supports": {
+            "browser-versions.browser-version-features": {
                 "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
                 "type": "browser-version-features"
+            },
+            "browser-versions.history-current": {
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history-current}",
+                "type": "browser-versions-history"
             },
             "browser-versions.history": {
                 "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
@@ -340,13 +398,28 @@ To get a single browser version:
         }
     }
 
+## Features
 
-# Features
-
-A **Feature** is a precise web technology, such as the value `cover` for the CSS
+A **feature** is a precise web technology, such as the value `cover` for the CSS
 `background-size` property.
 
-To get the list of features:
+The **features** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **slug** *(write-once)* - Unique, human-friendly slug
+    - **experimental** - true if feature is experimental, should not be used
+      in production
+    - **name** *(localized)* - Feature name
+* **links**
+    - **feature-set** *(one)* - Associated **feature-set**
+    - **spec-sections** *(many)* - Associated **spec-sections**
+    - **browser-version-features** *(many)* - Associated **browser-version-features**
+    - **history-current** *(one)* - Current **features-history**
+    - **history** *(many)* - Associated **features-history**, in time order
+      (most recent first)
+
+To get the list of **features**:
 
     GET /features HTTP/1.1
     Host: api.compat.mozilla.org
@@ -366,7 +439,8 @@ To get the list of features:
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
-                "browser-version-supports": ["1125", "1212", "1536"],
+                "browser-version-features": ["1125", "1212", "1536"],
+                "history-current": "456",
                 "history": ["456"]
             },
             "meta": {
@@ -385,7 +459,8 @@ To get the list of features:
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
-                "browser-version-supports": ["1126", "1213", "1537"],
+                "browser-version-features": ["1126", "1213", "1537"],
+                "history-current": "457",
                 "history": ["457"]
             }
         },{
@@ -397,7 +472,8 @@ To get the list of features:
             "links": {
                 "feature-set": "398",
                 "spec-sections": ["489"],
-                "browser-version-supports": ["1127", "1214", "1538"],
+                "browser-version-features": ["1127", "1214", "1538"],
+                "history-current": "458",
                 "history": ["458"]
             },
             "meta": {
@@ -418,9 +494,13 @@ To get the list of features:
                 "href": "https://api.compat.mozilla.org/spec-sections/{features.spec-sections}",
                 "type": "spec-sections"
             },
-            "features.browser-version-supports": {
-                "href": "https://api.compat.mozilla.org/browser-version-features/{features.browser-version-supports}",
+            "features.browser-version-features": {
+                "href": "https://api.compat.mozilla.org/browser-version-features/{features.browser-version-features}",
                 "type": "browser-version-features"
+            },
+            "features.history-current": {
+                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
+                "type": "features-history"
             },
             "features.history": {
                 "href": "https://api.compat.mozilla.org/features-history/{features.history}",
@@ -441,7 +521,7 @@ To get the list of features:
     }
 
 
-To get a specific feature:
+To get a specific **feature**:
 
     GET /features/276 HTTP/1.1
     Host: api.compat.mozilla.org
@@ -461,7 +541,8 @@ To get a specific feature:
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
-                "browser-version-supports": ["1125", "1212", "1536"],
+                "browser-version-features": ["1125", "1212", "1536"],
+                "history-current": "456",
                 "history": ["456"]
             },
             "meta": {
@@ -482,6 +563,10 @@ To get a specific feature:
                 "href": "https://api.compat.mozilla.org/spec-sections/{features.spec-sections}",
                 "type": "spec-sections"
             },
+            "features.history-current": {
+                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
+                "type": "features-history"
+            },
             "features.history": {
                 "href": "https://api.compat.mozilla.org/features-history/{features.history}",
                 "type": "features-history"
@@ -490,9 +575,32 @@ To get a specific feature:
     }
 
 
-# Feature Sets
+## Feature Sets
 
-A **Feature Set** organizes features into a heierarchy of logical groups.
+A **feature-set** organizes features into a heierarchy of logical groups.
+
+The **feature-sets** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **slug** *(write-once)* - Unique, human-friendly slug
+    - **name** *(localized)* - Feature set name
+* **links**
+    - **features** *(many)* - Associated **features**
+    - **parent** *(one or null)* - The **feature-set** one level up, or null
+      if top-level
+    - **ancestors** *(many)* - The **feature-sets** that form the path to the
+      top of the tree, including this one, in bread-crumb order (top to self)
+    - **siblings** *(many)* - The **feature-sets** with the same parent,
+      including including this one, in display order
+    - **children** *(many)* - The **feature-sets** that have this
+      **feature-set** as parent, in display order
+    - **decendants** *(many)* - The **feature-sets** in the local tree for
+      this **feature-set**. including this one, in tree order
+    - **history-current** *(one)* - The current **feature-sets-history**
+    - **history** *(many)* - Associated **feature-sets-history**, in time
+      order (most recent first)
+
 
 To get the list of feature sets:
 
@@ -518,6 +626,7 @@ To get the list of feature sets:
                 "siblings": ["300", "301", "302", "303"],
                 "children": ["313", "314", "315"],
                 "decendants": ["301", "313", "314", "315"],
+                "history-current": "647",
                 "history": ["647"]
             },
             "meta": {
@@ -539,6 +648,7 @@ To get the list of feature sets:
                 "siblings": ["372", "373", "374", "375"],
                 "children": [],
                 "decendants": ["373"],
+                "history-current": "648",
                 "history": ["648"]
             },
             "meta": {
@@ -575,6 +685,10 @@ To get the list of feature sets:
                 "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
                 "type": "feature-sets"
             },
+            "feature-sets.history-current": {
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
+                "type": "feature-sets-history"
+            },
             "feature-sets.history": {
                 "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
                 "type": "feature-sets-history"
@@ -594,7 +708,7 @@ To get the list of feature sets:
     }
 
 
-To get a single feature set:
+To get a single **feature set**:
 
 
     GET /features-sets/373 HTTP/1.1
@@ -618,6 +732,8 @@ To get a single feature set:
                 "siblings": ["372", "373", "374", "375"],
                 "children": [],
                 "decendants": [],
+                "history-current": "648",
+                "history": ["648"]
             },
             "meta": {
                 "translations": {
@@ -653,6 +769,10 @@ To get a single feature set:
                 "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
                 "type": "feature-sets"
             },
+            "feature-sets.history-current": {
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
+                "type": "feature-sets-history"
+            },
             "feature-sets.history": {
                 "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
                 "type": "feature-sets-history"
@@ -661,23 +781,33 @@ To get a single feature set:
     }
 
 
-The tree structure is represented by the links:
-
-* parent - The parent of this feature set, or null if top-level
-* ancestors - The path to the top of the tree, in bread-crumb order, including
-  self
-* siblings - The feature sets with the same parent, including this one, in
-  display order
-* children - The feature sets that have this feature set as parent, in display
-  order
-* decendants - The feature sets under this feature set. including this one,
-  in tree order
-
-
 ## Browser Version Features
 
-A **Browser Version Feature** is an assertion of the feature support for a
+A **browser-version-feature** is an assertion of the feature support for a
 particular version of a browser.
+
+The **browser-version-feature** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **support** - Assertion of support of the **browser-version** for the
+      **feature**, one of "yes", "no", "prefixed", "partial", "unknown"
+    - **prefix** - Prefix needed, if support is "prefixed"
+    - **note** *(localized)* - Short note on support, designed for inline
+      display, max 20 characters
+    - **footnote** *(localized)* - Long note on support, designed for
+      display after a compatibility table, MDN wiki format
+* **links**
+    - **browser-version** *(one)* - The associated **browser-version**
+    - **feature** *(one)* - The associated **feature**
+    - **history-current** *(one)* - Current
+      **browser-version-features-history**
+    - **history** *(many)* - Associated **browser-version-features-history**
+      in time order (most recent first)
+
+
+To get the list of **browser-version-features**:
+
 
     GET /browser-version-features HTTP/1.1
     Host: api.compat.mozilla.org
@@ -698,6 +828,7 @@ particular version of a browser.
             "links": {
                 "browser-version": "123",
                 "feature": "276",
+                "history-current": "2567",
                 "history": ["2567"]
             },
             "meta": {
@@ -721,6 +852,7 @@ particular version of a browser.
             "links": {
                 "browser-version": "124",
                 "feature": "276",
+                "history-current": "2568",
                 "history": ["2568"]
             },
             "meta": {
@@ -744,7 +876,8 @@ particular version of a browser.
             "links": {
                 "browser-version": "123",
                 "feature": "295",
-                "history": ["2568"]
+                "history-current": "2569",
+                "history": ["2569"]
             },
             "meta": {
                 "translations": {
@@ -767,7 +900,8 @@ particular version of a browser.
             "links": {
                 "browser-version": "123",
                 "feature": "295",
-                "history": ["2568"]
+                "history-current": "2570",
+                "history": ["2570"]
             },
             "meta": {
                 "translations": {
@@ -791,8 +925,12 @@ particular version of a browser.
                 "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
                 "type": "features"
             },
+            "browser-version-features.history-current": {
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history-current}",
+                "type": "browser-version-features-history"
+            },
             "browser-version-features.history": {
-                "href": "https://api.compat.mozilla.org/browsers-version-features-history/{browser-version-features.history}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history}",
                 "type": "browser-version-features-history"
             }
         },
@@ -810,7 +948,7 @@ particular version of a browser.
     }
 
 
-To retrieve support for a single feature:
+To get a single **browser-version-features**:
 
 
     GET /browser-version-features/1123 HTTP/1.1
@@ -832,6 +970,7 @@ To retrieve support for a single feature:
             "links": {
                 "browser-version": "123",
                 "feature": "276",
+                "history-current": "2567",
                 "history": ["2567"]
             },
             "meta": {
@@ -856,12 +995,229 @@ To retrieve support for a single feature:
                 "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
                 "type": "features"
             },
+            "browser-version-features.history-current": {
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history-current}",
+                "type": "browser-version-features-history"
+            },
             "browser-version-features.history": {
-                "href": "https://api.compat.mozilla.org/browsers-version-features-history/{browser-version-features.history}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history}",
                 "type": "browser-version-features-history"
             }
         }
     }
+
+
+# History
+
+History objects are created when a Resource is created, updated, or deleted.
+By navigating the history chain, a caller can see the changes of a resource
+over time.
+
+All history representations are similar, so one example should be enough to
+determine the pattern.
+
+## Browsers History
+
+A **browsers-history** represents the state of a **browser** at a point in
+time, and who is responsible for that representation.  The representation
+includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **timestamp** *(server selected)* - Timestamp of this change
+    - **event** *(server selected)* - The type of event, one of "created",
+      "changed", or "deleted"
+    - **browsers** - The **browsers** representation at this point in time
+* **links**
+    - **browser** *(one)* - Associated **browser**
+    - **user** *(many)* - The user responsible for this change
+
+
+To get the list of **browsers-history**:
+
+
+    GET /browsers-history HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+    Content-Language: en
+
+    {
+        "browsers-history": [{
+            "id": "1001",
+            "timestamp": "1404919464.559140",
+            "event": "created",
+            "browsers": {
+                "id": "1",
+                "slug": "chrome",
+                "class": "desktop",
+                "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
+                "name": "Chrome",
+                "engine": null,
+                "links": {
+                    "versions": ["123"],
+                    "history-current": "1001",
+                    "history": ["1001"]
+                },
+                "meta": {
+                    "translations": {
+                        "name": {
+                            "selected": "en",
+                            "available": ["en"]
+                        },
+                        "engine": {
+                            "selected": null,
+                            "available": []
+                        }
+                    }
+                }
+            },
+            "links": {
+                "browser": "1",
+                "user": "1",
+            }
+        }, {
+            "id": "1002",
+            "timestamp": "1404919464.559140",
+            "event": "created",
+            "browsers": {
+                "id": "2",
+                "slug": "firefox",
+                "class": "desktop",
+                "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+                "name": "Firefox",
+                "engine": "Gecko",
+                "links": {
+                    "versions": ["124"],
+                    "history-current": "1002",
+                    "history": ["1002"]
+                },
+                "meta": {
+                    "translations": {
+                        "name": {
+                            "selected": "en",
+                            "available": ["en"]
+                        },
+                        "engine": {
+                            "selected": "en",
+                            "available": ["en"]
+                        }
+                    }
+                }
+            },
+            "links": {
+                "browser": "1",
+                "users": "1",
+            }
+        }],
+        "links": {
+            "browsers-history.browser": {
+                "href": "https://api.compat.mozilla.org/browser-history/{browsers-history.browser}",
+                "type": "browsers"
+            },
+            "browsers-history.user": {
+                "href": "https://api.compat.mozilla.org/users/{browsers-history.user}",
+                "type": "users"
+            },
+        },
+        "meta": {
+            "pagination": {
+                "browsers-history": {
+                    "prev": null,
+                    "next": "https://api.compat.mozilla.org/browsers-history?page=2&per_page=10",
+                    "pages": 2,
+                    "per_page": 10,
+                    "total": 14,
+                }
+            }
+        }
+    }
+
+
+To get a single **browsers-history** representation:
+
+
+    GET /browsers-history/1002 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+    Content-Language: en
+
+    {
+        "browsers-history": {
+            "id": "1002",
+            "timestamp": "1404919464.559140",
+            "event": "created",
+            "browsers": {
+                "id": "2",
+                "slug": "firefox",
+                "class": "desktop",
+                "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+                "name": "Firefox",
+                "engine": "Gecko",
+                "links": {
+                    "versions": ["124"],
+                    "history-current": "1002",
+                    "history": ["1002"]
+                },
+                "meta": {
+                    "translations": {
+                        "name": {
+                            "selected": "en",
+                            "available": ["en"]
+                        },
+                        "engine": {
+                            "selected": "en",
+                            "available": ["en"]
+                        }
+                    }
+                }
+            },
+            "links": {
+                "browser": "1",
+                "users": "1",
+            }
+        },
+        "links": {
+            "browsers-history.browser": {
+                "href": "https://api.compat.mozilla.org/browser-history/{browsers-history.browser}",
+                "type": "browsers"
+            },
+            "browsers-history.user": {
+                "href": "https://api.compat.mozilla.org/users/{browsers-history.user}",
+                "type": "users"
+            },
+        }
+    }
+
+## Browser Versions History
+
+A **browser-versions-history** represents a state of a **browser-version** at
+a point in time, and who is responsible for that representation.  See
+**browsers-history** and **browser-versions** for an idea of the represention.
+
+## Features History
+
+A **features-history** represents a state of a **feature** at a point in time,
+and who is responsible for that representation.  See **browsers-history** and
+**features** for an idea of the represention.
+
+## Feature Sets History
+
+A **feature-sets-history** represents a state of a **feature-set** at a point
+in time, and who is responsible for that representation.  See
+**browsers-history** and **feature-sets** for an idea of the represention.
+
+## Browser Version Features History
+
+A **browser-version-features-history** represents a state of a
+**browser-version-feature** at a point in time, and who is responsible for that
+representation.  See **browsers-history** and **browser-version-features** for
+an idea of the represention.
 
 
 # Views
@@ -912,7 +1268,9 @@ developed around March 2014.  These changes are:
 
 # To Do
 
-* Add attribute and link reference to docs
-* Convert specs to attribute with links and caching
+* Add spec models
+* Add user models
+* Add translations back to main repr
 * Power Queries - for example, feature by slug
-* Add browsers-history, browsers-versions-history, etc.
+* Add examples of tables, updating
+* Add example of reverting
