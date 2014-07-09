@@ -95,7 +95,6 @@ To get the list of **browsers**:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "browsers": [{
@@ -103,48 +102,30 @@ To get the list of **browsers**:
             "slug": "chrome",
             "class": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
-            "name": "Chrome",
+            "name": {
+                "en": "Chrome"
+            },
             "engine": null,
             "links": {
                 "versions": ["123"],
                 "history-current": "1001",
                 "history": ["1001"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    },
-                    "engine": {
-                        "selected": null,
-                        "available": []
-                    }
-                }
             }
         },{
             "id": "2",
             "slug": "firefox",
             "class": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-            "name": "Firefox",
-            "engine": "Gecko",
+            "name": {
+                "en": "Firefox"
+            },
+            "engine": {
+                "en": "Gecko"
+            },
             "links": {
                 "versions": ["124"],
                 "history-current": "1002",
                 "history": ["1002"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    },
-                    "engine": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         }],
         "links": {
@@ -185,7 +166,6 @@ To get a single **browser**:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "browsers": {
@@ -193,24 +173,16 @@ To get a single **browser**:
             "slug": "firefox",
             "class": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-            "name": "Firefox",
-            "engine": "Gecko",
+            "name": {
+                "en": "Firefox"
+            },
+            "engine": {
+                "en": "Gecko"
+            },
             "links": {
                 "versions": ["124"],
                 "history-current": "1002",
                 "history": ["1002"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    },
-                    "engine": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         },
         "links": {
@@ -428,34 +400,29 @@ To get the list of **features**:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "features": [{
             "id": "276",
             "slug": "css-background-size-contain",
             "experimental": false,
-            "name": "background-size: contain",
+            "name": {
+                "en": "background-size: contain"
+            },
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
                 "browser-version-features": ["1125", "1212", "1536"],
                 "history-current": "456",
                 "history": ["456"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         },{
             "id": "277",
             "slug": "css-background-size-cover",
             "experimental": false,
-            "name": "background-size: cover",
+            "name": {
+                "en": "background-size: cover"
+            },
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
@@ -467,7 +434,8 @@ To get the list of **features**:
             "id": "289",
             "slug": "css-display-grid",
             "experimental": true,
-            "name": "display: grid",
+            "name": {
+                "en": "display: grid",
             },
             "links": {
                 "feature-set": "398",
@@ -475,14 +443,6 @@ To get the list of **features**:
                 "browser-version-features": ["1127", "1214", "1538"],
                 "history-current": "458",
                 "history": ["458"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         }],
         "links": {
@@ -530,28 +490,21 @@ To get a specific **feature**:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "features": {
             "id": "276",
             "slug": "css-background-size-contain",
             "experimental": false,
-            "name": "background-size: contain",
+            "name": {
+                "en": "background-size: contain"
+            },
             "links": {
                 "feature-set": "373",
                 "spec-sections": ["485"],
                 "browser-version-features": ["1125", "1212", "1536"],
                 "history-current": "456",
                 "history": ["456"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         },
         "links": {
@@ -612,13 +565,14 @@ To get the list of feature sets:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "feature-sets": [{
             "id": "301",
             "slug": "css",
-            "name": "CSS",
+            "name": {
+                "en": "CSS"
+            },
             "links": {
                 "features": [],
                 "parent": null,
@@ -628,19 +582,13 @@ To get the list of feature sets:
                 "decendants": ["301", "313", "314", "315"],
                 "history-current": "647",
                 "history": ["647"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         },{
             "id": "373",
             "slug": "css-background-size",
-            "name": "background-size",
+            "name": {
+                "en": "background-size"
+            },
             "links": {
                 "features": ["275", "276", "277"],
                 "parent": "301",
@@ -650,14 +598,6 @@ To get the list of feature sets:
                 "decendants": ["373"],
                 "history-current": "648",
                 "history": ["648"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         }],
         "links": {
@@ -718,13 +658,14 @@ To get a single **feature set**:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "feature-sets": [{
             "id": "373",
             "slug": "css-background-size",
-            "name": "background-size",
+            "name": {
+                "en": "background-size"
+            },
             "links": {
                 "features": ["275", "276", "277"],
                 "parent": "301",
@@ -734,14 +675,6 @@ To get a single **feature set**:
                 "decendants": [],
                 "history-current": "648",
                 "history": ["648"]
-            },
-            "meta": {
-                "translations": {
-                    "name": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         }],
         "links": {
@@ -816,7 +749,6 @@ To get the list of **browser-version-features**:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "browser-version-features": [{
@@ -830,18 +762,6 @@ To get the list of **browser-version-features**:
                 "feature": "276",
                 "history-current": "2567",
                 "history": ["2567"]
-            },
-            "meta": {
-                "translations": {
-                    "note": {
-                        "selected": null,
-                        "available": []
-                    },
-                    "footnote": {
-                        "selected": null,
-                        "available": []
-                    }
-                }
             }
         },{
             "id": "1124",
@@ -854,18 +774,6 @@ To get the list of **browser-version-features**:
                 "feature": "276",
                 "history-current": "2568",
                 "history": ["2568"]
-            },
-            "meta": {
-                "translations": {
-                    "note": {
-                        "selected": null,
-                        "available": []
-                    },
-                    "footnote": {
-                        "selected": null,
-                        "available": []
-                    }
-                }
             }
         },{
             "id": "1256",
@@ -878,42 +786,22 @@ To get the list of **browser-version-features**:
                 "feature": "295",
                 "history-current": "2569",
                 "history": ["2569"]
-            },
-            "meta": {
-                "translations": {
-                    "note": {
-                        "selected": null,
-                        "available": []
-                    },
-                    "footnote": {
-                        "selected": null,
-                        "available": []
-                    }
-                }
             }
         },{
             "id": "1256",
             "support": "yes",
             "prefix": null,
-            "note": "(behind a pref)",
-            "footnote": "To activate flexbox support, for Firefox 18 amd 19, the user has to change the about:config...",
+            "note": {
+                "en": "(behind a pref)"
+            },
+            "footnote": {
+                "en": "To activate flexbox support, for Firefox 18 amd 19, the user has to change the about:config..."
+            },
             "links": {
                 "browser-version": "123",
                 "feature": "295",
                 "history-current": "2570",
                 "history": ["2570"]
-            },
-            "meta": {
-                "translations": {
-                    "note": {
-                        "selected": "en",
-                        "available": ["en"]
-                    },
-                    "footnote": {
-                        "selected": "en",
-                        "available": ["en"]
-                    }
-                }
             }
         }],
         "links": {
@@ -958,7 +846,6 @@ To get a single **browser-version-features**:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "browser-version-features": {
@@ -972,18 +859,6 @@ To get a single **browser-version-features**:
                 "feature": "276",
                 "history-current": "2567",
                 "history": ["2567"]
-            },
-            "meta": {
-                "translations": {
-                    "note": {
-                        "selected": null,
-                        "available": []
-                    },
-                    "footnote": {
-                        "selected": null,
-                        "available": []
-                    }
-                }
             }
         },
         "links": {
@@ -1042,7 +917,6 @@ To get the list of **browsers-history**:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "browsers-history": [{
@@ -1054,24 +928,14 @@ To get the list of **browsers-history**:
                 "slug": "chrome",
                 "class": "desktop",
                 "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
-                "name": "Chrome",
+                "name": {
+                    "en": "Chrome"
+                },
                 "engine": null,
                 "links": {
                     "versions": ["123"],
                     "history-current": "1001",
                     "history": ["1001"]
-                },
-                "meta": {
-                    "translations": {
-                        "name": {
-                            "selected": "en",
-                            "available": ["en"]
-                        },
-                        "engine": {
-                            "selected": null,
-                            "available": []
-                        }
-                    }
                 }
             },
             "links": {
@@ -1087,24 +951,16 @@ To get the list of **browsers-history**:
                 "slug": "firefox",
                 "class": "desktop",
                 "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-                "name": "Firefox",
-                "engine": "Gecko",
+                "name": {
+                    "en": "Firefox"
+                },
+                "engine": {
+                    "en": "Gecko"
+                },
                 "links": {
                     "versions": ["124"],
                     "history-current": "1002",
                     "history": ["1002"]
-                },
-                "meta": {
-                    "translations": {
-                        "name": {
-                            "selected": "en",
-                            "available": ["en"]
-                        },
-                        "engine": {
-                            "selected": "en",
-                            "available": ["en"]
-                        }
-                    }
                 }
             },
             "links": {
@@ -1145,7 +1001,6 @@ To get a single **browsers-history** representation:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Content-Language: en
 
     {
         "browsers-history": {
@@ -1157,24 +1012,16 @@ To get a single **browsers-history** representation:
                 "slug": "firefox",
                 "class": "desktop",
                 "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-                "name": "Firefox",
-                "engine": "Gecko",
+                "name": {
+                    "en": "Firefox"
+                },
+                "engine": {
+                    "en": "Gecko"
+                },
                 "links": {
                     "versions": ["124"],
                     "history-current": "1002",
                     "history": ["1002"]
-                },
-                "meta": {
-                    "translations": {
-                        "name": {
-                            "selected": "en",
-                            "available": ["en"]
-                        },
-                        "engine": {
-                            "selected": "en",
-                            "available": ["en"]
-                        }
-                    }
                 }
             },
             "links": {
@@ -1270,7 +1117,6 @@ developed around March 2014.  These changes are:
 
 * Add spec models
 * Add user models
-* Add translations back to main repr
 * Power Queries - for example, feature by slug
 * Add examples of tables, updating
 * Add example of reverting
