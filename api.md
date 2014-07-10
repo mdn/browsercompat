@@ -1390,6 +1390,8 @@ These changes are:
       [run-in value of display property](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility)
     - **name** - converted to localized text
     - **specfication-sections** - replaces spec link
+    - **feature-set** - Is there a use case for multiple **feature sets** for
+      a feature?  The doc assumes no, which makes things easier.
 * **feature-sets**
     - **slug - human-friendly unique identifier
     - **name - converted to localized text
@@ -1408,6 +1410,8 @@ There are also additional Resources:
   translated titles and anchors
 * **specifications** - For referring to a specification, with translated titles
   and URIs.
+* All the history resources (**browsers-history**,
+  **browser-versions-history**, etc.)
 
 ## Unresolved Issues
 
@@ -1453,4 +1457,3 @@ There are also additional Resources:
 
 * Add examples of views for tables, updating
 * Look at additional MDN content for items in common use
-* Add link for self to reprs
