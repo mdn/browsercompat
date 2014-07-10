@@ -16,6 +16,9 @@ There are several issues with the table-based compatibility tables, some of
 which could be solved by having a database-backed representation of
 compatibilty data, readable and writable from an API.
 
+**Contents**
+<!--TOC-->
+
 # The Entrypoints
 
 The API will be reachable at <https://api.compat.mozilla.org>. A non-SSL
