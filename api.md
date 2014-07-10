@@ -1341,6 +1341,24 @@ A final endpoint is used to delete the credential and log out the user:
 
 * `/auth/logout`
 
+## Browser Identification
+
+The `/browser-ident` endpoint provides browser identification based on the
+User Agent and other parameters.
+
+Two potential sources for this information:
+
+* [WhichBrowser](https://github.com/NielsLeenheer/WhichBrowser) - Very
+  detailed.  Uses User Agent header and feature detection to distinguish
+  between similar browsers.  Written in PHP.
+* [ua-parser](https://github.com/tobie/ua-parser) - Parses the User Agent.
+  The
+  [reference parser](https://webplatform.github.io/browser-compat-model/https://webplatform.github.io/browser-compat-model/#reference-user-agent-parser)
+  for [WebPlatform.org](http://www.webplatform.org).  Written in Python.
+
+This endpoint will probably require the browser to visit it.  It will be
+further speced as part of the UX around user contributions.
+
 # Issues to Resolve Before Code
 
 ## Additions to Browser Compatibility Data Architecture
@@ -1435,5 +1453,4 @@ There are also additional Resources:
 
 * Add examples of views for tables, updating
 * Look at additional MDN content for items in common use
-* Add browser identification service
 * Add link for self to reprs
