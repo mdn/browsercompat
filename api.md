@@ -58,6 +58,8 @@ The two sites are served from a single codebase, at
   for translations of human-facing text
 * [django-mptt](https://github.com/django-mptt/django-mptt/), for efficiently
   storing hierarchical data
+* [django-oauth2-provider](https://github.com/caffeinehit/django-oauth2-provider),
+  for script-based updates of content
 
 # Resources
 
@@ -1306,7 +1308,38 @@ data to anonymous users.
 
 # Services
 
-A **Service** provides server functionality that is not tied to the data store.
+A **Service** provides server functionality beyond basic manipulation of
+resources.
+
+## Authentication
+
+Several endpoint handle user authentication.
+
+<https://api.compat.mozilla.org/auth> is an HTML page that shows the user's
+current authentication status, and includes a button for starting a
+[Persona](http://www.mozilla.org/en-US/persona/) login.
+
+One endpoint implements Persona logins.  See the
+[Persona Quick Setup](https://developer.mozilla.org/en-US/Persona/Quick_Setup)
+for details.
+
+* `/auth/persona/login` - Exchanges a Persona assertion for a login cookie.
+  If the email is not on the system, then a new **user** resource is created.
+  If the user has not accepted the latest version of the contribution
+  agreement, then they are redirected to a page to accept it.  Otherwise, they
+  are redirected to /auth.
+
+Four endpoints are used for [OAuth2](http://tools.ietf.org/html/rfc6749),
+used to exchange Persona credentials for credentials usable from a server:
+
+* `/auth/oauth2/authorize`
+* `/auth/oauth2/authorize/confirm`
+* `/auth/oauth2/redirect`
+* `/auth/oauth2/access_token`
+
+A final endpoint is used to delete the credential and log out the user:
+
+* `/auth/logout`
 
 # Issues to Resolve Before Code
 
@@ -1402,6 +1435,5 @@ There are also additional Resources:
 
 * Add examples of views for tables, updating
 * Look at additional MDN content for items in common use
-* Add authentication
 * Add browser identification service
 * Add link for self to reprs
