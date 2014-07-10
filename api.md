@@ -1006,9 +1006,9 @@ To get a single **browser-version-features**:
     }
 
 
-# History
+# History Resources
 
-History objects are created when a Resource is created, updated, or deleted.
+History Resources are created when a Resource is created, updated, or deleted.
 By navigating the history chain, a caller can see the changes of a resource
 over time.
 
@@ -1018,8 +1018,7 @@ determine the pattern.
 ## Browsers History
 
 A **browsers-history** represents the state of a **browser** at a point in
-time, and who is responsible for that representation.  The representation
-includes:
+time, and who is responsible for that state.  The representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
@@ -1105,6 +1104,92 @@ A **browser-version-features-history** represents a state of a
 representation.  See **browsers-history** and **browser-version-features** for
 an idea of the represention.
 
+## Users
+
+A **user** represents a person or process that creates, changes, or deletes a
+resource.
+
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **username** - The user's email or ID
+    - **created** *(server selected)* - UTC timestamp of when this user
+      account was created
+    - **agreement-version** - The version of the contribution agreement the
+      user has accepted.  "0" for not agreed, "1" for first version, etc.
+    - **permissions** - A list of permissions.  Permissions include:
+        * "change-browser-version-feature" - Add or change a
+          **browser-version-feauture**
+        * "change-resource" - Add or change any resource except **users** or
+          history resources
+        * "change-user" - Change a **user** resource
+        * "delete-resource" - Delete any resource
+* **links**
+    - **browsers-history** *(many)* - Associated **browsers-history**
+    - **browser-versions-history** *(many)* - Associated
+      **browser-versions-history**
+    - **features-history** *(many)* - Associated **features-history**
+    - **feature-sets-history** *(many)* - Associated **feature-sets-history**
+    - **browser-version-features-history** *(many)* - Associated
+      **browser-version-features-history**
+
+
+To get a single **user** representation:
+
+    GET /users/42 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "users": {
+            "id": "42",
+            "username": "askDNA@tdv.com",
+            "created": "1405000551.750000",
+            "agreement-version": "1",
+            "permissions": ["change-browser-version-feature"]
+            "links": {
+                "browsers-history": [],
+                "browser-versions-history": [],
+                "features-history": [],
+                "feature-sets-history": [],
+                "browser-version-features-history": ["1789", "1790"],
+            }
+        },
+        "links" {
+            "users.browsers-history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{users.browsers-history}",
+                "type": "browsers-history"
+            },
+            "users.browser-versions-history": {
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{users.browser-versions-history}",
+                "type": "browser-versions-history"
+            },
+            "users.features-history": {
+                "href": "https://api.compat.mozilla.org/features-history/{users.features-history}",
+                "type": "features-history"
+            },
+            "users.feature-sets-history": {
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{users.feature-sets-history}",
+                "type": "feature-sets-history"
+            },
+            "users.browser-version-features-history": {
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{users.browser-version-features-history}",
+                "type": "browser-version-features-history"
+            }
+        }
+    }
+
+If a client is authenticated, the logged-in user's account can be retrieved with:
+
+
+    GET /users/me HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+
 
 # Views
 
@@ -1174,10 +1259,21 @@ There are also additional Resources:
 * overholt wants
   [availability in Web Workers](https://bugzilla.mozilla.org/show_bug.cgi?id=996570#c14).
   Is an API enough to support that need?
-* There are strings marked for translations, but I can't find examples of
-  translations in the wild:
-    - browser.name - Firefox explicitly says
+* I'm not sure if the translatable strings are correct:
+    - browsers.name - Firefox explicitly says
       [don't localize our brand](http://www.mozilla.org/en-US/styleguide/communications/translation/#branding).
+      I can't find examples of any localized browser names in the wild.
+    - browsers.engine - Same
+    - features.name - "Basic usage" and "none, inline and block" should be
+      localized.  But, are those good feature names?  Could you write a bit of
+      JavaScript to test 'Basic usage'?  Should there be three features
+      ("display: none", "display: inline", "display: block") instead?  The
+      need for translated feature names might be a doc smell.
+    - feature-sets.name - Not sure if "CSS", "display", etc. should be
+      localized, similar logic to feature names.
+* I think Niels Leenheer has good points about browsers being different across
+  operating systems and OS versions - I'm considering adding this to the model:
+  [Mapping browsers to 2.2.1 Dictionary Browser Members](http://lists.w3.org/Archives/Public/public-webplatform-tests/2013OctDec/0007.html).
 * How should we support versioning the API?  There is no Internet concensus.
     - I expect to break the API as needed while implementing.  At some point
       (late 2014), we'll call it v1.
@@ -1188,14 +1284,17 @@ There are also additional Resources:
       (`Accept: application/vnd.api+json;version=2`)
     - These people all hate each other.
       [Read a good blog post on the subject](http://www.troyhunt.com/2014/02/your-api-versioning-is-wrong-which-is.html).
-* Should all users have create / update / delete permissions on all resources?
-  Or should we have more fine-grained permissions?
+* What should be the default permissions for new users?  What is the process
+  for upgrading or downgrading permissions?
+* Is Persona a good fit for creating API accounts?  There will need to be a
+  process where an MDN user becomes an API user, and a way for an API user
+  to authenticate directly with the API.
 
 ## To Do
 
 * Add spec models
-* Add user models
 * Add examples of views for tables, updating
 * Look at additional MDN content for items in common use
 * Add authentication
 * Add browser identification service
+* Add link for self to reprs
