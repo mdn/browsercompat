@@ -62,6 +62,20 @@ Resources are simple objects supporting CRUD operations.  Read operations
 can be done anonymously.  Creating and updating require account permissions,
 and deleting requires admin account permissions.
 
+All resources support similar operations using HTTP methods:
+
+* `GET /<type>` - List instances (paginated)
+* `POST /<type>` - Create new instance
+* `GET /<type>/<id>` - Retrieve an instance
+* `PUT /<type>/<id>` - Update an instance
+* `DELETE /<type>/<id>` - Delete instance
+
+Additional features may be added as needed.  See the
+[JSON API docs](http://jsonapi.org/format/) for ideas and what format they
+will take.
+
+Because the operations are similar, only **browsers** has complete operations
+examples, and others just show retrieving an instance (`GET /<type>/</id>`).
 
 ## Browsers
 
@@ -75,7 +89,7 @@ The **browsers** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **slug** *(write-once)* - Unique, human-friendly slug
-    - **class** - String, must be one of "desktop" or "mobile"
+    - **environment** - String, must be one of "desktop" or "mobile"
     - **icon** - Protocol-less path to representative icon
     - **name** *(localized)* - Browser name
     - **engine** *(localized)* - Browser engine, or null if not version tracked
@@ -85,7 +99,9 @@ The **browsers** representation includes:
     - **history** *(many)* - Associated **browsers-history** in time order
       (most recent first)
 
-To get the list of **browsers**:
+### List
+
+To get the paginated list of **browsers**:
 
 
     GET /browsers HTTP/1.1
@@ -100,7 +116,7 @@ To get the list of **browsers**:
         "browsers": [{
             "id": "1",
             "slug": "chrome",
-            "class": "desktop",
+            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
             "name": {
                 "en": "Chrome"
@@ -114,7 +130,7 @@ To get the list of **browsers**:
         },{
             "id": "2",
             "slug": "firefox",
-            "class": "desktop",
+            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
             "name": {
                 "en": "Firefox"
@@ -126,6 +142,122 @@ To get the list of **browsers**:
                 "versions": ["124"],
                 "history-current": "1002",
                 "history": ["1002"]
+            }
+        },{
+            "id": "3",
+            "slug": "ie",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+            "name": {
+                "en": "Internet Explorer"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["125", "167", "178"],
+                "history-current": "1003",
+                "history": ["1003"]
+            }
+        },{
+            "id": "4",
+            "slug": "opera",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera.png",
+            "name": {
+                "en": "Opera"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["126"],
+                "history-current": "1004",
+                "history": ["1004"]
+            }
+        },{
+            "id": "5",
+            "slug": "safari",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari.png",
+            "name": {
+                "en": "Safari"
+            },
+            "engine": {
+                "en": "Webkit"
+            },
+            "links": {
+                "versions": ["127"],
+                "history-current": "1005",
+                "history": ["1005"]
+            }
+        },{
+            "id": "6",
+            "slug": "android",
+            "environment": "mobile",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/android.png",
+            "name": {
+                "en": "Android"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["128"],
+                "history-current": "1006",
+                "history": ["1006"]
+            }
+        },{
+            "id": "7",
+            "slug": "firefox-mobile",
+            "environment": "mobile",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox-mobile.png",
+            "name": {
+                "en": "Firefox Mobile"
+            },
+            "engine": {
+                "en": "Gecko"
+            },
+            "links": {
+                "versions": ["129"],
+                "history-current": "1007",
+                "history": ["1007"]
+            }
+        },{
+            "id": "8",
+            "slug": "ie-phone",
+            "environment": "mobile",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie-phone.png",
+            "name": {
+                "en": "IE Phone"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["130"],
+                "history-current": "1008",
+                "history": ["1008"]
+            }
+        },{
+            "id": "9",
+            "slug": "opera-mobile",
+            "environment": "mobile",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera-mobile.png",
+            "name": {
+                "en": "Opera Mobile"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["131"],
+                "history-current": "1009",
+                "history": ["1009"]
+            }
+        },{
+            "id": "10",
+            "slug": "safari-mobile",
+            "environment": "mobile",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari-mobile.png",
+            "name": {
+                "en": "Safari Mobile"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["132"],
+                "history-current": "1010",
+                "history": ["1010"]
             }
         }],
         "links": {
@@ -155,6 +287,73 @@ To get the list of **browsers**:
         }
     }
 
+### Create
+
+Creating **browser** instances require authentication with create privileges.
+To create a new **browser** instance, POST a representation with at least the
+required parameters.  Some items (such as the `id` attribute and the
+`history-current` link) will be picked by the server, and will be ignored if
+included.
+
+Here's an example of creating a **browser** instance:
+
+    POST /browsers HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+    Content-Type: application/vnd.api+json
+
+    {
+        "browsers": {
+            "slug": "amazon-silk-mobile",
+            "environment": "mobile",
+            "name": {
+                "en": "Amazon Silk Mobile"
+            }
+        }
+    }
+
+
+The successful response:
+
+
+    HTTP/1.1 201 Created
+    Content-Type: application/vnd.api+json
+    Location: https://api.compat.mozilla.org/browsers/15
+
+    {
+        "browsers": {
+            "id": "15",
+            "slug": "amazon-silk-mobile",
+            "environment": "mobile",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/amazon-silk-mobile.png",
+            "name": {
+                "en": "Amazon Silk Mobile"
+            },
+            "engine": null,
+            "links": {
+                "versions": [],
+                "history-current": "1027",
+                "history": ["1027"]
+            }
+        },
+        "links": {
+            "browsers.versions": {
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+                "type": "browser-versions"
+            },
+            "browsers.history-current": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+                "type": "browsers-history"
+            },
+            "browsers.history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+                "type": "browsers-history"
+            }
+        }
+    }
+
+### Retrieve by ID
 
 To get a single **browser**:
 
@@ -171,7 +370,7 @@ To get a single **browser**:
         "browsers": {
             "id": "2",
             "slug": "firefox",
-            "class": "desktop",
+            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
             "name": {
                 "en": "Firefox"
@@ -193,13 +392,306 @@ To get a single **browser**:
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
-            }
+            },
             "browsers.history": {
                 "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
     }
+
+### Retrieve by Slug
+
+To get a **browser** by slug:
+
+
+    GET /browsers/firefox HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+    Location: https://api.compat.mozilla.org/browsers/2
+
+    {
+        "browsers": {
+            "id": "2",
+            "slug": "firefox",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+            "name": {
+                "en": "Firefox"
+            },
+            "engine": {
+                "en": "Gecko"
+            },
+            "links": {
+                "versions": ["124"],
+                "history-current": "1002",
+                "history": ["1002"]
+            }
+        },
+        "links": {
+            "browsers.versions": {
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+                "type": "browser-versions"
+            },
+            "browsers.history-current": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+                "type": "browsers-history"
+            },
+            "browsers.history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+                "type": "browsers-history"
+            }
+        }
+    }
+
+### Update
+
+Updating a **browser** instance require authentication with create privileges.
+Some items (such as the `id` attribute and `history` links) can not be
+changed, and will be ignored if included.  A successful update will return a
+`200 OK`, add a new ID to the `history` links list, and update the
+`history-current` link.
+
+To update a **browser**:
+
+    PUT /browsers/3 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+    {
+        "browsers": {
+            "id": "3",
+            "slug": "ie",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+            "name": {
+                "en": "IE"
+            },
+            "engine": null
+        }
+    }
+
+
+The successful response is:
+
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "browsers": {
+            "id": "3",
+            "slug": "ie",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+            "name": {
+                "en": "IE"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["125", "167", "178"],
+                "history-current": "1033",
+                "history": ["1033", "1003"]
+            }
+        },
+        "links": {
+            "browsers.versions": {
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+                "type": "browser-versions"
+            },
+            "browsers.history-current": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+                "type": "browsers-history"
+            },
+            "browsers.history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+                "type": "browsers-history"
+            }
+        }
+    }
+
+
+### Partial Update
+
+An update can just update some fields:
+
+
+    PUT /browsers/3 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+    {
+        "browsers": {
+            "name": {
+                "en": "M$ Internet Exploder 💩"
+            }
+        }
+    }
+
+
+The successful response is:
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "browsers": {
+            "id": "3",
+            "slug": "ie",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+            "name": {
+                "en": "M$ Internet Exploder 💩"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["125", "167", "178"],
+                "history-current": "1034",
+                "history": ["1034", "1033", "1003"]
+            }
+        },
+        "links": {
+            "browsers.versions": {
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+                "type": "browser-versions"
+            },
+            "browsers.history-current": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+                "type": "browsers-history"
+            },
+            "browsers.history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+                "type": "browsers-history"
+            }
+        }
+    }
+
+### Reverting to a previous version
+
+To revert to an earlier version, set the `history-current` link to a
+previous value.  This resets the content and creates a new
+**browsers-history** object.
+
+    PUT /browsers/3 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+    {
+        "browsers": {
+            "links": {
+                "history-current": "1003"
+            }
+        }
+    }
+
+
+A successful response:
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "browsers": {
+            "id": "3",
+            "slug": "ie",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+            "name": {
+                "en": "Internet Explorer"
+            },
+            "engine": null,
+            "links": {
+                "versions": ["125", "167", "178"],
+                "history-current": "1035",
+                "history": ["1035", "1034", "1033", "1003"]
+            }
+        },
+        "links": {
+            "browsers.versions": {
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+                "type": "browser-versions"
+            },
+            "browsers.history-current": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+                "type": "browsers-history"
+            },
+            "browsers.history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+                "type": "browsers-history"
+            }
+        }
+    }
+
+
+### Deletion
+
+To delete a **browser**:
+
+
+    DELETE /browsers/2 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+
+    HTTP/1.1 204 No Content
+
+
+### Reverting a deletion
+
+To revert a deletion:
+
+
+    PUT /browsers/2 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "browsers": {
+            "id": "2",
+            "slug": "firefox",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+            "name": {
+                "en": "Firefox"
+            },
+            "engine": {
+                "en": "Gecko"
+            },
+            "links": {
+                "versions": ["124"],
+                "history-current": "1104",
+                "history": ["1104", "1103", "1002"]
+            }
+        },
+        "links": {
+            "browsers.versions": {
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+                "type": "browser-versions"
+            },
+            "browsers.history-current": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+                "type": "browsers-history"
+            },
+            "browsers.history": {
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+                "type": "browsers-history"
+            }
+        }
+    }
+
 
 ## Browser Versions
 
@@ -223,97 +715,6 @@ The **browser-versions** representation includes:
     - **history-current** *(one)* - Current **browsers-versions-history**
     - **history** *(many)* - Associated **browser-versions-history**, in time
       order (most recent first)
-
-To get the list of **browser-versions**:
-
-
-    GET /browser-versions HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browser-versions": [{
-            "id": "123",
-            "version": "1.0",
-            "engine-version": null,
-            "current": false,
-            "links": {
-                "browser": "1",
-                "previous": null,
-                "next": "176",
-                "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
-                "history-current": "567",
-                "history": ["567"]
-            }
-        },{
-            "id": "124",
-            "version": "18.0",
-            "engine-version": "18.0",
-            "current": false,
-            "links": {
-                "browser": "2",
-                "previous": "122",
-                "next": "176",
-                "browser-version-features": ["1212", "1213", "1214", "1215", "1216"],
-                "history-current": "568",
-                "history": ["568"]
-            }
-        },{
-            "id": "129",
-            "version": "30.0",
-            "engine-version": "30.0",
-            "current": true,
-            "links": {
-                "browser": "2",
-                "previous": "128",
-                "next": null,
-                "browser-version-features": ["1536", "1537", "1538", "1539", "1540"],
-                "history-current": "569",
-                "history": ["569"]
-            }
-        }],
-        "links": {
-            "browser-versions.browser": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
-                "type": "browsers"
-            },
-            "browser-versions.previous": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.previous}",
-                "type": "browser-versions"
-            },
-            "browser-versions.next": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
-                "type": "browser-versions"
-            },
-            "browser-versions.browser-version-features": {
-                "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
-                "type": "browser-version-features"
-            },
-            "browser-versions.history-current": {
-                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history-current}",
-                "type": "browser-versions-history"
-            },
-            "browser-versions.history": {
-                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
-                "type": "browser-versions-history"
-            }
-        },
-        "meta": {
-            "pagination": {
-                "browser-versions": {
-                    "prev": null,
-                    "next": "https://api.compat.mozilla.org/browser-versions?page=2&per_page=10",
-                    "pages": 14,
-                    "per_page": 10,
-                    "total": 134,
-                }
-            }
-        }
-    }
 
 
 To get a single **browser-version**:
@@ -391,96 +792,6 @@ The **features** representation includes:
     - **history** *(many)* - Associated **features-history**, in time order
       (most recent first)
 
-To get the list of **features**:
-
-    GET /features HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "features": [{
-            "id": "276",
-            "slug": "css-background-size-contain",
-            "experimental": false,
-            "name": {
-                "en": "background-size: contain"
-            },
-            "links": {
-                "feature-set": "373",
-                "spec-sections": ["485"],
-                "browser-version-features": ["1125", "1212", "1536"],
-                "history-current": "456",
-                "history": ["456"]
-            }
-        },{
-            "id": "277",
-            "slug": "css-background-size-cover",
-            "experimental": false,
-            "name": {
-                "en": "background-size: cover"
-            },
-            "links": {
-                "feature-set": "373",
-                "spec-sections": ["485"],
-                "browser-version-features": ["1126", "1213", "1537"],
-                "history-current": "457",
-                "history": ["457"]
-            }
-        },{
-            "id": "289",
-            "slug": "css-display-grid",
-            "experimental": true,
-            "name": {
-                "en": "display: grid",
-            },
-            "links": {
-                "feature-set": "398",
-                "spec-sections": ["489"],
-                "browser-version-features": ["1127", "1214", "1538"],
-                "history-current": "458",
-                "history": ["458"]
-            }
-        }],
-        "links": {
-            "features.feature-set": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
-                "type": "features-sets"
-            },
-            "features.spec-sections": {
-                "href": "https://api.compat.mozilla.org/spec-sections/{features.spec-sections}",
-                "type": "spec-sections"
-            },
-            "features.browser-version-features": {
-                "href": "https://api.compat.mozilla.org/browser-version-features/{features.browser-version-features}",
-                "type": "browser-version-features"
-            },
-            "features.history-current": {
-                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
-                "type": "features-history"
-            },
-            "features.history": {
-                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
-                "type": "features-history"
-            }
-        },
-        "meta": {
-            "pagination": {
-                "features": {
-                    "prev": null,
-                    "next": "https://api.compat.mozilla.org/features?page=2&per_page=10",
-                    "pages": 76,
-                    "per_page": 10,
-                    "total": 754,
-                }
-            }
-        }
-    }
-
-
 To get a specific **feature**:
 
     GET /features/276 HTTP/1.1
@@ -553,99 +864,6 @@ The **feature-sets** representation includes:
     - **history-current** *(one)* - The current **feature-sets-history**
     - **history** *(many)* - Associated **feature-sets-history**, in time
       order (most recent first)
-
-
-To get the list of feature sets:
-
-
-    GET /features-sets HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "feature-sets": [{
-            "id": "301",
-            "slug": "css",
-            "name": {
-                "en": "CSS"
-            },
-            "links": {
-                "features": [],
-                "parent": null,
-                "ancestors": ["301"],
-                "siblings": ["300", "301", "302", "303"],
-                "children": ["313", "314", "315"],
-                "decendants": ["301", "313", "314", "315"],
-                "history-current": "647",
-                "history": ["647"]
-            }
-        },{
-            "id": "373",
-            "slug": "css-background-size",
-            "name": {
-                "en": "background-size"
-            },
-            "links": {
-                "features": ["275", "276", "277"],
-                "parent": "301",
-                "ancestors": ["301"],
-                "siblings": ["372", "373", "374", "375"],
-                "children": [],
-                "decendants": ["373"],
-                "history-current": "648",
-                "history": ["648"]
-            }
-        }],
-        "links": {
-            "feature-sets.features": {
-                "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
-                "type": "features"
-            },
-            "feature-sets.parent": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
-                "type": "feature-sets"
-            },
-            "feature-sets.ancestors": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
-                "type": "feature-sets"
-            },
-            "feature-sets.siblings": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
-                "type": "feature-sets"
-            },
-            "feature-sets.children": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
-                "type": "feature-sets"
-            },
-            "feature-sets.decendants": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
-                "type": "feature-sets"
-            },
-            "feature-sets.history-current": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
-                "type": "feature-sets-history"
-            },
-            "feature-sets.history": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
-                "type": "feature-sets-history"
-            }
-        },
-        "meta": {
-            "pagination": {
-                "feature-sets": {
-                    "prev": null,
-                    "next": "https://api.compat.mozilla.org/feature-sets?page=2&per_page=10",
-                    "pages": 14,
-                    "per_page": 10,
-                    "total": 131,
-                }
-            }
-        }
-    }
 
 
 To get a single **feature set**:
@@ -739,103 +957,6 @@ The **browser-version-feature** representation includes:
       in time order (most recent first)
 
 
-To get the list of **browser-version-features**:
-
-
-    GET /browser-version-features HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browser-version-features": [{
-            "id": "1123",
-            "support": "yes",
-            "prefix": null,
-            "note": null,
-            "footnote": null,
-            "links": {
-                "browser-version": "123",
-                "feature": "276",
-                "history-current": "2567",
-                "history": ["2567"]
-            }
-        },{
-            "id": "1124",
-            "support": "yes",
-            "prefix": null,
-            "note": null,
-            "footnote": null,
-            "links": {
-                "browser-version": "124",
-                "feature": "276",
-                "history-current": "2568",
-                "history": ["2568"]
-            }
-        },{
-            "id": "1256",
-            "support": "prefixed",
-            "prefix": "-webkit",
-            "note": null,
-            "footnote": null,
-            "links": {
-                "browser-version": "123",
-                "feature": "295",
-                "history-current": "2569",
-                "history": ["2569"]
-            }
-        },{
-            "id": "1256",
-            "support": "yes",
-            "prefix": null,
-            "note": {
-                "en": "(behind a pref)"
-            },
-            "footnote": {
-                "en": "To activate flexbox support, for Firefox 18 amd 19, the user has to change the about:config..."
-            },
-            "links": {
-                "browser-version": "123",
-                "feature": "295",
-                "history-current": "2570",
-                "history": ["2570"]
-            }
-        }],
-        "links": {
-            "browser-version-features.browser-version": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browser-version-features.browser-version}",
-                "type": "browser-versions"
-            },
-            "browser-version-features.feature": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
-                "type": "features"
-            },
-            "browser-version-features.history-current": {
-                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history-current}",
-                "type": "browser-version-features-history"
-            },
-            "browser-version-features.history": {
-                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history}",
-                "type": "browser-version-features-history"
-            }
-        },
-        "meta": {
-            "pagination": {
-                "browser-version-features": {
-                    "prev": null,
-                    "next": "https://api.compat.mozilla.org/browser-version-features?page=2&per_page=10",
-                    "pages": 1057,
-                    "per_page": 10,
-                    "total": 10564,
-                }
-            }
-        }
-    }
-
-
 To get a single **browser-version-features**:
 
 
@@ -907,91 +1028,6 @@ includes:
     - **browser** *(one)* - Associated **browser**
     - **user** *(many)* - The user responsible for this change
 
-
-To get the list of **browsers-history**:
-
-
-    GET /browsers-history HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browsers-history": [{
-            "id": "1001",
-            "timestamp": "1404919464.559140",
-            "event": "created",
-            "browsers": {
-                "id": "1",
-                "slug": "chrome",
-                "class": "desktop",
-                "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
-                "name": {
-                    "en": "Chrome"
-                },
-                "engine": null,
-                "links": {
-                    "versions": ["123"],
-                    "history-current": "1001",
-                    "history": ["1001"]
-                }
-            },
-            "links": {
-                "browser": "1",
-                "user": "1",
-            }
-        }, {
-            "id": "1002",
-            "timestamp": "1404919464.559140",
-            "event": "created",
-            "browsers": {
-                "id": "2",
-                "slug": "firefox",
-                "class": "desktop",
-                "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-                "name": {
-                    "en": "Firefox"
-                },
-                "engine": {
-                    "en": "Gecko"
-                },
-                "links": {
-                    "versions": ["124"],
-                    "history-current": "1002",
-                    "history": ["1002"]
-                }
-            },
-            "links": {
-                "browser": "1",
-                "users": "1",
-            }
-        }],
-        "links": {
-            "browsers-history.browser": {
-                "href": "https://api.compat.mozilla.org/browser-history/{browsers-history.browser}",
-                "type": "browsers"
-            },
-            "browsers-history.user": {
-                "href": "https://api.compat.mozilla.org/users/{browsers-history.user}",
-                "type": "users"
-            },
-        },
-        "meta": {
-            "pagination": {
-                "browsers-history": {
-                    "prev": null,
-                    "next": "https://api.compat.mozilla.org/browsers-history?page=2&per_page=10",
-                    "pages": 2,
-                    "per_page": 10,
-                    "total": 14,
-                }
-            }
-        }
-    }
-
-
 To get a single **browsers-history** representation:
 
 
@@ -1010,7 +1046,7 @@ To get a single **browsers-history** representation:
             "browsers": {
                 "id": "2",
                 "slug": "firefox",
-                "class": "desktop",
+                "environment": "desktop",
                 "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
                 "name": {
                     "en": "Firefox"
@@ -1077,46 +1113,86 @@ data to anonymous users.
 
 A **Service** provides server functionality that is not tied to the data store.
 
-# Additions to Browser Compatibility Data Architecture
+# Issues to Resolve Before Code
+
+## Additions to Browser Compatibility Data Architecture
 
 This spec includes changes to the
 [Browser Compatibility Data Architecture](https://docs.google.com/document/d/1YF7GJ6kgV5_hx6SJjyrgunqznQU1mKxp5FaLAEzMDl4/edit#)
-developed around March 2014.  These changes are:
+developed around March 2014.  These seemed like a good idea to me, based on
+list threads and thinking how to recreate Browser Compatibility tables live on
+MDN.
 
-* browsers
-    - slug - human-friendly unique identifier
-    - name - converted to localized text
-    - environment - either "desktop" or "mobile".  Supports current division of
-      browser types on MDN.
-    - engine - either the localized engine name or null.  Supports current
+These changes are:
+
+* **browsers**
+    - **slug** - human-friendly unique identifier
+    - **name** - converted to localized text.
+    - **environment** - either "desktop" or "mobile".  Supports current division
+      of browser types on MDN.
+    - **engine** - either the localized engine name or null.  Supports current
       engine version callouts on MDN tables.
-* browser-versions
-    - current - true if version is recommended for download.  For some
+* **browser-versions**
+    - **current** - true if version is recommended for download.  For some
       browsers (IE), may have multiple current versions.
-    - previous - ID of previous browser version, or null if first
-    - next - ID of next browser version, or null if last
-* features
-    - slug - human-friendly unique identifier
-    - experimental - true if property is experimental.  Supports beaker icon
-      on MDN, such as
+    - **previous** - ID of previous browser version, or null if first
+    - **next** - ID of next browser version, or null if last
+* **features**
+    - **slug** - human-friendly unique identifier
+    - **experimental** - true if property is experimental.  Supports beaker
+      icon on MDN, such as
       [run-in value of display property](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility)
-    - name - converted to localized text
-    - spec-sections - replaces spec link
-* feature-sets
-    - slug - human-friendly unique identifier
-    - name - converted to localized text
-    - ancestors, siblings, children, decendants - tree relations
-* browser-version-features
-    - prefix - string prefix to enable, or null if no prefix
-    - note - short note, length limited, translated, or null.  Supports inline
-      notes currently in use on MDN
-    - footnote - longer note, may include code samples, translated, or null.
+    - **name** - converted to localized text
+    - **spec-sections** - replaces spec link
+* **feature-sets**
+    - **slug - human-friendly unique identifier
+    - **name - converted to localized text
+    - **ancestors**, **siblings**, **children**, **decendants** - tree relations
+* **browser-version-features**
+    - **prefix** - string prefix to enable, or null if no prefix
+    - **note** - short note, length limited, translated, or null.  Supports
+      inline notes currently in use on MDN
+    - **footnote** - longer note, may include code samples, translated, or null.
       Supports extended footnote in use on MDN.
 
-# To Do
+There are also additional Resources:
+
+* **user** - For identifying the user who made a change
+* **spec-section** - For referring to a section of a specification, with
+  translated titles
+* **spec** - For referring to a specification, with translated titles
+
+## Unresolved Issues
+
+* We've been talking data models.  This document talks about APIs.
+  **The service will not have a working SQL interface**.  Features like
+  history require that changes are made through the API.  Make sure your
+  use case is supported by the API.
+* overholt wants
+  [availability in Web Workers](https://bugzilla.mozilla.org/show_bug.cgi?id=996570#c14).
+  Is an API enough to support that need?
+* There are strings marked for translations, but I can't find examples of
+  translations in the wild:
+    - browser.name - Firefox explicitly says
+      [don't localize our brand](http://www.mozilla.org/en-US/styleguide/communications/translation/#branding).
+* How should we support versioning the API?  There is no Internet concensus.
+    - I expect to break the API as needed while implementing.  At some point
+      (late 2014), we'll call it v1.
+    - Additions, such as new attributes and links, will not cause an API bump
+    - Some people put the version in the URL (/v1/browsers, /v2/browsers)
+    - Some people use a custom header (`X-Api-Version: 2`)
+    - Some people use the Accept header
+      (`Accept: application/vnd.api+json;version=2`)
+    - These people all hate each other.
+      [Read a good blog post on the subject](http://www.troyhunt.com/2014/02/your-api-versioning-is-wrong-which-is.html).
+* Should all users have create / update / delete permissions on all resources?
+  Or should we have more fine-grained permissions?
+
+## To Do
 
 * Add spec models
 * Add user models
-* Power Queries - for example, feature by slug
-* Add examples of tables, updating
-* Add example of reverting
+* Add examples of views for tables, updating
+* Look at additional MDN content for items in common use
+* Add authentication
+* Add browser identification service
