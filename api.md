@@ -1011,22 +1011,22 @@ To get a single **browser-version-features**:
 
 ## Specifications
 
-A **specification** is a W3C document that specifies a web technology.
+A **specification** is a W3C document that specifies a web technology.  This data is 
 
 The **specification** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
+    - **slug** - The key for the KumaScript macros
+      [SpecName](https://developer.mozilla.org/en-US/docs/Template:SpecName)
+      and
+      [Spec2](https://developer.mozilla.org/en-US/docs/Template:Spec2),
+      used as a data source.
     - **name** *(localized)* - Specification name
-    - **uri** *(localized)* - Specification URI, without anchor
-    - **maturity-level** - Status of document, from
-      [W3C Technical Report Development Process](http://www.w3.org/2005/10/Process-20051014/tr#maturity-levels).
-      One of "working-draft", "candidate-recommendation",
-      "proposed-recommendation", "w3c-recommendation", "working-group-note",
-      "proposed-edited-recommendation", "rescinded-recommendation",
-      "interest-group-notes", "coordination-group-notes"
+    - **uri** *(localized)* - Specification URI, without subpath and anchor
 * **links**
     - **specification-sections** *(many)* - Associated **specification-sections**.
+    - **specification-status** *(one)* - Associated **specification-status**
 
 To get a single **specification**:
 
@@ -1041,24 +1041,28 @@ To get a single **specification**:
     {
         "specifications": {
             "id": "273",
+            "slug": "CSS1",
             "name": {
                 "en": "Cascading Style Sheets, level 1",
                 "fr": "Les feuilles de style en cascade, niveau 1"
             },
             "uri": {
-                "en": "http://www.w3.org/TR/CSS1",
+                "en": "http://www.w3.org/TR/CSS1/",
                 "fr": "http://www.yoyodesign.org/doc/w3c/css1/index.html"
             },
-            "maturity-level": "w3c-recommendation",
             "links": {
                 "specification-sections": ["792", "793"]
+                "specification-status": "23"
             }
         },
         "links": {
             "specifications.specification-sections": {
                 "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
                 "type": "specification-sections"
-            }
+            },
+            "specifications.specification-status": {
+                "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
+                "type": "specification-statuses"
         }
     }
 
@@ -1073,14 +1077,14 @@ The **specification-section** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **name** *(localized)* - Section name
-    - **anchor** *(localized)* - Anchor ID in doc, or null if no anchor
-    - **number** - Section number, or none if omitted
+    - **subpath** *(localized)* - A subpage (possibly with an #anchor) to get
+      to the subsection in the doc.  Can be empty string.
     - **note** *(localized)* - Notes for this section
 * **links**
     - **specification** *(one)* - The **specification**
     - **features** *(many)* - The associated **features**
 
-To get a single **specification**:
+To get a single **specification-section**:
 
     GET /specification-sections/792 HTTP/1.1
     Host: api.compat.mozilla.org
@@ -1099,21 +1103,71 @@ To get a single **specification**:
             "anchor": {
                 "en": "#display"
             },
-            "number": "5.6.1",
             "notes": {
                 "en": "Basic values: <code>none<\/code>, <code>block<\/code>, <code>inline<\/code>, and <code>list-item<\/code>."
-        },
+            },
             "links": {
                 "specification": "273",
+                "features": ["275", "276", "277"]
             }
         },
         "links": {
-            "specifications.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
+            "specification-sections.specification": {
+                "href": "https://api.compat.mozilla.org/specifications/{specification-sections.specification}",
+                "type": "specifications"
+            },
+            "specification-sections.features": {
+                "href": "https://api.compat.mozilla.org/specification-sections/{specification-sections.features}",
                 "type": "features"
             }
         }
     }
+
+## Specification Statuses
+
+A **specification-status** refers to the status of a **specification**
+document.
+
+The **specification-status** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **slug** - The value for this status in the KumaScript macro
+      [Spec2](https://developer.mozilla.org/en-US/docs/Template:Spec2)
+    - **name** *(localized)* - Status name
+* **links**
+    - **specifications** *(many)* - Associated **specifications**
+
+To get a single **specification-section**:
+
+    GET /specification-statuses/1 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vn.api+json
+
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "specification-statuses": {
+            "id": "1",
+            "slug": "REC",
+            "name": {
+                "en": "Recommendation",
+                "jp": "勧告"
+            },
+            "links": {
+                "specifications": ["272", "273", "274"]
+            }
+        },
+        "links": {
+            "specification-statuses.specifications": {
+                "href": "https://api.compat.mozilla.org/specifications/{specification-statuses.specifications}",
+                "type": "specifications"
+            }
+        }
+    }
+
 
 # History Resources
 
@@ -1456,4 +1510,5 @@ There are also additional Resources:
 ## To Do
 
 * Add examples of views for tables, updating
+* Add multi-get to browser doc
 * Look at additional MDN content for items in common use
