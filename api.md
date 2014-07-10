@@ -789,7 +789,7 @@ The **features** representation includes:
     - **name** *(localized)* - Feature name
 * **links**
     - **feature-set** *(one)* - Associated **feature-set**
-    - **spec-sections** *(many)* - Associated **spec-sections**
+    - **specification-sections** *(many)* - Associated **specification-sections**
     - **browser-version-features** *(many)* - Associated **browser-version-features**
     - **history-current** *(one)* - Current **features-history**
     - **history** *(many)* - Associated **features-history**, in time order
@@ -815,7 +815,7 @@ To get a specific **feature**:
             },
             "links": {
                 "feature-set": "373",
-                "spec-sections": ["485"],
+                "specification-sections": ["485"],
                 "browser-version-features": ["1125", "1212", "1536"],
                 "history-current": "456",
                 "history": ["456"]
@@ -826,9 +826,9 @@ To get a specific **feature**:
                 "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
                 "type": "features-sets"
             },
-            "features.spec-sections": {
-                "href": "https://api.compat.mozilla.org/spec-sections/{features.spec-sections}",
-                "type": "spec-sections"
+            "features.specification-sections": {
+                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
+                "type": "specification-sections"
             },
             "features.history-current": {
                 "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
@@ -881,7 +881,7 @@ To get a single **feature set**:
     Content-Type: application/vnd.api+json
 
     {
-        "feature-sets": [{
+        "feature-sets": {
             "id": "373",
             "slug": "css-background-size",
             "name": {
@@ -897,7 +897,7 @@ To get a single **feature set**:
                 "history-current": "648",
                 "history": ["648"]
             }
-        }],
+        },
         "links": {
             "feature-sets.features": {
                 "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
@@ -933,6 +933,7 @@ To get a single **feature set**:
             }
         }
     }
+
 
 
 ## Browser Version Features
@@ -1005,6 +1006,112 @@ To get a single **browser-version-features**:
         }
     }
 
+
+## Specifications
+
+A **specification** is a W3C document that specifies a web technology.
+
+The **specification** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **name** *(localized)* - Specification name
+    - **uri** *(localized)* - Specification URI, without anchor
+    - **maturity-level** - Status of document, from
+      [W3C Technical Report Development Process](http://www.w3.org/2005/10/Process-20051014/tr#maturity-levels).
+      One of "working-draft", "candidate-recommendation",
+      "proposed-recommendation", "w3c-recommendation", "working-group-note",
+      "proposed-edited-recommendation", "rescinded-recommendation",
+      "interest-group-notes", "coordination-group-notes"
+* **links**
+    - **specification-sections** *(many)* - Associated **specification-sections**.
+
+To get a single **specification**:
+
+    GET /specifications/273 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vn.api+json
+
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "specifications": {
+            "id": "273",
+            "name": {
+                "en": "Cascading Style Sheets, level 1",
+                "fr": "Les feuilles de style en cascade, niveau 1"
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/CSS1",
+                "fr": "http://www.yoyodesign.org/doc/w3c/css1/index.html"
+            },
+            "maturity-level": "w3c-recommendation",
+            "links": {
+                "specification-sections": ["792", "793"]
+            }
+        },
+        "links": {
+            "specifications.specification-sections": {
+                "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
+                "type": "specification-sections"
+            }
+        }
+    }
+
+
+## Specification Sections
+
+A **specification-section** refers to a specific area of a **specification**
+document.
+
+The **specification-section** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **name** *(localized)* - Section name
+    - **anchor** *(localized)* - Anchor ID in doc, or null if no anchor
+    - **number** - Section number, or none if omitted
+    - **note** *(localized)* - Notes for this section
+* **links**
+    - **specification** *(one)* - The **specification**
+    - **features** *(many)* - The associated **features**
+
+To get a single **specification**:
+
+    GET /specification-sections/792 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vn.api+json
+
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "specification-sections": {
+            "id": "792",
+            "name": {
+                "en": "'display'"
+            },
+            "anchor": {
+                "en": "#display"
+            },
+            "number": "5.6.1",
+            "notes": {
+                "en": "Basic values: <code>none<\/code>, <code>block<\/code>, <code>inline<\/code>, and <code>list-item<\/code>."
+        },
+            "links": {
+                "specification": "273",
+            }
+        },
+        "links": {
+            "specifications.specification-sections": {
+                "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
+                "type": "features"
+            }
+        }
+    }
 
 # History Resources
 
@@ -1231,7 +1338,7 @@ These changes are:
       icon on MDN, such as
       [run-in value of display property](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility)
     - **name** - converted to localized text
-    - **spec-sections** - replaces spec link
+    - **specfication-sections** - replaces spec link
 * **feature-sets**
     - **slug - human-friendly unique identifier
     - **name - converted to localized text
@@ -1245,10 +1352,11 @@ These changes are:
 
 There are also additional Resources:
 
-* **user** - For identifying the user who made a change
-* **spec-section** - For referring to a section of a specification, with
-  translated titles
-* **spec** - For referring to a specification, with translated titles
+* **users** - For identifying the user who made a change
+* **specification-sections** - For referring to a section of a specification, with
+  translated titles and anchors
+* **specifications** - For referring to a specification, with translated titles
+  and URIs.
 
 ## Unresolved Issues
 
@@ -1292,7 +1400,6 @@ There are also additional Resources:
 
 ## To Do
 
-* Add spec models
 * Add examples of views for tables, updating
 * Look at additional MDN content for items in common use
 * Add authentication
