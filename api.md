@@ -1017,7 +1017,7 @@ The **specification** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **slug** - The key for the KumaScript macros
+    - **kuma-key** - The key for the KumaScript macros
       [SpecName](https://developer.mozilla.org/en-US/docs/Template:SpecName)
       and
       [Spec2](https://developer.mozilla.org/en-US/docs/Template:Spec2),
@@ -1041,7 +1041,7 @@ To get a single **specification**:
     {
         "specifications": {
             "id": "273",
-            "slug": "CSS1",
+            "kuma-key": "CSS1",
             "name": {
                 "en": "Cascading Style Sheets, level 1",
                 "fr": "Les feuilles de style en cascade, niveau 1"
@@ -1100,7 +1100,7 @@ To get a single **specification-section**:
             "name": {
                 "en": "'display'"
             },
-            "anchor": {
+            "subpath": {
                 "en": "#display"
             },
             "notes": {
@@ -1132,7 +1132,7 @@ The **specification-status** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **slug** - The value for this status in the KumaScript macro
+    - **kuma-key** - The value for this status in the KumaScript macro
       [Spec2](https://developer.mozilla.org/en-US/docs/Template:Spec2)
     - **name** *(localized)* - Status name
 * **links**
@@ -1140,7 +1140,7 @@ The **specification-status** representation includes:
 
 To get a single **specification-section**:
 
-    GET /specification-statuses/1 HTTP/1.1
+    GET /specification-statuses/49 HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vn.api+json
 
@@ -1150,14 +1150,14 @@ To get a single **specification-section**:
 
     {
         "specification-statuses": {
-            "id": "1",
-            "slug": "REC",
+            "id": "49",
+            "kuma-key": "REC",
             "name": {
                 "en": "Recommendation",
                 "jp": "勧告"
             },
             "links": {
-                "specifications": ["272", "273", "274"]
+                "specifications": ["272", "273", "274", "576"]
             }
         },
         "links": {
@@ -1313,16 +1313,16 @@ To get a single **user** representation:
             "username": "askDNA@tdv.com",
             "created": "1405000551.750000",
             "agreement-version": "1",
-            "permissions": ["change-browser-version-feature"]
+            "permissions": ["change-browser-version-feature"],
             "links": {
                 "browsers-history": [],
                 "browser-versions-history": [],
                 "features-history": [],
                 "feature-sets-history": [],
-                "browser-version-features-history": ["1789", "1790"],
+                "browser-version-features-history": ["1789", "1790"]
             }
         },
-        "links" {
+        "links": {
             "users.browsers-history": {
                 "href": "https://api.compat.mozilla.org/browsers-history/{users.browsers-history}",
                 "type": "browsers-history"
@@ -1356,9 +1356,242 @@ If a client is authenticated, the logged-in user's account can be retrieved with
 
 # Views
 
-A **View** is a read-only combination of resources designed for displaying
-data to anonymous users.
+A **View** is a combination of resources for a particular presentation.  It is
+suitable for anonymous viewing of content and for updating by a user with the
+appropriate permissions.
 
+It is possible that views are unnecessary, and could be constructed by
+supporting optional parts of the JSON API spec, such as
+[Inclusion of Linked Resources](http://jsonapi.org/format/#fetching-includes).
+These views are written as if they are aliases for a fully-fleshed
+implementation.
+
+## Specifications by Feature
+
+This view collects the specifications for a feature.  It is used for the
+Specifications section of a simple technology.
+
+Here is the call for the HTML element
+[address](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address):
+
+
+    GET /views/specifications_by_feature/html-address HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "features": {
+            "id": "191",
+            "slug": "html-address",
+            "experimental": false,
+            "name": {
+                "en": "<address>"
+            },
+            "links": {
+                "feature-set": "816",
+                "specification-sections": ["746", "421", "70"],
+                "browser-version-features": ["358", "543", "975"],
+                "history-current": "395",
+                "history": ["395"]
+            }
+        },
+        "linked": {
+            "specification-sections": [{
+                "id": "746",
+                "name": {
+                    "en": "The address element"
+                },
+                "subpath": {
+                    "en": "sections.html#the-address-element"
+                },
+                "notes": null,
+                "links": {
+                    "specification": "273",
+                    "features": ["275", "276", "277"]
+                }
+            },{
+                "id": "421",
+                "name": {
+                    "en": "The address element"
+                },
+                "subpath": {
+                    "en": "sections.html#the-address-element"
+                },
+                "notes": null,
+                "links": {
+                    "specification": "114",
+                    "features": ["275", "276", "277"]
+                }
+            },{
+                "id": "70",
+                "name": {
+                    "en": "The ADDRESS element"
+                },
+                "subpath": {
+                    "en": "struct/global.html#h-7.5.6"
+                },
+                "notes": null,
+                "links": {
+                    "specification": "576",
+                    "features": ["275", "276", "277"]
+                }
+            }],
+            "specifications": [{
+                "id": "62",
+                "kumu-key": "HTML WHATWG",
+                "name": {
+                    "en": "WHATWG HTML Living Standard",
+                },
+                "uri": {
+                    "en": "http://www.whatwg.org/specs/web-apps/current-work/multipage/",
+                },
+                "links": {
+                    "specification-sections": ["745", "746", "747"]
+                    "specification-status": "23"
+                }
+            },{
+                "id": "114",
+                "kumu-key": "HTML5 W3C",
+                "name": {
+                    "en": "HTML5",
+                },
+                "uri": {
+                    "en": "http://www.w3.org/TR/html5/",
+                },
+                "links": {
+                    "specification-sections": ["420", "421", "422"]
+                    "specification-status": "52"
+                }
+            },{
+                "id": "576",
+                "kumu-key": "HTML4.01",
+                "name": {
+                    "en": "HTML 4.01 Specification",
+                },
+                "uri": {
+                    "en": "http://www.w3.org/TR/html401/",
+                },
+                "links": {
+                    "specification-sections": ["69", "70", "71"]
+                    "specification-status": "49"
+                }
+            ],
+            "specification-statuses": [{
+                "id": "23",
+                "kuma-key": "Living",
+                "name": {
+                    "en": "Living Standard",
+                },
+                "links": {
+                    "specifications": ["62"]
+                }
+            }, {
+                "id": "49",
+                "kuma-key": "REC",
+                "name": {
+                    "en": "Recommendation",
+                    "jp": "勧告"
+                },
+                "links": {
+                    "specifications": ["272", "273", "274", "576"]
+                }
+            }, {
+                "id": "52",
+                "kuma-key": "CR",
+                "name": {
+                    "en": "Candidate Recommendation",
+                    "ja": "勧告候補",
+                },
+                "links": {
+                    "specifications": ["113", "114", "115"]
+                }
+            }]
+        },
+        "links": {
+            "features.feature-set": {
+                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
+                "type": "features-sets"
+            },
+            "features.specification-sections": {
+                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
+                "type": "specification-sections"
+            },
+            "features.history-current": {
+                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
+                "type": "features-history"
+            },
+            "features.history": {
+                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
+                "type": "features-history"
+            }
+        }
+    }
+
+The KumaScript would parse this into an in-memory object store, and then use
+it to:
+
+1. Create an HTML table with a header row "Specification", "Status", "Comment"
+2. For each id in features.links.specification-sections (`["746", "421", "70"]`):
+    * Add the first column: a link to specifications.uri.(lang or en) +
+      specifications-sections.subpath.(lang or en), with link text
+      specifications.name.(lang or en), with title based on
+      specification-sections.name.(lang or en).
+    * Add the second column: A span with class
+      "spec-" + specification-statuses.kuma-key, and the text
+      specification-statuses.name.(lang or en).
+    * Add the third column:
+      specification-statuses.notes.(land or en), or empty string
+3. Close the table, and add an edit button.
+
+Editing a specification may require additional requests, such as
+authenticating the user to the API and fetching the list of specifications
+to populate a dropdown.
+
+Updating the specification table requires a PUT to the API, with the complete
+or partial representation.  For example, to add a note to the HTML 4.01 spec:
+
+
+    PUT /views/specifications_by_feature/html-address HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+    {
+        "linked": {
+            "specification-sections": {
+                "id": "70",
+                "notes": {
+                    "en": "Don't write as ADDRESS; uppercase isn't cool anymore."
+                }
+            }
+        }
+    }
+
+
+The response will be the full representation with the accepted changes, or an
+error.
+
+Alternatively, the change can be sent to the resource itself:
+
+    PUT /specification-sections/70 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+    {
+        "specification-sections": {
+            "notes": {
+                "en": "Don't write as ADDRESS; uppercase isn't cool anymore."
+            }
+        }
+    }
+
+
+Other edits, such as deleting or creating resources, may need to be done as
+independant API calls.
 
 # Services
 
@@ -1444,8 +1677,6 @@ These changes are:
       [run-in value of display property](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility)
     - **name** - converted to localized text
     - **specfication-sections** - replaces spec link
-    - **feature-set** - Is there a use case for multiple **feature sets** for
-      a feature?  The doc assumes no, which makes things easier.
 * **feature-sets**
     - **slug - human-friendly unique identifier
     - **name - converted to localized text
@@ -1506,6 +1737,13 @@ There are also additional Resources:
 * Is Persona a good fit for creating API accounts?  There will need to be a
   process where an MDN user becomes an API user, and a way for an API user
   to authenticate directly with the API.
+* Is there a use case for a single **feature** being associated with
+  multiple **feature-sets**?  If not, we might be able to combine the two
+  types into a single structure, and remove half the view variants.
+* I wasn't able to bring in the concept of changesets - linking several edits
+  by a single user into a logical unit.  Authentication might be abused for
+  that purpose - log a user in, all the edits with that session token are
+  one session.  Maybe.
 
 ## To Do
 
