@@ -460,6 +460,28 @@ Location: https://api.compat.mozilla.org/browsers/15
 }
 ```
 
+This, and other methods that change resources, will create a new
+**changeset**, and associate the new **browsers-history** with that
+**changeset**.  To assign to an existing changeset, add it to the URI:
+
+```http
+POST /browsers?changeset=176 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
+Content-Type: application/vnd.api+json
+
+{
+    "browsers": {
+        "slug": "amazon-silk-mobile",
+        "environment": "mobile",
+        "name": {
+            "en": "Amazon Silk Mobile"
+        }
+    }
+}
+```
+
 ### Update
 
 Updating a **browser** instance require authentication with create privileges.
@@ -526,7 +548,6 @@ Content-Type: application/vnd.api+json
     }
 }
 ```
-
 
 ### Partial Update
 
@@ -1199,6 +1220,170 @@ Content-Type: application/vnd.api+json
 }
 ```
 
+# Change Control Resources
+
+Change Control Resources help manage changes to resources.
+
+## Users
+
+A **user** represents a person or process that creates, changes, or deletes a
+resource.
+
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **username** - The user's email or ID
+    - **created** *(server selected)* - UTC timestamp of when this user
+      account was created
+    - **agreement-version** - The version of the contribution agreement the
+      user has accepted.  "0" for not agreed, "1" for first version, etc.
+    - **permissions** - A list of permissions.  Permissions include:
+        * "change-browser-version-feature" - Add or change a
+          **browser-version-feauture**
+        * "change-resource" - Add or change any resource except **users** or
+          history resources
+        * "change-user" - Change a **user** resource
+        * "delete-resource" - Delete any resource
+* **links**
+    - **changesets** *(many)* - Associated **changesets**
+    - **browsers-history** *(many)* - Associated **browsers-history**
+    - **browser-versions-history** *(many)* - Associated
+      **browser-versions-history**
+    - **features-history** *(many)* - Associated **features-history**
+    - **feature-sets-history** *(many)* - Associated **feature-sets-history**
+    - **browser-version-features-history** *(many)* - Associated
+      **browser-version-features-history**
+
+
+To get a single **user** representation:
+
+```http
+GET /users/42 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+    "users": {
+        "id": "42",
+        "username": "askDNA@tdv.com",
+        "created": "1405000551.750000",
+        "agreement-version": "1",
+        "permissions": ["change-browser-version-feature"],
+        "links": {
+            "changesets": "73"
+        }
+    },
+    "links": {
+        "users.changesets": {
+            "href": "https://api.compat.mozilla.org/changesets/{users.changesets}",
+            "type": "changesets"
+        }
+    }
+}
+```
+
+If a client is authenticated, the logged-in user's account can be retrieved with:
+
+```http
+GET /users/me HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
+
+## Changesets
+
+A **changeset** collects history resources into a logical unit, allowing for
+faster reversions and better history display.  The **changeset** can be
+auto-created through a `POST`, `PUT`, or `DELETE` to a resource, or it can
+be created independently and specified by adding `changeset=<ID>` URI
+parameter (i.e., `PUT /browsers/15?changeset=73`).
+
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **created** *(server selected)* - UTC timestamp of when this changeset
+      was created
+    - **modified *(server selected)* - UTC timestamp of when this changeset
+      was last modified
+    - **target-resource** *(write-once)* - The name of the primary resource
+      for this changeset, for example "browsers", "browser-versions", etc.
+    - **target-resource-id** *(write-once)* - The ID of the primary resource
+      for this changeset.
+* **links**
+    - **user** *(one)* - The user who initiated this changeset
+    - **browsers-history** *(many)* - Associated **browsers-history**
+    - **browser-versions-history** *(many)* - Associated
+      **browser-versions-history**
+    - **features-history** *(many)* - Associated **features-history**
+    - **feature-sets-history** *(many)* - Associated **feature-sets-history**
+    - **browser-version-features-history** *(many)* - Associated
+      **browser-version-features-history**
+
+
+To get a single **changeset** representation:
+
+```http
+GET /changeset/73 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+    "changesets": {
+        "id": "73",
+        "created": "1405353048.910000",
+        "modified": "1405353048.910000",
+        "target-resource": "feature-sets",
+        "target-resource-id": "35",
+        "links": {
+            "user": "42",
+            "browsers-history": [],
+            "browser-versions-history": [],
+            "features-history": [],
+            "feature-sets-history": [],
+            "browser-version-features-history": ["1789", "1790"]
+        }
+    },
+    "links": {
+        "changesets.user": {
+            "href": "https://api.compat.mozilla.org/users/{changesets.user}",
+            "type": "users"
+        },
+        "changesets.browsers-history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{changesets.browsers-history}",
+            "type": "browsers-history"
+        },
+        "changesets.browser-versions-history": {
+            "href": "https://api.compat.mozilla.org/browser-versions-history/{changesets.browser-versions-history}",
+            "type": "browser-versions-history"
+        },
+        "changesets.features-history": {
+            "href": "https://api.compat.mozilla.org/features-history/{changesets.features-history}",
+            "type": "features-history"
+        },
+        "changesets.feature-sets-history": {
+            "href": "https://api.compat.mozilla.org/feature-sets-history/{changesets.feature-sets-history}",
+            "type": "feature-sets-history"
+        },
+        "changesets.browser-version-features-history": {
+            "href": "https://api.compat.mozilla.org/browser-version-features-history/{changesets.browser-version-features-history}",
+            "type": "browser-version-features-history"
+        }
+    }
+}
+```
+
 # History Resources
 
 History Resources are created when a Resource is created, updated, or deleted.
@@ -1221,7 +1406,7 @@ time, and who is responsible for that state.  The representation includes:
     - **browsers** - The **browsers** representation at this point in time
 * **links**
     - **browser** *(one)* - Associated **browser**
-    - **user** *(many)* - The user responsible for this change
+    - **changeset** *(one)* - Associated **changeset**
 
 To get a single **browsers-history** representation:
 
@@ -1259,7 +1444,7 @@ Content-Type: application/vnd.api+json
         },
         "links": {
             "browser": "1",
-            "users": "1",
+            "changeset": "1",
         }
     },
     "links": {
@@ -1267,9 +1452,9 @@ Content-Type: application/vnd.api+json
             "href": "https://api.compat.mozilla.org/browser-history/{browsers-history.browser}",
             "type": "browsers"
         },
-        "browsers-history.user": {
-            "href": "https://api.compat.mozilla.org/users/{browsers-history.user}",
-            "type": "users"
+        "browsers-history.changeset": {
+            "href": "https://api.compat.mozilla.org/changesets/{browsers-history.changeset}",
+            "type": "changeset"
         }
     }
 }
@@ -1299,97 +1484,6 @@ A **browser-version-features-history** represents a state of a
 **browser-version-feature** at a point in time, and who is responsible for that
 representation.  See **browsers-history** and **browser-version-features** for
 an idea of the represention.
-
-## Users
-
-A **user** represents a person or process that creates, changes, or deletes a
-resource.
-
-The representation includes:
-
-* **attributes**
-    - **id** *(server selected)* - Database ID
-    - **username** - The user's email or ID
-    - **created** *(server selected)* - UTC timestamp of when this user
-      account was created
-    - **agreement-version** - The version of the contribution agreement the
-      user has accepted.  "0" for not agreed, "1" for first version, etc.
-    - **permissions** - A list of permissions.  Permissions include:
-        * "change-browser-version-feature" - Add or change a
-          **browser-version-feauture**
-        * "change-resource" - Add or change any resource except **users** or
-          history resources
-        * "change-user" - Change a **user** resource
-        * "delete-resource" - Delete any resource
-* **links**
-    - **browsers-history** *(many)* - Associated **browsers-history**
-    - **browser-versions-history** *(many)* - Associated
-      **browser-versions-history**
-    - **features-history** *(many)* - Associated **features-history**
-    - **feature-sets-history** *(many)* - Associated **feature-sets-history**
-    - **browser-version-features-history** *(many)* - Associated
-      **browser-version-features-history**
-
-
-To get a single **user** representation:
-
-```http
-GET /users/42 HTTP/1.1
-Host: api.compat.mozilla.org
-Accept: application/vnd.api+json
-```
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/vnd.api+json
-
-{
-    "users": {
-        "id": "42",
-        "username": "askDNA@tdv.com",
-        "created": "1405000551.750000",
-        "agreement-version": "1",
-        "permissions": ["change-browser-version-feature"],
-        "links": {
-            "browsers-history": [],
-            "browser-versions-history": [],
-            "features-history": [],
-            "feature-sets-history": [],
-            "browser-version-features-history": ["1789", "1790"]
-        }
-    },
-    "links": {
-        "users.browsers-history": {
-            "href": "https://api.compat.mozilla.org/browsers-history/{users.browsers-history}",
-            "type": "browsers-history"
-        },
-        "users.browser-versions-history": {
-            "href": "https://api.compat.mozilla.org/browser-versions-history/{users.browser-versions-history}",
-            "type": "browser-versions-history"
-        },
-        "users.features-history": {
-            "href": "https://api.compat.mozilla.org/features-history/{users.features-history}",
-            "type": "features-history"
-        },
-        "users.feature-sets-history": {
-            "href": "https://api.compat.mozilla.org/feature-sets-history/{users.feature-sets-history}",
-            "type": "feature-sets-history"
-        },
-        "users.browser-version-features-history": {
-            "href": "https://api.compat.mozilla.org/browser-version-features-history/{users.browser-version-features-history}",
-            "type": "browser-version-features-history"
-        }
-    }
-}
-```
-
-If a client is authenticated, the logged-in user's account can be retrieved with:
-
-```http
-GET /users/me HTTP/1.1
-Host: api.compat.mozilla.org
-Accept: application/vnd.api+json
-```
 
 
 # Views
@@ -2250,7 +2344,6 @@ There are also additional Resources:
 
 ## To Do
 
-* Add changesets resource
 * feature-sets -> "Page on MDN"
 * Change view to read-only, add table data
 * Add multi-get to browser doc
