@@ -2338,6 +2338,12 @@ The process for using this representation is:
 This may be done by including the JSON in the page as sent over the wire,
 or loaded asynchronously, with the tables built after initial page load.
 
+This can also be used by a
+["caniuse" table layout](https://wiki.mozilla.org/MDN/Development/CompatibilityTables/Data_Requirements#1._CanIUse_table_layout)
+by ignoring the meta section and displaying all the included data.  This will
+require more client-side processing to generate, or additional data in the
+`<meta>` section.
+
 ### Updating Views with Changesets
 
 Updating the page requires a sequence of requests.  For example, if a user
@@ -2624,7 +2630,7 @@ These changes are:
     - **next** - ID of next browser version, or null if last
 * **features**
     - **slug** - human-friendly unique identifier
-    - **experimental** - true if property is experimental.  Supports beaker
+    - **experimental** - true if feature is experimental.  Supports beaker
       icon on MDN, such as
       [run-in value of display property](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility)
     - **name** - converted to localized text
@@ -2697,17 +2703,38 @@ There are also additional Resources:
   versions, and the KumaScript parse them for the significant versions, with
   UX for exposing known versions?  The view doc proposes one implementation,
   with a `<meta>` section for identifying the important bits.
-* Do we want to add more items to **browser-versions**?  Here's the Wikipedia
+* Do we want to add more items to browser-versions?  Here's the Wikipedia
   release history for
   [Chrome](http://en.wikipedia.org/wiki/Google_Chrome_complete_version_history#Release_history)
   and
   [Firefox](http://en.wikipedia.org/wiki/Firefox_release_history#Release_history).
-  Some possibly useful additions: release date, codename, JS engine version,
-  notes.
+  Some possibly useful additions: release date, retirement date, codename,
+  JS engine version, operating system, notes.  It feels like we should import
+  the data from version-specific KumaScripts like
+  [CompatGeckoDesktop](https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop)
+  (versions, release dates, translations, links to release docs).
+* We'll need additional models for automated browser testing.  Things like
+  user agents, test names, test results for a user / user agent.  And, we'll
+  need a bunch of rules for mapping test results to features, required number
+  of tests before we'll say a browser supports a feature, what to do with
+  test conflicts, etc.  It might be easier to move all those wishlist items to
+  a different project, that talks to this API when it's ready to assert
+  browser support for a feature.
+* I added an 'experimental' attribute to feature.  Do we need additional
+  flags?  See "non-standard" in
+  [caption-side](https://developer.mozilla.org/en-US/docs/Web/CSS/caption-side#Browser_compatibility),
+  "unimplemented" in
+  [@font-face](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face#Browser_compatibility),
+  "warning" on
+  [length](https://developer.mozilla.org/en-US/docs/Web/CSS/length#Browser_compatibility),
+  and "fix me" on
+  [line-break](https://developer.mozilla.org/en-US/docs/Web/CSS/line-break#Browser_compatibility).
 
 ## To Do
 
-* Add multi-get to browser doc
+* Add multi-get to browser doc, after deciding on
+  `GET /browser-versions/1,2,3,4` vs.
+  `GET /browser/1/browser-versions`
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
 
