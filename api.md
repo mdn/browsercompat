@@ -108,189 +108,291 @@ The **browsers** representation includes:
 
 To get the paginated list of **browsers**:
 
+```http
+GET /browsers HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
-    GET /browsers HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browsers": [{
-            "id": "1",
-            "slug": "chrome",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
-            "name": {
-                "en": "Chrome"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["123"],
-                "history-current": "1001",
-                "history": ["1001"]
-            }
-        },{
-            "id": "2",
-            "slug": "firefox",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-            "name": {
-                "en": "Firefox"
-            },
-            "engine": {
-                "en": "Gecko"
-            },
-            "links": {
-                "versions": ["124"],
-                "history-current": "1002",
-                "history": ["1002"]
-            }
-        },{
-            "id": "3",
-            "slug": "ie",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
-            "name": {
-                "en": "Internet Explorer"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["125", "167", "178"],
-                "history-current": "1003",
-                "history": ["1003"]
-            }
-        },{
-            "id": "4",
-            "slug": "opera",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera.png",
-            "name": {
-                "en": "Opera"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["126"],
-                "history-current": "1004",
-                "history": ["1004"]
-            }
-        },{
-            "id": "5",
-            "slug": "safari",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari.png",
-            "name": {
-                "en": "Safari"
-            },
-            "engine": {
-                "en": "Webkit"
-            },
-            "links": {
-                "versions": ["127"],
-                "history-current": "1005",
-                "history": ["1005"]
-            }
-        },{
-            "id": "6",
-            "slug": "android",
-            "environment": "mobile",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/android.png",
-            "name": {
-                "en": "Android"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["128"],
-                "history-current": "1006",
-                "history": ["1006"]
-            }
-        },{
-            "id": "7",
-            "slug": "firefox-mobile",
-            "environment": "mobile",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox-mobile.png",
-            "name": {
-                "en": "Firefox Mobile"
-            },
-            "engine": {
-                "en": "Gecko"
-            },
-            "links": {
-                "versions": ["129"],
-                "history-current": "1007",
-                "history": ["1007"]
-            }
-        },{
-            "id": "8",
-            "slug": "ie-phone",
-            "environment": "mobile",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie-phone.png",
-            "name": {
-                "en": "IE Phone"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["130"],
-                "history-current": "1008",
-                "history": ["1008"]
-            }
-        },{
-            "id": "9",
-            "slug": "opera-mobile",
-            "environment": "mobile",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera-mobile.png",
-            "name": {
-                "en": "Opera Mobile"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["131"],
-                "history-current": "1009",
-                "history": ["1009"]
-            }
-        },{
-            "id": "10",
-            "slug": "safari-mobile",
-            "environment": "mobile",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari-mobile.png",
-            "name": {
-                "en": "Safari Mobile"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["132"],
-                "history-current": "1010",
-                "history": ["1010"]
-            }
-        }],
-        "links": {
-            "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
-            },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
-                "type": "browsers-history"
-            },
-            "browsers.history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
-                "type": "browsers-history"
-            }
+{
+    "browsers": [{
+        "id": "1",
+        "slug": "chrome",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
+        "name": {
+            "en": "Chrome"
         },
-        "meta": {
-            "pagination": {
-                "browsers": {
-                    "prev": null,
-                    "next": "https://api.compat.mozilla.org/browsers?page=2&per_page=10",
-                    "pages": 2,
-                    "per_page": 10,
-                    "total": 14,
-                }
+        "engine": null,
+        "links": {
+            "versions": ["123"],
+            "history-current": "1001",
+            "history": ["1001"]
+        }
+    },{
+        "id": "2",
+        "slug": "firefox",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+        "name": {
+            "en": "Firefox"
+        },
+        "engine": {
+            "en": "Gecko"
+        },
+        "links": {
+            "versions": ["124"],
+            "history-current": "1002",
+            "history": ["1002"]
+        }
+    },{
+        "id": "3",
+        "slug": "ie",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+        "name": {
+            "en": "Internet Explorer"
+        },
+        "engine": null,
+        "links": {
+            "versions": ["125", "167", "178"],
+            "history-current": "1003",
+            "history": ["1003"]
+        }
+    },{
+        "id": "4",
+        "slug": "opera",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera.png",
+        "name": {
+            "en": "Opera"
+        },
+        "engine": null,
+        "links": {
+            "versions": ["126"],
+            "history-current": "1004",
+            "history": ["1004"]
+        }
+    },{
+        "id": "5",
+        "slug": "safari",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari.png",
+        "name": {
+            "en": "Safari"
+        },
+        "engine": {
+            "en": "Webkit"
+        },
+        "links": {
+            "versions": ["127"],
+            "history-current": "1005",
+            "history": ["1005"]
+        }
+    },{
+        "id": "6",
+        "slug": "android",
+        "environment": "mobile",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/android.png",
+        "name": {
+            "en": "Android"
+        },
+        "engine": null,
+        "links": {
+            "versions": ["128"],
+            "history-current": "1006",
+            "history": ["1006"]
+        }
+    },{
+        "id": "7",
+        "slug": "firefox-mobile",
+        "environment": "mobile",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox-mobile.png",
+        "name": {
+            "en": "Firefox Mobile"
+        },
+        "engine": {
+            "en": "Gecko"
+        },
+        "links": {
+            "versions": ["129"],
+            "history-current": "1007",
+            "history": ["1007"]
+        }
+    },{
+        "id": "8",
+        "slug": "ie-phone",
+        "environment": "mobile",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie-phone.png",
+        "name": {
+            "en": "IE Phone"
+        },
+        "engine": null,
+        "links": {
+            "versions": ["130"],
+            "history-current": "1008",
+            "history": ["1008"]
+        }
+    },{
+        "id": "9",
+        "slug": "opera-mobile",
+        "environment": "mobile",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera-mobile.png",
+        "name": {
+            "en": "Opera Mobile"
+        },
+        "engine": null,
+        "links": {
+            "versions": ["131"],
+            "history-current": "1009",
+            "history": ["1009"]
+        }
+    },{
+        "id": "10",
+        "slug": "safari-mobile",
+        "environment": "mobile",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari-mobile.png",
+        "name": {
+            "en": "Safari Mobile"
+        },
+        "engine": null,
+        "links": {
+            "versions": ["132"],
+            "history-current": "1010",
+            "history": ["1010"]
+        }
+    }],
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
+        },
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
+        },
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "browsers": {
+                "prev": null,
+                "next": "https://api.compat.mozilla.org/browsers?page=2&per_page=10",
+                "pages": 2,
+                "per_page": 10,
+                "total": 14,
             }
         }
     }
+}
+```
+
+### Retrieve by ID
+
+To get a single **browser**:
+
+
+```http
+GET /browsers/2 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+    "browsers": {
+        "id": "2",
+        "slug": "firefox",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+        "name": {
+            "en": "Firefox"
+        },
+        "engine": {
+            "en": "Gecko"
+        },
+        "links": {
+            "versions": ["124"],
+            "history-current": "1002",
+            "history": ["1002"]
+        }
+    },
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
+        },
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
+        },
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
+        }
+    }
+}
+```
+
+### Retrieve by Slug
+
+To get a **browser** by slug:
+
+```http
+GET /browsers/firefox HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+Location: https://api.compat.mozilla.org/browsers/2
+
+{
+    "browsers": {
+        "id": "2",
+        "slug": "firefox",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+        "name": {
+            "en": "Firefox"
+        },
+        "engine": {
+            "en": "Gecko"
+        },
+        "links": {
+            "versions": ["124"],
+            "history-current": "1002",
+            "history": ["1002"]
+        }
+    },
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
+        },
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
+        },
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
+        }
+    }
+}
+```
 
 ### Create
 
@@ -302,156 +404,61 @@ included.
 
 Here's an example of creating a **browser** instance:
 
-    POST /browsers HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
-    Content-Type: application/vnd.api+json
+```http
+POST /browsers HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
+Content-Type: application/vnd.api+json
 
-    {
-        "browsers": {
-            "slug": "amazon-silk-mobile",
-            "environment": "mobile",
-            "name": {
-                "en": "Amazon Silk Mobile"
-            }
+{
+    "browsers": {
+        "slug": "amazon-silk-mobile",
+        "environment": "mobile",
+        "name": {
+            "en": "Amazon Silk Mobile"
         }
     }
+}
+```
 
+```http
+HTTP/1.1 201 Created
+Content-Type: application/vnd.api+json
+Location: https://api.compat.mozilla.org/browsers/15
 
-The successful response:
-
-
-    HTTP/1.1 201 Created
-    Content-Type: application/vnd.api+json
-    Location: https://api.compat.mozilla.org/browsers/15
-
-    {
-        "browsers": {
-            "id": "15",
-            "slug": "amazon-silk-mobile",
-            "environment": "mobile",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/amazon-silk-mobile.png",
-            "name": {
-                "en": "Amazon Silk Mobile"
-            },
-            "engine": null,
-            "links": {
-                "versions": [],
-                "history-current": "1027",
-                "history": ["1027"]
-            }
+{
+    "browsers": {
+        "id": "15",
+        "slug": "amazon-silk-mobile",
+        "environment": "mobile",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/amazon-silk-mobile.png",
+        "name": {
+            "en": "Amazon Silk Mobile"
         },
+        "engine": null,
         "links": {
-            "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
-            },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
-                "type": "browsers-history"
-            },
-            "browsers.history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
-                "type": "browsers-history"
-            }
+            "versions": [],
+            "history-current": "1027",
+            "history": ["1027"]
         }
-    }
-
-### Retrieve by ID
-
-To get a single **browser**:
-
-
-    GET /browsers/2 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browsers": {
-            "id": "2",
-            "slug": "firefox",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-            "name": {
-                "en": "Firefox"
-            },
-            "engine": {
-                "en": "Gecko"
-            },
-            "links": {
-                "versions": ["124"],
-                "history-current": "1002",
-                "history": ["1002"]
-            }
+    },
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
         },
-        "links": {
-            "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
-            },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
-                "type": "browsers-history"
-            },
-            "browsers.history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
-                "type": "browsers-history"
-            }
-        }
-    }
-
-### Retrieve by Slug
-
-To get a **browser** by slug:
-
-
-    GET /browsers/firefox HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-    Location: https://api.compat.mozilla.org/browsers/2
-
-    {
-        "browsers": {
-            "id": "2",
-            "slug": "firefox",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-            "name": {
-                "en": "Firefox"
-            },
-            "engine": {
-                "en": "Gecko"
-            },
-            "links": {
-                "versions": ["124"],
-                "history-current": "1002",
-                "history": ["1002"]
-            }
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
         },
-        "links": {
-            "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
-            },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
-                "type": "browsers-history"
-            },
-            "browsers.history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
-                "type": "browsers-history"
-            }
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
         }
     }
+}
+```
 
 ### Update
 
@@ -463,119 +470,119 @@ changed, and will be ignored if included.  A successful update will return a
 
 To update a **browser**:
 
-    PUT /browsers/3 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+```http
+PUT /browsers/3 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
 
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
-            "name": {
-                "en": "IE"
-            },
-            "engine": null
-        }
-    }
-
-
-The successful response is:
-
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
-            "name": {
-                "en": "IE"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["125", "167", "178"],
-                "history-current": "1033",
-                "history": ["1033", "1003"]
-            }
+{
+    "browsers": {
+        "id": "3",
+        "slug": "ie",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+        "name": {
+            "en": "IE"
         },
+        "engine": null
+    }
+}
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+    "browsers": {
+        "id": "3",
+        "slug": "ie",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+        "name": {
+            "en": "IE"
+        },
+        "engine": null,
         "links": {
-            "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
-            },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
-                "type": "browsers-history"
-            },
-            "browsers.history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
-                "type": "browsers-history"
-            }
+            "versions": ["125", "167", "178"],
+            "history-current": "1033",
+            "history": ["1033", "1003"]
+        }
+    },
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
+        },
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
+        },
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
         }
     }
+}
+```
 
 
 ### Partial Update
 
 An update can just update some fields:
 
+```http
+PUT /browsers/3 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
 
-    PUT /browsers/3 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
-
-    {
-        "browsers": {
-            "name": {
-                "en": "M$ Internet Exploder 💩"
-            }
+{
+    "browsers": {
+        "name": {
+            "en": "M$ Internet Exploder 💩"
         }
     }
+}
+```
 
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-The successful response is:
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
-            "name": {
-                "en": "M$ Internet Exploder 💩"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["125", "167", "178"],
-                "history-current": "1034",
-                "history": ["1034", "1033", "1003"]
-            }
+{
+    "browsers": {
+        "id": "3",
+        "slug": "ie",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+        "name": {
+            "en": "M$ Internet Exploder 💩"
         },
+        "engine": null,
         "links": {
-            "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
-            },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
-                "type": "browsers-history"
-            },
-            "browsers.history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
-                "type": "browsers-history"
-            }
+            "versions": ["125", "167", "178"],
+            "history-current": "1034",
+            "history": ["1034", "1033", "1003"]
+        }
+    },
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
+        },
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
+        },
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
         }
     }
+}
+```
 
 ### Reverting to a previous version
 
@@ -583,120 +590,122 @@ To revert to an earlier version, set the `history-current` link to a
 previous value.  This resets the content and creates a new
 **browsers-history** object.
 
-    PUT /browsers/3 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+```http
+PUT /browsers/3 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
 
-    {
-        "browsers": {
-            "links": {
-                "history-current": "1003"
-            }
-        }
-    }
-
-
-A successful response:
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
-            "name": {
-                "en": "Internet Explorer"
-            },
-            "engine": null,
-            "links": {
-                "versions": ["125", "167", "178"],
-                "history-current": "1035",
-                "history": ["1035", "1034", "1033", "1003"]
-            }
-        },
+{
+    "browsers": {
         "links": {
-            "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
-            },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
-                "type": "browsers-history"
-            },
-            "browsers.history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
-                "type": "browsers-history"
-            }
+            "history-current": "1003"
         }
     }
+}
+```
 
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+    "browsers": {
+        "id": "3",
+        "slug": "ie",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+        "name": {
+            "en": "Internet Explorer"
+        },
+        "engine": null,
+        "links": {
+            "versions": ["125", "167", "178"],
+            "history-current": "1035",
+            "history": ["1035", "1034", "1033", "1003"]
+        }
+    },
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
+        },
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
+        },
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
+        }
+    }
+}
+```
 
 ### Deletion
 
 To delete a **browser**:
 
+```http
+DELETE /browsers/2 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
+```
 
-    DELETE /browsers/2 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
-
-
-    HTTP/1.1 204 No Content
-
+```http
+HTTP/1.1 204 No Content
+```
 
 ### Reverting a deletion
 
 To revert a deletion:
 
+```http
+PUT /browsers/2 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
+```
 
-    PUT /browsers/2 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browsers": {
-            "id": "2",
-            "slug": "firefox",
-            "environment": "desktop",
-            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-            "name": {
-                "en": "Firefox"
-            },
-            "engine": {
-                "en": "Gecko"
-            },
-            "links": {
-                "versions": ["124"],
-                "history-current": "1104",
-                "history": ["1104", "1103", "1002"]
-            }
+{
+    "browsers": {
+        "id": "2",
+        "slug": "firefox",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+        "name": {
+            "en": "Firefox"
+        },
+        "engine": {
+            "en": "Gecko"
         },
         "links": {
-            "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
-            },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
-                "type": "browsers-history"
-            },
-            "browsers.history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
-                "type": "browsers-history"
-            }
+            "versions": ["124"],
+            "history-current": "1104",
+            "history": ["1104", "1103", "1002"]
+        }
+    },
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
+        },
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
+        },
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
         }
     }
-
+}
+```
 
 ## Browser Versions
 
@@ -724,57 +733,59 @@ The **browser-versions** representation includes:
 
 To get a single **browser-version**:
 
+```http
+GET /browser-versions/123 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
-    GET /browser-versions/123 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browser-versions": {
-            "id": "123",
-            "version": "1.0",
-            "engine-version": null,
-            "current": false,
-            "links": {
-                "browser": "1",
-                "previous": null,
-                "next": "176",
-                "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
-                "history-current": "567",
-                "history": ["567"]
-            }
-        },
+{
+    "browser-versions": {
+        "id": "123",
+        "version": "1.0",
+        "engine-version": null,
+        "current": false,
         "links": {
-            "browser-versions.browser": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
-                "type": "browsers"
-            },
-            "browser-versions.previous": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.previous}",
-                "type": "browser-versions"
-            },
-            "browser-versions.next": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
-                "type": "browser-versions"
-            },
-            "browser-versions.browser-version-features": {
-                "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
-                "type": "browser-version-features"
-            },
-            "browser-versions.history-current": {
-                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history-current}",
-                "type": "browser-versions-history"
-            },
-            "browser-versions.history": {
-                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
-                "type": "browser-versions-history"
-            }
+            "browser": "1",
+            "previous": null,
+            "next": "176",
+            "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
+            "history-current": "567",
+            "history": ["567"]
+        }
+    },
+    "links": {
+        "browser-versions.browser": {
+            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
+            "type": "browsers"
+        },
+        "browser-versions.previous": {
+            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.previous}",
+            "type": "browser-versions"
+        },
+        "browser-versions.next": {
+            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
+            "type": "browser-versions"
+        },
+        "browser-versions.browser-version-features": {
+            "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
+            "type": "browser-version-features"
+        },
+        "browser-versions.history-current": {
+            "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history-current}",
+            "type": "browser-versions-history"
+        },
+        "browser-versions.history": {
+            "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
+            "type": "browser-versions-history"
         }
     }
+}
+```
 
 ## Features
 
@@ -799,50 +810,52 @@ The **features** representation includes:
 
 To get a specific **feature**:
 
-    GET /features/276 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+GET /features/276 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "features": {
-            "id": "276",
-            "slug": "css-background-size-contain",
-            "experimental": false,
-            "name": {
-                "en": "background-size: contain"
-            },
-            "links": {
-                "feature-set": "373",
-                "specification-sections": ["485"],
-                "browser-version-features": ["1125", "1212", "1536"],
-                "history-current": "456",
-                "history": ["456"]
-            }
+{
+    "features": {
+        "id": "276",
+        "slug": "css-background-size-contain",
+        "experimental": false,
+        "name": {
+            "en": "background-size: contain"
         },
         "links": {
-            "features.feature-set": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
-                "type": "features-sets"
-            },
-            "features.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
-                "type": "specification-sections"
-            },
-            "features.history-current": {
-                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
-                "type": "features-history"
-            },
-            "features.history": {
-                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
-                "type": "features-history"
-            }
+            "feature-set": "373",
+            "specification-sections": ["485"],
+            "browser-version-features": ["1125", "1212", "1536"],
+            "history-current": "456",
+            "history": ["456"]
+        }
+    },
+    "links": {
+        "features.feature-set": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
+            "type": "features-sets"
+        },
+        "features.specification-sections": {
+            "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
+            "type": "specification-sections"
+        },
+        "features.history-current": {
+            "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
+            "type": "features-history"
+        },
+        "features.history": {
+            "href": "https://api.compat.mozilla.org/features-history/{features.history}",
+            "type": "features-history"
         }
     }
-
+}
+```
 
 ## Feature Sets
 
@@ -875,75 +888,75 @@ The **feature-sets** representation includes:
 
 To get a single **feature set**:
 
+```http
+GET /features-sets/373 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
-    GET /features-sets/373 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "feature-sets": {
-            "id": "373",
-            "slug": "css-background-size",
-            "name": {
-                "en": "background-size"
-            },
-            "links": {
-                "features": ["275", "276", "277"],
-                "specification-sections": [],
-                "parent": "301",
-                "ancestors": ["301", "373"],
-                "siblings": ["372", "373", "374", "375"],
-                "children": [],
-                "decendants": [],
-                "history-current": "648",
-                "history": ["648"]
-            }
+{
+    "feature-sets": {
+        "id": "373",
+        "slug": "css-background-size",
+        "name": {
+            "en": "background-size"
         },
         "links": {
-            "feature-sets.features": {
-                "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
-                "type": "features"
-            },
-            "feature-sets.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
-                "type": "specfication-sections"
-            },
-            "feature-sets.parent": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
-                "type": "feature-sets"
-            },
-            "feature-sets.ancestors": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
-                "type": "feature-sets"
-            },
-            "feature-sets.siblings": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
-                "type": "feature-sets"
-            },
-            "feature-sets.children": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
-                "type": "feature-sets"
-            },
-            "feature-sets.decendants": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
-                "type": "feature-sets"
-            },
-            "feature-sets.history-current": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
-                "type": "feature-sets-history"
-            },
-            "feature-sets.history": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
-                "type": "feature-sets-history"
-            }
+            "features": ["275", "276", "277"],
+            "specification-sections": [],
+            "parent": "301",
+            "ancestors": ["301", "373"],
+            "siblings": ["372", "373", "374", "375"],
+            "children": [],
+            "decendants": [],
+            "history-current": "648",
+            "history": ["648"]
+        }
+    },
+    "links": {
+        "feature-sets.features": {
+            "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
+            "type": "features"
+        },
+        "feature-sets.specification-sections": {
+            "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
+            "type": "specfication-sections"
+        },
+        "feature-sets.parent": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
+            "type": "feature-sets"
+        },
+        "feature-sets.ancestors": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
+            "type": "feature-sets"
+        },
+        "feature-sets.siblings": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
+            "type": "feature-sets"
+        },
+        "feature-sets.children": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
+            "type": "feature-sets"
+        },
+        "feature-sets.decendants": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
+            "type": "feature-sets"
+        },
+        "feature-sets.history-current": {
+            "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
+            "type": "feature-sets-history"
+        },
+        "feature-sets.history": {
+            "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
+            "type": "feature-sets-history"
         }
     }
-
-
+}
+```
 
 ## Browser Version Features
 
@@ -972,49 +985,50 @@ The **browser-version-feature** representation includes:
 
 To get a single **browser-version-features**:
 
+```http
+GET /browser-version-features/1123 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
-    GET /browser-version-features/1123 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browser-version-features": {
-            "id": "1123",
-            "support": "yes",
-            "prefix": null,
-            "note": null,
-            "footnote": null,
-            "links": {
-                "browser-version": "123",
-                "feature": "276",
-                "history-current": "2567",
-                "history": ["2567"]
-            }
-        },
+{
+    "browser-version-features": {
+        "id": "1123",
+        "support": "yes",
+        "prefix": null,
+        "note": null,
+        "footnote": null,
         "links": {
-            "browser-version-features.browser-version": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browser-version-features.browser-version}",
-                "type": "browser-versions"
-            },
-            "browser-version-features.feature": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
-                "type": "features"
-            },
-            "browser-version-features.history-current": {
-                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history-current}",
-                "type": "browser-version-features-history"
-            },
-            "browser-version-features.history": {
-                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history}",
-                "type": "browser-version-features-history"
-            }
+            "browser-version": "123",
+            "feature": "276",
+            "history-current": "2567",
+            "history": ["2567"]
+        }
+    },
+    "links": {
+        "browser-version-features.browser-version": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browser-version-features.browser-version}",
+            "type": "browser-versions"
+        },
+        "browser-version-features.feature": {
+            "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
+            "type": "features"
+        },
+        "browser-version-features.history-current": {
+            "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history-current}",
+            "type": "browser-version-features-history"
+        },
+        "browser-version-features.history": {
+            "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history}",
+            "type": "browser-version-features-history"
         }
     }
-
+}
+```
 
 ## Specifications
 
@@ -1037,42 +1051,44 @@ The **specification** representation includes:
 
 To get a single **specification**:
 
-    GET /specifications/273 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vn.api+json
+```http
+GET /specifications/273 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vn.api+json
+```
 
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "specifications": {
-            "id": "273",
-            "kuma-key": "CSS1",
-            "name": {
-                "en": "Cascading Style Sheets, level 1",
-                "fr": "Les feuilles de style en cascade, niveau 1"
-            },
-            "uri": {
-                "en": "http://www.w3.org/TR/CSS1/",
-                "fr": "http://www.yoyodesign.org/doc/w3c/css1/index.html"
-            },
-            "links": {
-                "specification-sections": ["792", "793"]
-                "specification-status": "23"
-            }
+{
+    "specifications": {
+        "id": "273",
+        "kuma-key": "CSS1",
+        "name": {
+            "en": "Cascading Style Sheets, level 1",
+            "fr": "Les feuilles de style en cascade, niveau 1"
+        },
+        "uri": {
+            "en": "http://www.w3.org/TR/CSS1/",
+            "fr": "http://www.yoyodesign.org/doc/w3c/css1/index.html"
         },
         "links": {
-            "specifications.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
-                "type": "specification-sections"
-            },
-            "specifications.specification-status": {
-                "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
-                "type": "specification-statuses"
+            "specification-sections": ["792", "793"]
+            "specification-status": "23"
         }
+    },
+    "links": {
+        "specifications.specification-sections": {
+            "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
+            "type": "specification-sections"
+        },
+        "specifications.specification-status": {
+            "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
+            "type": "specification-statuses"
     }
-
+}
+```
 
 ## Specification Sections
 
@@ -1094,43 +1110,46 @@ The **specification-section** representation includes:
 
 To get a single **specification-section**:
 
-    GET /specification-sections/792 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vn.api+json
+```http
+GET /specification-sections/792 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vn.api+json
+```
 
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "specification-sections": {
-            "id": "792",
-            "name": {
-                "en": "'display'"
-            },
-            "subpath": {
-                "en": "#display"
-            },
-            "notes": {
-                "en": "Basic values: <code>none<\/code>, <code>block<\/code>, <code>inline<\/code>, and <code>list-item<\/code>."
-            },
-            "links": {
-                "specification": "273",
-                "features": ["275", "276", "277"],
-                "feature-sets": [],
-            }
+{
+    "specification-sections": {
+        "id": "792",
+        "name": {
+            "en": "'display'"
+        },
+        "subpath": {
+            "en": "#display"
+        },
+        "notes": {
+            "en": "Basic values: <code>none<\/code>, <code>block<\/code>, <code>inline<\/code>, and <code>list-item<\/code>."
         },
         "links": {
-            "specification-sections.specification": {
-                "href": "https://api.compat.mozilla.org/specifications/{specification-sections.specification}",
-                "type": "specifications"
-            },
-            "specification-sections.features": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{specification-sections.features}",
-                "type": "features"
-            }
+            "specification": "273",
+            "features": ["275", "276", "277"],
+            "feature-sets": [],
+        }
+    },
+    "links": {
+        "specification-sections.specification": {
+            "href": "https://api.compat.mozilla.org/specifications/{specification-sections.specification}",
+            "type": "specifications"
+        },
+        "specification-sections.features": {
+            "href": "https://api.compat.mozilla.org/specification-sections/{specification-sections.features}",
+            "type": "features"
         }
     }
+}
+```
 
 ## Specification Statuses
 
@@ -1149,34 +1168,36 @@ The **specification-status** representation includes:
 
 To get a single **specification-section**:
 
-    GET /specification-statuses/49 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vn.api+json
+```http
+GET /specification-statuses/49 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vn.api+json
+```
 
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "specification-statuses": {
-            "id": "49",
-            "kuma-key": "REC",
-            "name": {
-                "en": "Recommendation",
-                "jp": "勧告"
-            },
-            "links": {
-                "specifications": ["84", "85", "272", "273", "274", "576"]
-            }
+{
+    "specification-statuses": {
+        "id": "49",
+        "kuma-key": "REC",
+        "name": {
+            "en": "Recommendation",
+            "jp": "勧告"
         },
         "links": {
-            "specification-statuses.specifications": {
-                "href": "https://api.compat.mozilla.org/specifications/{specification-statuses.specifications}",
-                "type": "specifications"
-            }
+            "specifications": ["84", "85", "272", "273", "274", "576"]
+        }
+    },
+    "links": {
+        "specification-statuses.specifications": {
+            "href": "https://api.compat.mozilla.org/specifications/{specification-statuses.specifications}",
+            "type": "specifications"
         }
     }
-
+}
+```
 
 # History Resources
 
@@ -1204,52 +1225,55 @@ time, and who is responsible for that state.  The representation includes:
 
 To get a single **browsers-history** representation:
 
+```http
+GET /browsers-history/1002 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
-    GET /browsers-history/1002 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "browsers-history": {
-            "id": "1002",
-            "timestamp": "1404919464.559140",
-            "event": "created",
-            "browsers": {
-                "id": "2",
-                "slug": "firefox",
-                "environment": "desktop",
-                "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
-                "name": {
-                    "en": "Firefox"
-                },
-                "engine": {
-                    "en": "Gecko"
-                },
-                "links": {
-                    "versions": ["124"],
-                    "history-current": "1002",
-                    "history": ["1002"]
-                }
+{
+    "browsers-history": {
+        "id": "1002",
+        "timestamp": "1404919464.559140",
+        "event": "created",
+        "browsers": {
+            "id": "2",
+            "slug": "firefox",
+            "environment": "desktop",
+            "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+            "name": {
+                "en": "Firefox"
+            },
+            "engine": {
+                "en": "Gecko"
             },
             "links": {
-                "browser": "1",
-                "users": "1",
+                "versions": ["124"],
+                "history-current": "1002",
+                "history": ["1002"]
             }
         },
         "links": {
-            "browsers-history.browser": {
-                "href": "https://api.compat.mozilla.org/browser-history/{browsers-history.browser}",
-                "type": "browsers"
-            },
-            "browsers-history.user": {
-                "href": "https://api.compat.mozilla.org/users/{browsers-history.user}",
-                "type": "users"
-            },
+            "browser": "1",
+            "users": "1",
+        }
+    },
+    "links": {
+        "browsers-history.browser": {
+            "href": "https://api.compat.mozilla.org/browser-history/{browsers-history.browser}",
+            "type": "browsers"
+        },
+        "browsers-history.user": {
+            "href": "https://api.compat.mozilla.org/users/{browsers-history.user}",
+            "type": "users"
         }
     }
+}
+```
 
 ## Browser Versions History
 
@@ -1309,58 +1333,63 @@ The representation includes:
 
 To get a single **user** representation:
 
-    GET /users/42 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+GET /users/42 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-    {
-        "users": {
-            "id": "42",
-            "username": "askDNA@tdv.com",
-            "created": "1405000551.750000",
-            "agreement-version": "1",
-            "permissions": ["change-browser-version-feature"],
-            "links": {
-                "browsers-history": [],
-                "browser-versions-history": [],
-                "features-history": [],
-                "feature-sets-history": [],
-                "browser-version-features-history": ["1789", "1790"]
-            }
-        },
+{
+    "users": {
+        "id": "42",
+        "username": "askDNA@tdv.com",
+        "created": "1405000551.750000",
+        "agreement-version": "1",
+        "permissions": ["change-browser-version-feature"],
         "links": {
-            "users.browsers-history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{users.browsers-history}",
-                "type": "browsers-history"
-            },
-            "users.browser-versions-history": {
-                "href": "https://api.compat.mozilla.org/browser-versions-history/{users.browser-versions-history}",
-                "type": "browser-versions-history"
-            },
-            "users.features-history": {
-                "href": "https://api.compat.mozilla.org/features-history/{users.features-history}",
-                "type": "features-history"
-            },
-            "users.feature-sets-history": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{users.feature-sets-history}",
-                "type": "feature-sets-history"
-            },
-            "users.browser-version-features-history": {
-                "href": "https://api.compat.mozilla.org/browser-version-features-history/{users.browser-version-features-history}",
-                "type": "browser-version-features-history"
-            }
+            "browsers-history": [],
+            "browser-versions-history": [],
+            "features-history": [],
+            "feature-sets-history": [],
+            "browser-version-features-history": ["1789", "1790"]
+        }
+    },
+    "links": {
+        "users.browsers-history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{users.browsers-history}",
+            "type": "browsers-history"
+        },
+        "users.browser-versions-history": {
+            "href": "https://api.compat.mozilla.org/browser-versions-history/{users.browser-versions-history}",
+            "type": "browser-versions-history"
+        },
+        "users.features-history": {
+            "href": "https://api.compat.mozilla.org/features-history/{users.features-history}",
+            "type": "features-history"
+        },
+        "users.feature-sets-history": {
+            "href": "https://api.compat.mozilla.org/feature-sets-history/{users.feature-sets-history}",
+            "type": "feature-sets-history"
+        },
+        "users.browser-version-features-history": {
+            "href": "https://api.compat.mozilla.org/browser-version-features-history/{users.browser-version-features-history}",
+            "type": "browser-version-features-history"
         }
     }
+}
+```
 
 If a client is authenticated, the logged-in user's account can be retrieved with:
 
-
-    GET /users/me HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+GET /users/me HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
 
 # Views
@@ -1384,160 +1413,164 @@ Here is the call for the HTML element
 [address](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address):
 
 
-    GET /views/specifications-by-feature/html-address HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+GET /views/specifications-by-feature/html-address HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-    {
-        "features": {
-            "id": "191",
-            "slug": "html-address",
-            "experimental": false,
-            "name": {
-                "en": "<address>"
-            },
-            "links": {
-                "feature-set": "816",
-                "specification-sections": ["746", "421", "70"],
-                "browser-version-features": ["358", "543", "975"],
-                "history-current": "395",
-                "history": ["395"]
-            }
-        },
-        "linked": {
-            "specification-sections": [{
-                "id": "746",
-                "name": {
-                    "en": "The address element"
-                },
-                "subpath": {
-                    "en": "sections.html#the-address-element"
-                },
-                "notes": null,
-                "links": {
-                    "specification": "273",
-                    "features": ["275", "276", "277"]
-                }
-            },{
-                "id": "421",
-                "name": {
-                    "en": "The address element"
-                },
-                "subpath": {
-                    "en": "sections.html#the-address-element"
-                },
-                "notes": null,
-                "links": {
-                    "specification": "114",
-                    "features": ["275", "276", "277"]
-                }
-            },{
-                "id": "70",
-                "name": {
-                    "en": "The ADDRESS element"
-                },
-                "subpath": {
-                    "en": "struct/global.html#h-7.5.6"
-                },
-                "notes": null,
-                "links": {
-                    "specification": "576",
-                    "features": ["275", "276", "277"]
-                }
-            }],
-            "specifications": [{
-                "id": "62",
-                "kumu-key": "HTML WHATWG",
-                "name": {
-                    "en": "WHATWG HTML Living Standard",
-                },
-                "uri": {
-                    "en": "http://www.whatwg.org/specs/web-apps/current-work/multipage/",
-                },
-                "links": {
-                    "specification-sections": ["745", "746", "747"]
-                    "specification-status": "23"
-                }
-            },{
-                "id": "114",
-                "kumu-key": "HTML5 W3C",
-                "name": {
-                    "en": "HTML5",
-                },
-                "uri": {
-                    "en": "http://www.w3.org/TR/html5/",
-                },
-                "links": {
-                    "specification-sections": ["420", "421", "422"]
-                    "specification-status": "52"
-                }
-            },{
-                "id": "576",
-                "kumu-key": "HTML4.01",
-                "name": {
-                    "en": "HTML 4.01 Specification",
-                },
-                "uri": {
-                    "en": "http://www.w3.org/TR/html401/",
-                },
-                "links": {
-                    "specification-sections": ["69", "70", "71"]
-                    "specification-status": "49"
-                }
-            ],
-            "specification-statuses": [{
-                "id": "23",
-                "kuma-key": "Living",
-                "name": {
-                    "en": "Living Standard",
-                },
-                "links": {
-                    "specifications": ["62"]
-                }
-            }, {
-                "id": "49",
-                "kuma-key": "REC",
-                "name": {
-                    "en": "Recommendation",
-                    "jp": "勧告"
-                },
-                "links": {
-                    "specifications": ["84", "85", "272", "273", "274", "576"]
-                }
-            }, {
-                "id": "52",
-                "kuma-key": "CR",
-                "name": {
-                    "en": "Candidate Recommendation",
-                    "ja": "勧告候補",
-                },
-                "links": {
-                    "specifications": ["83", "113", "114", "115"]
-                }
-            }]
+{
+    "features": {
+        "id": "191",
+        "slug": "html-address",
+        "experimental": false,
+        "name": {
+            "en": "<address>"
         },
         "links": {
-            "features.feature-set": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
-                "type": "features-sets"
+            "feature-set": "816",
+            "specification-sections": ["746", "421", "70"],
+            "browser-version-features": ["358", "543", "975"],
+            "history-current": "395",
+            "history": ["395"]
+        }
+    },
+    "linked": {
+        "specification-sections": [{
+            "id": "746",
+            "name": {
+                "en": "The address element"
             },
-            "features.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
-                "type": "specification-sections"
+            "subpath": {
+                "en": "sections.html#the-address-element"
             },
-            "features.history-current": {
-                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
-                "type": "features-history"
-            },
-            "features.history": {
-                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
-                "type": "features-history"
+            "notes": null,
+            "links": {
+                "specification": "273",
+                "features": ["275", "276", "277"]
             }
+        },{
+            "id": "421",
+            "name": {
+                "en": "The address element"
+            },
+            "subpath": {
+                "en": "sections.html#the-address-element"
+            },
+            "notes": null,
+            "links": {
+                "specification": "114",
+                "features": ["275", "276", "277"]
+            }
+        },{
+            "id": "70",
+            "name": {
+                "en": "The ADDRESS element"
+            },
+            "subpath": {
+                "en": "struct/global.html#h-7.5.6"
+            },
+            "notes": null,
+            "links": {
+                "specification": "576",
+                "features": ["275", "276", "277"]
+            }
+        }],
+        "specifications": [{
+            "id": "62",
+            "kumu-key": "HTML WHATWG",
+            "name": {
+                "en": "WHATWG HTML Living Standard",
+            },
+            "uri": {
+                "en": "http://www.whatwg.org/specs/web-apps/current-work/multipage/",
+            },
+            "links": {
+                "specification-sections": ["745", "746", "747"]
+                "specification-status": "23"
+            }
+        },{
+            "id": "114",
+            "kumu-key": "HTML5 W3C",
+            "name": {
+                "en": "HTML5",
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/html5/",
+            },
+            "links": {
+                "specification-sections": ["420", "421", "422"]
+                "specification-status": "52"
+            }
+        },{
+            "id": "576",
+            "kumu-key": "HTML4.01",
+            "name": {
+                "en": "HTML 4.01 Specification",
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/html401/",
+            },
+            "links": {
+                "specification-sections": ["69", "70", "71"]
+                "specification-status": "49"
+            }
+        ],
+        "specification-statuses": [{
+            "id": "23",
+            "kuma-key": "Living",
+            "name": {
+                "en": "Living Standard",
+            },
+            "links": {
+                "specifications": ["62"]
+            }
+        }, {
+            "id": "49",
+            "kuma-key": "REC",
+            "name": {
+                "en": "Recommendation",
+                "jp": "勧告"
+            },
+            "links": {
+                "specifications": ["84", "85", "272", "273", "274", "576"]
+            }
+        }, {
+            "id": "52",
+            "kuma-key": "CR",
+            "name": {
+                "en": "Candidate Recommendation",
+                "ja": "勧告候補",
+            },
+            "links": {
+                "specifications": ["83", "113", "114", "115"]
+            }
+        }]
+    },
+    "links": {
+        "features.feature-set": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
+            "type": "features-sets"
+        },
+        "features.specification-sections": {
+            "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
+            "type": "specification-sections"
+        },
+        "features.history-current": {
+            "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
+            "type": "features-history"
+        },
+        "features.history": {
+            "href": "https://api.compat.mozilla.org/features-history/{features.history}",
+            "type": "features-history"
         }
     }
+}
+```
 
 The KumaScript would parse this into an in-memory object store, and then use
 it to:
@@ -1562,22 +1595,23 @@ to populate a dropdown.
 Updating the specification table requires a PUT to the API, with the complete
 or partial representation.  For example, to add a note to the HTML 4.01 spec:
 
+```http
+PUT /views/specifications-by-feature/html-address HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
 
-    PUT /views/specifications-by-feature/html-address HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
-
-    {
-        "linked": {
-            "specification-sections": {
-                "id": "70",
-                "notes": {
-                    "en": "Don't write as ADDRESS; uppercase isn't cool anymore."
-                }
+{
+    "linked": {
+        "specification-sections": {
+            "id": "70",
+            "notes": {
+                "en": "Don't write as ADDRESS; uppercase isn't cool anymore."
             }
         }
     }
+}
+```
 
 
 The response will be the full representation with the accepted changes, or an
@@ -1585,18 +1619,20 @@ error.
 
 Alternatively, the change can be sent to the resource itself:
 
-    PUT /specification-sections/70 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+```http
+PUT /specification-sections/70 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
 
-    {
-        "specification-sections": {
-            "notes": {
-                "en": "Don't write as ADDRESS; uppercase isn't cool anymore."
-            }
+{
+    "specification-sections": {
+        "notes": {
+            "en": "Don't write as ADDRESS; uppercase isn't cool anymore."
         }
     }
+}
+```
 
 
 Other edits, such as deleting or creating resources, may need to be done as
@@ -1610,393 +1646,396 @@ Specifications section of a complex technology.
 Here is the call for the CSS property
 [display](https://developer.mozilla.org/en-US/docs/Web/CSS/display):
 
+```http
+GET /views/specifications-by-feature-set/css-display HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
 
-    GET /views/specifications-by-feature-set/css-display HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-    {
-        "feature-sets": {
-            "id": "780",
-            "slug": "css-display",
+{
+    "feature-sets": {
+        "id": "780",
+        "slug": "css-display",
+        "name": {
+            "en": "display"
+        },
+        "links": {
+            "features": ["7633", "7634", "7635", "7636", "7637", "7638", "7639", "7640", "7641", "7642"],
+            "specification-sections": ["9481", "9482", "9483", "9484", "9485"],
+            "parent": "301",
+            "ancestors": ["301", "780"],
+            "siblings": ["778", "779", "780", "781", "782"],
+            "children": [],
+            "decendants": [],
+            "history-current": "648",
+            "history": ["648"]
+        }
+    },
+    "linked": {
+        "features": [{
+            "id": "7633",
+            "slug": "css-display-basic",
+            "experimental": false,
+            "name": {
+                "en": "<code>none<\/code>, <code>inline<\/code>, and <code>block<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3138", "3139", "3140", "3141", "3142"],
+                "history-current": "456",
+                "history": ["456"]
+            }
+        }, {
+            "id": "7634",
+            "slug": "css-display-inline-block",
+            "experimental": false,
+            "name": {
+                "en": "<code>inline block<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3238", "3239", "3240", "3241", "3242"],
+                "history-current": "466",
+                "history": ["466"]
+            }
+        }, {
+            "id": "7635",
+            "slug": "css-display-list-item",
+            "experimental": false,
+            "name": {
+                "en": "<code>list-item<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3338", "3339", "3340", "3341", "3342"],
+                "history-current": "476",
+                "history": ["476"]
+            }
+        }, {
+            "id": "7636",
+            "slug": "css-display-run-in",
+            "experimental": true,
+            "name": {
+                "en": "<code>run-in<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3438", "3439", "3440", "3441", "3442"],
+                "history-current": "486",
+                "history": ["486"]
+            }
+        }, {
+            "id": "7637",
+            "slug": "css-display-inline-table",
+            "experimental": false,
+            "name": {
+                "en": "<code>inline-table<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3538", "3539", "3540", "3541", "3542"],
+                "history-current": "496",
+                "history": ["496"]
+            }
+        }, {
+            "id": "7638",
+            "slug": "css-display-table",
+            "experimental": false,
+            "name": {
+                "en": "<code>table<\/code>, <code>table-cell<\/code>, <code>table-column<\/code>, <code>table-colgroup<\/code>, <code>table-header-group<\/code>, <code>table-row-group<\/code>, <code>table-footer-group<\/code>, <code>table-row<\/code>, and <code>table-caption<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3638", "3639", "3640", "3641", "3642"],
+                "history-current": "506",
+                "history": ["506"]
+            }
+        }, {
+            "id": "7639",
+            "slug": "css-display-flex",
+            "experimental": false,
+            "name": {
+                "en": "<code>flex<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3738", "3739", "3740", "3741", "3742"],
+                "history-current": "516",
+                "history": ["516"]
+            }
+        }, {
+            "id": "7640",
+            "slug": "css-display-inline-flex",
+            "experimental": false,
+            "name": {
+                "en": "<code>inline-flex<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3838", "3839", "3840", "3841", "3842"],
+                "history-current": "526",
+                "history": ["526"]
+            }
+        }, {
+            "id": "7641",
+            "slug": "css-display-grid",
+            "experimental": yes,
+            "name": {
+                "en": "<code>grid<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["3938", "3939", "3940", "3941", "3942"],
+                "history-current": "536",
+                "history": ["536"]
+            }
+        }, {
+            "id": "7641",
+            "slug": "css-display-inline-grid",
+            "experimental": yes,
+            "name": {
+                "en": "<code>inline-grid<\/code>"
+            },
+            "links": {
+                "feature-set": "780",
+                "specification-sections": [],
+                "browser-version-features": ["4038", "4039", "4040", "4041", "4042"],
+                "history-current": "546",
+                "history": ["546"]
+            }
+        }],
+        "specification-sections": [{
+            "id": "9481",
             "name": {
                 "en": "display"
             },
+            "subpath": {
+                "en": "#display"
+            },
+            "notes": {
+                "en": "Added the <code>run-in<\/code> value."
+            },
             "links": {
-                "features": ["7633", "7634", "7635", "7636", "7637", "7638", "7639", "7640", "7641", "7642"],
-                "specification-sections": ["9481", "9482", "9483", "9484", "9485"],
-                "parent": "301",
-                "ancestors": ["301", "780"],
-                "siblings": ["778", "779", "780", "781", "782"],
-                "children": [],
-                "decendants": [],
-                "history-current": "648",
-                "history": ["648"]
+                "specification": "81",
+                "features": [],
+                "feature-sets": ["780"]
             }
-        },
-        "linked": {
-            "features": [{
-                "id": "7633",
-                "slug": "css-display-basic",
-                "experimental": false,
-                "name": {
-                    "en": "<code>none<\/code>, <code>inline<\/code>, and <code>block<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3138", "3139", "3140", "3141", "3142"],
-                    "history-current": "456",
-                    "history": ["456"]
-                }
-            }, {
-                "id": "7634",
-                "slug": "css-display-inline-block",
-                "experimental": false,
-                "name": {
-                    "en": "<code>inline block<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3238", "3239", "3240", "3241", "3242"],
-                    "history-current": "466",
-                    "history": ["466"]
-                }
-            }, {
-                "id": "7635",
-                "slug": "css-display-list-item",
-                "experimental": false,
-                "name": {
-                    "en": "<code>list-item<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3338", "3339", "3340", "3341", "3342"],
-                    "history-current": "476",
-                    "history": ["476"]
-                }
-            }, {
-                "id": "7636",
-                "slug": "css-display-run-in",
-                "experimental": true,
-                "name": {
-                    "en": "<code>run-in<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3438", "3439", "3440", "3441", "3442"],
-                    "history-current": "486",
-                    "history": ["486"]
-                }
-            }, {
-                "id": "7637",
-                "slug": "css-display-inline-table",
-                "experimental": false,
-                "name": {
-                    "en": "<code>inline-table<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3538", "3539", "3540", "3541", "3542"],
-                    "history-current": "496",
-                    "history": ["496"]
-                }
-            }, {
-                "id": "7638",
-                "slug": "css-display-table",
-                "experimental": false,
-                "name": {
-                    "en": "<code>table<\/code>, <code>table-cell<\/code>, <code>table-column<\/code>, <code>table-colgroup<\/code>, <code>table-header-group<\/code>, <code>table-row-group<\/code>, <code>table-footer-group<\/code>, <code>table-row<\/code>, and <code>table-caption<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3638", "3639", "3640", "3641", "3642"],
-                    "history-current": "506",
-                    "history": ["506"]
-                }
-            }, {
-                "id": "7639",
-                "slug": "css-display-flex",
-                "experimental": false,
-                "name": {
-                    "en": "<code>flex<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3738", "3739", "3740", "3741", "3742"],
-                    "history-current": "516",
-                    "history": ["516"]
-                }
-            }, {
-                "id": "7640",
-                "slug": "css-display-inline-flex",
-                "experimental": false,
-                "name": {
-                    "en": "<code>inline-flex<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3838", "3839", "3840", "3841", "3842"],
-                    "history-current": "526",
-                    "history": ["526"]
-                }
-            }, {
-                "id": "7641",
-                "slug": "css-display-grid",
-                "experimental": yes,
-                "name": {
-                    "en": "<code>grid<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["3938", "3939", "3940", "3941", "3942"],
-                    "history-current": "536",
-                    "history": ["536"]
-                }
-            }, {
-                "id": "7641",
-                "slug": "css-display-inline-grid",
-                "experimental": yes,
-                "name": {
-                    "en": "<code>inline-grid<\/code>"
-                },
-                "links": {
-                    "feature-set": "780",
-                    "specification-sections": [],
-                    "browser-version-features": ["4038", "4039", "4040", "4041", "4042"],
-                    "history-current": "546",
-                    "history": ["546"]
-                }
-            }],
-            "specification-sections": [{
-                "id": "9481",
-                "name": {
-                    "en": "display"
-                },
-                "subpath": {
-                    "en": "#display"
-                },
-                "notes": {
-                    "en": "Added the <code>run-in<\/code> value."
-                },
-                "links": {
-                    "specification": "81",
-                    "features": [],
-                    "feature-sets": ["780"]
-                }
-            }, {
-                "id": "9482",
-                "name": {
-                    "en": "display"
-                },
-                "subpath": {
-                    "en": "#grid-declaration0"
-                },
-                "notes": {
-                    "en": "Added the grid box model values."
-                },
-                "links": {
-                    "specification": "82",
-                    "features": [],
-                    "feature-sets": ["780"]
-                }
-            }, {
-                "id": "9483",
-                "name": {
-                    "en": "display"
-                },
-                "subpath": {
-                    "en": "#flex-containers"
-                },
-                "notes": {
-                    "en": "Added the flexible box model values."
-                },
-                "links": {
-                    "specification": "83",
-                    "features": [],
-                    "feature-sets": ["780"]
-                }
-            }, {
-                "id": "9484",
-                "name": {
-                    "en": "display"
-                },
-                "subpath": {
-                    "en": "visuren.html#display-prop"
-                },
-                "notes": {
-                    "en": "Added the table mode values and <code>inline-block<\/code>."
-                },
-                "links": {
-                    "specification": "83",
-                    "features": [],
-                    "feature-sets": ["780"]
-                }
-            }, {
-                "id": "9485",
-                "name": {
-                    "en": "display"
-                },
-                "subpath": {
-                    "en": "#display"
-                },
-                "notes": {
-                    "en": "Basic values: <code>none,block,inline,<\/code> and <code>list-item<\/code>."
-                },
-                "links": {
-                    "specification": "83",
-                    "features": [],
-                    "feature-sets": ["780"]
-                }
-            }],
-            "specifications": [{
-                "id": "81",
-                "kumu-key": "CSS3 Box",
-                "name": {
-                    "en": "CSS Basic Box Model"
-                },
-                "uri": {
-                    "en": "http://dev.w3.org/csswg/css3-box/"
-                },
-                "links": {
-                    "specification-sections": ["9481"],
-                    "specification-status": "24"
-                }
-            }, {
-                "id": "82",
-                "kumu-key": "CSS3 Grid",
-                "name": {
-                    "en": "CSS Grid Layout"
-                },
-                "uri": {
-                    "en": "http://dev.w3.org/csswg/css3-grid-layout/"
-                },
-                "links": {
-                    "specification-sections": ["9482"],
-                    "specification-status": "24"
-                }
-            }, {
-                "id": "83",
-                "kumu-key": "CSS3 Flexbox",
-                "name": {
-                    "en": "CSS Flexible Box Layout Module"
-                },
-                "uri": {
-                    "en": "http://dev.w3.org/csswg/css3-flexbox/"
-                },
-                "links": {
-                    "specification-sections": ["9483"],
-                    "specification-status": "52"
-                }
-            }, {
-                "id": "84",
-                "kumu-key": "CSS2.1"
-                "name": {
-                    "en": "CSS Level 2 (Revision 1)"
-                },
-                "uri": {
-                    "en": "http://www.w3.org/TR/CSS2/"
-                },
-                "links": {
-                    "specification-sections": ["9484"],
-                    "specification-status": "49"
-                }
-            }, {
-                "id": "85",
-                "kumu-key": "CSS1"
-                "name": {
-                    "en": "CSS Level 1"
-                },
-                "uri": {
-                    "en": "http://www.w3.org/TR/CSS1/"
-                },
-                "links": {
-                    "specification-sections": ["9485"],
-                    "specification-status": "49"
-                }
-            }],
-            "specification-statuses": [{
-                "id": "24",
-                "kuma-key": "WD",
-                "name": {
-                    "en": "Working Draft",
-                    "ja": "草案"
-                },
-                "links": {
-                    "specifications": ["81", "82"]
-                }
-            }, {
-                "id": "49",
-                "kuma-key": "REC",
-                "name": {
-                    "en": "Recommendation",
-                    "jp": "勧告"
-                },
-                "links": {
-                    "specifications": ["84", "85", "272", "273", "274", "576"]
-                }
-            }, {
-                "id": "52",
-                "kuma-key": "CR",
-                "name": {
-                    "en": "Candidate Recommendation",
-                    "ja": "勧告候補",
-                },
-                "links": {
-                    "specifications": ["83", "113", "114", "115"]
-                }
-            }]
-        },
-        "links": {
-            "feature-sets.features": {
-                "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
-                "type": "features"
+        }, {
+            "id": "9482",
+            "name": {
+                "en": "display"
             },
-            "feature-sets.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
-                "type": "specfication-sections"
+            "subpath": {
+                "en": "#grid-declaration0"
             },
-            "feature-sets.parent": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
-                "type": "feature-sets"
+            "notes": {
+                "en": "Added the grid box model values."
             },
-            "feature-sets.ancestors": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
-                "type": "feature-sets"
-            },
-            "feature-sets.siblings": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
-                "type": "feature-sets"
-            },
-            "feature-sets.children": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
-                "type": "feature-sets"
-            },
-            "feature-sets.decendants": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
-                "type": "feature-sets"
-            },
-            "feature-sets.history-current": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
-                "type": "feature-sets-history"
-            },
-            "feature-sets.history": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
-                "type": "feature-sets-history"
+            "links": {
+                "specification": "82",
+                "features": [],
+                "feature-sets": ["780"]
             }
+        }, {
+            "id": "9483",
+            "name": {
+                "en": "display"
+            },
+            "subpath": {
+                "en": "#flex-containers"
+            },
+            "notes": {
+                "en": "Added the flexible box model values."
+            },
+            "links": {
+                "specification": "83",
+                "features": [],
+                "feature-sets": ["780"]
+            }
+        }, {
+            "id": "9484",
+            "name": {
+                "en": "display"
+            },
+            "subpath": {
+                "en": "visuren.html#display-prop"
+            },
+            "notes": {
+                "en": "Added the table mode values and <code>inline-block<\/code>."
+            },
+            "links": {
+                "specification": "83",
+                "features": [],
+                "feature-sets": ["780"]
+            }
+        }, {
+            "id": "9485",
+            "name": {
+                "en": "display"
+            },
+            "subpath": {
+                "en": "#display"
+            },
+            "notes": {
+                "en": "Basic values: <code>none,block,inline,<\/code> and <code>list-item<\/code>."
+            },
+            "links": {
+                "specification": "83",
+                "features": [],
+                "feature-sets": ["780"]
+            }
+        }],
+        "specifications": [{
+            "id": "81",
+            "kumu-key": "CSS3 Box",
+            "name": {
+                "en": "CSS Basic Box Model"
+            },
+            "uri": {
+                "en": "http://dev.w3.org/csswg/css3-box/"
+            },
+            "links": {
+                "specification-sections": ["9481"],
+                "specification-status": "24"
+            }
+        }, {
+            "id": "82",
+            "kumu-key": "CSS3 Grid",
+            "name": {
+                "en": "CSS Grid Layout"
+            },
+            "uri": {
+                "en": "http://dev.w3.org/csswg/css3-grid-layout/"
+            },
+            "links": {
+                "specification-sections": ["9482"],
+                "specification-status": "24"
+            }
+        }, {
+            "id": "83",
+            "kumu-key": "CSS3 Flexbox",
+            "name": {
+                "en": "CSS Flexible Box Layout Module"
+            },
+            "uri": {
+                "en": "http://dev.w3.org/csswg/css3-flexbox/"
+            },
+            "links": {
+                "specification-sections": ["9483"],
+                "specification-status": "52"
+            }
+        }, {
+            "id": "84",
+            "kumu-key": "CSS2.1"
+            "name": {
+                "en": "CSS Level 2 (Revision 1)"
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/CSS2/"
+            },
+            "links": {
+                "specification-sections": ["9484"],
+                "specification-status": "49"
+            }
+        }, {
+            "id": "85",
+            "kumu-key": "CSS1"
+            "name": {
+                "en": "CSS Level 1"
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/CSS1/"
+            },
+            "links": {
+                "specification-sections": ["9485"],
+                "specification-status": "49"
+            }
+        }],
+        "specification-statuses": [{
+            "id": "24",
+            "kuma-key": "WD",
+            "name": {
+                "en": "Working Draft",
+                "ja": "草案"
+            },
+            "links": {
+                "specifications": ["81", "82"]
+            }
+        }, {
+            "id": "49",
+            "kuma-key": "REC",
+            "name": {
+                "en": "Recommendation",
+                "jp": "勧告"
+            },
+            "links": {
+                "specifications": ["84", "85", "272", "273", "274", "576"]
+            }
+        }, {
+            "id": "52",
+            "kuma-key": "CR",
+            "name": {
+                "en": "Candidate Recommendation",
+                "ja": "勧告候補",
+            },
+            "links": {
+                "specifications": ["83", "113", "114", "115"]
+            }
+        }]
+    },
+    "links": {
+        "feature-sets.features": {
+            "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
+            "type": "features"
+        },
+        "feature-sets.specification-sections": {
+            "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
+            "type": "specfication-sections"
+        },
+        "feature-sets.parent": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
+            "type": "feature-sets"
+        },
+        "feature-sets.ancestors": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
+            "type": "feature-sets"
+        },
+        "feature-sets.siblings": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
+            "type": "feature-sets"
+        },
+        "feature-sets.children": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
+            "type": "feature-sets"
+        },
+        "feature-sets.decendants": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
+            "type": "feature-sets"
+        },
+        "feature-sets.history-current": {
+            "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
+            "type": "feature-sets-history"
+        },
+        "feature-sets.history": {
+            "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
+            "type": "feature-sets-history"
         }
     }
+}
+```
 
 The KumaScript would parse this into an in-memory object store, and then use
 it to:
@@ -2022,22 +2061,23 @@ Updating the specification table requires a PUT to the API, with the complete
 or partial representation.  For example, to add a note to the CSS3 Flexbox
 spec:
 
+```http
+PUT /views/specifications-by-feature-set/html-address HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
 
-    PUT /views/specifications-by-feature-set/html-address HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
-
-    {
-        "linked": {
-            "specification-sections": {
-                "id": "83",
-                "notes": {
-                    "en": "Added the <code>flex, inline-flex<\/code> values."
-                }
+{
+    "linked": {
+        "specification-sections": {
+            "id": "83",
+            "notes": {
+                "en": "Added the <code>flex, inline-flex<\/code> values."
             }
         }
     }
+}
+```
 
 
 The response will be the full representation with the accepted changes, or an
@@ -2045,19 +2085,20 @@ error.
 
 Alternatively, the change can be sent to the resource itself:
 
-    PUT /specification-sections/83 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+```http
+PUT /specification-sections/83 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
 
-    {
-        "specification-sections": {
-            "notes": {
-                "en": "Added the <code>flex, inline-flex<\/code> values."
-            }
+{
+    "specification-sections": {
+        "notes": {
+            "en": "Added the <code>flex, inline-flex<\/code> values."
         }
     }
-
+}
+```
 
 Other edits, such as deleting or creating resources, may need to be done as
 independant API calls.
@@ -2209,7 +2250,6 @@ There are also additional Resources:
 
 ## To Do
 
-* Convert to fenced code blocks
 * Add changesets resource
 * feature-sets -> "Page on MDN"
 * Change view to read-only, add table data
