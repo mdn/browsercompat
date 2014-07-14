@@ -2309,6 +2309,8 @@ The process for using this representation is:
 This may be done by including the JSON in the page as sent over the wire,
 or loaded asynchronously, with the tables built after initial page load.
 
+### Updating Views with Changesets
+
 Updating the page requires a sequence of requests.  For example, if a user
 wants to change Chrome support for `<address>` from an unknown version to
 version 1, you'll have to create the **browser-version** for that version,
@@ -2378,7 +2380,7 @@ Location: https://api.compat.mozilla.org/changesets/5284
             "type": "browser-version-features-history"
         }
     }
-
+```
 
 Next, use the **changeset** ID when creating the **browser-version**:
 
