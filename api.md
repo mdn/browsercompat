@@ -2206,20 +2206,16 @@ There are also additional Resources:
 * Is Persona a good fit for creating API accounts?  There will need to be a
   process where an MDN user becomes an API user, and a way for an API user
   to authenticate directly with the API.
-* Is there a use case for a single **feature** being associated with
-  multiple **feature-sets**?  If not, we might be able to combine the two
-  types into a single structure, and remove half the view variants.
-* I wasn't able to bring in the concept of changesets - linking several edits
-  by a single user into a logical unit.  Authentication might be abused for
-  that purpose - log a user in, all the edits with that session token are
-  one session.  Maybe.
 
 ## To Do
 
-* Add examples of views for tables, updating
-* Expand specification views to spec + table
+* Convert to fenced code blocks
+* Add changesets resource
+* feature-sets -> "Page on MDN"
+* Change view to read-only, add table data
 * Add multi-get to browser doc
 * Look at additional MDN content for items in common use
+* Move to developers.mozill.org subpath, auth changes
 
 <!--
 # vi:syntax=md
