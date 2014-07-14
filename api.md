@@ -2275,6 +2275,26 @@ Content-Type: application/vnd.api+json
             "href": "https://api.compat.mozilla.org/specifications/{specification-statuses.specifications}",
             "type": "specifications"
         }
+    },
+    "meta": {
+        "compat-table-important": {
+            "browsers": ["1", "2", "3", "4", "5", "6", "7", "8", "11", "9", "10"],
+            "browser-version-features": {
+                "191": {
+                    "1": ["358"],
+                    "2": ["359"],
+                    "3": ["360"],
+                    "4": ["361"],
+                    "5": ["362"],
+                    "6": ["363"],
+                    "7": ["364"],
+                    "8": ["365"],
+                    "11": ["366"],
+                    "9": ["367"],
+                    "10": ["368"]
+                }
+            }
+        }
     }
 }
 ```
@@ -2299,12 +2319,21 @@ The process for using this representation is:
 3. Create the Browser Compatibility section:
     1. Add The "Browser compatibility" header
     2. Create two HTML tables, one for Desktop browsers, one for Mobile browsers
-    3. For each browser, add a column with name and engine translations
-    4. For each feature, add a row:
+    3. For each browser id in meta.compat-table-important, add a column with
+       the translated browser name.  If the engine has a name, add it in
+       parenthesis
+    4. For each feature in feature-sets.features:
         * Add the first column: the translated feature name
-        * Add each remaining column: Add the important version support
-          information.  The exact implementation is to be determined.
-    5. Close each table and add an edit button.
+        * For each browser id in meta.compat-table-important:
+            - Get the important browser-version-feature IDs from
+              meta.compat-table-important.browser-version-features.<`feature ID`>.<`browser ID`>
+            - If null, then display "?"
+            - If just one, display "<`version`> (<`engine version`>)",
+              "<`version`>", or "<`support`>", depending on the defined attributes
+            - If multiple, display as subcells
+            - Add prefixes, notes, and footnotes links as appropriate
+    5. Close each table, add an edit button
+    6. Add footnotes for displayed browser-version-features
 
 This may be done by including the JSON in the page as sent over the wire,
 or loaded asynchronously, with the tables built after initial page load.
@@ -2662,11 +2691,12 @@ There are also additional Resources:
   to authenticate directly with the API.
 * If we succeed, we'll have a detailed history of browser support for each
   feature.  For example, the datastore will know that every version of Firefox
-  supported the `<h1>` tag.  How should version history be summerized for the
+  supported the `<h1>` tag.  How should version history be summarized for the
   Browser Compatibility table?  Should the API pick the "important" versions,
   and the KumaScript display them all?  Or should the API send all known
   versions, and the KumaScript parse them for the significant versions, with
-  UX for exposing known versions?
+  UX for exposing known versions?  The view doc proposes one implementation,
+  with a `<meta>` section for identifying the important bits.
 * Do we want to add more items to **browser-versions**?  Here's the Wikipedia
   release history for
   [Chrome](http://en.wikipedia.org/wiki/Google_Chrome_complete_version_history#Release_history)
