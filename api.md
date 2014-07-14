@@ -80,7 +80,7 @@ Additional features may be added as needed.  See the
 will take.
 
 Because the operations are similar, only **browsers** has complete operations
-examples, and others just show retrieving an instance (`GET /<type>/</id>`).
+examples, and others just show retrieving an instance (`GET /<type>/<id>`).
 
 ## Browsers
 
@@ -856,6 +856,8 @@ The **feature-sets** representation includes:
     - **name** *(localized)* - Feature set name
 * **links**
     - **features** *(many)* - Associated **features**
+    - **specification-sections** *(many)* - Associated
+      **specification-sections**
     - **parent** *(one or null)* - The **feature-set** one level up, or null
       if top-level
     - **ancestors** *(many)* - The **feature-sets** that form the path to the
@@ -891,6 +893,7 @@ To get a single **feature set**:
             },
             "links": {
                 "features": ["275", "276", "277"],
+                "specification-sections": [],
                 "parent": "301",
                 "ancestors": ["301", "373"],
                 "siblings": ["372", "373", "374", "375"],
@@ -904,6 +907,10 @@ To get a single **feature set**:
             "feature-sets.features": {
                 "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
                 "type": "features"
+            },
+            "feature-sets.specification-sections": {
+                "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
+                "type": "specfication-sections"
             },
             "feature-sets.parent": {
                 "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
@@ -1011,7 +1018,7 @@ To get a single **browser-version-features**:
 
 ## Specifications
 
-A **specification** is a W3C document that specifies a web technology.  This data is 
+A **specification** is a standards document that specifies a web technology.
 
 The **specification** representation includes:
 
@@ -1083,6 +1090,7 @@ The **specification-section** representation includes:
 * **links**
     - **specification** *(one)* - The **specification**
     - **features** *(many)* - The associated **features**
+    - **feature-sets** *(many)* - The associated **feature-sets**
 
 To get a single **specification-section**:
 
@@ -1108,7 +1116,8 @@ To get a single **specification-section**:
             },
             "links": {
                 "specification": "273",
-                "features": ["275", "276", "277"]
+                "features": ["275", "276", "277"],
+                "feature-sets": [],
             }
         },
         "links": {
@@ -1157,7 +1166,7 @@ To get a single **specification-section**:
                 "jp": "勧告"
             },
             "links": {
-                "specifications": ["272", "273", "274", "576"]
+                "specifications": ["84", "85", "272", "273", "274", "576"]
             }
         },
         "links": {
@@ -1375,7 +1384,7 @@ Here is the call for the HTML element
 [address](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address):
 
 
-    GET /views/specifications_by_feature/html-address HTTP/1.1
+    GET /views/specifications-by-feature/html-address HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -1496,7 +1505,7 @@ Here is the call for the HTML element
                     "jp": "勧告"
                 },
                 "links": {
-                    "specifications": ["272", "273", "274", "576"]
+                    "specifications": ["84", "85", "272", "273", "274", "576"]
                 }
             }, {
                 "id": "52",
@@ -1506,7 +1515,7 @@ Here is the call for the HTML element
                     "ja": "勧告候補",
                 },
                 "links": {
-                    "specifications": ["113", "114", "115"]
+                    "specifications": ["83", "113", "114", "115"]
                 }
             }]
         },
@@ -1538,7 +1547,7 @@ it to:
     * Add the first column: a link to specifications.uri.(lang or en) +
       specifications-sections.subpath.(lang or en), with link text
       specifications.name.(lang or en), with title based on
-      specification-sections.name.(lang or en).
+      specification-sections.name.(lang or en) or feature.name.(lang or en).
     * Add the second column: A span with class
       "spec-" + specification-statuses.kuma-key, and the text
       specification-statuses.name.(lang or en).
@@ -1554,7 +1563,7 @@ Updating the specification table requires a PUT to the API, with the complete
 or partial representation.  For example, to add a note to the HTML 4.01 spec:
 
 
-    PUT /views/specifications_by_feature/html-address HTTP/1.1
+    PUT /views/specifications-by-feature/html-address HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
@@ -1585,6 +1594,466 @@ Alternatively, the change can be sent to the resource itself:
         "specification-sections": {
             "notes": {
                 "en": "Don't write as ADDRESS; uppercase isn't cool anymore."
+            }
+        }
+    }
+
+
+Other edits, such as deleting or creating resources, may need to be done as
+independant API calls.
+
+## Specifications by Feature Set
+
+This view collects the specifications for a feature set.  It is used for the
+Specifications section of a complex technology.
+
+Here is the call for the CSS property
+[display](https://developer.mozilla.org/en-US/docs/Web/CSS/display):
+
+
+    GET /views/specifications-by-feature-set/css-display HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+
+    HTTP/1.1 200 OK
+    Content-Type: application/vnd.api+json
+
+    {
+        "feature-sets": {
+            "id": "780",
+            "slug": "css-display",
+            "name": {
+                "en": "display"
+            },
+            "links": {
+                "features": ["7633", "7634", "7635", "7636", "7637", "7638", "7639", "7640", "7641", "7642"],
+                "specification-sections": ["9481", "9482", "9483", "9484", "9485"],
+                "parent": "301",
+                "ancestors": ["301", "780"],
+                "siblings": ["778", "779", "780", "781", "782"],
+                "children": [],
+                "decendants": [],
+                "history-current": "648",
+                "history": ["648"]
+            }
+        },
+        "linked": {
+            "features": [{
+                "id": "7633",
+                "slug": "css-display-basic",
+                "experimental": false,
+                "name": {
+                    "en": "<code>none<\/code>, <code>inline<\/code>, and <code>block<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3138", "3139", "3140", "3141", "3142"],
+                    "history-current": "456",
+                    "history": ["456"]
+                }
+            }, {
+                "id": "7634",
+                "slug": "css-display-inline-block",
+                "experimental": false,
+                "name": {
+                    "en": "<code>inline block<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3238", "3239", "3240", "3241", "3242"],
+                    "history-current": "466",
+                    "history": ["466"]
+                }
+            }, {
+                "id": "7635",
+                "slug": "css-display-list-item",
+                "experimental": false,
+                "name": {
+                    "en": "<code>list-item<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3338", "3339", "3340", "3341", "3342"],
+                    "history-current": "476",
+                    "history": ["476"]
+                }
+            }, {
+                "id": "7636",
+                "slug": "css-display-run-in",
+                "experimental": true,
+                "name": {
+                    "en": "<code>run-in<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3438", "3439", "3440", "3441", "3442"],
+                    "history-current": "486",
+                    "history": ["486"]
+                }
+            }, {
+                "id": "7637",
+                "slug": "css-display-inline-table",
+                "experimental": false,
+                "name": {
+                    "en": "<code>inline-table<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3538", "3539", "3540", "3541", "3542"],
+                    "history-current": "496",
+                    "history": ["496"]
+                }
+            }, {
+                "id": "7638",
+                "slug": "css-display-table",
+                "experimental": false,
+                "name": {
+                    "en": "<code>table<\/code>, <code>table-cell<\/code>, <code>table-column<\/code>, <code>table-colgroup<\/code>, <code>table-header-group<\/code>, <code>table-row-group<\/code>, <code>table-footer-group<\/code>, <code>table-row<\/code>, and <code>table-caption<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3638", "3639", "3640", "3641", "3642"],
+                    "history-current": "506",
+                    "history": ["506"]
+                }
+            }, {
+                "id": "7639",
+                "slug": "css-display-flex",
+                "experimental": false,
+                "name": {
+                    "en": "<code>flex<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3738", "3739", "3740", "3741", "3742"],
+                    "history-current": "516",
+                    "history": ["516"]
+                }
+            }, {
+                "id": "7640",
+                "slug": "css-display-inline-flex",
+                "experimental": false,
+                "name": {
+                    "en": "<code>inline-flex<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3838", "3839", "3840", "3841", "3842"],
+                    "history-current": "526",
+                    "history": ["526"]
+                }
+            }, {
+                "id": "7641",
+                "slug": "css-display-grid",
+                "experimental": yes,
+                "name": {
+                    "en": "<code>grid<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["3938", "3939", "3940", "3941", "3942"],
+                    "history-current": "536",
+                    "history": ["536"]
+                }
+            }, {
+                "id": "7641",
+                "slug": "css-display-inline-grid",
+                "experimental": yes,
+                "name": {
+                    "en": "<code>inline-grid<\/code>"
+                },
+                "links": {
+                    "feature-set": "780",
+                    "specification-sections": [],
+                    "browser-version-features": ["4038", "4039", "4040", "4041", "4042"],
+                    "history-current": "546",
+                    "history": ["546"]
+                }
+            }],
+            "specification-sections": [{
+                "id": "9481",
+                "name": {
+                    "en": "display"
+                },
+                "subpath": {
+                    "en": "#display"
+                },
+                "notes": {
+                    "en": "Added the <code>run-in<\/code> value."
+                },
+                "links": {
+                    "specification": "81",
+                    "features": [],
+                    "feature-sets": ["780"]
+                }
+            }, {
+                "id": "9482",
+                "name": {
+                    "en": "display"
+                },
+                "subpath": {
+                    "en": "#grid-declaration0"
+                },
+                "notes": {
+                    "en": "Added the grid box model values."
+                },
+                "links": {
+                    "specification": "82",
+                    "features": [],
+                    "feature-sets": ["780"]
+                }
+            }, {
+                "id": "9483",
+                "name": {
+                    "en": "display"
+                },
+                "subpath": {
+                    "en": "#flex-containers"
+                },
+                "notes": {
+                    "en": "Added the flexible box model values."
+                },
+                "links": {
+                    "specification": "83",
+                    "features": [],
+                    "feature-sets": ["780"]
+                }
+            }, {
+                "id": "9484",
+                "name": {
+                    "en": "display"
+                },
+                "subpath": {
+                    "en": "visuren.html#display-prop"
+                },
+                "notes": {
+                    "en": "Added the table mode values and <code>inline-block<\/code>."
+                },
+                "links": {
+                    "specification": "83",
+                    "features": [],
+                    "feature-sets": ["780"]
+                }
+            }, {
+                "id": "9485",
+                "name": {
+                    "en": "display"
+                },
+                "subpath": {
+                    "en": "#display"
+                },
+                "notes": {
+                    "en": "Basic values: <code>none,block,inline,<\/code> and <code>list-item<\/code>."
+                },
+                "links": {
+                    "specification": "83",
+                    "features": [],
+                    "feature-sets": ["780"]
+                }
+            }],
+            "specifications": [{
+                "id": "81",
+                "kumu-key": "CSS3 Box",
+                "name": {
+                    "en": "CSS Basic Box Model"
+                },
+                "uri": {
+                    "en": "http://dev.w3.org/csswg/css3-box/"
+                },
+                "links": {
+                    "specification-sections": ["9481"],
+                    "specification-status": "24"
+                }
+            }, {
+                "id": "82",
+                "kumu-key": "CSS3 Grid",
+                "name": {
+                    "en": "CSS Grid Layout"
+                },
+                "uri": {
+                    "en": "http://dev.w3.org/csswg/css3-grid-layout/"
+                },
+                "links": {
+                    "specification-sections": ["9482"],
+                    "specification-status": "24"
+                }
+            }, {
+                "id": "83",
+                "kumu-key": "CSS3 Flexbox",
+                "name": {
+                    "en": "CSS Flexible Box Layout Module"
+                },
+                "uri": {
+                    "en": "http://dev.w3.org/csswg/css3-flexbox/"
+                },
+                "links": {
+                    "specification-sections": ["9483"],
+                    "specification-status": "52"
+                }
+            }, {
+                "id": "84",
+                "kumu-key": "CSS2.1"
+                "name": {
+                    "en": "CSS Level 2 (Revision 1)"
+                },
+                "uri": {
+                    "en": "http://www.w3.org/TR/CSS2/"
+                },
+                "links": {
+                    "specification-sections": ["9484"],
+                    "specification-status": "49"
+                }
+            }, {
+                "id": "85",
+                "kumu-key": "CSS1"
+                "name": {
+                    "en": "CSS Level 1"
+                },
+                "uri": {
+                    "en": "http://www.w3.org/TR/CSS1/"
+                },
+                "links": {
+                    "specification-sections": ["9485"],
+                    "specification-status": "49"
+                }
+            }],
+            "specification-statuses": [{
+                "id": "24",
+                "kuma-key": "WD",
+                "name": {
+                    "en": "Working Draft",
+                    "ja": "草案"
+                },
+                "links": {
+                    "specifications": ["81", "82"]
+                }
+            }, {
+                "id": "49",
+                "kuma-key": "REC",
+                "name": {
+                    "en": "Recommendation",
+                    "jp": "勧告"
+                },
+                "links": {
+                    "specifications": ["84", "85", "272", "273", "274", "576"]
+                }
+            }, {
+                "id": "52",
+                "kuma-key": "CR",
+                "name": {
+                    "en": "Candidate Recommendation",
+                    "ja": "勧告候補",
+                },
+                "links": {
+                    "specifications": ["83", "113", "114", "115"]
+                }
+            }]
+        },
+        "links": {
+            "feature-sets.features": {
+                "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
+                "type": "features"
+            },
+            "feature-sets.specification-sections": {
+                "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
+                "type": "specfication-sections"
+            },
+            "feature-sets.parent": {
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
+                "type": "feature-sets"
+            },
+            "feature-sets.ancestors": {
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
+                "type": "feature-sets"
+            },
+            "feature-sets.siblings": {
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
+                "type": "feature-sets"
+            },
+            "feature-sets.children": {
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
+                "type": "feature-sets"
+            },
+            "feature-sets.decendants": {
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
+                "type": "feature-sets"
+            },
+            "feature-sets.history-current": {
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
+                "type": "feature-sets-history"
+            },
+            "feature-sets.history": {
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
+                "type": "feature-sets-history"
+            }
+        }
+    }
+
+The KumaScript would parse this into an in-memory object store, and then use
+it to:
+
+1. Create an HTML table with a header row "Specification", "Status", "Comment"
+2. For each id in feature-sets.links.specification-sections (`["9481", "9482", ...]`):
+    * Add the first column: a link to specifications.uri.(lang or en) +
+      specifications-sections.subpath.(lang or en), with link text
+      specifications.name.(lang or en), with title based on
+      specification-sections.name.(lang or en) or feature.name.(lang or en).
+    * Add the second column: A span with class
+      "spec-" + specification-statuses.kuma-key, and the text
+      specification-statuses.name.(lang or en).
+    * Add the third column:
+      specification-statuses.notes.(land or en), or empty string
+3. Close the table, and add an edit button.
+
+Editing a specification may require additional requests, such as
+authenticating the user to the API and fetching the list of specifications
+to populate a dropdown.
+
+Updating the specification table requires a PUT to the API, with the complete
+or partial representation.  For example, to add a note to the CSS3 Flexbox
+spec:
+
+
+    PUT /views/specifications-by-feature-set/html-address HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+    {
+        "linked": {
+            "specification-sections": {
+                "id": "83",
+                "notes": {
+                    "en": "Added the <code>flex, inline-flex<\/code> values."
+                }
+            }
+        }
+    }
+
+
+The response will be the full representation with the accepted changes, or an
+error.
+
+Alternatively, the change can be sent to the resource itself:
+
+    PUT /specification-sections/83 HTTP/1.1
+    Host: api.compat.mozilla.org
+    Accept: application/vnd.api+json
+    Authorization: Bearer mF_9.B5f-4.1JqM
+
+    {
+        "specification-sections": {
+            "notes": {
+                "en": "Added the <code>flex, inline-flex<\/code> values."
             }
         }
     }
@@ -1748,5 +2217,10 @@ There are also additional Resources:
 ## To Do
 
 * Add examples of views for tables, updating
+* Expand specification views to spec + table
 * Add multi-get to browser doc
 * Look at additional MDN content for items in common use
+
+<!--
+# vi:syntax=md
+-->
