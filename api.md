@@ -2951,13 +2951,25 @@ features to add, or existing features that will be dropped.
 * [Web/CSS/animation-name](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-name#Specifications) -
   New property that moved from prefixed support to standard support.
 * [Web/CSS/caption-side](https://developer.mozilla.org/en-US/docs/Web/CSS/caption-side#Specifications) -
-  Rarely used 'Non-standard' tag.
+  Rarely used 'Non-standard' tag.  Also seen on
+  [Web/CSS/text-align](https://developer.mozilla.org/en-US/docs/Web/CSS/text-align#Specifications)
 * [Web/CSS/@font-face](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face#Specifications) -
-  Rarely used 'Unimplemented' tag as inline note
+  Rarely used 'Unimplemented' tag as inline note.  Also seen on
+  [Web/CSS/text-decoration-line](https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-line#Specifications).
 * [Web/CSS/length](https://developer.mozilla.org/en-US/docs/Web/CSS/length#Browser_compatibility) -
-  Rarely used "warning" tag
+  Rarely used "warning" tag.  Also seen on
+  [Web/CSS/text-underline-position](https://developer.mozilla.org/en-US/docs/Web/CSS/text-underline-position#Specifications).
 * [Web/CSS/line-break](https://developer.mozilla.org/en-US/docs/Web/CSS/line-break#Specifications) -
   Rarely used "Fix Me" inline note
+* [Web/CSS/min-height](https://developer.mozilla.org/en-US/docs/Web/CSS/min-height#Specifications) -
+  "Obsolete since Gecko 22" tag on auto, versus:
+* [Web/CSS/min-width](https://developer.mozilla.org/en-US/docs/Web/CSS/min-width#Specifications) -
+  Obsolete trash can icon
+* [Web/CSS/text-transform](https://developer.mozilla.org/en-US/docs/Web/CSS/text-transform#Specifications) -
+  Interesting use of non-ascii unicode in feature names, good test case.
+* [Web/CSS/transform-origin](https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin#Specifications) -
+  IE may justify a 'alternate' value for browser-version-features.support, or
+  just 'no' with a footnote.
 
 Some pages will require manual intervention to get them into the data store.
 Here's a sample:
@@ -2974,6 +2986,17 @@ Here's a sample:
   Long inline notes should be converted to footnotes.
 * [Web/CSS/:invalid](https://developer.mozilla.org/en-US/docs/Web/CSS/:invalid#Specifications) -
   Links in feature names to other MDN docs
+* [Web/CSS/outline-color](https://developer.mozilla.org/en-US/docs/Web/CSS/outline-color#Specifications) -
+  Instead of version, long note about support.  Convert to two versions, footnote.
+* [Web/CSS/radial-gradient](https://developer.mozilla.org/en-US/docs/Web/CSS/radial-gradient#Specifications) -
+  Evolving standard, used version notes instead of marking feature as
+  experimental or deprecated.
+* [Web/CSS/ratio](https://developer.mozilla.org/en-US/docs/Web/CSS/ratio#Specifications) -
+  Strange Chrome version
+* [Web/CSS/tab-size](https://developer.mozilla.org/en-US/docs/Web/CSS/tab-size#Specifications) -
+  Lots of interesting versions, including Safari nightly.
+* [Web/CSS/text-rendering](https://developer.mozilla.org/en-US/docs/Web/CSS/text-rendering#Specifications) -
+  convert to footnotes, other changes needed.  Not sure if it belongs under CSS.
 
 ## Data sources for browser versions
 
