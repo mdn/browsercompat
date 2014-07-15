@@ -821,10 +821,12 @@ The **features** representation includes:
     - **slug** *(write-once)* - Unique, human-friendly slug
     - **experimental** - true if feature is experimental, should not be used
       in production
-    - **canonical** - true if the feature is a canonical feature, representing
+    - **canonical** - true if the **name** is a canonical name, representing
       code that a developer could use directly.  For example, "display: none" is
-      the canonical feature for the CSS display property with a value of none,
-      while "Basic support" is a non-canonical feature.
+      the canonical name for the CSS display property with a value of none,
+      while "Basic support" and
+      "&lt;code&gt;none, inline&lt;/code&gt; and &lt;code&gt;block&lt;/code&gt;"
+      are non-canonical names that should be translated.
     - **name** *(localized)* - Feature name.  When **canonical** is
       True, the only translated string is in the
       [non-linguistic](http://www.w3.org/International/questions/qa-no-language#nonlinguistic)
@@ -842,7 +844,7 @@ The **features** representation includes:
     - **history** *(many)* - Associated **features-history**, in time order
       (most recent first)
 
-To get a specific **feature** (in this case, a canonical feature):
+To get a specific **feature** (in this case, a canonically-named feature):
 
 ```http
 GET /features/276 HTTP/1.1
@@ -892,7 +894,7 @@ Content-Type: application/vnd.api+json
 }
 ```
 
-Here's an example of a non-canonical feature:
+Here's an example of a non-canonically named feature:
 
 ```http
 GET /features/191 HTTP/1.1
@@ -907,7 +909,7 @@ Content-Type: application/vnd.api+json
 {
     "features": {
         "id": "191",
-        "slug": "html-address",
+        "slug": "html-element-address",
         "experimental": false,
         "canonical": false,
         "name": {
@@ -955,7 +957,20 @@ The **feature-sets** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **slug** *(write-once)* - Unique, human-friendly slug
-    - **name** *(localized)* - Feature set name
+    - **kuma-path** - The path to the page on MDN that this feature-set was
+      first scraped from.  May be used in UX or for debugging import scripts.
+    - **canonical** - true if the feature set has a canonical name,
+      representing code that a developer could use directly.  For example,
+      "display" is a canonical name for the CSS display property, and
+      should not be translated, while "CSS" and
+      "Flexbox Values for &lt;code&gt;display&lt;code&gt;" are non-canonical
+      names that should be translated.
+    - **name** *(localized)* - Feature set name.  When **canonical** is
+      True, the only translated string is in the
+      [non-linguistic](http://www.w3.org/International/questions/qa-no-language#nonlinguistic)
+      language `zxx`, and should be wrapped in a `<code>` block when
+      displayed.  When **canonical** is false, the name will include at
+      least an `en` translation, and may include HTML markup.
 * **links**
     - **features** *(many)* - Associated **features**
     - **specification-sections** *(many)* - Associated
@@ -975,7 +990,7 @@ The **feature-sets** representation includes:
       order (most recent first)
 
 
-To get a single **feature set**:
+To get a single **feature set** (in this case, a canonically named feature):
 
 ```http
 GET /features-sets/373 HTTP/1.1
@@ -990,9 +1005,11 @@ Content-Type: application/vnd.api+json
 {
     "feature-sets": {
         "id": "373",
-        "slug": "css-background-size",
+        "slug": "css-property-background-size",
+        "kuma-path": "en-US/docs/Web/CSS/display",
+        "canonical": true,
         "name": {
-            "en": "background-size"
+            "zxx": "background-size"
         },
         "links": {
             "features": ["275", "276", "277"],
@@ -1587,9 +1604,11 @@ Content-Type: application/vnd.api+json
 {
     "feature-sets": {
         "id": "816"
-        "slug": "html-address",
+        "slug": "html-element-address",
+        "kuma-path": "en-US/docs/Web/HTML/Element/address",
+        "canonical": true
         "name": {
-            "en": "address"
+            "zxx": "address"
         },
         "links": {
             "features": ["191"],
@@ -2389,7 +2408,10 @@ The process for using this representation is:
        the translated browser name.  If the engine has a name, add it in
        parenthesis
     4. For each feature in feature-sets.features:
-        * Add the first column: the translated feature name
+        * Add the first column: the feature name.  If feature.canonical,
+          use the `zxx` translation of feature.name wrapped in `<code>`.
+          Otherwise, use the best translation of feature.name, in a
+          `lang=(lang)` block.
         * For each browser id in meta.compat-table-important:
             - Get the important browser-version-feature IDs from
               meta.compat-table-important.browser-version-features.<`feature ID`>.<`browser ID`>
@@ -2847,7 +2869,6 @@ Here's a sample:
   `GET /browser/1/browser-versions`
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
-* Add "kuma-path" to feature sets
 * Add significant ordering documentation and examples
 * Update browser-versions for release date, retirement date, future flag
 
