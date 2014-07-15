@@ -821,16 +821,28 @@ The **features** representation includes:
     - **slug** *(write-once)* - Unique, human-friendly slug
     - **experimental** - true if feature is experimental, should not be used
       in production
-    - **name** *(localized)* - Feature name
+    - **canonical** - true if the feature is a canonical feature, representing
+      code that a developer could use directly.  For example, "display: none" is
+      the canonical feature for the CSS display property with a value of none,
+      while "Basic support" is a non-canonical feature.
+    - **name** *(localized)* - Feature name.  When **canonical** is
+      True, the only translated string is in the
+      [non-linguistic](http://www.w3.org/International/questions/qa-no-language#nonlinguistic)
+      language `zxx`, and should be wrapped in a `<code>` block when
+      displayed.  When **canonical** is false, the name will include at
+      least an `en` translation, and may include HTML markup.
 * **links**
-    - **feature-set** *(one)* - Associated **feature-set**
+    - **feature-sets** *(many)* - Associated **feature-sets**.  Ideally, a
+      **feature** is contained in a single **feature-set**, but it may be
+      associated with multiple **feature-sets** during a transition
+      period.
     - **specification-sections** *(many)* - Associated **specification-sections**
     - **browser-version-features** *(many)* - Associated **browser-version-features**
     - **history-current** *(one)* - Current **features-history**
     - **history** *(many)* - Associated **features-history**, in time order
       (most recent first)
 
-To get a specific **feature**:
+To get a specific **feature** (in this case, a canonical feature):
 
 ```http
 GET /features/276 HTTP/1.1
@@ -845,17 +857,70 @@ Content-Type: application/vnd.api+json
 {
     "features": {
         "id": "276",
-        "slug": "css-background-size-contain",
+        "slug": "css-property-background-size-value-contain",
         "experimental": false,
+        "canonical": true,
         "name": {
-            "en": "background-size: contain"
+            "zxx": "background-size: contain"
         },
         "links": {
-            "feature-set": "373",
+            "feature-sets": ["373"],
             "specification-sections": ["485"],
             "browser-version-features": ["1125", "1212", "1536"],
             "history-current": "456",
             "history": ["456"]
+        }
+    },
+    "links": {
+        "features.feature-set": {
+            "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
+            "type": "features-sets"
+        },
+        "features.specification-sections": {
+            "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
+            "type": "specification-sections"
+        },
+        "features.history-current": {
+            "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
+            "type": "features-history"
+        },
+        "features.history": {
+            "href": "https://api.compat.mozilla.org/features-history/{features.history}",
+            "type": "features-history"
+        }
+    }
+}
+```
+
+Here's an example of a non-canonical feature:
+
+```http
+GET /features/191 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+    "features": {
+        "id": "191",
+        "slug": "html-address",
+        "experimental": false,
+        "canonical": false,
+        "name": {
+            "en": "Basic support"
+        },
+        "links": {
+            "feature-sets": ["816"],
+            "specification-sections": [],
+            "browser-version-features": [
+                "358", "359", "360", "361", "362", "363", "364",
+                "365", "366", "367", "368"],
+            "history-current": "395",
+            "history": ["395"]
         }
     },
     "links": {
@@ -1544,11 +1609,12 @@ Content-Type: application/vnd.api+json
                 "id": "191",
                 "slug": "html-address",
                 "experimental": false,
+                "canonical": false,
                 "name": {
                     "en": "Basic support"
                 },
                 "links": {
-                    "feature-set": "816",
+                    "feature-sets": ["816"],
                     "specification-sections": [],
                     "browser-version-features": [
                         "358", "359", "360", "361", "362", "363", "364",
@@ -2781,7 +2847,6 @@ Here's a sample:
   `GET /browser/1/browser-versions`
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
-* Add "canonical" flag to features
 * Add "kuma-path" to feature sets
 * Add significant ordering documentation and examples
 * Update browser-versions for release date, retirement date, future flag
