@@ -2781,6 +2781,10 @@ Here's a sample:
   `GET /browser/1/browser-versions`
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
+* Add "canonical" flag to features
+* Add "kuma-path" to feature sets
+* Add significant ordering documentation and examples
+* Update browser-versions for release date, retirement date, future flag
 
 <!--
 # vi:syntax=md
