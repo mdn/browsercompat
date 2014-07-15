@@ -17,7 +17,51 @@ which could be solved by having a database-backed representation of
 compatibilty data, readable and writable from an API.
 
 **Contents**
+<!-- Marked TOC -->
 <!--TOC-->
+
+<!-- Github TOC -->
+
+* [The Entrypoints](#the-entrypoints)
+* [Resources](#resources)
+    * [Browsers](#browsers)
+        * [List](#list)
+        * [Retrieve by ID](#retrieve-by-id)
+        * [Retrieve by Slug](#retrieve-by-slug)
+        * [Create](#create)
+        * [Update](#update)
+        * [Partial Update](#partial-update)
+        * [Reverting to a previous version](reverting-to-a-previous-version)
+        * [Deletion](#deletion)
+        * [Reverting a deletion](#reverting-a-deletion)
+    * [Browser Versions](#browser-versions)
+    * [Features](#features)
+    * [Feature Sets](#feature-sets)
+    * [Browser Version Features](#browser-version-features)
+    * [Specifications](#specifications)
+    * [Specification Sections](#specification-sections)
+    * [Specification Statuses](#specification-statuses)
+* [Change Control Resources](#change-control-resources)
+    * [Users](#users)
+    * [Changesets](#changesets)
+* [History Resources](#history-resources)
+    * [Browsers History](#browsers-history)
+    * [Browser Versions History](#browser-versions-history)
+    * [Features History](#features-history)
+    * [Feature Sets History](#feature-sets-history)
+    * [Browser Version Features History](#browser-version-features-history)
+* [Views](#views)
+    * [View a Feature Set](#view-a-feature-set)
+        * [Updatng Views with Changesets](#updating-views-with-changesets)
+* [Services](#services)
+    * [Authentication](#authentication)
+    * [Browser Identification](#browser-identification)
+* [Issues to Resolve Before Code](#issues-to-resolve-before-code)
+    * [Additions to Browser Compatibility Data Architecture](#additions-to-browser-compatibility-data-architecture)
+    * [Unresolved Issues](#unresolved-issues)
+    * [Interesting MDN Pages](#interesting-mdn-pages)
+    * [Data sources for browser versions](#data-sources-for-browser-versions)
+    * [To Do](#to-do)
 
 # The Entrypoints
 
