@@ -796,8 +796,21 @@ The **browser-versions** representation includes:
       if unknown (for example, to document support for features in early HTML)
     - **engine-version** *(write-once)* - Version of browser engine, or null
       if not tracked
-    - **current** - true if this version is recommended for download, false if
-      this has been replaced by a new version
+    - **release-day** - Day that browser was released in
+      [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or null if
+      unknown.
+    - **retirement-day** - Approximate day the browser was "retired" (stopped
+      being a current browser), in
+      [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or null if
+      unknown.
+    - **status** - One of:
+      * "retired" - Old version, no longer the preferred download for any
+        platform
+      * "retired-beta" - Old beta version, replaced by a new beta or release
+      * "current" - Current version, the preferred download or update for
+        users
+      * "beta" - A release candidate suggested for early adopters or testers
+      * "future" - A planned future release
 * **links**
     - **browser** - The related **browser**
     - **browser-version-features** *(many)* - Associated **browser-version-features**,
@@ -807,7 +820,6 @@ The **browser-versions** representation includes:
       Set to a value from **history** to revert to that version.
     - **history** *(many)* - Associated **browser-versions-history**, in time
       order (most recent first).  Changes are ignored.
-
 
 To get a single **browser-version**:
 
@@ -824,9 +836,11 @@ Content-Type: application/vnd.api+json
 {
     "browser-versions": {
         "id": "123",
-        "version": "1.0",
+        "version": "1.0.154",
         "engine-version": null,
-        "current": false,
+        "release-day": "2008-12-11",
+        "retirement-day": "2009-05-24",
+        "status": "retired",
         "links": {
             "browser": "1",
             "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
@@ -1976,7 +1990,9 @@ Content-Type: application/vnd.api+json
                 "id": "758",
                 "version": null,
                 "engine-version": null,
-                "current": false,
+                "release-day": null,
+                "retirement-day": null,
+                "status": "current",
                 "links": {
                     "browser": "1",
                     "browser-version-features": ["158", "258", "358", "458"],
@@ -1987,7 +2003,9 @@ Content-Type: application/vnd.api+json
                 "id": "759",
                 "version": "1.0",
                 "engine-version": "1.7",
-                "current": false,
+                "release-day": "2004-12-09",
+                "retirement-day": "2005-02-24",
+                "status": "retired",
                 "links": {
                     "browser": "2",
                     "browser-version-features": ["159", "259", "359", "459"],
@@ -1998,7 +2016,9 @@ Content-Type: application/vnd.api+json
                 "id": "760",
                 "version": "1.0",
                 "engine-version": null,
-                "current": false,
+                "release-day": "1995-08-16",
+                "retirement-day": null,
+                "status": "retired",
                 "links": {
                     "browser": "3",
                     "browser-version-features": ["160", "260", "360", "460"],
@@ -2009,7 +2029,9 @@ Content-Type: application/vnd.api+json
                 "id": "761",
                 "version": "5.12",
                 "engine-version": null,
-                "current": false,
+                "release-day": "2001-06-27",
+                "retirement-day": null,
+                "status": "retired",
                 "links": {
                     "browser": "4",
                     "browser-version-features": ["161", "261", "361", "461"],
@@ -2020,7 +2042,9 @@ Content-Type: application/vnd.api+json
                 "id": "762",
                 "version": "1.0",
                 "engine-version": null,
-                "current": false,
+                "release-day": "2003-06-23",
+                "retirement-day": null,
+                "status": "retired",
                 "links": {
                     "browser": "5",
                     "browser-version-features": ["162", "262", "362", "462"],
@@ -2031,7 +2055,9 @@ Content-Type: application/vnd.api+json
                 "id": "763",
                 "version": null,
                 "engine-version": null,
-                "current": false,
+                "release-day": null,
+                "retirement-day": null,
+                "status": "current",
                 "links": {
                     "browser": "6",
                     "browser-version-features": ["163", "263", "363", "463"],
@@ -2042,7 +2068,9 @@ Content-Type: application/vnd.api+json
                 "id": "764",
                 "version": "1.0",
                 "engine-version": "1.7",
-                "current": false,
+                "release-day": null,
+                "retirement-day": null,
+                "status": "retired",
                 "links": {
                     "browser": "7",
                     "browser-version-features": ["164", "264", "364", "464"],
@@ -2053,7 +2081,9 @@ Content-Type: application/vnd.api+json
                 "id": "765",
                 "version": null,
                 "engine-version": null,
-                "current": false,
+                "release-day": null,
+                "retirement-day": null,
+                "status": "current",
                 "links": {
                     "browser": "8",
                     "browser-version-features": ["165", "265", "365", "465"],
@@ -2064,7 +2094,9 @@ Content-Type: application/vnd.api+json
                 "id": "766",
                 "version": null,
                 "engine-version": null,
-                "current": false,
+                "release-day": null,
+                "retirement-day": null,
+                "status": "current",
                 "links": {
                     "browser": "11",
                     "browser-version-features": ["166", "266", "366", "466"],
@@ -2075,7 +2107,9 @@ Content-Type: application/vnd.api+json
                 "id": "767",
                 "version": null,
                 "engine-version": null,
-                "current": false,
+                "release-day": null,
+                "retirement-day": null,
+                "status": "current",
                 "links": {
                     "browser": "9",
                     "browser-version-features": ["167", "267", "367", "467"],
@@ -2086,7 +2120,9 @@ Content-Type: application/vnd.api+json
                 "id": "768",
                 "version": null,
                 "engine-version": null,
-                "current": false,
+                "release-day": null,
+                "retirement-day": null,
+                "status": "current",
                 "links": {
                     "browser": "10",
                     "browser-version-features": ["168", "268", "368", "468"],
@@ -2549,6 +2585,7 @@ Content-Type: application/vnd.api+json
 {
     "browser-versions": {
         "version": "1",
+        "status": "retired",
         "links": {
             "browser": "1",
         }
@@ -2566,7 +2603,9 @@ Location: https://api.compat.mozilla.org/browser-versions/4477
         "id": "4477",
         "version": "1",
         "engine-version": null,
-        "current": false,
+        "release-day": null,
+        "retirement-day": null,
+        "status": "retired",
         "links": {
             "browser": "1",
             "browser-version-features": [],
@@ -2734,20 +2773,25 @@ These changes are:
     - **engine** - either the localized engine name or null.  Supports current
       engine version callouts on MDN tables.
 * **browser-versions**
-    - **current** - true if version is recommended for download.  For some
-      browsers (IE), may have multiple current versions.
-    - **previous** - ID of previous browser version, or null if first
-    - **next** - ID of next browser version, or null if last
+    - **engine-version** - Engine version, used in Firefox version numbers
+    - **release-day** - Day of release
+    - **retirement-day** - Day of "retirement", or when it was superceeded by
+      a new release.
+    - **status** - One of "retired", "retired-beta", "current", "beta",
+      "future"
 * **features**
     - **slug** - human-friendly unique identifier
     - **experimental** - true if feature is experimental.  Supports beaker
       icon on MDN, such as
       [run-in value of display property](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility)
-    - **name** - converted to localized text
+    - **canonical** - True if the name is the code used by a developer
+    - **name** - converted to localized text, or lang 'zxx' if canonical
     - **specfication-sections** - replaces spec link
 * **feature-sets**
     - **slug - human-friendly unique identifier
-    - **name - converted to localized text
+    - **kuma-path** - MDN path that data was scraped from
+    - **canonical** - True if the name is the code used by a developer
+    - **name** - converted to localized text, or lang 'zxx' if canonical
     - **ancestors**, **siblings**, **children**, **decendants** - tree relations
 * **browser-version-features**
     - **prefix** - string prefix to enable, or null if no prefix
@@ -2758,13 +2802,15 @@ These changes are:
 
 There are also additional Resources:
 
-* **users** - For identifying the user who made a change
 * **specification-sections** - For referring to a section of a specification, with
   translated titles and anchors
 * **specifications** - For referring to a specification, with translated titles
   and URIs.
+* **specification-statuses** - For identifying the process stage of a spec
 * All the history resources (**browsers-history**,
   **browser-versions-history**, etc.)
+* **users** - For identifying the user who made a change
+* **changesets** - Collect several history resources into a logical change
 
 ## Unresolved Issues
 
@@ -2784,9 +2830,11 @@ There are also additional Resources:
       localized.  But, are those good feature names?  Could you write a bit of
       JavaScript to test 'Basic usage'?  Should there be three features
       ("display: none", "display: inline", "display: block") instead?  The
-      need for translated feature names might be a doc smell.
+      need for translated feature names might be a doc smell.  The canonical
+      flag might turn into a list of tables to fix.
     - feature-sets.name - Not sure if "CSS", "display", etc. should be
-      localized, similar logic to feature names.
+      localized, similar logic to feature names.  The canonical flag will
+      help.
 * I think Niels Leenheer has good points about browsers being different across
   operating systems and OS versions - I'm considering adding this to the model:
   [Mapping browsers to 2.2.1 Dictionary Browser Members](http://lists.w3.org/Archives/Public/public-webplatform-tests/2013OctDec/0007.html).
@@ -2883,6 +2931,29 @@ Here's a sample:
 * [Web/CSS/:invalid](https://developer.mozilla.org/en-US/docs/Web/CSS/:invalid#Specifications) -
   Links in feature names to other MDN docs
 
+## Data sources for browser versions
+
+The **browser-version** model currently supports a release date and a
+retirement date, as well as other version data.  Some sources for this data
+include:
+
+* Google Chrome
+    - [Google Chrome Release History](http://en.wikipedia.org/wiki/Google_Chrome#Release_history)
+      on Wikipedia
+* Mozilla Firefox
+    - [Firefox Release History](http://en.wikipedia.org/wiki/Firefox_release_history)
+      on Wikipedia
+* Microsoft Internet Explorer
+    - [Release History for desktop Windows OX version](http://en.wikipedia.org/wiki/Internet_Explorer_1#Release_history_for_desktop_Windows_OS_version)
+      on Wikipedia
+* Opera
+    - [Opera version history](http://www.opera.com/docs/history/) on opera.com
+    - [Opera presto history](http://www.opera.com/docs/history/presto/)
+      on opera.com
+* Safari
+    - [Safari version history](http://en.wikipedia.org/wiki/Safari_version_history#Release_history)
+      on Wikipedia
+
 
 ## To Do
 
@@ -2891,7 +2962,6 @@ Here's a sample:
   `GET /browser/1/browser-versions`
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
-* Update browser-versions for release date, retirement date, future flag
 
 <!--
 # vi:syntax=md
