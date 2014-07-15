@@ -2730,6 +2730,50 @@ There are also additional Resources:
   and "fix me" on
   [line-break](https://developer.mozilla.org/en-US/docs/Web/CSS/line-break#Browser_compatibility).
 
+## Interesting MDN Pages
+
+These MDN pages represent use cases for compatability data.  They may suggest
+features to add, or existing features that will be dropped.
+
+* [Web/HTML/Element/address](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address#Specifications) -
+  A typical "simple" example.  However, the name is non-canonical
+  ("Basic Features") and must be translated, rather than a canonical form
+  ("`<address>`") that could be the same for all languages.
+* [Web/CSS/display](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Specifications) -
+  This complex page includes non-canonical names
+  ("`none,inline` and `block`"), experimental features (`run-in`), support
+  changes across versions, prefixes, etc.  Everything that makes this project
+  hard.
+* [Web/CSS/cursor](https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#Specifications)
+  May be more complex than `display`.
+* [Web/CSS/animation-name](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-name#Specifications) -
+  New property that moved from prefixed support to standard support.
+* [Web/CSS/caption-side](https://developer.mozilla.org/en-US/docs/Web/CSS/caption-side#Specifications) -
+  Rarely used 'Non-standard' tag.
+* [Web/CSS/@font-face](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face#Specifications) -
+  Rarely used 'Unimplemented' tag as inline note
+* [Web/CSS/length](https://developer.mozilla.org/en-US/docs/Web/CSS/length#Browser_compatibility) -
+  Rarely used "warning" tag
+* [Web/CSS/line-break](https://developer.mozilla.org/en-US/docs/Web/CSS/line-break#Specifications) -
+  Rarely used "Fix Me" inline note
+
+Some pages will require manual intervention to get them into the data store.
+Here's a sample:
+
+* [Web/CSS/box-decoration-break](https://developer.mozilla.org/en-US/docs/Web/CSS/box-decoration-break#Specifications) -
+  Broken formatting
+* [Web/CSS/box-sizing](https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing#Specifications) -
+  In Safari column, link to engine version will become an inline note.
+* [Web/CSS/break-inside](https://developer.mozilla.org/en-US/docs/Web/CSS/break-inside#Specifications) -
+  Will need to add a skeleton compatibility table.
+* [Web/CSS/@document](https://developer.mozilla.org/en-US/docs/Web/CSS/@document#Specifications) -
+  Specification paragraph rather than normal table.
+* [Web/CSS/clip](https://developer.mozilla.org/en-US/docs/Web/CSS/clip#Specifications) -
+  Long inline notes should be converted to footnotes.
+* [Web/CSS/:invalid](https://developer.mozilla.org/en-US/docs/Web/CSS/:invalid#Specifications) -
+  Links in feature names to other MDN docs
+
+
 ## To Do
 
 * Add multi-get to browser doc, after deciding on
