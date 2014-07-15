@@ -1,0 +1,46 @@
+digraph "display broken into feature sets" {
+
+  node [ shape=rect];
+  "CSS properties";
+  "CSS1\nValues";
+  "CSS2.1\nValues";
+  "Flexible\nBox\nValues";
+  "Table\nLayout\nValues";
+  "Grid Box\nModel\nValues";
+  "Basic Box\nModel\nValues";
+
+  node [shape=rect fontname="monospace"];
+  "CSS";
+  "display";
+
+
+  node [ shape=oval fontname="monospace" fontsize=10.0];
+  "CSS" -> "CSS properties";
+  "CSS properties" -> "display";
+  "display" -> "CSS1\nValues";
+  "CSS1\nValues" -> "display: none";
+  "CSS1\nValues" -> "display: block";
+  "CSS1\nValues" -> "display: inline";
+  "CSS1\nValues" -> "display: list-item";
+  "display" -> "CSS2.1\nValues";
+  "CSS2.1\nValues" -> "Table\nLayout\nValues";
+  "CSS2.1\nValues" -> "display: inline-block";
+  "display" -> "Flexible\nBox\nValues";
+  "Flexible\nBox\nValues" -> "display: flex";
+  "Flexible\nBox\nValues" -> "display: inline-flex";
+  "Table\nLayout\nValues" -> "display: table";
+  "Table\nLayout\nValues" -> "display: table-cell";
+  "Table\nLayout\nValues" -> "display: table-column";
+  "Table\nLayout\nValues" -> "display: inline-table";
+  "Table\nLayout\nValues" -> "display: table-caption";
+  "Table\nLayout\nValues" -> "display: table-column-group";
+  "Table\nLayout\nValues" -> "display: table-footer-group";
+  "Table\nLayout\nValues" -> "display: table-header-group";
+  "Table\nLayout\nValues" -> "display: table-row";
+  "Table\nLayout\nValues" -> "display: table-row-group";
+  "display" -> "Grid Box\nModel\nValues";
+  "Grid Box\nModel\nValues" -> "display: grid";
+  "Grid Box\nModel\nValues" -> "display: inline-grid";
+  "display" -> "Basic Box\nModel\nValues";
+  "Basic Box\nModel\nValues" -> "display: run-in";
+}
