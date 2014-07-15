@@ -99,10 +99,12 @@ The **browsers** representation includes:
     - **name** *(localized)* - Browser name
     - **engine** *(localized)* - Browser engine, or null if not version tracked
 * **links**
-    - **versions** *(many)* - Associated **browser-versions**
-    - **history-current** *(one)* - Current **browsers-history**
+    - **versions** *(many)* - Associated **browser-versions**, ordered roughly
+      from earliest to latest.  User can change the order.
+    - **history-current** *(one)* - Current **browsers-history**.  Can be
+      set to a value from **history** to revert changes.
     - **history** *(many)* - Associated **browsers-history** in time order
-      (most recent first)
+      (most recent first). Changes are ignored.
 
 ### List
 
@@ -605,6 +607,60 @@ Content-Type: application/vnd.api+json
 }
 ```
 
+To change just the **browser-version** order:
+
+```http
+PUT /browsers/3 HTTP/1.1
+Host: api.compat.mozilla.org
+Accept: application/vnd.api+json
+Authorization: Bearer mF_9.B5f-4.1JqM
+
+{
+    "browsers": {
+        "links": {
+            "versions": ["178", "167", "125"]
+        }
+    }
+}
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.api+json
+
+{
+    "browsers": {
+        "id": "3",
+        "slug": "ie",
+        "environment": "desktop",
+        "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+        "name": {
+            "en": "M$ Internet Exploder 💩"
+        },
+        "engine": null,
+        "links": {
+            "versions": ["178", "167", "125"],
+            "history-current": "1035",
+            "history": ["1035", "1034", "1033", "1003"]
+        }
+    },
+    "links": {
+        "browsers.versions": {
+            "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
+            "type": "browser-versions"
+        },
+        "browsers.history-current": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
+            "type": "browsers-history"
+        },
+        "browsers.history": {
+            "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
+            "type": "browsers-history"
+        }
+    }
+}
+```
+
 ### Reverting to a previous version
 
 To revert to an earlier version, set the `history-current` link to a
@@ -642,8 +698,8 @@ Content-Type: application/vnd.api+json
         "engine": null,
         "links": {
             "versions": ["125", "167", "178"],
-            "history-current": "1035",
-            "history": ["1035", "1034", "1033", "1003"]
+            "history-current": "1036",
+            "history": ["1036", "1035", "1034", "1033", "1003"]
         }
     },
     "links": {
@@ -743,14 +799,14 @@ The **browser-versions** representation includes:
     - **current** - true if this version is recommended for download, false if
       this has been replaced by a new version
 * **links**
-    - **previous** *(one or null)* - The previous **browser-version**, or null
-      if first version or out-of-sequence
-    - **next** *(one or null)* - The next **browser-version**, or null if most
-      recent version or out-of-sequence
-    - **browser-version-features** *(many)* - Associated **browser-version-features**
-    - **history-current** *(one)* - Current **browsers-versions-history**
+    - **browser** - The related **browser**
+    - **browser-version-features** *(many)* - Associated **browser-version-features**,
+      in ID order.  Changes are ignored; work on the
+      **browser-version-features** to add, change, or remove.
+    - **history-current** *(one)* - Current **browsers-versions-history**.
+      Set to a value from **history** to revert to that version.
     - **history** *(many)* - Associated **browser-versions-history**, in time
-      order (most recent first)
+      order (most recent first).  Changes are ignored.
 
 
 To get a single **browser-version**:
@@ -773,8 +829,6 @@ Content-Type: application/vnd.api+json
         "current": false,
         "links": {
             "browser": "1",
-            "previous": null,
-            "next": "176",
             "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
             "history-current": "567",
             "history": ["567"]
@@ -784,14 +838,6 @@ Content-Type: application/vnd.api+json
         "browser-versions.browser": {
             "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
             "type": "browsers"
-        },
-        "browser-versions.previous": {
-            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.previous}",
-            "type": "browser-versions"
-        },
-        "browser-versions.next": {
-            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
-            "type": "browser-versions"
         },
         "browser-versions.browser-version-features": {
             "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
@@ -837,12 +883,15 @@ The **features** representation includes:
     - **feature-sets** *(many)* - Associated **feature-sets**.  Ideally, a
       **feature** is contained in a single **feature-set**, but it may be
       associated with multiple **feature-sets** during a transition
-      period.
-    - **specification-sections** *(many)* - Associated **specification-sections**
-    - **browser-version-features** *(many)* - Associated **browser-version-features**
-    - **history-current** *(one)* - Current **features-history**
+      period.  Order is in ID order, changes are ignored.
+    - **specification-sections** *(many)* - Associated **specification-sections**.
+      Order can be changed by the user.
+    - **browser-version-features** *(many)* - Associated **browser-version-features**,
+      Order is in ID order, changes are ignored.
+    - **history-current** *(one)* - Current **features-history**.  User can
+      set to a valid **history** to revert to that version.
     - **history** *(many)* - Associated **features-history**, in time order
-      (most recent first)
+      (most recent first).  Changes are ignored.
 
 To get a specific **feature** (in this case, a canonically-named feature):
 
@@ -972,22 +1021,28 @@ The **feature-sets** representation includes:
       displayed.  When **canonical** is false, the name will include at
       least an `en` translation, and may include HTML markup.
 * **links**
-    - **features** *(many)* - Associated **features**
+    - **features** *(many)* - Associated **features**.  Can be re-ordered by
+      the user.
     - **specification-sections** *(many)* - Associated
-      **specification-sections**
+      **specification-sections**.  Can be re-ordered by the user.
     - **parent** *(one or null)* - The **feature-set** one level up, or null
-      if top-level
+      if top-level.  Can be changed by user.
     - **ancestors** *(many)* - The **feature-sets** that form the path to the
-      top of the tree, including this one, in bread-crumb order (top to self)
+      top of the tree, including this one, in bread-crumb order (top to self).
+      Can not be changed by user - set the **parent** instead.
     - **siblings** *(many)* - The **feature-sets** with the same parent,
-      including including this one, in display order
+      including including this one, in display order.  Can be re-ordered by the
+      user.
     - **children** *(many)* - The **feature-sets** that have this
-      **feature-set** as parent, in display order
+      **feature-set** as parent, in display order.  Can be re-ordered by the
+      user.
     - **decendants** *(many)* - The **feature-sets** in the local tree for
-      this **feature-set**. including this one, in tree order
+      this **feature-set**. including this one, in tree order.  Can not be
+      changed by the user - set the **parent** on the child **feature-set**
+      instead.
     - **history-current** *(one)* - The current **feature-sets-history**
     - **history** *(many)* - Associated **feature-sets-history**, in time
-      order (most recent first)
+      order (most recent first).  Can not be re-ordered by user.
 
 
 To get a single **feature set** (in this case, a canonically named feature):
@@ -1081,12 +1136,15 @@ The **browser-version-feature** representation includes:
     - **footnote** *(localized)* - Long note on support, designed for
       display after a compatibility table, MDN wiki format
 * **links**
-    - **browser-version** *(one)* - The associated **browser-version**
-    - **feature** *(one)* - The associated **feature**
+    - **browser-version** *(one)* - The associated **browser-version**.  Can
+      be changed by the user.
+    - **feature** *(one)* - The associated **feature**.  Can be changed by
+      the user.
     - **history-current** *(one)* - Current
-      **browser-version-features-history**
+      **browser-version-features-history**.  Can be changed to a valid
+      **history** to revert to that version.
     - **history** *(many)* - Associated **browser-version-features-history**
-      in time order (most recent first)
+      in time order (most recent first).  Changes are ignored.
 
 
 To get a single **browser-version-features**:
@@ -1153,7 +1211,9 @@ The **specification** representation includes:
     - **uri** *(localized)* - Specification URI, without subpath and anchor
 * **links**
     - **specification-sections** *(many)* - Associated **specification-sections**.
-    - **specification-status** *(one)* - Associated **specification-status**
+      The order can be changed by the user.
+    - **specification-status** *(one)* - Associated **specification-status**.
+      Can be changed by the user.
 
 To get a single **specification**:
 
@@ -1211,9 +1271,12 @@ The **specification-section** representation includes:
       to the subsection in the doc.  Can be empty string.
     - **note** *(localized)* - Notes for this section
 * **links**
-    - **specification** *(one)* - The **specification**
-    - **features** *(many)* - The associated **features**
-    - **feature-sets** *(many)* - The associated **feature-sets**
+    - **specification** *(one)* - The **specification**.  Can be changed by
+      the user.
+    - **features** *(many)* - The associated **features**.  In ID order,
+      changes are ignored.
+    - **feature-sets** *(many)* - The associated **feature-sets**.  In ID,
+      order, changes are ignored.
 
 To get a single **specification-section**:
 
@@ -1271,7 +1334,8 @@ The **specification-status** representation includes:
       [Spec2](https://developer.mozilla.org/en-US/docs/Template:Spec2)
     - **name** *(localized)* - Status name
 * **links**
-    - **specifications** *(many)* - Associated **specifications**
+    - **specifications** *(many)* - Associated **specifications**.
+      In ID order, changes are ignored.
 
 To get a single **specification-section**:
 
@@ -1332,15 +1396,8 @@ The representation includes:
         * "change-user" - Change a **user** resource
         * "delete-resource" - Delete any resource
 * **links**
-    - **changesets** *(many)* - Associated **changesets**
-    - **browsers-history** *(many)* - Associated **browsers-history**
-    - **browser-versions-history** *(many)* - Associated
-      **browser-versions-history**
-    - **features-history** *(many)* - Associated **features-history**
-    - **feature-sets-history** *(many)* - Associated **feature-sets-history**
-    - **browser-version-features-history** *(many)* - Associated
-      **browser-version-features-history**
-
+    - **changesets** *(many)* - Associated **changesets**, in ID order,
+      changes are ignored.
 
 To get a single **user** representation:
 
@@ -1362,7 +1419,7 @@ Content-Type: application/vnd.api+json
         "agreement-version": "1",
         "permissions": ["change-browser-version-feature"],
         "links": {
-            "changesets": "73"
+            "changesets": ["73"]
         }
     },
     "links": {
@@ -1403,14 +1460,19 @@ The representation includes:
     - **target-resource-id** *(write-once)* - The ID of the primary resource
       for this changeset.
 * **links**
-    - **user** *(one)* - The user who initiated this changeset
-    - **browsers-history** *(many)* - Associated **browsers-history**
+    - **user** *(one)* - The user who initiated this changeset, can not be
+      changed.
+    - **browsers-history** *(many)* - Associated **browsers-history**, in
+      ID order, changes are ignored.
     - **browser-versions-history** *(many)* - Associated
-      **browser-versions-history**
-    - **features-history** *(many)* - Associated **features-history**
-    - **feature-sets-history** *(many)* - Associated **feature-sets-history**
+      **browser-versions-history**, in ID order, changes are ignored.
+    - **features-history** *(many)* - Associated **features-history**,
+      in ID order, changes are ignored.
+    - **feature-sets-history** *(many)* - Associated **feature-sets-history**,
+      in ID order, changes are ignored.
     - **browser-version-features-history** *(many)* - Associated
-      **browser-version-features-history**
+      **browser-version-features-history**, in ID order, changes are
+      ignored.
 
 
 To get a single **changeset** representation:
@@ -1491,8 +1553,8 @@ time, and who is responsible for that state.  The representation includes:
       "changed", or "deleted"
     - **browsers** - The **browsers** representation at this point in time
 * **links**
-    - **browser** *(one)* - Associated **browser**
-    - **changeset** *(one)* - Associated **changeset**
+    - **browser** *(one)* - Associated **browser**, can not be changed
+    - **changeset** *(one)* - Associated **changeset**, can not be changed.
 
 To get a single **browsers-history** representation:
 
@@ -1917,8 +1979,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "1",
-                    "previous": null,
-                    "next": "null",
                     "browser-version-features": ["158", "258", "358", "458"],
                     "history-current": "1567",
                     "history": ["1567"]
@@ -1930,8 +1990,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "2",
-                    "previous": null,
-                    "next": "1253",
                     "browser-version-features": ["159", "259", "359", "459"],
                     "history-current": "1568",
                     "history": ["1568"]
@@ -1943,8 +2001,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "3",
-                    "previous": null,
-                    "next": "923",
                     "browser-version-features": ["160", "260", "360", "460"],
                     "history-current": "1569",
                     "history": ["1569"]
@@ -1956,8 +2012,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "4",
-                    "previous": "234",
-                    "next": "924",
                     "browser-version-features": ["161", "261", "361", "461"],
                     "history-current": "1570",
                     "history": ["1570"]
@@ -1969,8 +2023,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "5",
-                    "previous": null,
-                    "next": "1224",
                     "browser-version-features": ["162", "262", "362", "462"],
                     "history-current": "1571",
                     "history": ["1571"]
@@ -1982,8 +2034,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "6",
-                    "previous": null,
-                    "next": null,
                     "browser-version-features": ["163", "263", "363", "463"],
                     "history-current": "1572",
                     "history": ["1572"]
@@ -1995,8 +2045,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "7",
-                    "previous": null,
-                    "next": null,
                     "browser-version-features": ["164", "264", "364", "464"],
                     "history-current": "1574",
                     "history": ["1574"]
@@ -2008,8 +2056,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "8",
-                    "previous": null,
-                    "next": null,
                     "browser-version-features": ["165", "265", "365", "465"],
                     "history-current": "1575",
                     "history": ["1575"]
@@ -2021,8 +2067,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "11",
-                    "previous": null,
-                    "next": null,
                     "browser-version-features": ["166", "266", "366", "466"],
                     "history-current": "1576",
                     "history": ["1576"]
@@ -2034,8 +2078,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "9",
-                    "previous": null,
-                    "next": null,
                     "browser-version-features": ["167", "267", "367", "467"],
                     "history-current": "1577",
                     "history": ["1577"]
@@ -2047,8 +2089,6 @@ Content-Type: application/vnd.api+json
                 "current": false,
                 "links": {
                     "browser": "10",
-                    "previous": null,
-                    "next": null,
                     "browser-version-features": ["168", "268", "368", "468"],
                     "history-current": "1578",
                     "history": ["1578"]
@@ -2287,14 +2327,6 @@ Content-Type: application/vnd.api+json
         "browser-versions.browser": {
             "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
             "type": "browsers"
-        },
-        "browser-versions.previous": {
-            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.previous}",
-            "type": "browser-versions"
-        },
-        "browser-versions.next": {
-            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
-            "type": "browser-versions"
         },
         "browser-versions.browser-version-features": {
             "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
@@ -2537,8 +2569,6 @@ Location: https://api.compat.mozilla.org/browser-versions/4477
         "current": false,
         "links": {
             "browser": "1",
-            "previous": null,
-            "next": "null",
             "browser-version-features": [],
             "history-current": "3052",
             "history": ["3052"]
@@ -2548,14 +2578,6 @@ Location: https://api.compat.mozilla.org/browser-versions/4477
         "browser-versions.browser": {
             "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
             "type": "browsers"
-        },
-        "browser-versions.previous": {
-            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.previous}",
-            "type": "browser-versions"
-        },
-        "browser-versions.next": {
-            "href": "https://api.compat.mozilla.org/browsers/{browser-versions.next}",
-            "type": "browser-versions"
         },
         "browser-versions.browser-version-features": {
             "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
@@ -2869,7 +2891,6 @@ Here's a sample:
   `GET /browser/1/browser-versions`
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
-* Add significant ordering documentation and examples
 * Update browser-versions for release date, retirement date, future flag
 
 <!--
