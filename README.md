@@ -7,8 +7,8 @@ on
 
 * [api.md](api.md) - Draft API documentation.  Once we get 90% there, we'll
   start the code.
-* [canonicalized-display.svg](canonicalized-display.svg) - One way to break
-  up pages like the one for the
+* [canonicalized-display.svg](https://rawgit.com/jwhitlock/web-platform-compat/master/canonicalized-display.svg) -
+  One way to break up pages like the one for the
   [CSS display property](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility),
   while preserving table order and other desirable features.  The
   [source](canonicalized-display.gv) is in Graphviz.
