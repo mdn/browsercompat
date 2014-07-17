@@ -60,6 +60,7 @@ compatibilty data, readable and writable from an API.
     * [Additions to Browser Compatibility Data Architecture](#additions-to-browser-compatibility-data-architecture)
     * [Unresolved Issues](#unresolved-issues)
     * [Interesting MDN Pages](#interesting-mdn-pages)
+    * [Translating from MDN wiki format](#translating-from-mdn-wiki-format)
     * [Data sources for browser versions](#data-sources-for-browser-versions)
     * [To Do](#to-do)
 
@@ -855,6 +856,8 @@ The **browser-versions** representation includes:
         users
       * "beta" - A release candidate suggested for early adopters or testers
       * "future" - A planned future release
+    - **release-notes-uri** (localized) - URI of release notes for this
+      version, or null if none.
 * **links**
     - **browser** - The related **browser**
     - **browser-version-features** *(many)* - Associated **browser-version-features**,
@@ -885,6 +888,7 @@ Content-Type: application/vnd.api+json
         "release-day": "2008-12-11",
         "retirement-day": "2009-05-24",
         "status": "retired",
+        "release-notes-uri": null,
         "links": {
             "browser": "1",
             "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
@@ -923,8 +927,14 @@ The **features** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **slug** *(write-once)* - Unique, human-friendly slug
-    - **experimental** - true if feature is experimental, should not be used
-      in production
+    - **maturity** - Is the feature part of a current recommended standard?
+      One of the following:
+        * `standard` - Default value.  Feature is defined in a current
+          standard.
+        * `non-standard` - Feature was never defined in a standard or was
+          explicitly removed by a current standard.
+        * `experimental` - Feature is part of a standard that isn't endorsed,
+          such as a working draft or on the recommendation track.
     - **canonical** - true if the **name** is a canonical name, representing
       code that a developer could use directly.  For example, "display: none" is
       the canonical name for the CSS display property with a value of none,
@@ -967,7 +977,7 @@ Content-Type: application/vnd.api+json
     "features": {
         "id": "276",
         "slug": "css-property-background-size-value-contain",
-        "experimental": false,
+        "maturity": "standard",
         "canonical": true,
         "name": {
             "zxx": "background-size: contain"
@@ -1017,7 +1027,7 @@ Content-Type: application/vnd.api+json
     "features": {
         "id": "191",
         "slug": "html-element-address",
-        "experimental": false,
+        "maturity": "standard",
         "canonical": false,
         "name": {
             "en": "Basic support"
@@ -1396,7 +1406,7 @@ The **specification-status** representation includes:
     - **specifications** *(many)* - Associated **specifications**.
       In ID order, changes are ignored.
 
-To get a single **specification-section**:
+To get a single **specification-status**:
 
 ```http
 GET /specification-statuses/49 HTTP/1.1
@@ -1748,7 +1758,7 @@ Content-Type: application/vnd.api+json
             {
                 "id": "191",
                 "slug": "html-address",
-                "experimental": false,
+                "maturity": "standard",
                 "canonical": false,
                 "name": {
                     "en": "Basic support"
@@ -2038,6 +2048,7 @@ Content-Type: application/vnd.api+json
                 "release-day": null,
                 "retirement-day": null,
                 "status": "current",
+                "release-notes-uri": null,
                 "links": {
                     "browser": "1",
                     "browser-version-features": ["158", "258", "358", "458"],
@@ -2651,6 +2662,7 @@ Location: https://api.compat.mozilla.org/browser-versions/4477
         "release-day": null,
         "retirement-day": null,
         "status": "retired",
+        "release-notes-uri": null,
         "links": {
             "browser": "1",
             "browser-version-features": [],
@@ -2824,11 +2836,16 @@ These changes are:
       a new release.
     - **status** - One of "retired", "retired-beta", "current", "beta",
       "future"
+    - **relese-notes-uri** - For Mozilla releases, as specified in
+      [CompatGeckoDesktop](https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop).
 * **features**
     - **slug** - human-friendly unique identifier
-    - **experimental** - true if feature is experimental.  Supports beaker
-      icon on MDN, such as
-      [run-in value of display property](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility)
+    - **maturity** - the standards maturity of the feature.  One of "standard"
+      (no special markup), "non-standard" (non-standard flag, like
+      the `left` and `right` features of
+      [Web/CSS/caption-side](https://developer.mozilla.org/en-US/docs/Web/CSS/caption-side#Browser_compatibility)),
+      or "experimental" (beaker flag, like the `run-in` value of
+      [Web/CSS/display](https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility)).
     - **canonical** - True if the name is the code used by a developer
     - **name** - converted to localized text, or lang 'zxx' if canonical
     - **specfication-sections** - replaces spec link
@@ -2929,15 +2946,6 @@ There are also additional Resources:
   test conflicts, etc.  It might be easier to move all those wishlist items to
   a different project, that talks to this API when it's ready to assert
   browser support for a feature.
-* I added an 'experimental' attribute to feature.  Do we need additional
-  flags?  See "non-standard" in
-  [caption-side](https://developer.mozilla.org/en-US/docs/Web/CSS/caption-side#Browser_compatibility),
-  "unimplemented" in
-  [@font-face](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face#Browser_compatibility),
-  "warning" on
-  [length](https://developer.mozilla.org/en-US/docs/Web/CSS/length#Browser_compatibility),
-  and "fix me" on
-  [line-break](https://developer.mozilla.org/en-US/docs/Web/CSS/line-break#Browser_compatibility).
 * groovecoder says that api.compat.mozilla.org is a non-starter with Mozilla
   IT - too hard to provision a new domain.  He suggests a subpath under
   developer.mozilla.org.  Should we go with:
@@ -3021,6 +3029,138 @@ Here's a sample:
   apoplectic warning of Chrome behaviour.  Maybe convert to regular note, or
   add a Feature for Chrome prefix with non-standard tag?
 
+## Translating from MDN wiki format
+
+The current compatibility data on developer.mozilla.org in MDN wiki format, a
+combination of HTML and KumaScript.
+
+A MDN page will be imported as a feature-set.
+
+
+Here's the MDN wiki version of the Specifications section for
+[Web/CSS/border-image-width](http://developer.mozilla.org/en-US/docs/Web/CSS/border-image-width):
+
+```html
+<h2 id="Specifications" name="Specifications">Specifications</h2>
+<table class="standard-table">
+ <thead>
+  <tr>
+   <th scope="col">Specification</th>
+   <th scope="col">Status</th>
+   <th scope="col">Comment</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr>
+   <td>{{SpecName('CSS3 Backgrounds', '#border-image-width', 'border-image-width')}}</td>
+   <td>{{Spec2('CSS3 Backgrounds')}}</td>
+   <td>Initial specification</td>
+  </tr>
+ </tbody>
+</table>
+```
+
+The elements of this table are converted into API data:
+
+* **Body row, first column** - Format is `SpecName('KEY', 'PATH', 'NAME')`.
+  `KEY` is the specification.kuma-key, `PATH` is specification-section.subpath,
+  in the page language, and `NAME` is specification-section.name, in the page
+  language.  The macro
+  [SpecName](https://developer.mozilla.org/en-US/docs/Template:SpecName) has
+  additional lookups on `KEY` for specification.name and specification.uri (en
+  language only).
+* **Body row, second column** - Format is `Spec2('KEY')`.  `KEY` is the
+  specification.kuma-key, and should match the one from column one.  The macro
+  [Spec2](https://developer.mozilla.org/en-US/docs/Template:Spec2) has
+  additional lookups on `KEY` for specification-status.kuma-key, and
+  specification-status.name (multiple languages).
+* **Body row, third column** - Format is a text fragment which may include HTML
+  markup, becomes the specification-section.name associated with this
+  feature-set.
+
+and here's the Browser compatibility section:
+
+```html
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+<div>
+ {{CompatibilityTable}}</div>
+<div id="compat-desktop">
+ <table class="compat-table">
+  <tbody>
+   <tr>
+    <th>Feature</th>
+    <th>Chrome</th>
+    <th>Firefox (Gecko)</th>
+    <th>Internet Explorer</th>
+    <th>Opera</th>
+    <th>Safari</th>
+   </tr>
+   <tr>
+    <td>Basic support</td>
+    <td>15.0</td>
+    <td>{{CompatGeckoDesktop("13.0")}}</td>
+    <td>11</td>
+    <td>15</td>
+    <td>6</td>
+   </tr>
+  </tbody>
+ </table>
+</div>
+<div id="compat-mobile">
+ <table class="compat-table">
+  <tbody>
+   <tr>
+    <th>Feature</th>
+    <th>Android</th>
+    <th>Firefox Mobile (Gecko)</th>
+    <th>IE Phone</th>
+    <th>Opera Mobile</th>
+    <th>Safari Mobile</th>
+   </tr>
+   <tr>
+    <td>Basic support</td>
+    <td>{{CompatUnknown}}</td>
+    <td>{{CompatGeckoMobile("13.0")}}</td>
+    <td>{{CompatNo}}</td>
+    <td>{{CompatUnknown}}</td>
+    <td>{{CompatUnknown}}</td>
+   </tr>
+  </tbody>
+ </table>
+</div>
+```
+
+This will be converted to API resources:
+
+* **Table class** - one of "compat-desktop" or "compat-mobile", sets
+  browser.environment.
+* **Header row, all but the first column** - format is either
+  `Browser Name (Engine Name)` or `Browser Name`.  Used for browser.name,
+  browser.engine-name (set or `null`).  Other formats or KumaScript halt
+  import.
+* **Non-header rows, first column** - If the format
+  is `<code>some text</code>`, then feature.canonical=true and the
+  string is the canonical name.  If the format is text w/o KumaScript, it
+  is the non-canonocial name.  If there is also KumaScript, it varies:
+    * TODO: doc KumaScript
+* **Non-header rows, remaining columns** - Usually Kumascript:
+    * `{{CompatUnknown}}` - browser-version.version and
+      browser-version.engine-version are `null`, and
+      browser-version-feature.support is `"unknown"`
+    * `{{CompatNo}}` - browser-version.version and
+      browser-version.engine-version are `null`, and
+      browser-version-feature.support is `"no"`
+    * `{{CompatGeckoDesktop("VAL")}}` - browser-version.version is
+      set to `"VAL"`, browser-version-feature.support is `"yes"`.
+      browser-version.engine-version and browser-version.release-day is set by
+      logic in
+      [CompatGeckoDesktop](https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop).
+    * Numeric string, such as `6`, `15.0`.  This becomes the
+      browser-version.version, browser-version.engine-version is `null`, and
+      browser-version-feature.support is `"yes"`.
+* **Content after table** - This is usually formatted as a paragraph,
+  containing HTML.  It should become browser-version-features.footnotes,
+  but it will challenging to auto-parse and associate.
 
 ## Data sources for browser versions
 
@@ -3034,6 +3174,7 @@ include:
 * Mozilla Firefox
     - [Firefox Release History](http://en.wikipedia.org/wiki/Firefox_release_history)
       on Wikipedia
+    - [Template:CompatGeckoDesktop](https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop)
 * Microsoft Internet Explorer
     - [Release History for desktop Windows OX version](http://en.wikipedia.org/wiki/Internet_Explorer_1#Release_history_for_desktop_Windows_OS_version)
       on Wikipedia
