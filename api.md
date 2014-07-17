@@ -1187,7 +1187,8 @@ The **browser-version-feature** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **support** - Assertion of support of the **browser-version** for the
-      **feature**, one of "yes", "no", "prefixed", "partial", "unknown"
+      **feature**, one of "yes", "no", "prefixed", "partial", "unknown",
+      or "never"
     - **prefix** - Prefix needed, if support is "prefixed"
     - **note** *(localized)* - Short note on support, designed for inline
       display, max 20 characters
@@ -2838,6 +2839,12 @@ These changes are:
     - **name** - converted to localized text, or lang 'zxx' if canonical
     - **ancestors**, **siblings**, **children**, **decendants** - tree relations
 * **browser-version-features**
+    - **support** - Added a value "never", for cases where developers have
+      announced they will not support a feature.  For example, the
+      [CSS @font-face at-rule](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face#Specifications),
+      which has been closed as WONTFIX in
+      [Bugzilla 119490](https://bugzilla.mozilla.org/show_bug.cgi?id=119490),
+      appears as `{{CompatNo}}{{unimplemented_inline(119490)}}`.
     - **prefix** - string prefix to enable, or null if no prefix
     - **note** - short note, length limited, translated, or null.  Supports
       inline notes currently in use on MDN
