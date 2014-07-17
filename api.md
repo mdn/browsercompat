@@ -2931,6 +2931,16 @@ There are also additional Resources:
   [length](https://developer.mozilla.org/en-US/docs/Web/CSS/length#Browser_compatibility),
   and "fix me" on
   [line-break](https://developer.mozilla.org/en-US/docs/Web/CSS/line-break#Browser_compatibility).
+* groovecoder says that api.compat.mozilla.org is a non-starter with Mozilla
+  IT - too hard to provision a new domain.  He suggests a subpath under
+  developer.mozilla.org.  Should we go with:
+    1. https://api.compat.mozila.org and https://compat.mozilla.org
+    2. https://developer.mozilla.org/compat-api and
+       https://developer.mozilla.org/en-US/compat-api
+    3. https://api.compat.developer.mozilla.org and
+       https://compat.developer.mozilla.org
+    4. Something else?
+
 
 ## Interesting MDN Pages
 
@@ -2946,8 +2956,11 @@ features to add, or existing features that will be dropped.
   ("`none,inline` and `block`"), experimental features (`run-in`), support
   changes across versions, prefixes, etc.  Everything that makes this project
   hard.
-* [Web/CSS/cursor](https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#Specifications)
+* [Web/CSS/cursor](https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#Specifications) -
   May be more complex than `display`.
+* [Web/HTML/Element/Input](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#Browser_compatibility) -
+  Complex, with lots of attributes.  Split by standard may not be as useful
+  as other ways to split it.
 * [Web/CSS/animation-name](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-name#Specifications) -
   New property that moved from prefixed support to standard support.
 * [Web/CSS/caption-side](https://developer.mozilla.org/en-US/docs/Web/CSS/caption-side#Specifications) -
@@ -2997,6 +3010,10 @@ Here's a sample:
   Lots of interesting versions, including Safari nightly.
 * [Web/CSS/text-rendering](https://developer.mozilla.org/en-US/docs/Web/CSS/text-rendering#Specifications) -
   convert to footnotes, other changes needed.  Not sure if it belongs under CSS.
+* [Web/API/IDBObjectStore](https://developer.mozilla.org/en-US/docs/Web/API/IDBObjectStore#Specifications) -
+  apoplectic warning of Chrome behaviour.  Maybe convert to regular note, or
+  add a Feature for Chrome prefix with non-standard tag?
+
 
 ## Data sources for browser versions
 
