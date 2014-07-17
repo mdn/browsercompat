@@ -52,7 +52,7 @@ compatibilty data, readable and writable from an API.
     * [Browser Version Features History](#browser-version-features-history)
 * [Views](#views)
     * [View a Feature Set](#view-a-feature-set)
-        * [Updatng Views with Changesets](#updating-views-with-changesets)
+        * [Updating Views with Changesets](#updating-views-with-changesets)
 * [Services](#services)
     * [Authentication](#authentication)
     * [Browser Identification](#browser-identification)
@@ -1727,7 +1727,7 @@ Content-Type: application/vnd.api+json
         "id": "816"
         "slug": "html-element-address",
         "kuma-path": "en-US/docs/Web/HTML/Element/address",
-        "canonical": true
+        "canonical": true,
         "name": {
             "zxx": "address"
         },
