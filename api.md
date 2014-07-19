@@ -3147,6 +3147,9 @@ This will be converted to API resources:
     * `{{CompatUnknown}}` - browser-version.version and
       browser-version.engine-version are `null`, and
       browser-version-feature.support is `"unknown"`
+    * `{{CompatVersionUnknown}}` - browser-version.version and
+      browser-version.engine-version are `null`, and
+      browser-version-feature.support in `"yes"`
     * `{{CompatNo}}` - browser-version.version and
       browser-version.engine-version are `null`, and
       browser-version-feature.support is `"no"`
@@ -3155,6 +3158,10 @@ This will be converted to API resources:
       browser-version.engine-version and browser-version.release-day is set by
       logic in
       [CompatGeckoDesktop](https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop).
+    * `{{CompatGeckoMobile("VAL")}}` - browser-version.version is
+      set to `"VAL"`, browser-version-feature.support is `"yes"`.
+      browser-version.engine-version is set by logic in
+      [CompatGeckoMobile](https://developer.mozilla.org/en-US/docs/Template:CompatGeckoMobile).
     * Numeric string, such as `6`, `15.0`.  This becomes the
       browser-version.version, browser-version.engine-version is `null`, and
       browser-version-feature.support is `"yes"`.
@@ -3194,6 +3201,37 @@ include:
   `GET /browser/1/browser-versions`
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
+* Jeremie's suggested changes:
+    * Add browsers.notes, localized, to note things like engine, applicable
+      OS, execution contexts (web workers, XUL, etc.).
+    * Drop browsers.environment attribute.  "deskop", "mobile" doesn't cover
+      the world of browsers.  This is a UX change to MDN Browser compatability
+      tables.
+    * Drop browsers.engine attribute.  Not important for searching or
+      filtering, instead free text in browsers.notes
+    * Add browser-versions.notes, localized, to note things like OS, devices,
+      engines, etc.
+    * Drop browser-versions.engine-version, not important for searching or
+      sorting.
+    * Drop browser-versions.status.  Doesn't think the MDN team will be able
+      to keep up with browser releases.  Will instead rely on users
+      figuring out if a browser version is the current release.
+    * Drop feature.canonical.  Instead, name="string" means it is
+      canonical, and name={"lang": "translation"} means it is non-canonical.
+    * Feature-sets is a cloud, not a heirarchy.  "color=red" is the same
+      feature as "background-color=red", so needs to be multiply assigned.
+    * A feature-set can either have sub-feature sets (middle of cloud), or
+      features (edge of cloud).
+    * Add browser-version-feature-sets, to make positive assertions about
+      a browser-version supporting a feature-set.  Only negative assertions
+      can be made based on features.
+    * Drop order of features by feature set.  Client will alpha-sort.
+    * browser-version-features.support, drop "prefixed" status.  If prefixed,
+      support = 'yes', and prefix is set.
+    * Add examples of filtering (browser versions in 2010, firefox versions
+      before version X).
+* Holly's suggestion - nail down the data, so she has something solid to
+  build a UX on.
 
 <!--
 # vi:syntax=md
