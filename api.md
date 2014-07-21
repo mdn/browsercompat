@@ -3230,8 +3230,10 @@ include:
       support = 'yes', and prefix is set.
     * Add examples of filtering (browser versions in 2010, firefox versions
       before version X).
-* Holly's suggestion - nail down the data, so she has something solid to
-  build a UX on.
+* Holly's suggestions
+    * Nail down the data, so she has something solid to build a UX on.
+    * sheppy or jms will have experience with how users use tables and
+      contribute to them, how frequently.
 
 <!--
 # vi:syntax=md
