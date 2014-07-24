@@ -323,6 +323,16 @@ This will be converted to API resources:
   containing HTML.  It should become browser-version-features.footnotes,
   but it will challenging to auto-parse and associate.
 
+Once the initial conversion has been done for a page, it may be useful to
+perform additional steps:
+
+1. Split large feature-sets_ into smaller ones.  For example,
+   here's one way to reorganize `Web/CSS/display`_:
+
+.. image:: ../../_static/canonicalized-display.svg
+   :alt: Reorganization of Web/CSS/display
+   :target: https://rawgit.com/jwhitlock/web-platform-compat/master/docs/_static/canonicalized-display.svg
+
 Data sources for browser versions
 ---------------------------------
 
