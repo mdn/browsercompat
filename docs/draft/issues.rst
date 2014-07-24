@@ -125,16 +125,13 @@ Unresolved Issues
   test conflicts, etc.  It might be easier to move all those wishlist items to
   a different project, that talks to this API when it's ready to assert
   browser support for a feature.
-* groovecoder says that api.compat.mozilla.org is a non-starter with Mozilla
-  IT - too hard to provision a new domain.  He suggests a subpath under
-  developer.mozilla.org.  Should we go with:
+* groovecoder says that api.compat.mozilla.org is harder to coordinate with 
+  Mozilla IT.  He suggests a subpath under developer.mozilla.org like the
+  `django-rest-framework search API
+  <https://developer.mozilla.org/en-US/docs/MDN/User_guide/Advanced_search>`_:
 
-      1. https://api.compat.mozila.org and https://compat.mozilla.org
-      2. https://developer.mozilla.org/compat-api and
-         https://developer.mozilla.org/en-US/compat-api
-      3. https://api.compat.developer.mozilla.org and
-         https://compat.developer.mozilla.org
-      4. Something else?
+      https://developer.mozilla.org/en-US/compat/api
+ 
 
 
 Interesting MDN Pages

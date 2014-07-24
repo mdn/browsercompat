@@ -9,7 +9,7 @@ Authentication
 
 Several endpoint handle user authentication.
 
-https://api.compat.mozilla.org/auth is an HTML page that shows the user's
+https://developer.mozilla.org/compat/api/auth is an HTML page that shows the user's
 current authentication status, and includes a button for starting a Persona_
 login.
 

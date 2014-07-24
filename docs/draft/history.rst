@@ -29,7 +29,7 @@ To get a single **browsers-history** representation:
 .. code-block:: http
 
     GET /browsers-history/1002 HTTP/1.1
-    Host: api.compat.mozilla.org
+    Host: developer.mozilla.org/compat/api
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -70,11 +70,11 @@ A sample response is:
         },
         "links": {
             "browsers-history.browser": {
-                "href": "https://api.compat.mozilla.org/browser-history/{browsers-history.browser}",
+                "href": "https://developer.mozilla.org/compat/api/browser-history/{browsers-history.browser}",
                 "type": "browsers"
             },
             "browsers-history.changeset": {
-                "href": "https://api.compat.mozilla.org/changesets/{browsers-history.changeset}",
+                "href": "https://developer.mozilla.org/compat/api/changesets/{browsers-history.changeset}",
                 "type": "changeset"
             }
         }

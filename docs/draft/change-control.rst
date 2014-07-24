@@ -33,7 +33,7 @@ To get a single **user** representation:
 .. code-block:: http
 
     GET /users/42 HTTP/1.1
-    Host: api.compat.mozilla.org
+    Host: developer.mozilla.org/compat/api
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -58,7 +58,7 @@ A sample response is:
         },
         "links": {
             "users.changesets": {
-                "href": "https://api.compat.mozilla.org/changesets/{users.changesets}",
+                "href": "https://developer.mozilla.org/compat/api/changesets/{users.changesets}",
                 "type": "changesets"
             }
         }
@@ -69,7 +69,7 @@ If a client is authenticated, the logged-in user's account can be retrieved with
 .. code-block:: http
 
     GET /users/me HTTP/1.1
-    Host: api.compat.mozilla.org
+    Host: developer.mozilla.org/compat/api
     Accept: application/vnd.api+json
 
 Changesets
@@ -113,7 +113,7 @@ To get a single **changeset** representation:
 .. code-block:: http
 
     GET /changeset/73 HTTP/1.1
-    Host: api.compat.mozilla.org
+    Host: developer.mozilla.org/compat/api
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -143,27 +143,27 @@ A sample response is:
         },
         "links": {
             "changesets.user": {
-                "href": "https://api.compat.mozilla.org/users/{changesets.user}",
+                "href": "https://developer.mozilla.org/compat/api/users/{changesets.user}",
                 "type": "users"
             },
             "changesets.browsers-history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{changesets.browsers-history}",
+                "href": "https://developer.mozilla.org/compat/api/browsers-history/{changesets.browsers-history}",
                 "type": "browsers-history"
             },
             "changesets.browser-versions-history": {
-                "href": "https://api.compat.mozilla.org/browser-versions-history/{changesets.browser-versions-history}",
+                "href": "https://developer.mozilla.org/compat/api/browser-versions-history/{changesets.browser-versions-history}",
                 "type": "browser-versions-history"
             },
             "changesets.features-history": {
-                "href": "https://api.compat.mozilla.org/features-history/{changesets.features-history}",
+                "href": "https://developer.mozilla.org/compat/api/features-history/{changesets.features-history}",
                 "type": "features-history"
             },
             "changesets.feature-sets-history": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{changesets.feature-sets-history}",
+                "href": "https://developer.mozilla.org/compat/api/feature-sets-history/{changesets.feature-sets-history}",
                 "type": "feature-sets-history"
             },
             "changesets.browser-version-features-history": {
-                "href": "https://api.compat.mozilla.org/browser-version-features-history/{changesets.browser-version-features-history}",
+                "href": "https://developer.mozilla.org/compat/api/browser-version-features-history/{changesets.browser-version-features-history}",
                 "type": "browser-version-features-history"
             }
         }
