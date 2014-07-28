@@ -1,10 +1,37 @@
-django>=1.5.1
-coverage
-coveralls
-mock>=1.0.1
-nose>=1.3.0
-django-nose>=1.2
-flake8>=2.1.0
-tox>=1.7.0
-pyroma>=1.6
-check-manifest>=0.21
+# Requirements specific for development
+
+# Documentation
+Pygments==1.6
+Sphinx==1.2.2
+
+# Better test runner
+nose==1.3.3
+django-nose==1.2
+
+# Test coverage
+coverage==3.7.1
+docopt==0.6.2
+requests==2.3.0
+PyYAML==3.11
+coveralls==0.4.2
+
+# Backport of Python 3 mock
+mock==1.0.1
+
+# Multi-environment testing
+py==1.4.22
+virtualenv==1.11.6
+tox==1.7.2
+
+# PEP8 and static analysis
+mccabe==0.2.1
+pep8==1.5.7
+pyflakes==0.8.1
+flake8==2.2.2
+
+# MANIFEST.in checker
+check-manifest==0.21
+
+# Package QA
+docutils==0.12
+pyroma==1.6
