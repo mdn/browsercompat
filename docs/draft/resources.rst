@@ -22,6 +22,8 @@ examples, and others just show retrieving an instance (``GET /<type>/<id>``).
 .. _CRUD: http://en.wikipedia.org/wiki/Create,_read,_update_and_delete
 .. _`JSON API docs`: http://jsonapi.org/format/
 
+.. contents:: 
+
 Browsers
 --------
 

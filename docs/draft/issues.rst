@@ -1,6 +1,8 @@
 Issues to Resolve Before Code
 =============================
 
+.. contents:: 
+
 Additions to Browser Compatibility Data Architecture
 ----------------------------------------------------
 
