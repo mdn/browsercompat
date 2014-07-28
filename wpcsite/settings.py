@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'django_extensions',
+    'django_nose',
     'rest_framework',
 
     'webplatformcompat',
@@ -107,3 +108,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ]
 }
+
+# Django nose
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

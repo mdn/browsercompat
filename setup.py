@@ -8,10 +8,8 @@ import webplatformcompat
 
 try:
     from setuptools import setup
-    from setuptools.command.test import test as base_test
 except ImportError:
     from distutils.core import setup
-    from distutils.command.test import test as base_test
 
 version = webplatformcompat.__version__
 
@@ -24,11 +22,6 @@ if sys.argv[-1] == 'publish':
 
 readme = open('README.rst').read()
 
-
-class test(base_test):
-    def run(self):
-        import runtests
-        runtests.run_tests()
 
 setup(
     name='web-platform-compat',
@@ -44,11 +37,10 @@ setup(
     include_package_data=True,
     install_requires=[
     ],
+    test_suite='wpcsite.runtests.runtests',
     license="BSD",
     zip_safe=False,
     keywords='web-platform-compat',
-    test_suite="runtests",
-    cmdclass={'test': test},
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Framework :: Django',

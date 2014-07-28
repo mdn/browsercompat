@@ -27,7 +27,7 @@ lint:
 	flake8 webplatformcompat tests
 
 test:
-	python runtests.py test
+	./manage.py test
 
 test-all:
 	tox
