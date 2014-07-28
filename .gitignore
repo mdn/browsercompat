@@ -44,3 +44,6 @@ docs/_build/*
 
 # Downloaded files
 data-human.json
+
+# SQLite databases
+*.sqlite3

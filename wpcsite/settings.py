@@ -37,6 +37,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_extensions',
+    'rest_framework',
+
     'webplatformcompat',
 )
 
@@ -83,9 +86,24 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+#
+# 3rd Party Libraries
+#
+
+# Jingo / Jinja2 templates
+
 TEMPLATE_LOADERS = (
     'jingo.Loader',
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 )
 JINGO_INCLUDE_PATTERN = r'\.jinja2'
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_MODEL_SERIALIZER_CLASS':
+        'rest_framework.serializers.HyperlinkedModelSerializer',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    ]
+}
