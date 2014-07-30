@@ -29,3 +29,7 @@ Werkzeug==0.9.6
 gnureadline==6.3.3
 ipython==2.1.0
 ipdb==0.8
+
+# Debugging
+sqlparse==0.1.11
+django-debug-toolbar==1.2.1

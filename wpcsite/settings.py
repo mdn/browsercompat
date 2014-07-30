@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,7 +42,7 @@ INSTALLED_APPS = (
     'rest_framework',
 
     'webplatformcompat',
-)
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -114,3 +114,13 @@ REST_FRAMEWORK = {
 
 # Django nose
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Django Debug Toolbar
+if DEBUG:
+    try:
+        import debug_toolbar
+    except ImportError:
+        pass
+    else:
+        assert debug_toolbar
+        INSTALLED_APPS.append('debug_toolbar')
