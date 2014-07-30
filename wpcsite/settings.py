@@ -57,6 +57,10 @@ ROOT_URLCONF = 'wpcsite.urls'
 
 WSGI_APPLICATION = 'wpcsite.wsgi.application'
 
+# Prefer our template folder to rest_framework's
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'webplatformcompat/templates'),
+)
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -92,7 +96,6 @@ STATIC_URL = '/static/'
 #
 
 # Jingo / Jinja2 templates
-
 TEMPLATE_LOADERS = (
     'jingo.Loader',
     'django.template.loaders.filesystem.Loader',
@@ -106,15 +109,6 @@ REST_FRAMEWORK = {
         'rest_framework.serializers.HyperlinkedModelSerializer',
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-    ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'webplatformcompat.renderers.JsonApiRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ],
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework_json_api.parsers.JsonApiParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser',
     ],
 }
 
