@@ -344,11 +344,11 @@ A sample response is:
                 {
                     "id": "758",
                     "version": null,
-                    "engine-version": null,
                     "release-day": null,
                     "retirement-day": null,
                     "status": "current",
                     "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "1",
                         "browser-version-features": ["158", "258", "358", "458"],
@@ -358,10 +358,11 @@ A sample response is:
                 }, {
                     "id": "759",
                     "version": "1.0",
-                    "engine-version": "1.7",
                     "release-day": "2004-12-09",
                     "retirement-day": "2005-02-24",
                     "status": "retired",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "2",
                         "browser-version-features": ["159", "259", "359", "459"],
@@ -371,10 +372,11 @@ A sample response is:
                 }, {
                     "id": "760",
                     "version": "1.0",
-                    "engine-version": null,
                     "release-day": "1995-08-16",
                     "retirement-day": null,
                     "status": "retired",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "3",
                         "browser-version-features": ["160", "260", "360", "460"],
@@ -384,10 +386,11 @@ A sample response is:
                 }, {
                     "id": "761",
                     "version": "5.12",
-                    "engine-version": null,
                     "release-day": "2001-06-27",
                     "retirement-day": null,
                     "status": "retired",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "4",
                         "browser-version-features": ["161", "261", "361", "461"],
@@ -397,10 +400,11 @@ A sample response is:
                 }, {
                     "id": "762",
                     "version": "1.0",
-                    "engine-version": null,
                     "release-day": "2003-06-23",
                     "retirement-day": null,
                     "status": "retired",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "5",
                         "browser-version-features": ["162", "262", "362", "462"],
@@ -410,10 +414,11 @@ A sample response is:
                 }, {
                     "id": "763",
                     "version": null,
-                    "engine-version": null,
                     "release-day": null,
                     "retirement-day": null,
                     "status": "current",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "6",
                         "browser-version-features": ["163", "263", "363", "463"],
@@ -423,10 +428,11 @@ A sample response is:
                 }, {
                     "id": "764",
                     "version": "1.0",
-                    "engine-version": "1.7",
                     "release-day": null,
                     "retirement-day": null,
                     "status": "retired",
+                    "release-notes-uri": null,
+                    "note": "Uses Gecko 1.7",
                     "links": {
                         "browser": "7",
                         "browser-version-features": ["164", "264", "364", "464"],
@@ -436,10 +442,11 @@ A sample response is:
                 }, {
                     "id": "765",
                     "version": null,
-                    "engine-version": null,
                     "release-day": null,
                     "retirement-day": null,
                     "status": "current",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "8",
                         "browser-version-features": ["165", "265", "365", "465"],
@@ -449,10 +456,11 @@ A sample response is:
                 }, {
                     "id": "766",
                     "version": null,
-                    "engine-version": null,
                     "release-day": null,
                     "retirement-day": null,
                     "status": "current",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "11",
                         "browser-version-features": ["166", "266", "366", "466"],
@@ -462,10 +470,11 @@ A sample response is:
                 }, {
                     "id": "767",
                     "version": null,
-                    "engine-version": null,
                     "release-day": null,
                     "retirement-day": null,
                     "status": "current",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "9",
                         "browser-version-features": ["167", "267", "367", "467"],
@@ -475,10 +484,11 @@ A sample response is:
                 }, {
                     "id": "768",
                     "version": null,
-                    "engine-version": null,
                     "release-day": null,
                     "retirement-day": null,
                     "status": "current",
+                    "release-notes-uri": null,
+                    "note": null,
                     "links": {
                         "browser": "10",
                         "browser-version-features": ["168", "268", "368", "468"],
@@ -491,12 +501,11 @@ A sample response is:
                 {
                     "id": "1",
                     "slug": "chrome",
-                    "environment": "desktop",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
                     "name": {
                         "en": "Chrome"
                     },
-                    "engine": null,
+                    "note": null,
                     "links": {
                         "versions": ["123", "758"],
                         "history-current": "1001",
@@ -505,13 +514,12 @@ A sample response is:
                 },{
                     "id": "2",
                     "slug": "firefox",
-                    "environment": "desktop",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
                     "name": {
                         "en": "Firefox"
                     },
-                    "engine": {
-                        "en": "Gecko"
+                    "note": {
+                        "en": "Uses Gecko for its web browser engine."
                     },
                     "links": {
                         "versions": ["124", "759"],
@@ -521,12 +529,11 @@ A sample response is:
                 },{
                     "id": "3",
                     "slug": "ie",
-                    "environment": "desktop",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
                     "name": {
                         "en": "Internet Explorer"
                     },
-                    "engine": null,
+                    "note": null,
                     "links": {
                         "versions": ["125", "167", "178", "760"],
                         "history-current": "1003",
@@ -535,12 +542,11 @@ A sample response is:
                 },{
                     "id": "4",
                     "slug": "opera",
-                    "environment": "desktop",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera.png",
                     "name": {
                         "en": "Opera"
                     },
-                    "engine": null,
+                    "note": null,
                     "links": {
                         "versions": ["126", "761"],
                         "history-current": "1004",
@@ -549,13 +555,12 @@ A sample response is:
                 },{
                     "id": "5",
                     "slug": "safari",
-                    "environment": "desktop",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari.png",
                     "name": {
                         "en": "Safari"
                     },
-                    "engine": {
-                        "en": "Webkit"
+                    "note": {
+                        "en": "Uses Webkit for its web browser engine."
                     },
                     "links": {
                         "versions": ["127", "762"],
@@ -565,12 +570,11 @@ A sample response is:
                 },{
                     "id": "6",
                     "slug": "android",
-                    "environment": "mobile",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/android.png",
                     "name": {
                         "en": "Android"
                     },
-                    "engine": null,
+                    "note": null,
                     "links": {
                         "versions": ["128", "763"],
                         "history-current": "1006",
@@ -579,13 +583,12 @@ A sample response is:
                 },{
                     "id": "7",
                     "slug": "firefox-mobile",
-                    "environment": "mobile",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox-mobile.png",
                     "name": {
                         "en": "Firefox Mobile"
                     },
-                    "engine": {
-                        "en": "Gecko"
+                    "note": {
+                        "en": "Uses Gecko for its web browser engine."
                     },
                     "links": {
                         "versions": ["129", "764"],
@@ -595,12 +598,11 @@ A sample response is:
                 },{
                     "id": "8",
                     "slug": "ie-phone",
-                    "environment": "mobile",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie-phone.png",
                     "name": {
                         "en": "IE Phone"
                     },
-                    "engine": null,
+                    "note": null,
                     "links": {
                         "versions": ["130", "765"],
                         "history-current": "1008",
@@ -609,12 +611,11 @@ A sample response is:
                 },{
                     "id": "9",
                     "slug": "opera-mobile",
-                    "environment": "mobile",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera-mobile.png",
                     "name": {
                         "en": "Opera Mobile"
                     },
-                    "engine": null,
+                    "note": null,
                     "links": {
                         "versions": ["131", "767"],
                         "history-current": "1009",
@@ -623,12 +624,11 @@ A sample response is:
                 },{
                     "id": "10",
                     "slug": "safari-mobile",
-                    "environment": "mobile",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari-mobile.png",
                     "name": {
                         "en": "Safari Mobile"
                     },
-                    "engine": null,
+                    "note": null,
                     "links": {
                         "versions": ["132", "768"],
                         "history-current": "1010",
@@ -637,12 +637,11 @@ A sample response is:
                 },{
                     "id": "11",
                     "slug": "opera-mini",
-                    "environment": "mobile",
                     "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera-mini.png",
                     "name": {
                         "en": "Opera Mini"
                     },
-                    "engine": null,
+                    "note": null,
                     "links": {
                         "versions": ["131", "766"],
                         "history-current": "1019",
@@ -786,8 +785,18 @@ A sample response is:
             }
         },
         "meta": {
-            "compat-table-important": {
-                "browsers": ["1", "2", "3", "4", "5", "6", "7", "8", "11", "9", "10"],
+            "compat-table": {
+                "tabs": [{
+                    "name": {
+                        "en": "Desktop"
+                    },
+                    "browsers": ["1", "2", "3", "4", "5"]
+                },{
+                    "name": {
+                        "en": "Mobile"
+                    },
+                    "browsers": ["6", "7", "8", "11", "9", "10"]
+                }],
                 "browser-version-features": {
                     "191": {
                         "1": ["358"],
@@ -826,10 +835,10 @@ The process for using this representation is:
     4. Close the table, and add an edit button.
 3. Create the Browser Compatibility section:
     1. Add The "Browser compatibility" header
-    2. Create two HTML tables, one for Desktop browsers, one for Mobile browsers
-    3. For each browser id in meta.compat-table-important, add a column with
-       the translated browser name.  If the engine has a name, add it in
-       parenthesis
+    2. For each item in meta.compat-table.tabs, create a table with the proper
+       name ("Desktop", "Mobile")
+    3. For each browser id in meta.compat-table.tabs.browsers, add a column with
+       the translated browser name.
     4. For each feature in feature-sets.features:
         * Add the first column: the feature name.  If feature.canonical,
           use the ``zxx`` translation of feature.name wrapped in ``<code>``.
@@ -839,8 +848,8 @@ The process for using this representation is:
             - Get the important browser-version-feature IDs from
               meta.compat-table-important.browser-version-features.<``feature ID``>.<``browser ID``>
             - If null, then display "?"
-            - If just one, display "<``version``> (<``engine version``>)",
-              "<``version``>", or "<``support``>", depending on the defined attributes
+            - If just one, display "<``version``>", or "<``support``>",
+              depending on the defined attributes
             - If multiple, display as subcells
             - Add prefixes, notes, and footnotes links as appropriate
     5. Close each table, add an edit button
@@ -971,11 +980,11 @@ A sample response is:
         "browser-versions": {
             "id": "4477",
             "version": "1",
-            "engine-version": null,
             "release-day": null,
             "retirement-day": null,
             "status": "retired",
             "release-notes-uri": null,
+            "note": null,
             "links": {
                 "browser": "1",
                 "browser-version-features": [],

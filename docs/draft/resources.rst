@@ -37,10 +37,10 @@ The **browsers** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **slug** *(write-once)* - Unique, human-friendly slug
-    - **environment** - String, must be one of "desktop" or "mobile"
     - **icon** - Protocol-less path to representative icon
     - **name** *(localized)* - Browser name
-    - **engine** *(localized)* - Browser engine, or null if not version tracked
+    - **note** *(localized)* - Notes, intended for related data like
+      OS, applicable device, engines, etc.
 * **links**
     - **versions** *(many)* - Associated browser-versions_, ordered roughly
       from earliest to latest.  User can change the order.
@@ -74,12 +74,11 @@ A sample response is:
         "browsers": [{
             "id": "1",
             "slug": "chrome",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
             "name": {
                 "en": "Chrome"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["123", "758"],
                 "history-current": "1001",
@@ -88,13 +87,12 @@ A sample response is:
         },{
             "id": "2",
             "slug": "firefox",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
             "name": {
                 "en": "Firefox"
             },
-            "engine": {
-                "en": "Gecko"
+            "note": {
+                "en": "Uses Gecko for its web browser engine."
             },
             "links": {
                 "versions": ["124", "759"],
@@ -104,12 +102,11 @@ A sample response is:
         },{
             "id": "3",
             "slug": "ie",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
             "name": {
                 "en": "Internet Explorer"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["125", "167", "178", "760"],
                 "history-current": "1003",
@@ -118,12 +115,11 @@ A sample response is:
         },{
             "id": "4",
             "slug": "opera",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera.png",
             "name": {
                 "en": "Opera"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["126", "761"],
                 "history-current": "1004",
@@ -132,13 +128,12 @@ A sample response is:
         },{
             "id": "5",
             "slug": "safari",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari.png",
             "name": {
                 "en": "Safari"
             },
-            "engine": {
-                "en": "Webkit"
+            "note": {
+                "en": "Uses Webkit for its web browser engine."
             },
             "links": {
                 "versions": ["127", "762"],
@@ -148,12 +143,11 @@ A sample response is:
         },{
             "id": "6",
             "slug": "android",
-            "environment": "mobile",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/android.png",
             "name": {
                 "en": "Android"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["128", "763"],
                 "history-current": "1006",
@@ -162,13 +156,12 @@ A sample response is:
         },{
             "id": "7",
             "slug": "firefox-mobile",
-            "environment": "mobile",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox-mobile.png",
             "name": {
                 "en": "Firefox Mobile"
             },
-            "engine": {
-                "en": "Gecko"
+            "note": {
+                "en": "Uses Gecko for its web browser engine."
             },
             "links": {
                 "versions": ["129", "764"],
@@ -178,12 +171,11 @@ A sample response is:
         },{
             "id": "8",
             "slug": "ie-phone",
-            "environment": "mobile",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie-phone.png",
             "name": {
                 "en": "IE Phone"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["130", "765"],
                 "history-current": "1008",
@@ -192,12 +184,11 @@ A sample response is:
         },{
             "id": "9",
             "slug": "opera-mobile",
-            "environment": "mobile",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera-mobile.png",
             "name": {
                 "en": "Opera Mobile"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["131", "767"],
                 "history-current": "1009",
@@ -206,12 +197,11 @@ A sample response is:
         },{
             "id": "10",
             "slug": "safari-mobile",
-            "environment": "mobile",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari-mobile.png",
             "name": {
                 "en": "Safari Mobile"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["132", "768"],
                 "history-current": "1010",
@@ -269,13 +259,12 @@ A sample response is:
         "browsers": {
             "id": "2",
             "slug": "firefox",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
             "name": {
                 "en": "Firefox"
             },
-            "engine": {
-                "en": "Gecko"
+            "note": {
+                "en": "Uses Gecko for its web browser engine."
             },
             "links": {
                 "versions": ["124"],
@@ -324,13 +313,12 @@ A sample response is:
         "browsers": {
             "id": "2",
             "slug": "firefox",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
             "name": {
                 "en": "Firefox"
             },
-            "engine": {
-                "en": "Gecko"
+            "note": {
+                "en": "Uses Gecko for its web browser engine."
             },
             "links": {
                 "versions": ["124"],
@@ -378,7 +366,6 @@ Here's an example of creating a **browser** instance:
     {
         "browsers": {
             "slug": "amazon-silk-mobile",
-            "environment": "mobile",
             "name": {
                 "en": "Amazon Silk Mobile"
             }
@@ -399,12 +386,11 @@ A sample response is:
         "browsers": {
             "id": "15",
             "slug": "amazon-silk-mobile",
-            "environment": "mobile",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/amazon-silk-mobile.png",
             "name": {
                 "en": "Amazon Silk Mobile"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": [],
                 "history-current": "1027",
@@ -444,7 +430,6 @@ existing changeset, add it to the URI:
     {
         "browsers": {
             "slug": "amazon-silk-mobile",
-            "environment": "mobile",
             "name": {
                 "en": "Amazon Silk Mobile"
             }
@@ -475,12 +460,10 @@ To update a **browser**:
         "browsers": {
             "id": "3",
             "slug": "ie",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
             "name": {
                 "en": "IE"
             },
-            "engine": null
         }
     }
 
@@ -497,12 +480,11 @@ A sample response is:
         "browsers": {
             "id": "3",
             "slug": "ie",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
             "name": {
                 "en": "IE"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["125", "167", "178"],
                 "history-current": "1033",
@@ -560,12 +542,11 @@ A sample response is:
         "browsers": {
             "id": "3",
             "slug": "ie",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
             "name": {
                 "en": "M$ Internet Exploder 💩"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["125", "167", "178"],
                 "history-current": "1034",
@@ -620,12 +601,11 @@ A sample response is:
         "browsers": {
             "id": "3",
             "slug": "ie",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
             "name": {
                 "en": "M$ Internet Exploder 💩"
             },
-            "engine": null,
+            "note": null,
             "links": {
                 "versions": ["178", "167", "125"],
                 "history-current": "1035",
@@ -685,12 +665,11 @@ A sample response is:
         "browsers": {
             "id": "3",
             "slug": "ie",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
             "name": {
                 "en": "Internet Explorer"
             },
-            "engine": null,
+            "note": none,
             "links": {
                 "versions": ["125", "167", "178"],
                 "history-current": "1036",
@@ -756,14 +735,11 @@ A sample response is:
         "browsers": {
             "id": "2",
             "slug": "firefox",
-            "environment": "desktop",
             "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
             "name": {
                 "en": "Firefox"
             },
-            "engine": {
-                "en": "Gecko"
-            },
+            "note": null,
             "links": {
                 "versions": ["124"],
                 "history-current": "1104",
@@ -798,8 +774,6 @@ The **browser-versions** representation includes:
     - **id** *(server selected)* - Database ID
     - **version** *(write-once)* - Version of browser, or null
       if unknown (for example, to document support for features in early HTML)
-    - **engine-version** *(write-once)* - Version of browser engine, or null
-      if not tracked
     - **release-day** - Day that browser was released in `ISO 8601`_ format, or
       null if unknown.
     - **retirement-day** - Approximate day the browser was "retired" (stopped
@@ -815,6 +789,7 @@ The **browser-versions** representation includes:
       ``future`` (a planned future release).
     - **release-notes-uri** *(localized)* - URI of release notes for this
       version, or null if none.
+    - **note** *(localized)* - Engine, OS, etc. information, or null
 * **links**
     - **browser** - The related **browser**
     - **browser-version-features** *(many)* - Associated **browser-version-features**,
@@ -846,11 +821,11 @@ A sample response is:
         "browser-versions": {
             "id": "123",
             "version": "1.0.154",
-            "engine-version": null,
             "release-day": "2008-12-11",
             "retirement-day": "2009-05-24",
             "status": "retired",
             "release-notes-uri": null,
+            "note": null,
             "links": {
                 "browser": "1",
                 "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
@@ -1353,7 +1328,7 @@ A sample response is:
             "subpath": {
                 "en": "#display"
             },
-            "notes": {
+            "note": {
                 "en": "Basic values: <code>none<\/code>, <code>block<\/code>, <code>inline<\/code>, and <code>list-item<\/code>."
             },
             "links": {

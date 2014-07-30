@@ -1,5 +1,10 @@
-Issues to Resolve Before Code
-=============================
+Issues
+======
+
+This draft API reflects a good guess at a useful, efficent API for storing
+user-contributed compatability data.  Some of the guesses are better than
+others.  This section highlights the areas where more experienced opinions
+are welcome, and areas where more work is expected.
 
 .. contents:: 
 
@@ -16,18 +21,15 @@ These changes are:
 * browsers_
     - **slug** - human-friendly unique identifier
     - **name** - converted to localized text.
-    - **environment** - either `"desktop"` or `"mobile"`.  Supports current
-      division of browser types on MDN.
-    - **engine** - either the localized engine name or null.  Supports current
-      engine version callouts on MDN tables.
+    - **note** - added for engine, OS, etc. information
 * browser-versions_
-    - **engine-version** - Engine version, used in Firefox version numbers
     - **release-day** - Day of release
     - **retirement-day** - Day of "retirement", or when it was superceeded by
       a new release.
     - **status** - One of `"retired"`, `"retired-beta"`, `"current"`, `"beta"`,
       `"future"`
     - **relese-notes-uri** - For Mozilla releases, as specified in CompatGeckoDesktop_.
+    - **note** - added for engine version, etc.
 * features_
     - **slug** - human-friendly unique identifier
     - **maturity** - the standards maturity of the feature.  One of
@@ -79,7 +81,8 @@ Unresolved Issues
 * I'm not sure if the translatable strings are correct:
     - browsers.name - Firefox explicitly says `don't localize our brand`_.  I
       can't find examples of any localized browser names in the wild.
-    - browsers.engine - Same
+      Jeremie's opinion is that this is a branding decision that may change
+      in the future, so should be left localizable.
     - features.name - "Basic usage" and "none, inline and block" should be
       localized.  But, are those good feature names?  Could you write a bit of
       JavaScript to test 'Basic usage'?  Should there be three features
@@ -294,36 +297,31 @@ and here's the Browser compatibility section:
 
 This will be converted to API resources:
 
-* **Table class** - one of ``"compat-desktop"`` or ``"compat-mobile"``, sets
-  browser.environment.
+* **Table class** - one of ``"compat-desktop"`` or ``"compat-mobile"``.
+  Representation in API is TBD.
 * **Header row, all but the first column** - format is either ``Browser Name
-  (Engine Name)`` or ``Browser Name``.  Used for browser.name,
-  browser.engine-name (set or ``null``).  Other formats or KumaScript halt
-  import.
+  (Engine Name)`` or ``Browser Name``.  Used for browser.name, engine name is
+  discarded.  Other formats or KumaScript halt import.
 * **Non-header rows, first column** - If the format is ``<code>some
   text</code>``, then feature.canonical=true and the string is the canonical
   name.  If the format is text w/o KumaScript, it is the non-canonocial name.
   If there is also KumaScript, it varies. **TODO:** doc KumaScript.
 * **Non-header rows, remaining columns** - Usually Kumascript:
-    * ``{{CompatUnknown}}`` - browser-version.version and
-      browser-version.engine-version are ``null``, and
+    * ``{{CompatUnknown}}`` - browser-version.version is ``null``, and
       browser-version-feature.support is ``"unknown"``
-    * ``{{CompatVersionUnknown}}`` - browser-version.version and
-      browser-version.engine-version are ``null``, and
-      browser-version-feature.support in ``"yes"``
-    * ``{{CompatNo}}`` - browser-version.version and
-      browser-version.engine-version are ``null``, and
+    * ``{{CompatVersionUnknown}}`` - browser-version.version and are ``null``,
+      and browser-version-feature.support in ``"yes"``
+    * ``{{CompatNo}}`` - browser-version.version and are ``null``, and
       browser-version-feature.support is ``"no"``
-    * ``{{CompatGeckoDesktop("VAL")}}`` - browser-version.version is
-      set to ``"VAL"``, browser-version-feature.support is ``"yes"``.
-      browser-version.engine-version and browser-version.release-day is set by
-      logic in CompatGeckoDesktop_.
+    * ``{{CompatGeckoDesktop("VAL")}}`` - browser-version.version is set to
+      ``"VAL"``, browser-version-feature.support is ``"yes"``.  and
+      browser-version.release-day is set by logic in CompatGeckoDesktop_.
     * ``{{CompatGeckoMobile("VAL")}}`` - browser-version.version is set to
-      ``"VAL"``, browser-version-feature.support is ``"yes"``.
-      browser-version.engine-version is set by logic in CompatGeckoMobile_.
+      ``"VAL"``, browser-version-feature.support is ``"yes"``.  is set by logic
+      in CompatGeckoMobile_.
     * Numeric string, such as ``6``, ``15.0``.  This becomes the
-      browser-version.version, browser-version.engine-version is ``null``, and
-      browser-version-feature.support is ``"yes"``.
+      browser-version.version, and browser-version-feature.support is
+      ``"yes"``.
 * **Content after table** - This is usually formatted as a paragraph,
   containing HTML.  It should become browser-version-features.footnotes,
   but it will challenging to auto-parse and associate.
@@ -360,18 +358,15 @@ To Do
   /browser-versions/1,2,3,4`` vs.  ``GET /browser/1/browser-versions``
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
-* Jeremie's suggested changes:
-    * Add browsers.notes, localized, to note things like engine, applicable
-      OS, execution contexts (web workers, XUL, etc.).
-    * Drop browsers.environment attribute.  "deskop", "mobile" doesn't cover
-      the world of browsers.  This is a UX change to MDN Browser compatability
-      tables.
-    * Drop browsers.engine attribute.  Not important for searching or
-      filtering, instead free text in browsers.notes
-    * Add browser-versions.notes, localized, to note things like OS, devices,
-      engines, etc.
-    * Drop browser-versions.engine-version, not important for searching or
-      sorting.
+* Jeremie's suggested changes (*italics are done*)
+    * *Add browsers.notes, localized, to note things like engine, applicable
+      OS, execution contexts (web workers, XUL, etc.).*
+    * *Drop browsers.engine attribute.  Not important for searching or
+      filtering, instead free text in browsers.notes*
+    * *Add browser-versions.notes, localized, to note things like OS, devices,
+      engines, etc.*
+    * *Drop browser-versions.engine-version, not important for searching or
+      sorting.*
     * Drop browser-versions.status.  Doesn't think the MDN team will be able
       to keep up with browser releases.  Will instead rely on users
       figuring out if a browser version is the current release.
@@ -394,6 +389,7 @@ To Do
     * sheppy or jms will have experience with how users use tables and
       contribute to them, how frequently.
 * Add history resources for specifications, etc.
+* Add empty resource for deleted items?
 
 .. _Resources: resources.html
 .. _browsers: resources.html#browsers

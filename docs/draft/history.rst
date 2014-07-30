@@ -49,13 +49,12 @@ A sample response is:
             "browsers": {
                 "id": "2",
                 "slug": "firefox",
-                "environment": "desktop",
                 "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
                 "name": {
                     "en": "Firefox"
                 },
-                "engine": {
-                    "en": "Gecko"
+                "note": {
+                    "en": "Uses Gecko for its web browser engine."
                 },
                 "links": {
                     "versions": ["124"],
