@@ -13,6 +13,10 @@ help:
 
 clean: clean-build clean-pyc
 
+qa: lint coverage
+
+qa-all: qa docs sdist test-all
+
 clean-build:
 	rm -fr build/
 	rm -fr dist/
