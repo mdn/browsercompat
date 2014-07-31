@@ -10,16 +10,19 @@ Tests for `web-platform-compat` models module.
 
 import unittest
 
-# from webplatformcompat import models
+from webplatformcompat.models import Browser, BrowserVersion
 
 
-class TestWebPlatformCompat(unittest.TestCase):
+class TestBrowser(unittest.TestCase):
 
-    def setUp(self):
-        pass
+    def test_str(self):
+        browser = Browser(name='The Browser')
+        self.assertEqual('The Browser', str(browser))
 
-    def test_something(self):
-        pass
 
-    def tearDown(self):
-        pass
+class TestBrowserVersion(unittest.TestCase):
+
+    def test_str(self):
+        browser = Browser(name='The Browser')
+        bv = BrowserVersion(browser=browser, version='1.0')
+        self.assertEqual('The Browser 1.0', str(bv))
