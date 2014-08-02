@@ -41,4 +41,4 @@ class BrowserVersion(models.Model):
     icon = models.URLField(blank=True)
 
     def __str__(self):
-        return "{} {}".format(self.browser, self.version)
+        return "{0} {1}".format(self.browser, self.version)

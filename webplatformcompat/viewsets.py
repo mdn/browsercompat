@@ -8,7 +8,7 @@ from rest_framework_json_api.parsers import JsonApiParser
 
 from .models import Browser, BrowserVersion
 from .renderers import JsonApiRenderer
-from .serializers import UserSerializer
+from .serializers import BrowserSerializer, UserSerializer
 
 
 class ModelViewSet(BaseModelViewSet):
@@ -18,6 +18,7 @@ class ModelViewSet(BaseModelViewSet):
 
 class BrowserViewSet(ModelViewSet):
     model = Browser
+    serializer_class = BrowserSerializer
 
 
 class BrowserVersionViewSet(ModelViewSet):
