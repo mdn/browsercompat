@@ -20,7 +20,7 @@ Here is a simple example, the view for the HTML element address_:
 .. code-block:: http
 
     GET /views/view-by-feature-set/html-address HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -653,135 +653,135 @@ A sample response is:
         },
         "links": {
             "feature-sets.features": {
-                "href": "https://developer.mozilla.org/compat/api/features/{feature-sets.features}",
+                "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
                 "type": "features"
             },
             "feature-sets.specification-sections": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{feature-sets.specification-sections}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
                 "type": "specfication-sections"
             },
             "feature-sets.parent": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.parent}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
                 "type": "feature-sets"
             },
             "feature-sets.ancestors": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.ancestors}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
                 "type": "feature-sets"
             },
             "feature-sets.siblings": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.siblings}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
                 "type": "feature-sets"
             },
             "feature-sets.children": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.children}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
                 "type": "feature-sets"
             },
             "feature-sets.decendants": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.decendants}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
                 "type": "feature-sets"
             },
             "feature-sets.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets-history/{feature-sets.history-current}",
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
                 "type": "feature-sets-history"
             },
             "feature-sets.history": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets-history/{feature-sets.history}",
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
                 "type": "feature-sets-history"
             }
             "features.feature-set": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{features.feature-set}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
                 "type": "features-sets"
             },
             "features.specification-sections": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{features.specification-sections}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
                 "type": "specification-sections"
             },
             "features.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{features.history-current}",
+                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
                 "type": "features-history"
             },
             "features.history": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{features.history}",
+                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
                 "type": "features-history"
             },
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             },
             "browser-versions.browser": {
-                "href": "https://developer.mozilla.org/compat/api/browsers/{browser-versions.browser}",
+                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
                 "type": "browsers"
             },
             "browser-versions.browser-version-features": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features/{browser-versions.features}",
+                "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
                 "type": "browser-version-features"
             },
             "browser-versions.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions-history/{browser-versions.history-current}",
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history-current}",
                 "type": "browser-versions-history"
             },
             "browser-versions.history": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions-history/{browser-versions.history}",
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
                 "type": "browser-versions-history"
             },
             "features.feature-set": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{features.feature-set}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
                 "type": "features-sets"
             },
             "features.specification-sections": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{features.specification-sections}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
                 "type": "specification-sections"
             },
             "features.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{features.history-current}",
+                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
                 "type": "features-history"
             },
             "features.history": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{features.history}",
+                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
                 "type": "features-history"
             },
             "browser-version-features.browser-version": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browser-version-features.browser-version}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browser-version-features.browser-version}",
                 "type": "browser-versions"
             },
             "browser-version-features.feature": {
-                "href": "https://developer.mozilla.org/compat/api/browsers/{browser-version-features.feature}",
+                "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
                 "type": "features"
             },
             "browser-version-features.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features-history/{browser-version-features.history-current}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history-current}",
                 "type": "browser-version-features-history"
             },
             "browser-version-features.history": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features-history/{browser-version-features.history}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history}",
                 "type": "browser-version-features-history"
             },
             "specifications.specification-sections": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{specifications.specification-sections}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
                 "type": "specification-sections"
             },
             "specifications.specification-status": {
-                "href": "https://developer.mozilla.org/compat/api/specification-statuses/{specifications.specification-status}",
+                "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
                 "type": "specification-statuses"
             },
             "specification-sections.specification": {
-                "href": "https://developer.mozilla.org/compat/api/specifications/{specification-sections.specification}",
+                "href": "https://api.compat.mozilla.org/specifications/{specification-sections.specification}",
                 "type": "specifications"
             },
             "specification-sections.features": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{specification-sections.features}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{specification-sections.features}",
                 "type": "features"
             },
             "specification-statuses.specifications": {
-                "href": "https://developer.mozilla.org/compat/api/specifications/{specification-statuses.specifications}",
+                "href": "https://api.compat.mozilla.org/specifications/{specification-statuses.specifications}",
                 "type": "specifications"
             }
         },
@@ -867,7 +867,7 @@ The first step is to create a changeset_ as an authenticated user:
 .. code-block:: http
 
     POST /changesets/ HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
     Content-Type: application/vnd.api+json
@@ -887,7 +887,7 @@ A sample response is:
 
     HTTP/1.1 201 Created
     Content-Type: application/vnd.api+json
-    Location: https://developer.mozilla.org/compat/api/changesets/5284
+    Location: https://api.compat.mozilla.org/changesets/5284
 
 .. code-block:: json
 
@@ -909,27 +909,27 @@ A sample response is:
         },
         "links": {
             "changesets.user": {
-                "href": "https://developer.mozilla.org/compat/api/users/{changesets.user}",
+                "href": "https://api.compat.mozilla.org/users/{changesets.user}",
                 "type": "users"
             },
             "changesets.browsers-history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{changesets.browsers-history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{changesets.browsers-history}",
                 "type": "browsers-history"
             },
             "changesets.browser-versions-history": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions-history/{changesets.browser-versions-history}",
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{changesets.browser-versions-history}",
                 "type": "browser-versions-history"
             },
             "changesets.features-history": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{changesets.features-history}",
+                "href": "https://api.compat.mozilla.org/features-history/{changesets.features-history}",
                 "type": "features-history"
             },
             "changesets.feature-sets-history": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets-history/{changesets.feature-sets-history}",
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{changesets.feature-sets-history}",
                 "type": "feature-sets-history"
             },
             "changesets.browser-version-features-history": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features-history/{changesets.browser-version-features-history}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{changesets.browser-version-features-history}",
                 "type": "browser-version-features-history"
             }
         }
@@ -940,7 +940,7 @@ Next, use the changeset_ ID when creating the browser-version_:
 .. code-block:: http
 
     POST /browser-versions/?changeset=5284 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
     Content-Type: application/vnd.api+json
@@ -963,7 +963,7 @@ A sample response is:
 
     HTTP/1.1 201 Created
     Content-Type: application/vnd.api+json
-    Location: https://developer.mozilla.org/compat/api/browser-versions/4477
+    Location: https://api.compat.mozilla.org/browser-versions/4477
 
 .. code-block:: json
 
@@ -985,19 +985,19 @@ A sample response is:
         },
         "links": {
             "browser-versions.browser": {
-                "href": "https://developer.mozilla.org/compat/api/browsers/{browser-versions.browser}",
+                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
                 "type": "browsers"
             },
             "browser-versions.browser-version-features": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features/{browser-versions.features}",
+                "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
                 "type": "browser-version-features"
             },
             "browser-versions.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions-history/{browser-versions.history-current}",
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history-current}",
                 "type": "browser-versions-history"
             },
             "browser-versions.history": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions-history/{browser-versions.history}",
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
                 "type": "browser-versions-history"
             }
         }
@@ -1008,7 +1008,7 @@ Finally, create the browser-version-feature_:
 .. code-block:: http
 
     POST /browser-version-features/?changeset=5284 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
     Content-Type: application/vnd.api+json
@@ -1031,7 +1031,7 @@ A sample response is:
 
     HTTP/1.1 201 Created
     Content-Type: application/vnd.api+json
-    Location: https://developer.mozilla.org/compat/api/browser-version-features/8219
+    Location: https://api.compat.mozilla.org/browser-version-features/8219
 
 .. code-block:: json
 
@@ -1051,19 +1051,19 @@ A sample response is:
         },
         "links": {
             "browser-version-features.browser-version": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browser-version-features.browser-version}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browser-version-features.browser-version}",
                 "type": "browser-versions"
             },
             "browser-version-features.feature": {
-                "href": "https://developer.mozilla.org/compat/api/browsers/{browser-version-features.feature}",
+                "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
                 "type": "features"
             },
             "browser-version-features.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features-history/{browser-version-features.history-current}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history-current}",
                 "type": "browser-version-features-history"
             },
             "browser-version-features.history": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features-history/{browser-version-features.history}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history}",
                 "type": "browser-version-features-history"
             }
         }

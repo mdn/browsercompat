@@ -56,7 +56,7 @@ To request the paginated list of **browsers**:
 .. code-block:: http
 
     GET /browsers HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -218,15 +218,15 @@ A sample response is:
         }],
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         },
@@ -234,7 +234,7 @@ A sample response is:
             "pagination": {
                 "browsers": {
                     "prev": null,
-                    "next": "https://developer.mozilla.org/compat/api/browsers?page=2&per_page=10",
+                    "next": "https://api.compat.mozilla.org/browsers?page=2&per_page=10",
                     "pages": 2,
                     "per_page": 10,
                     "total": 14,
@@ -251,7 +251,7 @@ To request a single **browser**:
 .. code-block:: http
 
     GET /browsers/2 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -283,15 +283,15 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
@@ -305,7 +305,7 @@ To request a **browser** by slug:
 .. code-block:: http
 
     GET /browsers/firefox HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -314,7 +314,7 @@ A sample response is:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Location: https://developer.mozilla.org/compat/api/browsers/2
+    Location: https://api.compat.mozilla.org/browsers/2
 
 .. code-block:: json
 
@@ -338,15 +338,15 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
@@ -366,7 +366,7 @@ Here's an example of creating a **browser** instance:
 .. code-block:: http
 
     POST /browsers HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
     Content-Type: application/vnd.api+json
@@ -389,7 +389,7 @@ A sample response is:
 
     HTTP/1.1 201 Created
     Content-Type: application/vnd.api+json
-    Location: https://developer.mozilla.org/compat/api/browsers/15
+    Location: https://api.compat.mozilla.org/browsers/15
 
 .. code-block:: json
 
@@ -411,15 +411,15 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
@@ -432,7 +432,7 @@ existing changeset, add it to the URI:
 .. code-block:: http
 
     POST /browsers?changeset=176 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
     Content-Type: application/vnd.api+json
@@ -463,7 +463,7 @@ To update a **browser**:
 .. code-block:: http
 
     PUT /browsers/3 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
 
@@ -509,15 +509,15 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
@@ -531,7 +531,7 @@ An update can just update some fields:
 .. code-block:: http
 
     PUT /browsers/3 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
 
@@ -572,15 +572,15 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
@@ -591,7 +591,7 @@ To change just the browser-versions_ order:
 .. code-block:: http
 
     PUT /browsers/3 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
 
@@ -632,15 +632,15 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
@@ -656,7 +656,7 @@ browsers-history_ object:
 .. code-block:: http
 
     PUT /browsers/3 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
 
@@ -697,15 +697,15 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
@@ -719,7 +719,7 @@ To delete a **browser**:
 .. code-block:: http
 
     DELETE /browsers/2 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
 
@@ -737,7 +737,7 @@ To revert a deletion:
 .. code-block:: http
 
     PUT /browsers/2 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
 
@@ -770,15 +770,15 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browsers.versions}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
                 "type": "browser-versions"
             },
             "browsers.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history-current}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history-current}",
                 "type": "browsers-history"
             },
             "browsers.history": {
-                "href": "https://developer.mozilla.org/compat/api/browsers-history/{browsers.history}",
+                "href": "https://api.compat.mozilla.org/browsers-history/{browsers.history}",
                 "type": "browsers-history"
             }
         }
@@ -828,7 +828,7 @@ To get a single **browser-version**:
 .. code-block:: http
 
     GET /browser-versions/123 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -858,19 +858,19 @@ A sample response is:
         },
         "links": {
             "browser-versions.browser": {
-                "href": "https://developer.mozilla.org/compat/api/browsers/{browser-versions.browser}",
+                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
                 "type": "browsers"
             },
             "browser-versions.browser-version-features": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features/{browser-versions.features}",
+                "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
                 "type": "browser-version-features"
             },
             "browser-versions.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions-history/{browser-versions.history-current}",
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history-current}",
                 "type": "browser-versions-history"
             },
             "browser-versions.history": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions-history/{browser-versions.history}",
+                "href": "https://api.compat.mozilla.org/browser-versions-history/{browser-versions.history}",
                 "type": "browser-versions-history"
             }
         }
@@ -924,7 +924,7 @@ To get a specific **feature** (in this case, a canonically-named feature):
 .. code-block:: http
 
     GET /features/276 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -955,19 +955,19 @@ A sample response is:
         },
         "links": {
             "features.feature-set": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{features.feature-set}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
                 "type": "features-sets"
             },
             "features.specification-sections": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{features.specification-sections}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
                 "type": "specification-sections"
             },
             "features.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{features.history-current}",
+                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
                 "type": "features-history"
             },
             "features.history": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{features.history}",
+                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
                 "type": "features-history"
             }
         }
@@ -978,7 +978,7 @@ Here's an example of a non-canonically named feature:
 .. code-block:: http
 
     GET /features/191 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -1011,19 +1011,19 @@ A sample response is:
         },
         "links": {
             "features.feature-set": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{features.feature-set}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
                 "type": "features-sets"
             },
             "features.specification-sections": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{features.specification-sections}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
                 "type": "specification-sections"
             },
             "features.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{features.history-current}",
+                "href": "https://api.compat.mozilla.org/features-history/{features.history-current}",
                 "type": "features-history"
             },
             "features.history": {
-                "href": "https://developer.mozilla.org/compat/api/features-history/{features.history}",
+                "href": "https://api.compat.mozilla.org/features-history/{features.history}",
                 "type": "features-history"
             }
         }
@@ -1084,7 +1084,7 @@ To get a single **feature set** (in this case, a canonically named feature):
 .. code-block:: http
 
     GET /features-sets/373 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -1119,39 +1119,39 @@ A sample response is:
         },
         "links": {
             "feature-sets.features": {
-                "href": "https://developer.mozilla.org/compat/api/features/{feature-sets.features}",
+                "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
                 "type": "features"
             },
             "feature-sets.specification-sections": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{feature-sets.specification-sections}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
                 "type": "specfication-sections"
             },
             "feature-sets.parent": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.parent}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
                 "type": "feature-sets"
             },
             "feature-sets.ancestors": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.ancestors}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
                 "type": "feature-sets"
             },
             "feature-sets.siblings": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.siblings}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
                 "type": "feature-sets"
             },
             "feature-sets.children": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.children}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
                 "type": "feature-sets"
             },
             "feature-sets.decendants": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets/{feature-sets.decendants}",
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
                 "type": "feature-sets"
             },
             "feature-sets.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets-history/{feature-sets.history-current}",
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history-current}",
                 "type": "feature-sets-history"
             },
             "feature-sets.history": {
-                "href": "https://developer.mozilla.org/compat/api/feature-sets-history/{feature-sets.history}",
+                "href": "https://api.compat.mozilla.org/feature-sets-history/{feature-sets.history}",
                 "type": "feature-sets-history"
             }
         }
@@ -1192,7 +1192,7 @@ To get a single **browser-version-feature**:
 .. code-block:: http
 
     GET /browser-version-features/1123 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -1220,19 +1220,19 @@ A sample response is:
         },
         "links": {
             "browser-version-features.browser-version": {
-                "href": "https://developer.mozilla.org/compat/api/browser-versions/{browser-version-features.browser-version}",
+                "href": "https://api.compat.mozilla.org/browser-versions/{browser-version-features.browser-version}",
                 "type": "browser-versions"
             },
             "browser-version-features.feature": {
-                "href": "https://developer.mozilla.org/compat/api/browsers/{browser-version-features.feature}",
+                "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
                 "type": "features"
             },
             "browser-version-features.history-current": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features-history/{browser-version-features.history-current}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history-current}",
                 "type": "browser-version-features-history"
             },
             "browser-version-features.history": {
-                "href": "https://developer.mozilla.org/compat/api/browser-version-features-history/{browser-version-features.history}",
+                "href": "https://api.compat.mozilla.org/browser-version-features-history/{browser-version-features.history}",
                 "type": "browser-version-features-history"
             }
         }
@@ -1262,7 +1262,7 @@ To get a single **specification**:
 .. code-block:: http
 
     GET /specifications/273 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vn.api+json
 
 A sample response is:
@@ -1293,11 +1293,11 @@ A sample response is:
         },
         "links": {
             "specifications.specification-sections": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{specifications.specification-sections}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
                 "type": "specification-sections"
             },
             "specifications.specification-status": {
-                "href": "https://developer.mozilla.org/compat/api/specification-statuses/{specifications.specification-status}",
+                "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
                 "type": "specification-statuses"
             }
         }
@@ -1330,7 +1330,7 @@ To get a single **specification-section**:
 .. code-block:: http
 
     GET /specification-sections/792 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vn.api+json
 
 A sample response is:
@@ -1362,11 +1362,11 @@ A sample response is:
         },
         "links": {
             "specification-sections.specification": {
-                "href": "https://developer.mozilla.org/compat/api/specifications/{specification-sections.specification}",
+                "href": "https://api.compat.mozilla.org/specifications/{specification-sections.specification}",
                 "type": "specifications"
             },
             "specification-sections.features": {
-                "href": "https://developer.mozilla.org/compat/api/specification-sections/{specification-sections.features}",
+                "href": "https://api.compat.mozilla.org/specification-sections/{specification-sections.features}",
                 "type": "features"
             }
         }
@@ -1393,7 +1393,7 @@ To get a single **specification-status**:
 .. code-block:: http
 
     GET /specification-statuses/49 HTTP/1.1
-    Host: developer.mozilla.org/compat/api
+    Host: api.compat.mozilla.org
     Accept: application/vn.api+json
 
 A sample response is:
@@ -1419,7 +1419,7 @@ A sample response is:
         },
         "links": {
             "specification-statuses.specifications": {
-                "href": "https://developer.mozilla.org/compat/api/specifications/{specification-statuses.specifications}",
+                "href": "https://api.compat.mozilla.org/specifications/{specification-statuses.specifications}",
                 "type": "specifications"
             }
         }
