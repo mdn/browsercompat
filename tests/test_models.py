@@ -16,13 +16,13 @@ from webplatformcompat.models import Browser, BrowserVersion
 class TestBrowser(unittest.TestCase):
 
     def test_str(self):
-        browser = Browser(name='The Browser')
-        self.assertEqual('The Browser', str(browser))
+        browser = Browser(slug="browser")
+        self.assertEqual('browser', str(browser))
 
 
 class TestBrowserVersion(unittest.TestCase):
 
     def test_str(self):
-        browser = Browser(name='The Browser')
+        browser = Browser(slug="browser")
         bv = BrowserVersion(browser=browser, version='1.0')
-        self.assertEqual('The Browser 1.0', str(bv))
+        self.assertEqual('browser 1.0', str(bv))

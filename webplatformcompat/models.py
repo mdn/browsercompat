@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.utils.encoding import python_2_unicode_compatible
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
+from django_extensions.db.fields.json import JSONField
 
 
 @python_2_unicode_compatible
 class Browser(models.Model):
     slug = models.SlugField(unique=True)
     icon = models.URLField(blank=True)
-    name = models.CharField(max_length=50)
-    note = models.TextField(blank=True)
+
+    name = JSONField()
+    note = JSONField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.slug
 
 
 @python_2_unicode_compatible
@@ -38,7 +40,8 @@ class BrowserVersion(models.Model):
     release_day = models.DateField(blank=True, null=True)
     retirement_day = models.DateField(blank=True, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES)
-    icon = models.URLField(blank=True)
+    release_notes_uri = JSONField(blank=True)
+    note = JSONField(blank=True)
 
     def __str__(self):
         return "{0} {1}".format(self.browser, self.version)

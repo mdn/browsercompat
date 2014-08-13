@@ -6,7 +6,7 @@ API Serializers
 from django.contrib.auth.models import User
 from rest_framework.serializers import DateField, ModelSerializer
 
-from .fields import CharOrNullField
+from .fields import TranslatedTextField, URLOrNullField
 from .models import Browser
 
 
@@ -23,7 +23,9 @@ class UserSerializer(ModelSerializer):
 class BrowserSerializer(ModelSerializer):
     """Browser Serializer"""
 
-    note = CharOrNullField()
+    icon = URLOrNullField(required=False)
+    name = TranslatedTextField()
+    note = TranslatedTextField(required=False)
 
     class Meta:
         model = Browser
