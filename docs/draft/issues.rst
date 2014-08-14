@@ -130,16 +130,8 @@ Unresolved Issues
   test conflicts, etc.  It might be easier to move all those wishlist items to
   a different project, that talks to this API when it's ready to assert
   browser support for a feature.
-* groovecoder says that api.compat.mozilla.org is a non-starter with Mozilla
-  IT - too hard to provision a new domain.  He suggests a subpath under
-  developer.mozilla.org.  Should we go with:
-
-      1. https://api.compat.mozila.org and https://compat.mozilla.org
-      2. https://developer.mozilla.org/compat-api and
-         https://developer.mozilla.org/en-US/compat-api
-      3. https://api.compat.developer.mozilla.org and
-         https://compat.developer.mozilla.org
-      4. Something else?
+* We need to decide on the URIs for the API and the developer resources.
+  This is being tracked by `Bugzilla 1050458`_.
 
 
 Interesting MDN Pages
@@ -413,6 +405,7 @@ To Do
 .. _CompatGeckoMobile: https://developer.mozilla.org/en-US/docs/Template:CompatGeckoMobile
 .. _`CSS @font-face at-rule`: https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face#Specifications
 .. _`Bugzilla 119490`: https://bugzilla.mozilla.org/show_bug.cgi?id=119490
+.. _`Bugzilla 1050458`: https://bugzilla.mozilla.org/show_bug.cgi?id=1050458
 .. _`availability in Web Workers`: https://bugzilla.mozilla.org/show_bug.cgi?id=996570#c14
 .. _`don't localize our brand`: http://www.mozilla.org/en-US/styleguide/communications/translation/#branding
 .. _`Mapping browsers to 2.2.1 Dictionary Browser Members`: http://lists.w3.org/Archives/Public/public-webplatform-tests/2013OctDec/0007.html
