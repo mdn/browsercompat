@@ -13,6 +13,14 @@ from webplatformcompat.models import Browser
 
 class TestBrowserViewset(APITestCase):
 
+    def login_superuser(self):
+        user = User.objects.create(
+            username='staff', is_staff=True, is_superuser=True)
+        user.set_password('5T@FF')
+        user.save()
+        self.assertTrue(self.client.login(username='staff', password='5T@FF'))
+        return user
+
     def test_get_empty(self):
         browser = Browser.objects.create()
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
@@ -53,11 +61,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(response.data, expected_data)
 
     def test_post_empty(self):
-        user = User.objects.create(
-            username='staff', is_staff=True, is_superuser=True)
-        user.set_password('5T@FF')
-        user.save()
-        self.assertTrue(self.client.login(username='staff', password='5T@FF'))
+        self.login_superuser()
         response = self.client.post(reverse('browser-list'), {})
         self.assertEqual(400, response.status_code)
         expected_data = {
@@ -67,11 +71,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(response.data, expected_data)
 
     def test_post_minimal(self):
-        user = User.objects.create(
-            username='staff', is_staff=True, is_superuser=True)
-        user.set_password('5T@FF')
-        user.save()
-        self.assertTrue(self.client.login(username='staff', password='5T@FF'))
+        self.login_superuser()
         data = {'slug': 'firefox', 'name': '{"en": "Firefox"}'}
         response = self.client.post(reverse('browser-list'), data)
         self.assertEqual(201, response.status_code, response.data)
@@ -86,11 +86,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(response.data, expected_data)
 
     def test_post_full(self):
-        user = User.objects.create(
-            username='staff', is_staff=True, is_superuser=True)
-        user.set_password('5T@FF')
-        user.save()
-        self.assertTrue(self.client.login(username='staff', password='5T@FF'))
+        self.login_superuser()
         data = {
             'slug': 'firefox',
             'icon': ("https://people.mozilla.org/~faaborg/files/shiretoko"
