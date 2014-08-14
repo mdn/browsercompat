@@ -49,7 +49,7 @@ A sample response is:
             "browsers": {
                 "id": "2",
                 "slug": "firefox",
-                "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+                "icon": "https://compat.cdn.mozilla.net/media/img/browsers/firefox.png",
                 "name": {
                     "en": "Firefox"
                 },

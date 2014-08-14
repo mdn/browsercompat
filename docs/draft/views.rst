@@ -501,7 +501,7 @@ A sample response is:
                 {
                     "id": "1",
                     "slug": "chrome",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/chrome.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/chrome.png",
                     "name": {
                         "en": "Chrome"
                     },
@@ -514,7 +514,7 @@ A sample response is:
                 },{
                     "id": "2",
                     "slug": "firefox",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/firefox.png",
                     "name": {
                         "en": "Firefox"
                     },
@@ -529,7 +529,7 @@ A sample response is:
                 },{
                     "id": "3",
                     "slug": "ie",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/ie.png",
                     "name": {
                         "en": "Internet Explorer"
                     },
@@ -542,7 +542,7 @@ A sample response is:
                 },{
                     "id": "4",
                     "slug": "opera",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/opera.png",
                     "name": {
                         "en": "Opera"
                     },
@@ -555,7 +555,7 @@ A sample response is:
                 },{
                     "id": "5",
                     "slug": "safari",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/safari.png",
                     "name": {
                         "en": "Safari"
                     },
@@ -570,7 +570,7 @@ A sample response is:
                 },{
                     "id": "6",
                     "slug": "android",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/android.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/android.png",
                     "name": {
                         "en": "Android"
                     },
@@ -583,7 +583,7 @@ A sample response is:
                 },{
                     "id": "7",
                     "slug": "firefox-mobile",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/firefox-mobile.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/firefox-mobile.png",
                     "name": {
                         "en": "Firefox Mobile"
                     },
@@ -598,7 +598,7 @@ A sample response is:
                 },{
                     "id": "8",
                     "slug": "ie-phone",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/ie-phone.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/ie-phone.png",
                     "name": {
                         "en": "IE Phone"
                     },
@@ -611,7 +611,7 @@ A sample response is:
                 },{
                     "id": "9",
                     "slug": "opera-mobile",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera-mobile.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/opera-mobile.png",
                     "name": {
                         "en": "Opera Mobile"
                     },
@@ -624,7 +624,7 @@ A sample response is:
                 },{
                     "id": "10",
                     "slug": "safari-mobile",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/safari-mobile.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/safari-mobile.png",
                     "name": {
                         "en": "Safari Mobile"
                     },
@@ -637,7 +637,7 @@ A sample response is:
                 },{
                     "id": "11",
                     "slug": "opera-mini",
-                    "icon": "//compat.cdn.mozilla.net/media/img/browsers/opera-mini.png",
+                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/opera-mini.png",
                     "name": {
                         "en": "Opera Mini"
                     },

@@ -132,6 +132,9 @@ Unresolved Issues
   browser support for a feature.
 * We need to decide on the URIs for the API and the developer resources.
   This is being tracked by `Bugzilla 1050458`_.
+* In browsers_, it seems like icon won't be generally useful.  What format
+  should the icon be?  What size?  It may be more useful to use the slug for
+  deciding between icons designed for the local implementation.
 
 
 Interesting MDN Pages
