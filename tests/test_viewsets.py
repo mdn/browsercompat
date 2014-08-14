@@ -106,3 +106,26 @@ class TestBrowserViewset(APITestCase):
             'note': {"en": "Uses Gecko for its web browser engine"},
         }
         self.assertEqual(response.data, expected_data)
+
+    def test_post_bad_data(self):
+        self.login_superuser()
+        data = {
+            'slug': 'bad slug',
+            'icon': ("http://people.mozilla.org/~faaborg/files/shiretoko"
+                     "/firefoxIcon/firefox-128.png"),
+            'name': '"Firefox"',
+            'note': '{"es": "Utiliza Gecko por su motor del navegador web"}',
+        }
+        response = self.client.post(reverse('browser-list'), data)
+        self.assertEqual(400, response.status_code, response.data)
+        expected_data = {
+            'slug': [
+                "Enter a valid 'slug' consisting of letters, numbers,"
+                " underscores or hyphens."],
+            'icon': ["URI must use the 'https' protocol."],
+            'name': [
+                "Value must be a JSON dictionary of language codes to"
+                " strings."],
+            'note': ["Missing required language code 'en'."],
+        }
+        self.assertEqual(response.data, expected_data)

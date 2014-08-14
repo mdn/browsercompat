@@ -5,14 +5,16 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django_extensions.db.fields.json import JSONField
 
+from .validators import SecureURLValidator, LanguageDictValidator
+
 
 @python_2_unicode_compatible
 class Browser(models.Model):
     slug = models.SlugField(unique=True)
-    icon = models.URLField(blank=True)
-
-    name = JSONField()
-    note = JSONField(blank=True, null=True)
+    icon = models.URLField(blank=True, validators=[SecureURLValidator()])
+    name = JSONField(validators=[LanguageDictValidator()])
+    note = JSONField(
+        blank=True, null=True, validators=[LanguageDictValidator()])
 
     def __str__(self):
         return self.slug
