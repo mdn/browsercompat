@@ -26,6 +26,10 @@ class BrowserVersionViewSet(ModelViewSet):
     model = BrowserVersion
 
 
+class HistoricalBrowserViewSet(ModelViewSet):
+    model = Browser.history.model
+
+
 class UserViewSet(ModelViewSet):
     model = User
     serializer_class = UserSerializer

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
     'django_extensions',
     'django_nose',
+    'simple_history',
     'rest_framework',
 
     'webplatformcompat',

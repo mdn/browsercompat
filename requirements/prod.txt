@@ -19,3 +19,6 @@ django-extensions==1.3.8
 
 # JSON API interfaces for Django REST Framework
 -e git+https://github.com/jwhitlock/drf-json-api.git@develop#egg=drf_json_api
+
+# History of changes to models
+django-simple-history==1.4.0

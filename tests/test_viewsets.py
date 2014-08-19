@@ -4,7 +4,7 @@
 Tests for `web-platform-compat` viewsets module.
 """
 from __future__ import unicode_literals
-from json import dumps
+from json import dumps, loads
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -14,6 +14,10 @@ from webplatformcompat.models import Browser
 
 
 class TestBrowserViewset(APITestCase):
+    maxDiff = None
+
+    def reverse(self, viewname, **kwargs):
+        return 'http://testserver' + reverse(viewname, kwargs=kwargs)
 
     def login_superuser(self):
         user = User.objects.create(
@@ -25,15 +29,48 @@ class TestBrowserViewset(APITestCase):
 
     def test_get_empty(self):
         browser = Browser.objects.create()
-        url = reverse('browser-detail', kwargs={'pk': browser.pk})
-        response = self.client.get(url)
+        url = self.reverse('browser-detail', pk=browser.pk)
+        response = self.client.get(
+            url, content_type="application/vnd.api+json")
+        history = browser.history.get()
+        history_url = self.reverse('historicalbrowser-detail', pk=history.pk)
         expected_data = {
             'id': browser.pk,
             'slug': '',
             'icon': None,
             'name': None,
-            'note': None}
-        self.assertEqual(response.data, expected_data)
+            'note': None,
+            'history': [history_url],
+            'history_current': history_url,
+        }
+        self.assertEqual(dict(response.data), expected_data)
+        expected_content = {
+            "browsers": {
+                "id": str(browser.pk),
+                "slug": "",
+                "icon": None,
+                "name": None,
+                "note": None,
+                "links": {
+                    "history": [str(history.pk)],
+                    "history_current": str(history.pk)
+                }
+            },
+            "links": {
+                "browsers.history": {
+                    "type": "historical browsers",
+                    "href": history_url.replace(
+                        str(history.pk), "{browsers.history}"),
+                },
+                "browsers.history_current": {
+                    "type": "historical browsers",
+                    "href": history_url.replace(
+                        str(history.pk), "{browsers.history_current}"),
+                },
+            }
+        }
+        actual_content = loads(response.content.decode('utf-8'))
+        self.assertEqual(expected_content, actual_content)
 
     def test_get_populated(self):
         browser = Browser.objects.create(
@@ -44,6 +81,8 @@ class TestBrowserViewset(APITestCase):
             note={"en": "Uses Gecko for its web browser engine"})
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         response = self.client.get(url)
+        history = browser.history.get()
+        history_url = self.reverse('historicalbrowser-detail', pk=history.pk)
         expected_data = {
             'id': browser.pk,
             'slug': 'firefox',
@@ -51,14 +90,89 @@ class TestBrowserViewset(APITestCase):
                      "/firefoxIcon/firefox-128.png"),
             'name': {"en": "Firefox"},
             'note': {"en": "Uses Gecko for its web browser engine"},
+            'history': [history_url],
+            'history_current': history_url,
         }
         self.assertEqual(response.data, expected_data)
+
+    def test_get_list(self):
+        firefox = Browser.objects.create(
+            slug="firefox", name={"en": "Firefox"},
+            icon=("https://people.mozilla.org/~faaborg/files/shiretoko"
+                  "/firefoxIcon/firefox-128.png"),
+            note={"en": "Uses Gecko for its web browser engine"})
+        chrome = Browser.objects.create(
+            slug="chrome", name={"en": "Chrome"})
+        response = self.client.get(reverse('browser-list'))
+        firefox_history_id = '%s' % firefox.history.get().pk
+        chrome_history_id = '%s' % chrome.history.get().pk
+        expected_content = {
+            'browsers': [
+                {
+                    'id': '%s' % firefox.pk,
+                    'slug': 'firefox',
+                    'icon': ("https://people.mozilla.org/~faaborg/files/"
+                             "shiretoko/firefoxIcon/firefox-128.png"),
+                    'name': {"en": "Firefox"},
+                    'note': {"en": "Uses Gecko for its web browser engine"},
+                    'links': {
+                        'history': [firefox_history_id],
+                        'history_current': firefox_history_id,
+                    },
+                }, {
+                    'id': '%s' % chrome.pk,
+                    'slug': 'chrome',
+                    'icon': None,
+                    'name': {"en": "Chrome"},
+                    'note': None,
+                    'links': {
+                        'history': [chrome_history_id],
+                        'history_current': chrome_history_id,
+                    },
+                },
+            ],
+            'links': {
+                'browsers.history': {
+                    'href': (
+                        'http://testserver/api/historical-browsers/'
+                        '{browsers.history}'),
+                    'type': 'historical browsers',
+                },
+                'browsers.history_current': {
+                    'href': (
+                        'http://testserver/api/historical-browsers/'
+                        '{browsers.history_current}'),
+                    'type': 'historical browsers',
+                }
+            }
+        }
+        actual_content = loads(response.content.decode('utf-8'))
+        self.assertEqual(expected_content, actual_content)
+
+    def test_get_browsable_api(self):
+        self.login_superuser()
+        browser = Browser.objects.create()
+        url = self.reverse('browser-list')
+        response = self.client.get(url, HTTP_ACCEPT="text/html")
+        history = browser.history.get()
+        history_url = self.reverse('historicalbrowser-detail', pk=history.pk)
+        expected_data = [{
+            'id': browser.pk,
+            'slug': '',
+            'icon': None,
+            'name': None,
+            'note': None,
+            'history': [history_url],
+            'history_current': history_url,
+        }]
+        self.assertEqual(list(response.data), expected_data)
+        self.assertTrue(response['content-type'].startswith('text/html'))
 
     def test_post_not_authorized(self):
         response = self.client.post(reverse('browser-list'), {})
         self.assertEqual(403, response.status_code)
         expected_data = {
-            u'detail': u'Authentication credentials were not provided.'
+            'detail': 'Authentication credentials were not provided.'
         }
         self.assertEqual(response.data, expected_data)
 
@@ -67,8 +181,8 @@ class TestBrowserViewset(APITestCase):
         response = self.client.post(reverse('browser-list'), {})
         self.assertEqual(400, response.status_code)
         expected_data = {
-            "slug": [u"This field is required."],
-            "name": [u"This field is required."],
+            "slug": ["This field is required."],
+            "name": ["This field is required."],
         }
         self.assertEqual(response.data, expected_data)
 
@@ -78,12 +192,16 @@ class TestBrowserViewset(APITestCase):
         response = self.client.post(reverse('browser-list'), data)
         self.assertEqual(201, response.status_code, response.data)
         browser = Browser.objects.get()
+        history = browser.history.get()
+        history_url = self.reverse('historicalbrowser-detail', pk=history.pk)
         expected_data = {
             "id": browser.pk,
             "slug": "firefox",
             "icon": None,
-            "name": {u"en": u"Firefox"},
-            "note": None
+            "name": {"en": "Firefox"},
+            "note": None,
+            'history': [history_url],
+            'history_current': history_url,
         }
         self.assertEqual(response.data, expected_data)
 
@@ -99,6 +217,8 @@ class TestBrowserViewset(APITestCase):
         response = self.client.post(reverse('browser-list'), data)
         self.assertEqual(201, response.status_code, response.data)
         browser = Browser.objects.get()
+        history = browser.history.get()
+        history_url = self.reverse('historicalbrowser-detail', pk=history.pk)
         expected_data = {
             'id': browser.pk,
             'slug': 'firefox',
@@ -106,6 +226,8 @@ class TestBrowserViewset(APITestCase):
                      "/firefoxIcon/firefox-128.png"),
             'name': {"en": "Firefox"},
             'note': {"en": "Uses Gecko for its web browser engine"},
+            'history': [history_url],
+            'history_current': history_url,
         }
         self.assertEqual(response.data, expected_data)
 
@@ -148,12 +270,18 @@ class TestBrowserViewset(APITestCase):
         response = self.client.put(
             url, data=data, content_type="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
+        current_history = browser.history.most_recent()
+        histories = browser.history.all()
+        view = 'historicalbrowser-detail'
         expected_data = {
             "id": browser.pk,
             "slug": "browser",
             "icon": None,
             "name": {"en": "New Name"},
             "note": None,
+            "history": [
+                self.reverse(view, pk=h.pk) for h in histories],
+            "history_current": self.reverse(view, pk=current_history.pk),
         }
         self.assertEqual(response.data, expected_data)
 

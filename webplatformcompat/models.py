@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django_extensions.db.fields.json import JSONField
+from simple_history.models import HistoricalRecords
 
 from .validators import SecureURLValidator, LanguageDictValidator
 
@@ -15,6 +16,7 @@ class Browser(models.Model):
     name = JSONField(validators=[LanguageDictValidator()])
     note = JSONField(
         blank=True, null=True, validators=[LanguageDictValidator()])
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.slug
@@ -44,6 +46,7 @@ class BrowserVersion(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES)
     release_notes_uri = JSONField(blank=True)
     note = JSONField(blank=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return "{0} {1}".format(self.browser, self.version)
