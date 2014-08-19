@@ -6,12 +6,13 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.viewsets import ModelViewSet as BaseModelViewSet
 from rest_framework_json_api.parsers import JsonApiParser
 
+from .mixins import PartialPutMixin
 from .models import Browser, BrowserVersion
 from .renderers import JsonApiRenderer
 from .serializers import BrowserSerializer, UserSerializer
 
 
-class ModelViewSet(BaseModelViewSet):
+class ModelViewSet(PartialPutMixin, BaseModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
 

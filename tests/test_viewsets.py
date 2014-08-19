@@ -3,6 +3,8 @@
 """
 Tests for `web-platform-compat` viewsets module.
 """
+from __future__ import unicode_literals
+from json import dumps
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -127,5 +129,45 @@ class TestBrowserViewset(APITestCase):
                 "Value must be a JSON dictionary of language codes to"
                 " strings."],
             'note': ["Missing required language code 'en'."],
+        }
+        self.assertEqual(response.data, expected_data)
+
+    def test_put_as_json_api(self):
+        '''If content is application/vnd.api+json, put is partial'''
+        self.login_superuser()
+        browser = Browser.objects.create(
+            slug='browser', name={'en': 'Old Name'})
+        data = dumps({
+            'browsers': {
+                'name': {
+                    'en': 'New Name'
+                }
+            }
+        })
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.put(
+            url, data=data, content_type="application/vnd.api+json")
+        self.assertEqual(200, response.status_code, response.data)
+        expected_data = {
+            "id": browser.pk,
+            "slug": "browser",
+            "icon": None,
+            "name": {"en": "New Name"},
+            "note": None,
+        }
+        self.assertEqual(response.data, expected_data)
+
+    def test_put_as_json(self):
+        '''If content is application/json, put is full put'''
+        self.login_superuser()
+        browser = Browser.objects.create(
+            slug='browser', name={'en': 'Old Name'})
+        data = {'name': '{"en": "New Name"}'}
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.put(
+            url, data=data)
+        self.assertEqual(400, response.status_code, response.data)
+        expected_data = {
+            "slug": ["This field is required."],
         }
         self.assertEqual(response.data, expected_data)

@@ -25,6 +25,8 @@ class TranslatedTextField(CharField):
             return None
 
     def from_native(self, value):
+        if isinstance(value, dict):
+            return value
         value = value.strip()
         if value:
             try:
