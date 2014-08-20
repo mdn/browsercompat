@@ -205,6 +205,34 @@ class TestBrowserViewset(APITestCase):
         }
         self.assertEqual(response.data, expected_data)
 
+    def test_post_minimal_json_api(self):
+        self.login_superuser()
+        data = dumps({
+            'browsers': {
+                'slug': 'firefox',
+                'name': {
+                    "en": "Firefox"
+                },
+            }
+        })
+        response = self.client.post(
+            reverse('browser-list'), data=data,
+            content_type="application/vnd.api+json")
+        self.assertEqual(201, response.status_code, response.data)
+        browser = Browser.objects.get()
+        history = browser.history.get()
+        history_url = self.reverse('historicalbrowser-detail', pk=history.pk)
+        expected_data = {
+            "id": browser.pk,
+            "slug": "firefox",
+            "icon": None,
+            "name": {"en": "Firefox"},
+            "note": None,
+            'history': [history_url],
+            'history_current': history_url,
+        }
+        self.assertEqual(response.data, expected_data)
+
     def test_post_full(self):
         self.login_superuser()
         data = {
