@@ -9,7 +9,8 @@ from rest_framework_json_api.parsers import JsonApiParser
 from .mixins import PartialPutMixin
 from .models import Browser, BrowserVersion
 from .renderers import JsonApiRenderer
-from .serializers import BrowserSerializer, UserSerializer
+from .serializers import (
+    BrowserSerializer, BrowserVersionSerializer, UserSerializer)
 
 
 class ModelViewSet(PartialPutMixin, BaseModelViewSet):
@@ -24,10 +25,15 @@ class BrowserViewSet(ModelViewSet):
 
 class BrowserVersionViewSet(ModelViewSet):
     model = BrowserVersion
+    serializer_class = BrowserVersionSerializer
 
 
 class HistoricalBrowserViewSet(ModelViewSet):
     model = Browser.history.model
+
+
+class HistoricalBrowserVersionViewSet(ModelViewSet):
+    model = BrowserVersion.history.model
 
 
 class UserViewSet(ModelViewSet):

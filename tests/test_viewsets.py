@@ -42,6 +42,7 @@ class TestBrowserViewset(APITestCase):
             'note': None,
             'history': [history_url],
             'history_current': history_url,
+            'browser_versions': [],
         }
         self.assertEqual(dict(response.data), expected_data)
         expected_content = {
@@ -53,7 +54,8 @@ class TestBrowserViewset(APITestCase):
                 "note": None,
                 "links": {
                     "history": [str(history.pk)],
-                    "history_current": str(history.pk)
+                    "history_current": str(history.pk),
+                    "browser_versions": [],
                 }
             },
             "links": {
@@ -66,6 +68,9 @@ class TestBrowserViewset(APITestCase):
                     "type": "historical browsers",
                     "href": history_url.replace(
                         str(history.pk), "{browsers.history_current}"),
+                },
+                "browsers.browser_versions": {
+                    "type": "browser versions",
                 },
             }
         }
@@ -92,6 +97,7 @@ class TestBrowserViewset(APITestCase):
             'note': {"en": "Uses Gecko for its web browser engine"},
             'history': [history_url],
             'history_current': history_url,
+            'browser_versions': [],
         }
         self.assertEqual(response.data, expected_data)
 
@@ -118,6 +124,7 @@ class TestBrowserViewset(APITestCase):
                     'links': {
                         'history': [firefox_history_id],
                         'history_current': firefox_history_id,
+                        'browser_versions': [],
                     },
                 }, {
                     'id': '%s' % chrome.pk,
@@ -128,6 +135,7 @@ class TestBrowserViewset(APITestCase):
                     'links': {
                         'history': [chrome_history_id],
                         'history_current': chrome_history_id,
+                        'browser_versions': [],
                     },
                 },
             ],
@@ -143,7 +151,10 @@ class TestBrowserViewset(APITestCase):
                         'http://testserver/api/historical-browsers/'
                         '{browsers.history_current}'),
                     'type': 'historical browsers',
-                }
+                },
+                'browsers.browser_versions': {
+                    'type': 'browser versions',
+                },
             }
         }
         actual_content = loads(response.content.decode('utf-8'))
@@ -164,6 +175,7 @@ class TestBrowserViewset(APITestCase):
             'note': None,
             'history': [history_url],
             'history_current': history_url,
+            'browser_versions': [],
         }]
         self.assertEqual(list(response.data), expected_data)
         self.assertTrue(response['content-type'].startswith('text/html'))
@@ -202,6 +214,7 @@ class TestBrowserViewset(APITestCase):
             "note": None,
             'history': [history_url],
             'history_current': history_url,
+            'browser_versions': [],
         }
         self.assertEqual(response.data, expected_data)
 
@@ -230,6 +243,7 @@ class TestBrowserViewset(APITestCase):
             "note": None,
             'history': [history_url],
             'history_current': history_url,
+            'browser_versions': [],
         }
         self.assertEqual(response.data, expected_data)
 
@@ -256,6 +270,7 @@ class TestBrowserViewset(APITestCase):
             'note': {"en": "Uses Gecko for its web browser engine"},
             'history': [history_url],
             'history_current': history_url,
+            'browser_versions': [],
         }
         self.assertEqual(response.data, expected_data)
 
@@ -310,6 +325,7 @@ class TestBrowserViewset(APITestCase):
             "history": [
                 self.reverse(view, pk=h.pk) for h in histories],
             "history_current": self.reverse(view, pk=current_history.pk),
+            "browser_versions": [],
         }
         self.assertEqual(response.data, expected_data)
 

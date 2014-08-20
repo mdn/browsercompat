@@ -8,7 +8,7 @@ from rest_framework.serializers import DateField, ModelSerializer
 
 from .fields import (
     TranslatedTextField, SecureURLField, HistoryField, CurrentHistoryField)
-from .models import Browser
+from .models import Browser, BrowserVersion
 
 
 class HistoricalModelSerializer(ModelSerializer):
@@ -26,13 +26,13 @@ class HistoricalModelSerializer(ModelSerializer):
         cls = self.opts.model
         view_name = "historical%s-detail" % cls.__name__.lower()
 
-        name = 'history'
-        assert name in self.opts.fields and name not in fields
-        fields[name] = HistoryField(view_name=view_name)
+        assert 'history' in self.opts.fields
+        assert 'history' not in fields
+        fields['history'] = HistoryField(view_name=view_name)
 
-        name = 'history_current'
-        assert name in self.opts.fields and name not in fields
-        fields[name] = CurrentHistoryField(view_name=view_name)
+        assert 'history_current' in self.opts.fields
+        assert 'history_current' not in fields
+        fields['history_current'] = CurrentHistoryField(view_name=view_name)
 
         return fields
 
@@ -58,4 +58,18 @@ class BrowserSerializer(HistoricalModelSerializer):
         model = Browser
         fields = (
             'id', 'slug', 'icon', 'name', 'note', 'history',
+            'history_current', 'browser_versions')
+
+
+class BrowserVersionSerializer(HistoricalModelSerializer):
+    """Browser Version Serializer"""
+
+    release_notes_uri = TranslatedTextField(required=False)
+    note = TranslatedTextField(required=False)
+
+    class Meta:
+        model = BrowserVersion
+        fields = (
+            'id', 'browser', 'version', 'release_day', 'retirement_day',
+            'status', 'release_notes_uri', 'note', 'history',
             'history_current')

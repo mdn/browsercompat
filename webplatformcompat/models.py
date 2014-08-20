@@ -24,26 +24,21 @@ class Browser(models.Model):
 
 @python_2_unicode_compatible
 class BrowserVersion(models.Model):
-    STATUS_UNKNOWN = 0
-    STATUS_CURRENT = 1
-    STATUS_FUTURE = 3
-    STATUS_RETIRED = 4
-    STATUS_BETA = 5
-    STATUS_RETIRED_BETA = 6
-    STATUS_CHOICES = (
-        (STATUS_UNKNOWN, 'unknown'),
-        (STATUS_CURRENT, 'current'),
-        (STATUS_FUTURE, 'future'),
-        (STATUS_RETIRED, 'retired'),
-        (STATUS_BETA, 'beta'),
-        (STATUS_RETIRED_BETA, 'retired beta'),
-    )
+    STATUS_CHOICES = [(k, k) for k in (
+        'unknown',
+        'current',
+        'future',
+        'retired',
+        'beta',
+        'retired beta',
+    )]
 
-    browser = models.ForeignKey(Browser)
-    version = models.CharField(blank=True, max_length=10)
+    browser = models.ForeignKey(Browser, related_name='browser_versions')
+    version = models.CharField(blank=True, max_length=20)
     release_day = models.DateField(blank=True, null=True)
     retirement_day = models.DateField(blank=True, null=True)
-    status = models.IntegerField(choices=STATUS_CHOICES)
+    status = models.CharField(
+        max_length=15, choices=STATUS_CHOICES, default='unknown')
     release_notes_uri = JSONField(blank=True)
     note = JSONField(blank=True)
     history = HistoricalRecords()
