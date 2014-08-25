@@ -14,7 +14,6 @@ Contents:
    usage
    contributing
    draft/intro
-   modules
    tools
    history
 
