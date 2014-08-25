@@ -35,7 +35,10 @@ class TestBrowserViewset(APITestCase):
     '''Test browsers list and detail, as well as common functionality'''
 
     def test_get_empty(self):
-        browser = Browser.objects.create()
+        user = self.login_superuser()
+        browser = Browser()
+        browser._history_user = user
+        browser.save()
         url = self.reverse('browser-detail', pk=browser.pk)
         response = self.client.get(
             url, content_type="application/vnd.api+json")
@@ -85,12 +88,15 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(expected_content, actual_content)
 
     def test_get_populated(self):
-        browser = Browser.objects.create(
+        user = self.login_superuser()
+        browser = Browser(
             slug="firefox",
             icon=("https://people.mozilla.org/~faaborg/files/shiretoko"
                   "/firefoxIcon/firefox-128.png"),
             name={"en": "Firefox"},
             note={"en": "Uses Gecko for its web browser engine"})
+        browser._history_user = user
+        browser.save()
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         response = self.client.get(url)
         history = browser.history.get()
@@ -109,13 +115,17 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(response.data, expected_data)
 
     def test_get_list(self):
-        firefox = Browser.objects.create(
+        user = self.login_superuser()
+        firefox = Browser(
             slug="firefox", name={"en": "Firefox"},
             icon=("https://people.mozilla.org/~faaborg/files/shiretoko"
                   "/firefoxIcon/firefox-128.png"),
             note={"en": "Uses Gecko for its web browser engine"})
-        chrome = Browser.objects.create(
-            slug="chrome", name={"en": "Chrome"})
+        firefox._history_user = user
+        firefox.save()
+        chrome = Browser(slug="chrome", name={"en": "Chrome"})
+        chrome._history_user = user
+        chrome.save()
         response = self.client.get(reverse('browser-list'))
         firefox_history_id = '%s' % firefox.history.get().pk
         chrome_history_id = '%s' % chrome.history.get().pk
@@ -168,8 +178,10 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(expected_content, actual_content)
 
     def test_get_browsable_api(self):
-        self.login_superuser()
-        browser = Browser.objects.create()
+        user = self.login_superuser()
+        browser = Browser()
+        browser._history_user = user
+        browser.save()
         url = self.reverse('browser-list')
         response = self.client.get(url, HTTP_ACCEPT="text/html")
         history = browser.history.get()
@@ -306,9 +318,11 @@ class TestBrowserViewset(APITestCase):
 
     def test_put_as_json_api(self):
         '''If content is application/vnd.api+json, put is partial'''
-        self.login_superuser()
-        browser = Browser.objects.create(
+        user = self.login_superuser()
+        browser = Browser(
             slug='browser', name={'en': 'Old Name'})
+        browser._history_user = user
+        browser.save()
         data = dumps({
             'browsers': {
                 'name': {
@@ -338,9 +352,10 @@ class TestBrowserViewset(APITestCase):
 
     def test_put_as_json(self):
         '''If content is application/json, put is full put'''
-        self.login_superuser()
-        browser = Browser.objects.create(
-            slug='browser', name={'en': 'Old Name'})
+        user = self.login_superuser()
+        browser = Browser(slug='browser', name={'en': 'Old Name'})
+        browser._history_user = user
+        browser.save()
         data = {'name': '{"en": "New Name"}'}
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         response = self.client.put(
@@ -354,9 +369,10 @@ class TestBrowserViewset(APITestCase):
 
 class TestHistoricalBrowserViewset(APITestCase):
     def test_get(self):
-        self.login_superuser()
+        user = self.login_superuser()
         browser = Browser(slug='browser', name={'en': 'A Browser'})
         browser._history_date = datetime(2014, 8, 25, 20, 50, 38, 868903, UTC)
+        browser._history_user = user
         browser.save()
         bh = browser.history.all()[0]
         url = reverse('historicalbrowser-detail', kwargs={'pk': bh.pk})
@@ -368,7 +384,7 @@ class TestHistoricalBrowserViewset(APITestCase):
             'id': bh.history_id,
             'date': browser._history_date,
             'event': 'created',
-            'user': None,
+            'user': self.reverse('user-detail', pk=user.pk),
             'browser': self.reverse('browser-detail', pk=browser.pk),
             'browsers': {
                 'id': '1',
@@ -401,8 +417,8 @@ class TestHistoricalBrowserViewset(APITestCase):
                     },
                 },
                 'links': {
-                    'browser': '1',
-                    'user': None
+                    'browser': str(browser.pk),
+                    'user': str(user.pk),
                 }
             },
             'links': {
