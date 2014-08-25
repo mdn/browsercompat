@@ -10,11 +10,12 @@ web-platform-compat
 
 The Web Platform Compatibility API will support compatability data on the
 `Mozilla Developer Network`_.  This currently takes the form of browser
-compatability tables, such as the one on the `CSS display property`.
+compatability tables, such as the one on the `CSS display property`_.
 The API will help centralize this data, and allow it to be kept consistant
 across languages and different presentations.
 
 .. _Mozilla Developer Network: https://developer.mozilla.org
+.. _CSS display property: https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility
 
 The project started in December 2013.  The goals, requirements, and current
 status are documented on the MozillaWiki_.
