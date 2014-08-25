@@ -39,3 +39,6 @@ psycopg2==2.5.3
 # Serve static files
 static3==0.5.1
 dj-static==0.0.6
+
+# Timezone info
+pytz==2014.4

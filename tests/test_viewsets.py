@@ -4,16 +4,19 @@
 Tests for `web-platform-compat` viewsets module.
 """
 from __future__ import unicode_literals
+from datetime import datetime
 from json import dumps, loads
+from pytz import UTC
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase as BaseAPITestCase
 
 from webplatformcompat.models import Browser
 
 
-class TestBrowserViewset(APITestCase):
+class APITestCase(BaseAPITestCase):
+    '''APITestCase with useful methods'''
     maxDiff = None
 
     def reverse(self, viewname, **kwargs):
@@ -26,6 +29,10 @@ class TestBrowserViewset(APITestCase):
         user.save()
         self.assertTrue(self.client.login(username='staff', password='5T@FF'))
         return user
+
+
+class TestBrowserViewset(APITestCase):
+    '''Test browsers list and detail, as well as common functionality'''
 
     def test_get_empty(self):
         browser = Browser.objects.create()
@@ -343,3 +350,75 @@ class TestBrowserViewset(APITestCase):
             "slug": ["This field is required."],
         }
         self.assertEqual(response.data, expected_data)
+
+
+class TestHistoricalBrowserViewset(APITestCase):
+    def test_get(self):
+        self.login_superuser()
+        browser = Browser(slug='browser', name={'en': 'A Browser'})
+        browser._history_date = datetime(2014, 8, 25, 20, 50, 38, 868903, UTC)
+        browser.save()
+        bh = browser.history.all()[0]
+        url = reverse('historicalbrowser-detail', kwargs={'pk': bh.pk})
+        response = self.client.get(
+            url, HTTP_ACCEPT="application/vnd.api+json")
+        self.assertEqual(200, response.status_code, response.data)
+
+        expected_data = {
+            'id': bh.history_id,
+            'date': browser._history_date,
+            'event': 'created',
+            'user': None,
+            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'browsers': {
+                'id': '1',
+                'slug': 'browser',
+                'icon': None,
+                'name': {'en': 'A Browser'},
+                'note': None,
+                'links': {'history_current': '1'}
+            },
+        }
+        actual = dict(response.data)
+        actual['browsers'] = dict(actual['browsers'])
+        actual['browsers']['name'] = dict(actual['browsers']['name'])
+        self.assertDictEqual(expected_data, actual)
+        expected_json = {
+            'historical browsers': {
+                'id': '1',
+                'date': '2014-08-25T20:50:38.868Z',
+                'event': 'created',
+                'browsers': {
+                    'id': '1',
+                    'slug': 'browser',
+                    'icon': None,
+                    'name': {
+                        'en': 'A Browser'
+                    },
+                    'note': None,
+                    'links': {
+                        'history_current': '1'
+                    },
+                },
+                'links': {
+                    'browser': '1',
+                    'user': None
+                }
+            },
+            'links': {
+                'historical browsers.browser': {
+                    'href': (
+                        'http://testserver/api/browsers/'
+                        '{historical browsers.browser}'),
+                    'type': 'browsers'
+                },
+                'historical browsers.user': {
+                    'href': (
+                        'http://testserver/api/users/'
+                        '{historical browsers.user}'),
+                    'type': 'users'
+                }
+            }
+        }
+        self.assertDictEqual(
+            expected_json, loads(response.content.decode('utf-8')))

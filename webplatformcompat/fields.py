@@ -116,6 +116,31 @@ class CurrentHistoryField(HyperlinkedRelatedField):
             self.full_queryset, view_name, args, kwargs)
 
 
+class HistoricalObjectField(HyperlinkedRelatedField):
+    """Field is link from a history object to source
+
+    To use this field, pass the name of the detail view as `view_name`
+    """
+
+    def __init__(self, *args, **kwargs):
+        source = kwargs.pop('source', 'history_object')
+        assert source == 'history_object'
+        read_only = kwargs.pop('read_only', True)
+        assert read_only, 'read_only must be True'
+        super(HistoricalObjectField, self).__init__(
+            source=source, read_only=read_only, *args, **kwargs)
+
+    def field_to_native(self, obj, field_name):
+        """Convert to the URL of the history object
+
+        With a valid object, the queryset can be set to the proper model for
+        this object.
+        """
+        self.queryset = type(obj.history_object)._default_manager
+        return super(HistoricalObjectField, self).field_to_native(
+            obj, field_name)
+
+
 class TranslatedTextField(CharField):
     """Field is a dictionary of language codes to text"""
     def __init__(self, *args, **kwargs):
