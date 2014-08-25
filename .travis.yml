@@ -7,11 +7,6 @@ python:
   - "2.7"
   - "2.6"
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -r requirements/prod.txt -r requirements/test.txt
-
-# command to run tests using coverage, e.g. python setup.py test
+install: pip install -r requirements.txt coveralls
 script: python manage.py test --with-coverage
-
-# report coverage to coveralls.io
 after_success: coveralls

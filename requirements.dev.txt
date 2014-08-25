@@ -1,8 +1,9 @@
-# Requirements specific for development
+# Requirements for development
 
 # Documentation
 Pygments==1.6
 Sphinx==1.2.2
+docutils==0.12
 
 # Multi-environment testing
 py==1.4.22
@@ -33,3 +34,13 @@ ipdb==0.8
 # Debugging
 sqlparse==0.1.11
 django-debug-toolbar==1.2.1
+
+# Backport of Python 3 mock
+mock==1.0.1
+
+# Test coverage
+coverage==3.7.1
+docopt==0.6.2
+requests==2.3.0
+PyYAML==3.11
+coveralls==0.4.2

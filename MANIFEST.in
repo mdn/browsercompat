@@ -1,12 +1,11 @@
-include LICENSE
-include CONTRIBUTING.rst
-include HISTORY.rst
-include README.rst
-include Makefile
-include runtests.py
+include LICENSE CONTRIBUTING.rst HISTORY.rst README.rst
+include Makefile runtests.py .coveragerc manage.py
+include requirements.txt requirements.dev.txt
+include Procfile app.json
 
-recursive-include webplatformcompat *.html *.png *.gif *js *.css *jpg *jpeg *svg *py *.keep
-recursive-include requirements *.txt
 recursive-include docs Makefile *.gv *.svg _templates conf.py *.rst draft make.bat
 recursive-include tests *.py
 recursive-include tools *.py
+recursive-include webplatformcompat/static *.css *.map *.eot *.svg *.ttf *.woff *.js .keep
+recursive-include webplatformcompat/templates *.html *.jinja2
+recursive-include wpcsite *.py

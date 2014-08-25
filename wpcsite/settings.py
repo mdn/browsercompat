@@ -6,26 +6,58 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
+
+Designed for Heroku and http://12factor.net/config.  Configuration is
+overriden by environment variables.
+
+One way to set environment variables for local development in a virtualenv:
+
+$ vi $VIRTUAL_ENV/bin/postactivate
+export DJANGO_DEBUG=1
+$ vi $VIRTUAL_ENV/bin/predeactivate
+unset DJANGO_DEBUG
+$ source $VIRTUAL_ENV/bin/postactivate
+
+To set environment variables in heroku environment
+$ heroku config
+$ heroku config:set DJANGO_DEBUG=1
+
+Environment variables:
+ALLOWED_HOSTS - comma-separated list of allowed hosts
+DATABASE_URL - See https://github.com/kennethreitz/dj-database-url
+DJANGO_DEBUG - 1 to enable, 0 to disable, default disabled
+EXTRA_INSTALLED_APPS - comma-separated list of apps to add to INSTALLED_APPS
+SECRET_KEY - Overrides SECRET_KEY
+SECURE_PROXY_SSL_HEADER - "HTTP_X_FORWARDED_PROTOCOL,https" to enable
+STATIC_ROOT - Overrides STATIC_ROOT
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+# Build paths inside the project like this: rel_path('folder', 'file')
+from os import environ, path
+import dj_database_url
+
+BASE_DIR = path.dirname(path.dirname(__file__))
+
+
+def rel_path(*subpaths):
+    return path.join(BASE_DIR, *subpaths)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'jl^8zustdy8ht@=abml-j@%hp7hr-0u-41hb*1=duc91a%=9+%'
+SECRET_KEY = environ.get(
+    'SECRET_KEY', 'jl^8zustdy8ht@=abml-j@%hp7hr-0u-41hb*1=duc91a%=9+%')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = environ.get("DJANGO_DEBUG", '0') in (1, '1')
+TEMPLATE_DEBUG = DEBUG
 
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = environ.get('ALLOWED_HOSTS', '').split(',')
+if environ.get('SECURE_PROXY_SSL_HEADER'):
+    raw = environ['SECURE_PROXY_SSL_HEADER']
+    SECURE_PROXY_SSL_HEADER = tuple(raw.split(','))
 
 # Application definition
 
@@ -44,6 +76,8 @@ INSTALLED_APPS = [
 
     'webplatformcompat',
 ]
+if environ.get('EXTRA_INSTALLED_APPS'):
+    INSTALLED_APPS + environ['EXTRA_INSTALLED_APPS'].split(',')
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -60,17 +94,15 @@ WSGI_APPLICATION = 'wpcsite.wsgi.application'
 
 # Prefer our template folder to rest_framework's
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'webplatformcompat/templates'),
+    rel_path('webplatformcompat', 'templates'),
 )
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default':
+        dj_database_url.config(default='sqlite:///' + rel_path('db.sqlite3'))
 }
 
 # Internationalization
@@ -89,7 +121,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
+if environ.get('STATIC_ROOT'):
+    STATIC_ROOT = environ['STATIC_ROOT']
 STATIC_URL = '/static/'
 
 #
