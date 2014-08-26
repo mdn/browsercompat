@@ -6,7 +6,7 @@ API Serializers
 from django.contrib.auth.models import User
 from rest_framework.serializers import (
     DateField, DateTimeField, HyperlinkedRelatedField, IntegerField,
-    ModelSerializer, SerializerMethodField)
+    ModelSerializer, SerializerMethodField, ValidationError)
 
 from .fields import (
     CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
@@ -43,6 +43,32 @@ class HistoricalModelSerializer(ModelSerializer):
         fields['history_current'] = CurrentHistoryField(view_name=view_name)
 
         return fields
+
+    def from_native(self, data, files=None):
+        """If history_current in data, load historical data into instance"""
+        if data and 'history_current' in data:
+            history_id = int(data['history_current'].split('/')[-1])
+            current_history = self.object.history.all()[0]
+            if current_history.history_id != history_id:
+                try:
+                    historical = self.object.history.get(
+                        history_id=history_id).instance
+                except self.object.history.model.DoesNotExist:
+                    pass
+                else:
+                    for field in historical._meta.fields:
+                        attname = field.attname
+                        hist_value = getattr(historical, attname)
+                        setattr(self.object, attname, hist_value)
+        return super(HistoricalModelSerializer, self).from_native(data, files)
+
+    def validate_history_current(self, attrs, source):
+        value = attrs.get(source)
+        if value and self.object:
+            if value.history_object.pk != self.object.id:
+                raise ValidationError(
+                    'history is for a different object')
+        return attrs
 
 
 class BrowserSerializer(HistoricalModelSerializer):

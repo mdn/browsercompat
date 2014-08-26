@@ -22,10 +22,8 @@ class CurrentHistoryField(HyperlinkedRelatedField):
         self.manager = kwargs.pop('manager', 'history')
         required = kwargs.pop('required', False)
         assert not required, 'required must be False'
-        read_only = kwargs.pop('read_only', True)
-        assert read_only, 'read_only must be True (for now)'
         super(CurrentHistoryField, self).__init__(
-            required=required, read_only=read_only, *args, **kwargs)
+            required=required, *args, **kwargs)
 
     def initialize(self, parent, field_name):
         """Initialize field
@@ -48,8 +46,12 @@ class CurrentHistoryField(HyperlinkedRelatedField):
         the object is not set, so we leave it as the none() queryset set in
         initialize.
         """
+        if obj is None:
+            # From Browsable API rendere,
+            # self.get_raw_data_form(view, 'POST', request)
+            return None
         self.queryset = getattr(obj, self.manager)
-        most_recent = self.queryset.most_recent()
+        most_recent = self.queryset.latest('history_date')
         return self.to_native(most_recent)
 
     def get_object(self, queryset, view_name, args, kwargs):

@@ -334,8 +334,8 @@ class TestBrowserViewset(APITestCase):
         response = self.client.put(
             url, data=data, content_type="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
-        current_history = browser.history.most_recent()
         histories = browser.history.all()
+        current_history = histories[0]
         view = 'historicalbrowser-detail'
         expected_data = {
             "id": browser.pk,
@@ -365,6 +365,110 @@ class TestBrowserViewset(APITestCase):
             "slug": ["This field is required."],
         }
         self.assertEqual(response.data, expected_data)
+
+    def test_put_history_current(self):
+        user = self.login_superuser()
+        browser = Browser(
+            slug='browser', name={'en': 'Old Name'})
+        browser._history_user = user
+        browser.save()
+        old_history = browser.history.latest('history_date')
+        browser.name = {'en': 'Browser'}
+        browser.save()
+        data = dumps({
+            'browsers': {
+                'links': {
+                    'history_current': str(old_history.history_id)
+                }
+            }
+        })
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.put(
+            url, data=data, content_type="application/vnd.api+json")
+        self.assertEqual(200, response.status_code, response.data)
+        current_history = browser.history.all()[0]
+        self.assertNotEqual(old_history.history_id, current_history.history_id)
+        histories = browser.history.all()
+        self.assertEqual(3, len(histories))
+        view = 'historicalbrowser-detail'
+        expected_data = {
+            "id": browser.pk,
+            "slug": "browser",
+            "icon": None,
+            "name": {"en": "Old Name"},
+            "note": None,
+            'history': [
+                self.reverse(view, pk=h.pk) for h in histories],
+            'history_current': self.reverse(view, pk=current_history.pk),
+            'browser_versions': [],
+        }
+        self.assertEqual(dict(response.data), expected_data)
+
+    def test_put_history_current_wrong_browser_fails(self):
+        user = self.login_superuser()
+        browser = Browser(
+            slug='browser', name={'en': 'Old Name'})
+        browser._history_user = user
+        browser.save()
+        other_browser = Browser(
+            slug='other-browser', name={'en': 'Other Browser'})
+        other_browser._history_user = user
+        other_browser.save()
+        bad_history = other_browser.history.all()[0]
+        data = dumps({
+            'browsers': {
+                'slug': 'browser',
+                'links': {
+                    'history_current': str(bad_history.history_id)
+                }
+            }
+        })
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.put(
+            url, data=data, content_type="application/vnd.api+json")
+        self.assertEqual(400, response.status_code, response.data)
+        expected_data = {
+            'history_current': ['history is for a different object']
+        }
+        self.assertEqual(dict(response.data), expected_data)
+
+    def test_put_history_same(self):
+        user = self.login_superuser()
+        browser = Browser(
+            slug='browser', name={'en': 'Old Name'})
+        browser._history_user = user
+        browser.save()
+        browser.name = {'en': 'Browser'}
+        browser.save()
+        current_history = browser.history.latest('history_date')
+        data = dumps({
+            'browsers': {
+                'links': {
+                    'history_current': str(current_history.history_id)
+                }
+            }
+        })
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.put(
+            url, data=data, content_type="application/vnd.api+json")
+        self.assertEqual(200, response.status_code, response.data)
+        new_history = browser.history.all()[0]
+        self.assertNotEqual(new_history.history_id, current_history.history_id)
+        histories = browser.history.all()
+        self.assertEqual(3, len(histories))
+        view = 'historicalbrowser-detail'
+        expected_data = {
+            "id": browser.pk,
+            "slug": "browser",
+            "icon": None,
+            "name": {"en": "Browser"},
+            "note": None,
+            'history': [
+                self.reverse(view, pk=h.pk) for h in histories],
+            'history_current': self.reverse(view, pk=new_history.pk),
+            'browser_versions': [],
+        }
+        self.assertEqual(dict(response.data), expected_data)
 
 
 class TestHistoricalBrowserViewset(APITestCase):
