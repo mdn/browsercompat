@@ -57,6 +57,8 @@ class BrowserSerializer(HistoricalModelSerializer):
         fields = (
             'id', 'slug', 'icon', 'name', 'note', 'history',
             'history_current', 'browser_versions')
+        # Until restricted in Browsable API, ordered
+        read_only_fields = ('browser_versions', )
 
 
 class BrowserVersionSerializer(HistoricalModelSerializer):
