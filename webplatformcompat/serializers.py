@@ -9,8 +9,8 @@ from rest_framework.serializers import (
     ModelSerializer, SerializerMethodField)
 
 from .fields import (
-    TranslatedTextField, SecureURLField, HistoryField, CurrentHistoryField,
-    HistoricalObjectField)
+    CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
+    TranslatedTextField)
 from .models import Browser, BrowserVersion
 
 
@@ -44,10 +44,6 @@ class HistoricalModelSerializer(ModelSerializer):
 
         return fields
 
-
-#
-# Implementation Serializers
-#
 
 class BrowserSerializer(HistoricalModelSerializer):
     """Browser Serializer"""

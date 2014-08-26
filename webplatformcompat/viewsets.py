@@ -16,6 +16,10 @@ from .serializers import (
     UserSerializer)
 
 
+#
+# Base classes
+#
+
 class ModelViewSet(PartialPutMixin, BaseModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
@@ -24,6 +28,10 @@ class ModelViewSet(PartialPutMixin, BaseModelViewSet):
 class ReadOnlyModelViewSet(BaseROModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
 
+
+#
+# 'Regular' viewsets
+#
 
 class BrowserViewSet(ModelViewSet):
     model = Browser
@@ -35,6 +43,15 @@ class BrowserVersionViewSet(ModelViewSet):
     serializer_class = BrowserVersionSerializer
 
 
+class UserViewSet(ModelViewSet):
+    model = User
+    serializer_class = UserSerializer
+
+
+#
+# Historical object viewsets
+#
+
 class HistoricalBrowserViewSet(ReadOnlyModelViewSet):
     model = Browser.history.model
     serializer_class = HistoricalBrowserSerializer
@@ -43,8 +60,3 @@ class HistoricalBrowserViewSet(ReadOnlyModelViewSet):
 class HistoricalBrowserVersionViewSet(ReadOnlyModelViewSet):
     model = BrowserVersion.history.model
     serializer_class = HistoricalBrowserVersionSerializer
-
-
-class UserViewSet(ModelViewSet):
-    model = User
-    serializer_class = UserSerializer

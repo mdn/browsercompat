@@ -6,7 +6,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django_extensions.db.fields.json import JSONField
 from simple_history.models import HistoricalRecords
 
-from .validators import SecureURLValidator, LanguageDictValidator
+from .validators import LanguageDictValidator, SecureURLValidator
 
 
 @python_2_unicode_compatible
