@@ -97,11 +97,11 @@ class BrowserSerializer(HistoricalModelSerializer):
     icon = SecureURLField(required=False)
     name = TranslatedTextField()
     note = TranslatedTextField(required=False)
-    browser_versions = LimitedPrimaryKeyRelatedField(many=True)
+    versions = LimitedPrimaryKeyRelatedField(many=True)
 
     def save_object(self, obj, **kwargs):
-        if 'browser_versions' in getattr(obj, '_related_data', {}):
-            versions = obj._related_data.pop('browser_versions')
+        if 'versions' in getattr(obj, '_related_data', {}):
+            versions = obj._related_data.pop('versions')
         else:
             versions = None
 
@@ -117,9 +117,9 @@ class BrowserSerializer(HistoricalModelSerializer):
         model = Browser
         fields = (
             'id', 'slug', 'icon', 'name', 'note', 'history',
-            'history_current', 'browser_versions')
+            'history_current', 'versions')
         update_only_fields = (
-            'history', 'history_current', 'browser_versions')
+            'history', 'history_current', 'versions')
 
 
 class BrowserVersionSerializer(HistoricalModelSerializer):
@@ -184,7 +184,7 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
 
     class ArchivedBrowser(BrowserSerializer):
         class Meta(BrowserSerializer.Meta):
-            exclude = ('history_current', 'history', 'browser_versions')
+            exclude = ('history_current', 'history', 'versions')
 
     browser = HistoricalObjectField(view_name='browser-detail')
     browsers = SerializerMethodField('get_archive')

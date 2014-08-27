@@ -33,7 +33,7 @@ class BrowserVersion(models.Model):
         'retired beta',
     )]
 
-    browser = models.ForeignKey(Browser, related_name='browser_versions')
+    browser = models.ForeignKey(Browser, related_name='versions')
     version = models.CharField(blank=True, max_length=20)
     release_day = models.DateField(blank=True, null=True)
     retirement_day = models.DateField(blank=True, null=True)
