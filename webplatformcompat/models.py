@@ -45,3 +45,6 @@ class BrowserVersion(models.Model):
 
     def __str__(self):
         return "{0} {1}".format(self.browser, self.version)
+
+    class Meta:
+        order_with_respect_to = 'browser'

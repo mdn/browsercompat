@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase as BaseAPITestCase
 
-from webplatformcompat.models import Browser
+from webplatformcompat.models import Browser, BrowserVersion
 
 
 class APITestCase(BaseAPITestCase):
@@ -467,6 +467,114 @@ class TestBrowserViewset(APITestCase):
                 self.reverse(view, pk=h.pk) for h in histories],
             'history_current': self.reverse(view, pk=new_history.pk),
             'browser_versions': [],
+        }
+        self.assertEqual(dict(response.data), expected_data)
+
+    def test_versions_are_ordered(self):
+        user = self.login_superuser()
+        browser = Browser(slug='browser', name={'en': 'Browser'})
+        browser._history_user = user
+        browser.save()
+        v1 = BrowserVersion(browser=browser, version='1.0')
+        v2 = BrowserVersion(browser=browser, version='2.0')
+        v1._history_user = user
+        v2._history_user = user
+        v2.save()
+        v1.save()
+
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.get(url, HTTP_ACCEPT='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.data)
+        history = browser.history.all()
+        history_view = 'historicalbrowser-detail'
+        expected_data = {
+            "id": browser.pk,
+            "slug": 'browser',
+            "icon": None,
+            "name": {"en": "Browser"},
+            "note": None,
+            "history": [
+                self.reverse(history_view, pk=h.pk) for h in history],
+            "history_current": self.reverse(history_view, pk=history[0].pk),
+            "browser_versions": [v2.pk, v1.pk],
+        }
+        self.assertEqual(dict(response.data), expected_data)
+
+    def test_versions_are_reordered(self):
+        user = self.login_superuser()
+        browser = Browser(slug='browser', name={'en': 'Browser'})
+        browser._history_user = user
+        browser.save()
+        v1 = BrowserVersion(browser=browser, version='1.0')
+        v2 = BrowserVersion(browser=browser, version='2.0')
+        v1._history_user = user
+        v2._history_user = user
+        v2.save()
+        v1.save()
+
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        data = dumps({
+            'browsers': {
+                'links': {
+                    'browser_versions': [str(v1.pk), str(v2.pk)]
+                }
+            }
+        })
+        response = self.client.put(
+            url, data=data, content_type='application/vnd.api+json',
+            HTTP_ACCEPT='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.data)
+        history = browser.history.all()
+        history_view = 'historicalbrowser-detail'
+        expected_data = {
+            "id": browser.pk,
+            "slug": 'browser',
+            "icon": None,
+            "name": {"en": "Browser"},
+            "note": None,
+            "history": [
+                self.reverse(history_view, pk=h.pk) for h in history],
+            "history_current": self.reverse(history_view, pk=history[0].pk),
+            "browser_versions": [v1.pk, v2.pk],
+        }
+        self.assertEqual(dict(response.data), expected_data)
+
+    def test_versions_same_order(self):
+        user = self.login_superuser()
+        browser = Browser(slug='browser', name={'en': 'Browser'})
+        browser._history_user = user
+        browser.save()
+        v1 = BrowserVersion(browser=browser, version='1.0')
+        v2 = BrowserVersion(browser=browser, version='2.0')
+        v1._history_user = user
+        v2._history_user = user
+        v2.save()
+        v1.save()
+
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        data = dumps({
+            'browsers': {
+                'links': {
+                    'browser_versions': [str(v2.pk), str(v1.pk)]
+                }
+            }
+        })
+        response = self.client.put(
+            url, data=data, content_type='application/vnd.api+json',
+            HTTP_ACCEPT='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.data)
+        history = browser.history.all()
+        history_view = 'historicalbrowser-detail'
+        expected_data = {
+            "id": browser.pk,
+            "slug": 'browser',
+            "icon": None,
+            "name": {"en": "Browser"},
+            "note": None,
+            "history": [
+                self.reverse(history_view, pk=h.pk) for h in history],
+            "history_current": self.reverse(history_view, pk=history[0].pk),
+            "browser_versions": [v2.pk, v1.pk],
         }
         self.assertEqual(dict(response.data), expected_data)
 

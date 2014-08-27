@@ -6,11 +6,13 @@ API Serializers
 from django.contrib.auth.models import User
 from rest_framework.serializers import (
     DateField, DateTimeField, HyperlinkedRelatedField, IntegerField,
-    ModelSerializer, SerializerMethodField, ValidationError)
+    ModelSerializer, ModelSerializerOptions, SerializerMethodField,
+    ValidationError)
+
 
 from .fields import (
-    CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
-    TranslatedTextField)
+    CurrentHistoryField, HistoricalObjectField,  HistoryField,
+    LimitedPrimaryKeyRelatedField, SecureURLField, TranslatedTextField)
 from .models import Browser, BrowserVersion
 
 
@@ -18,14 +20,29 @@ from .models import Browser, BrowserVersion
 # "Regular" Serializers
 #
 
+class UpdateOnlySerializerOptions(ModelSerializerOptions):
+    def __init__(self, meta):
+        super(UpdateOnlySerializerOptions, self).__init__(meta)
+        self.update_only_fields = getattr(meta, 'update_only_fields', ())
 
-class HistoricalModelSerializer(ModelSerializer):
+
+class UpdateOnlyMixin(object):
+    _options_class = UpdateOnlySerializerOptions
+
+    def get_fields(self):
+        fields = super(UpdateOnlyMixin, self).get_fields()
+
+        view = self.context.get('view', None)
+        if view and view.action in ('list', 'create'):
+            update_only_fields = getattr(self.opts, 'update_only_fields', [])
+            for field_name in update_only_fields:
+                fields[field_name].read_only = True
+
+        return fields
+
+
+class HistoricalModelSerializer(UpdateOnlyMixin, ModelSerializer):
     """Model serializer with history manager"""
-
-    def __init__(self, *args, **kwargs):
-        """Add history and history_current fields"""
-        return super(HistoricalModelSerializer, self).__init__(
-            *args, **kwargs)
 
     def get_default_fields(self):
         """Add history and history_current to default fields"""
@@ -40,7 +57,10 @@ class HistoricalModelSerializer(ModelSerializer):
 
         assert 'history_current' in self.opts.fields
         assert 'history_current' not in fields
-        fields['history_current'] = CurrentHistoryField(view_name=view_name)
+        view = self.context.get('view', None)
+        read_only = view and view.action in ('list', 'create')
+        fields['history_current'] = CurrentHistoryField(
+            view_name=view_name, read_only=read_only)
 
         return fields
 
@@ -77,14 +97,29 @@ class BrowserSerializer(HistoricalModelSerializer):
     icon = SecureURLField(required=False)
     name = TranslatedTextField()
     note = TranslatedTextField(required=False)
+    browser_versions = LimitedPrimaryKeyRelatedField(many=True)
+
+    def save_object(self, obj, **kwargs):
+        if 'browser_versions' in getattr(obj, '_related_data', {}):
+            versions = obj._related_data.pop('browser_versions')
+        else:
+            versions = None
+
+        super(BrowserSerializer, self).save_object(obj, **kwargs)
+
+        if versions:
+            v_pks = [v.pk for v in versions]
+            current_order = obj.get_browserversion_order()
+            if v_pks != current_order:
+                obj.set_browserversion_order(v_pks)
 
     class Meta:
         model = Browser
         fields = (
             'id', 'slug', 'icon', 'name', 'note', 'history',
             'history_current', 'browser_versions')
-        # Until restricted in Browsable API, ordered
-        read_only_fields = ('browser_versions', )
+        update_only_fields = (
+            'history', 'history_current', 'browser_versions')
 
 
 class BrowserVersionSerializer(HistoricalModelSerializer):
@@ -92,12 +127,13 @@ class BrowserVersionSerializer(HistoricalModelSerializer):
 
     release_notes_uri = TranslatedTextField(required=False)
     note = TranslatedTextField(required=False)
+    order = IntegerField(read_only=True, source='_order')
 
     class Meta:
         model = BrowserVersion
         fields = (
             'id', 'browser', 'version', 'release_day', 'retirement_day',
-            'status', 'release_notes_uri', 'note', 'history',
+            'status', 'release_notes_uri', 'note', 'order', 'history',
             'history_current')
 
 

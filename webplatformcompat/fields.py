@@ -6,9 +6,24 @@ import json
 from django.core.exceptions import ValidationError
 from django.forms import Textarea
 from rest_framework.serializers import (
-    CharField, HyperlinkedRelatedField, URLField)
+    CharField, HyperlinkedRelatedField, PrimaryKeyRelatedField, URLField)
 
 from .validators import LanguageDictValidator, SecureURLValidator
+
+
+class LimitedRelatedFieldMixin(object):
+    '''Mixin to limit a related field queryset when the object is available'''
+
+    def field_to_native(self, obj, field_name):
+        """Convert a field to the native represenation
+
+        With a valid object, the queryset can be set to the object's
+        queryset, which may be more limited than the generic queryset.
+        """
+        if obj is not None:  # pragma: no cover
+            self.queryset = getattr(obj, self.source or field_name)
+        return super(LimitedRelatedFieldMixin, self).field_to_native(
+            obj, field_name)
 
 
 class CurrentHistoryField(HyperlinkedRelatedField):
@@ -46,8 +61,8 @@ class CurrentHistoryField(HyperlinkedRelatedField):
         the object is not set, so we leave it as the none() queryset set in
         initialize.
         """
-        if obj is None:
-            # From Browsable API rendere,
+        if obj is None:  # pragma: no cover
+            # From Browsable API renderer,
             # self.get_raw_data_form(view, 'POST', request)
             return None
         self.queryset = getattr(obj, self.manager)
@@ -91,7 +106,7 @@ class HistoricalObjectField(HyperlinkedRelatedField):
             obj, field_name)
 
 
-class HistoryField(HyperlinkedRelatedField):
+class HistoryField(LimitedRelatedFieldMixin, HyperlinkedRelatedField):
     """Field is the history manager
 
     To use this field, initialize 'source' to the name of the
@@ -120,17 +135,6 @@ class HistoryField(HyperlinkedRelatedField):
         self.queryset = manager.none()
         super(HistoryField, self).initialize(parent, field_name)
 
-    def field_to_native(self, obj, field_name):
-        """Convert to list of history PKs
-
-        With a valid object, the queryset can be set to the proper history for
-        this object.  In some views, such as the browsable API for the list,
-        the object is not set, so we leave it as the none() queryset set in
-        initialize.
-        """
-        self.queryset = getattr(obj, self.source or field_name)
-        return super(HistoryField, self).field_to_native(obj, field_name)
-
     def get_object(self, queryset, view_name, args, kwargs):
         """Get the specified object
 
@@ -141,6 +145,12 @@ class HistoryField(HyperlinkedRelatedField):
         assert queryset == self.queryset
         return super(HistoryField, self).get_object(
             self.full_queryset, view_name, args, kwargs)
+
+
+class LimitedPrimaryKeyRelatedField(
+        LimitedRelatedFieldMixin, PrimaryKeyRelatedField):
+    '''A PrimaryKey related field with restricted choices'''
+    pass
 
 
 class SecureURLField(URLField):

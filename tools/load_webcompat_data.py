@@ -184,7 +184,7 @@ def upload_compat_data(session, parsed_data):
             headers={
                 'content-type': 'application/vnd.api+json',
                 'X-CSRFToken': session.cookies['csrftoken']})
-        assert response.status_code == 201
+        assert response.status_code == 201, response.content
         browser_ids[slug] = response.json()['browsers']['id']
         if len(browser_ids) % 100 == 0:
             logger.info("Imported %d browsers..." % len(browser_ids))
