@@ -48,7 +48,7 @@ A sample response is:
                 "ancestors": ["800", "816"],
                 "siblings": ["814", "815", "816", "817", "818"],
                 "children": [],
-                "decendants": [],
+                "descendants": [],
                 "history-current": "216",
                 "history": ["216"]
             }
@@ -675,8 +675,8 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
                 "type": "feature-sets"
             },
-            "feature-sets.decendants": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
+            "feature-sets.descendants": {
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.descendants}",
                 "type": "feature-sets"
             },
             "feature-sets.history-current": {

@@ -1047,7 +1047,7 @@ The **feature-sets** representation includes:
     - **children** *(many)* - The feature-sets that have this
       feature-set as parent, in display order.  Can be re-ordered by the
       user.
-    - **decendants** *(many)* - The feature-sets in the local tree for
+    - **descendants** *(many)* - The feature-sets in the local tree for
       this feature-set. including this one, in tree order.  Can not be
       changed by the user - set the **parent** on the child feature-set
       instead.
@@ -1089,7 +1089,7 @@ A sample response is:
                 "ancestors": ["301", "373"],
                 "siblings": ["372", "373", "374", "375"],
                 "children": [],
-                "decendants": [],
+                "descendants": [],
                 "history-current": "648",
                 "history": ["648"]
             }
@@ -1119,8 +1119,8 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
                 "type": "feature-sets"
             },
-            "feature-sets.decendants": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.decendants}",
+            "feature-sets.descendants": {
+                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.descendants}",
                 "type": "feature-sets"
             },
             "feature-sets.history-current": {

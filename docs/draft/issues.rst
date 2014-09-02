@@ -45,7 +45,7 @@ These changes are:
     - **kuma-path** - MDN path that data was scraped from
     - **canonical** - True if the name is the code used by a developer
     - **name** - converted to localized text, or lang ``"zxx"`` if canonical
-    - **ancestors**, **siblings**, **children**, **decendants** - tree relations
+    - **ancestors**, **siblings**, **children**, **descendants** - tree relations
 * browser-version-features_
     - **support** - Added a value "never", for cases where developers have
       announced they will not support a feature.  For example, the `CSS
