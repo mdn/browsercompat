@@ -8,6 +8,10 @@ web-platform-compat
 .. image:: https://coveralls.io/repos/jwhitlock/web-platform-compat/badge.png?branch=master
     :target: https://coveralls.io/r/jwhitlock/web-platform-compat?branch=master
 
+.. image:: https://www.herokucdn.com/deploy/button.png
+    :target: https://heroku.com/deploy?template=https://github.com/jwhitlock/web-platform-compat
+    :alt: Deploy
+
 The Web Platform Compatibility API will support compatability data on the
 `Mozilla Developer Network`_.  This currently takes the form of browser
 compatability tables, such as the one on the `CSS display property`_.
