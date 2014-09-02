@@ -80,6 +80,9 @@ class TestBrowserViewset(APITestCase):
                         str(history.pk), "{browsers.history_current}"),
                 },
                 "browsers.versions": {
+                    'href': (
+                        'http://testserver/api/browser-versions/'
+                        '{browsers.versions}'),
                     "type": "browser versions",
                 },
             }
@@ -170,6 +173,9 @@ class TestBrowserViewset(APITestCase):
                     'type': 'historical browsers',
                 },
                 'browsers.versions': {
+                    'href': (
+                        'http://testserver/api/browser-versions/'
+                        '{browsers.versions}'),
                     'type': 'browser versions',
                 },
             }
@@ -487,6 +493,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
         history = browser.history.all()
         history_view = 'historicalbrowser-detail'
+        version_view = 'browserversion-detail'
         expected_data = {
             "id": browser.pk,
             "slug": 'browser',
@@ -496,7 +503,8 @@ class TestBrowserViewset(APITestCase):
             "history": [
                 self.reverse(history_view, pk=h.pk) for h in history],
             "history_current": self.reverse(history_view, pk=history[0].pk),
-            "versions": [v2.pk, v1.pk],
+            "versions": [
+                self.reverse(version_view, pk=v.pk) for v in (v2, v1)],
         }
         self.assertEqual(dict(response.data), expected_data)
 
@@ -526,6 +534,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
         history = browser.history.all()
         history_view = 'historicalbrowser-detail'
+        version_view = 'browserversion-detail'
         expected_data = {
             "id": browser.pk,
             "slug": 'browser',
@@ -535,7 +544,8 @@ class TestBrowserViewset(APITestCase):
             "history": [
                 self.reverse(history_view, pk=h.pk) for h in history],
             "history_current": self.reverse(history_view, pk=history[0].pk),
-            "versions": [v1.pk, v2.pk],
+            "versions": [
+                self.reverse(version_view, pk=v.pk) for v in (v1, v2)],
         }
         self.assertEqual(dict(response.data), expected_data)
 
@@ -565,6 +575,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
         history = browser.history.all()
         history_view = 'historicalbrowser-detail'
+        version_view = 'browserversion-detail'
         expected_data = {
             "id": browser.pk,
             "slug": 'browser',
@@ -574,7 +585,8 @@ class TestBrowserViewset(APITestCase):
             "history": [
                 self.reverse(history_view, pk=h.pk) for h in history],
             "history_current": self.reverse(history_view, pk=history[0].pk),
-            "versions": [v2.pk, v1.pk],
+            "versions": [
+                self.reverse(version_view, pk=v.pk) for v in (v2, v1)],
         }
         self.assertEqual(dict(response.data), expected_data)
 

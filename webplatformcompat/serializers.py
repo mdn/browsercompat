@@ -5,14 +5,12 @@ API Serializers
 
 from django.contrib.auth.models import User
 from rest_framework.serializers import (
-    DateField, DateTimeField, HyperlinkedRelatedField, IntegerField,
-    ModelSerializer, ModelSerializerOptions, SerializerMethodField,
-    ValidationError)
-
-
+    DateField, DateTimeField, HyperlinkedModelSerializer,
+    HyperlinkedModelSerializerOptions, HyperlinkedRelatedField, IntegerField,
+    ModelSerializer, SerializerMethodField, ValidationError)
 from .fields import (
-    CurrentHistoryField, HistoricalObjectField,  HistoryField,
-    LimitedPrimaryKeyRelatedField, SecureURLField, TranslatedTextField)
+    CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
+    TranslatedTextField)
 from .models import Browser, BrowserVersion
 
 
@@ -20,7 +18,7 @@ from .models import Browser, BrowserVersion
 # "Regular" Serializers
 #
 
-class UpdateOnlySerializerOptions(ModelSerializerOptions):
+class UpdateOnlySerializerOptions(HyperlinkedModelSerializerOptions):
     def __init__(self, meta):
         super(UpdateOnlySerializerOptions, self).__init__(meta)
         self.update_only_fields = getattr(meta, 'update_only_fields', ())
@@ -41,7 +39,7 @@ class UpdateOnlyMixin(object):
         return fields
 
 
-class HistoricalModelSerializer(UpdateOnlyMixin, ModelSerializer):
+class HistoricalModelSerializer(UpdateOnlyMixin, HyperlinkedModelSerializer):
     """Model serializer with history manager"""
 
     def get_default_fields(self):
@@ -97,7 +95,6 @@ class BrowserSerializer(HistoricalModelSerializer):
     icon = SecureURLField(required=False)
     name = TranslatedTextField()
     note = TranslatedTextField(required=False)
-    versions = LimitedPrimaryKeyRelatedField(many=True)
 
     def save_object(self, obj, **kwargs):
         if 'versions' in getattr(obj, '_related_data', {}):
