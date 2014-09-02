@@ -96,16 +96,16 @@ The representation includes:
 * **links**
     - **user** *(one)* - The user who initiated this changeset, can not be
       changed.
-    - **browsers-history** *(many)* - Associated browsers-history_, in ID
+    - **historical-browsers** *(many)* - Associated historical-browsers_, in ID
       order, changes are ignored.
-    - **browser-versions-history** *(many)* - Associated
-      browser-versions-history_, in ID order, changes are ignored.
-    - **features-history** *(many)* - Associated features-history_,
+    - **historical-browser-versions** *(many)* - Associated
+      historical-browser-versions_, in ID order, changes are ignored.
+    - **historical-features** *(many)* - Associated historical-features_,
       in ID order, changes are ignored.
-    - **feature-sets-history** *(many)* - Associated feature-sets-history_,
+    - **historical-feature-sets** *(many)* - Associated historical-feature-sets_,
       in ID order, changes are ignored.
-    - **browser-version-features-history** *(many)* - Associated
-      browser-version-features-history_, in ID order, changes are ignored.
+    - **historical-browser-version-features** *(many)* - Associated
+      historical-browser-version-features_, in ID order, changes are ignored.
 
 
 To get a single **changeset** representation:
@@ -134,11 +134,11 @@ A sample response is:
             "target-resource-id": "35",
             "links": {
                 "user": "42",
-                "browsers-history": [],
-                "browser-versions-history": [],
-                "features-history": [],
-                "feature-sets-history": [],
-                "browser-version-features-history": ["1789", "1790"]
+                "historical-browsers": [],
+                "historical-browser-versions": [],
+                "historical-features": [],
+                "historical-feature-sets": [],
+                "historical-browser-version-features": ["1789", "1790"]
             }
         },
         "links": {
@@ -146,25 +146,25 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/users/{changesets.user}",
                 "type": "users"
             },
-            "changesets.browsers-history": {
-                "href": "https://api.compat.mozilla.org/browsers-history/{changesets.browsers-history}",
-                "type": "browsers-history"
+            "changesets.historical-browsers": {
+                "href": "https://api.compat.mozilla.org/historical-browsers/{changesets.historical-browsers}",
+                "type": "historical-browsers"
             },
-            "changesets.browser-versions-history": {
-                "href": "https://api.compat.mozilla.org/browser-versions-history/{changesets.browser-versions-history}",
-                "type": "browser-versions-history"
+            "changesets.historical-browser-versions": {
+                "href": "https://api.compat.mozilla.org/historical-browser-versions/{changesets.historical-browser-versions}",
+                "type": "historical-browser-versions"
             },
-            "changesets.features-history": {
-                "href": "https://api.compat.mozilla.org/features-history/{changesets.features-history}",
-                "type": "features-history"
+            "changesets.historical-features": {
+                "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
+                "type": "historical-features"
             },
-            "changesets.feature-sets-history": {
-                "href": "https://api.compat.mozilla.org/feature-sets-history/{changesets.feature-sets-history}",
-                "type": "feature-sets-history"
+            "changesets.historical-feature-sets": {
+                "href": "https://api.compat.mozilla.org/historical-feature-sets/{changesets.historical-feature-sets}",
+                "type": "historical-feature-sets"
             },
-            "changesets.browser-version-features-history": {
-                "href": "https://api.compat.mozilla.org/browser-version-features-history/{changesets.browser-version-features-history}",
-                "type": "browser-version-features-history"
+            "changesets.historical-browser-version-features": {
+                "href": "https://api.compat.mozilla.org/historical-browser-version-features/{changesets.historical-browser-version-features}",
+                "type": "historical-browser-version-features"
             }
         }
     }
@@ -173,8 +173,8 @@ A sample response is:
 
 .. _browser-version-feature: resources.html#browser-version-features
 
-.. _browsers-history: history.html#browsers-history
-.. _browser-versions-history: history.html#browser-versions-history
-.. _browser-version-features-history: history.html#browser-version-features-history
-.. _features-history: history.html#features-history
-.. _feature-sets-history: history.html#feature-sets-history
+.. _historical-browsers: history.html#historical-browsers
+.. _historical-browser-versions: history.html#historical-browser-versions
+.. _historical-browser-version-features: history.html#historical-browser-version-features
+.. _historical-features: history.html#historical-features
+.. _historical-feature-sets: history.html#historical-feature-sets

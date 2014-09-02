@@ -8,15 +8,15 @@ over time.
 All history representations are similar, so one example should be enough to
 determine the pattern.
 
-Browsers History
-----------------
+Historical Browsers
+-------------------
 
-A **browsers-history** represents the state of a browser_ at a point in
-time, and who is responsible for that state.  The representation includes:
+A **historical-browser** resource represents the state of a browser_ at a point
+in time, and who is responsible for that state.  The representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **timestamp** *(server selected)* - Timestamp of this change
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
     - **event** *(server selected)* - The type of event, one of ``"created"``,
       ``"changed"``, or ``"deleted"``
     - **browsers** - The **browsers** representation at this point in time
@@ -24,11 +24,11 @@ time, and who is responsible for that state.  The representation includes:
     - **browser** *(one)* - Associated browser_, can not be changed
     - **changeset** *(one)* - Associated changeset_, can not be changed.
 
-To get a single **browsers-history** representation:
+To get a single **historical-browsers** representation:
 
 .. code-block:: http
 
-    GET /browsers-history/1002 HTTP/1.1
+    GET /historical-browsers/1002 HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -42,7 +42,7 @@ A sample response is:
 .. code-block:: json
 
     {
-        "browsers-history": {
+        "historical-browsers": {
             "id": "1002",
             "timestamp": "1404919464.559140",
             "event": "created",
@@ -57,9 +57,7 @@ A sample response is:
                     "en": "Uses Gecko for its web browser engine."
                 },
                 "links": {
-                    "versions": ["124"],
                     "history-current": "1002",
-                    "history": ["1002"]
                 }
             },
             "links": {
@@ -68,47 +66,49 @@ A sample response is:
             }
         },
         "links": {
-            "browsers-history.browser": {
-                "href": "https://api.compat.mozilla.org/browser-history/{browsers-history.browser}",
+            "historical-browsers.browser": {
+                "href": "https://api.compat.mozilla.org/browser-history/{historical-browsers.browser}",
                 "type": "browsers"
             },
-            "browsers-history.changeset": {
-                "href": "https://api.compat.mozilla.org/changesets/{browsers-history.changeset}",
+            "historical-browsers.changeset": {
+                "href": "https://api.compat.mozilla.org/changesets/{historical-browsers.changeset}",
                 "type": "changeset"
             }
         }
     }
 
-Browser Versions History
-------------------------
+Historical Browser Versions
+---------------------------
 
-A **browser-versions-history** represents a state of a browser-version_ at
-a point in time, and who is responsible for that representation.  See
-browsers-history_ and browser-versions_ for an idea of the represention.
+A **historical-browser-versions** resource represents the state of a
+browser-version_ at a point in time, and who is responsible for that
+representation.  See historical-browsers_ and browser-versions_ for an idea of
+the represention.
 
-Features History
-----------------
+Historical Features
+-------------------
 
-A **features-history** represents a state of a feature_ at a point in time,
-and who is responsible for that representation.  See browsers-history_ and
-features_ for an idea of the represention.
-
-Feature Sets History
---------------------
-
-A **feature-sets-history** represents a state of a feature-set_ at a point
+A **historical-features** resource represents the state of a feature_ at a point
 in time, and who is responsible for that representation.  See
-browsers-history_ and feature-sets_ for an idea of the represention.
+historical-browsers_ and features_ for an idea of the represention.
 
-Browser Version Features History
---------------------------------
+Historical Feature Sets
+-----------------------
 
-A **browser-version-features-history** represents a state of a
+A **historical-feature-sets** resource represents a state of a feature-set_ at
+a point in time, and who is responsible for that representation.  See
+historical-browsers_ and feature-sets_ for an idea of the represention.
+
+Historical Browser Version Features
+-----------------------------------
+
+A **historical-browser-version-features** resource represents a state of a
 browser-version-feature_ at a point in time, and who is responsible for that
-representation.  See browsers-history_ and browser-version-features_ for
-an idea of the represention.
+representation.  See historical-browsers_ and browser-version-features_ for an
+idea of the represention.
 
-.. _browsers-history: `Browsers History`_
+.. _historical-browser: `Historical Browsers`_
+.. _historical-browsers: `Historical Browsers`_
 
 .. _browser: resources.html#browsers
 .. _browser-version: resources.html#browser-versions
@@ -121,3 +121,5 @@ an idea of the represention.
 .. _feature-sets: resources.html#feature-sets
 
 .. _changeset: change-control#changesets
+
+.. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601

@@ -64,8 +64,8 @@ There are also additional Resources_:
 * specifications_ - For referring to a specification, with translated titles
   and URIs.
 * specification-statuses_ - For identifying the process stage of a spec
-* All the history_ resources (browsers-history_,
-  browser-versions-history_, etc.)
+* All the history_ resources (historical-browsers_,
+  historical-browser-versions_, etc.)
 * users_ - For identifying the user who made a change
 * changesets_ - Collect several history resources into a logical change
 
@@ -400,8 +400,8 @@ To Do
 .. _users: change-control#users
 
 .. _history: history.html
-.. _browsers-history: history.html#browsers-history
-.. _browser-versions-history: history.html#browser-versions-history
+.. _historical-browsers: history.html#historical-browsers
+.. _historical-browser-versions: history.html#historical-browser-versions
 
 .. _`Browser Compatibility Data Architecture`: https://docs.google.com/document/d/1YF7GJ6kgV5_hx6SJjyrgunqznQU1mKxp5FaLAEzMDl4/edit#
 .. _CompatGeckoDesktop: https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop
