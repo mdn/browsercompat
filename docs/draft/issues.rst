@@ -42,7 +42,7 @@ These changes are:
     - **specfication-sections** - replaces spec link
 * feature-sets_
     - **slug** - human-friendly unique identifier
-    - **kuma-path** - MDN path that data was scraped from
+    - **mdn-path** - MDN path that data was scraped from
     - **canonical** - True if the name is the code used by a developer
     - **name** - converted to localized text, or lang ``"zxx"`` if canonical
     - **ancestors**, **siblings**, **children**, **descendants** - tree relations
@@ -225,14 +225,14 @@ Here's the MDN wiki version of the Specifications section for
 The elements of this table are converted into API data:
 
 * **Body row, first column** - Format is ``SpecName('KEY', 'PATH', 'NAME')``.
-  ``KEY`` is the specification.kuma-key, ``PATH`` is
+  ``KEY`` is the specification.mdn-key, ``PATH`` is
   specification-section.subpath, in the page language, and ``NAME`` is
   specification-section.name, in the page language.  The macro SpecName_ has
   additional lookups on ``KEY`` for specification.name and specification.uri
   (en language only).
 * **Body row, second column** - Format is ``Spec2('KEY')``.  ``KEY`` is the
-  specification.kuma-key, and should match the one from column one.  The macro
-  Spec2_ has additional lookups on ``KEY`` for specification-status.kuma-key,
+  specification.mdn-key, and should match the one from column one.  The macro
+  Spec2_ has additional lookups on ``KEY`` for specification-status.mdn-key,
   and specification-status.name (multiple languages).
 * **Body row, third column** - Format is a text fragment which may include HTML
   markup, becomes the specification-section.name associated with this

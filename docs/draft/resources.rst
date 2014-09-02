@@ -1018,7 +1018,7 @@ The **feature-sets** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **slug** *(write-once)* - Unique, human-friendly slug
-    - **kuma-path** - The path to the page on MDN that this feature-set was
+    - **mdn-path** - The path to the page on MDN that this feature-set was
       first scraped from.  May be used in UX or for debugging import scripts.
     - **canonical** - true if the feature set has a canonical name,
       representing code that a developer could use directly.  For example,
@@ -1077,7 +1077,7 @@ A sample response is:
         "feature-sets": {
             "id": "373",
             "slug": "css-property-background-size",
-            "kuma-path": "en-US/docs/Web/CSS/display",
+            "mdn-path": "en-US/docs/Web/CSS/display",
             "canonical": true,
             "name": {
                 "zxx": "background-size"
@@ -1224,7 +1224,7 @@ The **specification** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **kuma-key** - The key for the KumaScript macros SpecName_ and Spec2_
+    - **mdn-key** - The key for the KumaScript macros SpecName_ and Spec2_
       used as a data source.
     - **name** *(localized)* - Specification name
     - **uri** *(localized)* - Specification URI, without subpath and anchor
@@ -1254,7 +1254,7 @@ A sample response is:
     {
         "specifications": {
             "id": "273",
-            "kuma-key": "CSS1",
+            "mdn-key": "CSS1",
             "name": {
                 "en": "Cascading Style Sheets, level 1",
                 "fr": "Les feuilles de style en cascade, niveau 1"
@@ -1359,7 +1359,7 @@ The **specification-status** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **kuma-key** - The value for this status in the KumaScript macro Spec2_
+    - **mdn-key** - The value for this status in the KumaScript macro Spec2_
     - **name** *(localized)* - Status name
 * **links**
     - **specifications** *(many)* - Associated specifications_.  In ID order,
@@ -1385,7 +1385,7 @@ A sample response is:
     {
         "specification-statuses": {
             "id": "49",
-            "kuma-key": "REC",
+            "mdn-key": "REC",
             "name": {
                 "en": "Recommendation",
                 "jp": "勧告"

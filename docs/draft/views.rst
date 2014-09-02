@@ -36,7 +36,7 @@ A sample response is:
         "feature-sets": {
             "id": "816"
             "slug": "html-element-address",
-            "kuma-path": "en-US/docs/Web/HTML/Element/address",
+            "mdn-path": "en-US/docs/Web/HTML/Element/address",
             "canonical": true,
             "name": {
                 "zxx": "address"
@@ -164,7 +164,7 @@ A sample response is:
             "specification-statuses": [
                 {
                     "id": "23",
-                    "kuma-key": "Living",
+                    "mdn-key": "Living",
                     "name": {
                         "en": "Living Standard",
                     },
@@ -173,7 +173,7 @@ A sample response is:
                     }
                 }, {
                     "id": "49",
-                    "kuma-key": "REC",
+                    "mdn-key": "REC",
                     "name": {
                         "en": "Recommendation",
                         "jp": "勧告"
@@ -183,7 +183,7 @@ A sample response is:
                     }
                 }, {
                     "id": "52",
-                    "kuma-key": "CR",
+                    "mdn-key": "CR",
                     "name": {
                         "en": "Candidate Recommendation",
                         "ja": "勧告候補",
@@ -828,7 +828,7 @@ The process for using this representation is:
           specifications.name.(lang or en), with title based on
           specification-sections.name.(lang or en) or feature.name.(lang or en).
         * Add the second column: A span with class
-          "spec-" + specification-statuses.kuma-key, and the text
+          "spec-" + specification-statuses.mdn-key, and the text
           specification-statuses.name.(lang or en).
         * Add the third column:
           specification-statuses.notes.(lang or en), or empty string
