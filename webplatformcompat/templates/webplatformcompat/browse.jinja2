@@ -1,0 +1,130 @@
+{% extends "webplatformcompat/base.jinja2" %}
+
+{% block head_title %}Browse Web Platform Compatability Data{% endblock %}
+
+{% block body_container %}
+<script type="text/x-handlebars">
+<div class="container">
+    <header>
+      <h1>Browse Web Platform Compatability Data</h1>
+    </header>
+    {{ '{{outlet}}' }}
+    <hr>
+    <footer>
+        <p>© Mozilla 2014</p>
+    </footer>
+</div>
+</script>
+
+<script type="text/x-handlebars" data-template-name="index">
+{% raw %}
+<p>
+    This is an application to view Web Platform Compatability Data.
+</p>
+<p>
+    The following is available:
+</p>
+<ul>
+    <li>{{#link-to 'browsers'}}Browsers{{/link-to}}</li>
+</ul>
+{% endraw %}
+</script>
+
+<script type="text/x-handlebars" data-template-name="browsers">
+{% raw %}
+<h2>{{length}} Browsers</h2>
+<!-- Doesn't work - adds trailing slash
+<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
+-->
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>slug</th>
+                <th>icon</th>
+                <th>name</th>
+                <th>note</th>
+                <th>versions</th>
+            </tr>
+        </thead>
+        <tbody>
+          {{#each itemController='browser'}}
+            <tr>
+                <td>{{id}}</td>
+                <td><code>{{slug}}</code></td>
+                <td>{{#if icon}}{{icon}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{name.en}}</td>
+                <td>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</td>
+                <td><a href='#'>{{#link-to 'browser' id}}{{versions.length}} {{versionInflection}}{{/link-to}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+    </table>
+</div>
+{% endraw %}
+</script>
+
+<script type="text/x-handlebars" data-template-name="browser">
+{% raw %}
+<h2>{{name.en}} Browser</h2>
+<!-- Doesn't work - adds trailing slash
+<p><em>{{#link-to 'browsers'}}back to Browsers{{/link-to}}</em></p>
+-->
+<dl>
+  <dt>Id</dt>
+  <dd>{{id}}</dd>
+  <dt>Slug</dt>
+  <dd><code>{{slug}}</code></dd>
+  <dt>Icon</dt>
+  <dd>{{#if icon}}{{icon}}{{else}}<em>none</em>{{/if}}</dd>
+  <dt>Name</dt>
+  <dd>{{name.en}}</dd>
+  <dt>Note</dt>
+  <dd>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</dd>
+</dl>
+
+<h3>{{versions.length}} {{versionInflection}}</h3>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>version</th>
+                <th>release day</th>
+                <th>retirement day</th>
+                <th>status</th>
+                <th>release notes URI</th>
+                <th>note</th>
+                <th>order</th>
+            </tr>
+        </thead>
+        <tbody>
+          {{#each v in versions}}
+          {{#with v}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{#if version}}{{version}}{{else}}<em>unspecified</em>{{/if}}</td>
+                <td>{{#if releaseDay}}{{releaseDay}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if retirementDay}}{{retirementDay}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{status}}</td>
+                <td>{{#if releaseNoteUri}}{{releaseNoteUri}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{order}}</td>
+            </tr>
+          {{/with}}
+          {{/each}}
+        </tbody>
+    </table>
+</div>
+{% endraw %}
+</script>
+{%- endblock body_container %}
+
+{% block body_js_extra %}
+<script src="{{ static('vendor/ember-1.7.0/handlebars-v1.3.0.js')}}"></script>
+<script src="{{ static('vendor/ember-1.7.0/ember.js')}}"></script>
+<script src="{{ static('vendor/ember-data-1.0.0-beta.9/ember-data.js')}}"></script>
+<script src="{{ static('vendor/ember-json-api-1.0-beta.3/json_api_adapter.js')}}"></script>
+<script src="{{ static('js/browse.js') }}"></script>
+{% endblock %}
