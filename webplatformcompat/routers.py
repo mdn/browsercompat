@@ -3,6 +3,7 @@
 import collections
 RouterDict = getattr(collections, 'OrderedDict', dict)
 
+from django.views.generic import RedirectView
 from rest_framework.compat import url
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -20,6 +21,7 @@ class GroupedRouter(DefaultRouter):
     '''Router with grouped API root and slash redirects'''
 
     view_groups = {}
+    allowed_ext = ['api', 'json']
 
     def register(self, prefix, viewset, base_name=None, group=None):
         assert group
@@ -65,8 +67,18 @@ class GroupedRouter(DefaultRouter):
 
         default_urls = super(DefaultRouter, self).get_urls()
         urls.extend(default_urls)
-        urls = format_suffix_patterns(urls)
-        return urls
+        urls = format_suffix_patterns(urls, allowed=self.allowed_ext)
+
+        # Add redirects for list views
+        assert not self.trailing_slash
+        redirect_urls = []
+        for u in default_urls:
+            if u.name.endswith('-list'):
+                pattern = u.regex.pattern.replace('$', '/$')
+                view = RedirectView.as_view(
+                    pattern_name=u.name, permanent=False)
+                redirect_urls.append(url(pattern, view))
+        return urls + redirect_urls
 
 
 router = GroupedRouter(trailing_slash=False)
