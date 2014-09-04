@@ -147,10 +147,8 @@ class UserSerializer(ModelSerializer):
 #
 # Historical object serializers
 #
-
-class HistoricalObjectSerializer(ModelSerializer):
+class HistoricalObjectSerializer(HyperlinkedModelSerializer):
     '''Common serializer attributes for Historical models'''
-
     id = IntegerField(source="history_id")
     date = DateTimeField(source="history_date")
     event = SerializerMethodField('get_event')
@@ -167,7 +165,7 @@ class HistoricalObjectSerializer(ModelSerializer):
         return self.EVENT_CHOICES[obj.history_type]
 
     def get_archive(self, obj):
-        serializer = self.ArchivedBrowser(obj)
+        serializer = self.ArchivedObject(obj)
         data = serializer.data
         data['id'] = str(data['id'])
         data['links'] = {'history_current': str(obj.history_id)}
@@ -179,7 +177,7 @@ class HistoricalObjectSerializer(ModelSerializer):
 
 class HistoricalBrowserSerializer(HistoricalObjectSerializer):
 
-    class ArchivedBrowser(BrowserSerializer):
+    class ArchivedObject(BrowserSerializer):
         class Meta(BrowserSerializer.Meta):
             exclude = ('history_current', 'history', 'versions')
 
@@ -194,7 +192,7 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
 
 class HistoricalBrowserVersionSerializer(HistoricalObjectSerializer):
 
-    class ArchivedBrowser(BrowserVersionSerializer):
+    class ArchivedObject(BrowserVersionSerializer):
         class Meta(BrowserVersionSerializer.Meta):
             exclude = ('history_current', 'history', 'browser')
 

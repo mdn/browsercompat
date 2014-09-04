@@ -146,6 +146,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ],
     'VIEW_NAME_FUNCTION': 'webplatformcompat.utils.get_view_name',
+    'DEFAULT_FILTER_BACKENDS': [
+        'webplatformcompat.filters.UnorderedDjangoFilterBackend',
+    ],
 }
 
 # Django nose
