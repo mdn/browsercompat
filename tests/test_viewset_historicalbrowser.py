@@ -16,6 +16,14 @@ from .base import APITestCase
 
 
 class TestHistoricalBrowserViewset(APITestCase):
+
+    def fix_data(self, data):
+        '''Fix response.data dictionary'''
+        out = dict(data)
+        out['browsers'] = dict(out['browsers'])
+        out['browsers']['name'] = dict(out['browsers']['name'])
+        return out
+
     def test_get(self):
         user = self.login_superuser()
         browser = self.create(
@@ -43,10 +51,7 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'links': {'history_current': '1'}
             },
         }
-        actual = dict(response.data)
-        actual['browsers'] = dict(actual['browsers'])
-        actual['browsers']['name'] = dict(actual['browsers']['name'])
-        self.assertDictEqual(expected_data, actual)
+        self.assertDictEqual(expected_data, self.fix_data(response.data))
         expected_json = {
             'historical-browsers': {
                 'id': '1',
@@ -86,3 +91,61 @@ class TestHistoricalBrowserViewset(APITestCase):
         }
         self.assertDictEqual(
             expected_json, loads(response.content.decode('utf-8')))
+
+    def test_filter_by_id(self):
+        user = self.login_superuser()
+        self.create(
+            Browser, slug='other', name={'en': 'Other Browser'})
+        browser = self.create(
+            Browser, slug='browser', name={'en': 'A Browser'},
+            _history_user=user,
+            _history_date=datetime(2014, 9, 4, 17, 58, 26, 915222, UTC))
+        bh = browser.history.all()[0]
+        url = reverse('historicalbrowser-list')
+        response = self.client.get(url, {'id': browser.id})
+        expected_data = {
+            'id': bh.history_id,
+            'date': browser._history_date,
+            'event': 'created',
+            'user': self.reverse('user-detail', pk=user.pk),
+            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'browsers': {
+                'id': str(browser.pk),
+                'slug': 'browser',
+                'icon': None,
+                'name': {'en': 'A Browser'},
+                'note': None,
+                'links': {'history_current': str(bh.pk)}
+            },
+        }
+        self.assertEqual(1, len(response.data))
+        self.assertEqual(expected_data, self.fix_data(response.data[0]))
+
+    def test_filter_by_slug(self):
+        user = self.login_superuser()
+        self.create(
+            Browser, slug='other', name={'en': 'Other Browser'})
+        browser = self.create(
+            Browser, slug='browser', name={'en': 'A Browser'},
+            _history_user=user,
+            _history_date=datetime(2014, 9, 4, 17, 58, 26, 915222, UTC))
+        bh = browser.history.all()[0]
+        url = reverse('historicalbrowser-list')
+        response = self.client.get(url, {'slug': 'browser'})
+        expected_data = {
+            'id': bh.history_id,
+            'date': browser._history_date,
+            'event': 'created',
+            'user': self.reverse('user-detail', pk=user.pk),
+            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'browsers': {
+                'id': str(browser.pk),
+                'slug': 'browser',
+                'icon': None,
+                'name': {'en': 'A Browser'},
+                'note': None,
+                'links': {'history_current': str(bh.pk)}
+            },
+        }
+        self.assertEqual(1, len(response.data))
+        self.assertEqual(expected_data, self.fix_data(response.data[0]))

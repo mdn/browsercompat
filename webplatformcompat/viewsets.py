@@ -58,6 +58,7 @@ class UserViewSet(ModelViewSet):
 class HistoricalBrowserViewSet(ReadOnlyModelViewSet):
     model = Browser.history.model
     serializer_class = HistoricalBrowserSerializer
+    filter_fields = ('id', 'slug')
 
 
 class HistoricalBrowserVersionViewSet(ReadOnlyModelViewSet):

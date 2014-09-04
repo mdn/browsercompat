@@ -15,7 +15,7 @@ class UnorderedDjangoFilterBackend(DjangoFilterBackend):
         filter_fields = getattr(view, 'filter_fields', None)
         assert not filter_class
 
-        if filter_fields:
+        if filter_fields:  # pragma: no cover
             class AutoFilterSet(self.default_filter_set):
                 class Meta:
                     model = queryset.model
@@ -23,4 +23,4 @@ class UnorderedDjangoFilterBackend(DjangoFilterBackend):
                     order_by = False
             return AutoFilterSet
 
-        return None
+        return None  # pragma: no cover
