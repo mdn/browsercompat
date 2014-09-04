@@ -183,6 +183,32 @@ class TestBrowserViewset(APITestCase):
         actual_content = loads(response.content.decode('utf-8'))
         self.assertEqual(expected_content, actual_content)
 
+    def test_filter_by_slug(self):
+        user = self.login_superuser()
+        browser = Browser(
+            slug="firefox", icon='', name={"en": "Firefox"}, note=None)
+        browser._history_user = user
+        browser.save()
+        not_browser = Browser(
+            slug="chrome", icon='', name={"en": "Chrome"})
+        not_browser._history_user = user
+        not_browser.save()
+        url = reverse('browser-list')
+        response = self.client.get(url, {'slug': 'firefox'})
+        history = browser.history.get()
+        history_url = self.reverse('historicalbrowser-detail', pk=history.pk)
+        expected_data = [{
+            'id': browser.pk,
+            'slug': 'firefox',
+            'icon': None,
+            'name': {"en": "Firefox"},
+            'note': None,
+            'history': [history_url],
+            'history_current': history_url,
+            'versions': [],
+        }]
+        self.assertEqual(response.data, expected_data)
+
     def test_get_browsable_api(self):
         user = self.login_superuser()
         browser = Browser()

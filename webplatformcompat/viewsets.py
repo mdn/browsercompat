@@ -36,6 +36,7 @@ class ReadOnlyModelViewSet(BaseROModelViewSet):
 class BrowserViewSet(ModelViewSet):
     model = Browser
     serializer_class = BrowserSerializer
+    filter_fields = ('slug',)
 
 
 class BrowserVersionViewSet(ModelViewSet):

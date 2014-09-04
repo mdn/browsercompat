@@ -295,7 +295,7 @@ To request a **browser** by slug:
 
 .. code-block:: http
 
-    GET /browsers/firefox HTTP/1.1
+    GET /browsers?slug=firefox HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -305,12 +305,11 @@ A sample response is:
 
     HTTP/1.1 200 OK
     Content-Type: application/vnd.api+json
-    Location: https://api.compat.mozilla.org/browsers/2
 
 .. code-block:: json
 
     {
-        "browsers": {
+        "browsers": [{
             "id": "2",
             "slug": "firefox",
             "icon": "https://compat.cdn.mozilla.net/media/img/browsers/firefox.png",
@@ -325,7 +324,7 @@ A sample response is:
                 "history-current": "1002",
                 "history": ["1002"]
             }
-        },
+        }],
         "links": {
             "browsers.versions": {
                 "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
