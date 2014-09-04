@@ -42,6 +42,7 @@ class BrowserViewSet(ModelViewSet):
 class BrowserVersionViewSet(ModelViewSet):
     model = BrowserVersion
     serializer_class = BrowserVersionSerializer
+    filter_fields = ('browser', 'browser__slug', 'version', 'status')
 
 
 class UserViewSet(ModelViewSet):
