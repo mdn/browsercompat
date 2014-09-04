@@ -145,6 +145,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ],
+    'VIEW_NAME_FUNCTION': 'webplatformcompat.utils.get_view_name',
 }
 
 # Django nose

@@ -70,12 +70,12 @@ class TestBrowserViewset(APITestCase):
             },
             "links": {
                 "browsers.history": {
-                    "type": "historical browsers",
+                    "type": "historical-browsers",
                     "href": history_url.replace(
                         str(history.pk), "{browsers.history}"),
                 },
                 "browsers.history_current": {
-                    "type": "historical browsers",
+                    "type": "historical-browsers",
                     "href": history_url.replace(
                         str(history.pk), "{browsers.history_current}"),
                 },
@@ -83,7 +83,7 @@ class TestBrowserViewset(APITestCase):
                     'href': (
                         'http://testserver/api/browser-versions/'
                         '{browsers.versions}'),
-                    "type": "browser versions",
+                    "type": "browser-versions",
                 },
             }
         }
@@ -164,19 +164,19 @@ class TestBrowserViewset(APITestCase):
                     'href': (
                         'http://testserver/api/historical-browsers/'
                         '{browsers.history}'),
-                    'type': 'historical browsers',
+                    'type': 'historical-browsers',
                 },
                 'browsers.history_current': {
                     'href': (
                         'http://testserver/api/historical-browsers/'
                         '{browsers.history_current}'),
-                    'type': 'historical browsers',
+                    'type': 'historical-browsers',
                 },
                 'browsers.versions': {
                     'href': (
                         'http://testserver/api/browser-versions/'
                         '{browsers.versions}'),
-                    'type': 'browser versions',
+                    'type': 'browser-versions',
                 },
             }
         }
@@ -624,7 +624,7 @@ class TestHistoricalBrowserViewset(APITestCase):
         actual['browsers']['name'] = dict(actual['browsers']['name'])
         self.assertDictEqual(expected_data, actual)
         expected_json = {
-            'historical browsers': {
+            'historical-browsers': {
                 'id': '1',
                 'date': '2014-08-25T20:50:38.868Z',
                 'event': 'created',
@@ -646,16 +646,16 @@ class TestHistoricalBrowserViewset(APITestCase):
                 }
             },
             'links': {
-                'historical browsers.browser': {
+                'historical-browsers.browser': {
                     'href': (
                         'http://testserver/api/browsers/'
-                        '{historical browsers.browser}'),
+                        '{historical-browsers.browser}'),
                     'type': 'browsers'
                 },
-                'historical browsers.user': {
+                'historical-browsers.user': {
                     'href': (
                         'http://testserver/api/users/'
-                        '{historical browsers.user}'),
+                        '{historical-browsers.user}'),
                     'type': 'users'
                 }
             }
