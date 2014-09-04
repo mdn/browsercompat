@@ -48,6 +48,7 @@ class BrowserVersionViewSet(ModelViewSet):
 class UserViewSet(ModelViewSet):
     model = User
     serializer_class = UserSerializer
+    filter_fields = ('username',)
 
 
 #
