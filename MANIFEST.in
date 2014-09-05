@@ -1,9 +1,9 @@
 include LICENSE CONTRIBUTING.rst HISTORY.rst README.rst
-include Makefile runtests.py .coveragerc manage.py
+include Makefile .coveragerc manage.py
 include requirements.txt requirements.dev.txt
 include Procfile app.json
 
-recursive-include docs Makefile *.gv *.svg _templates conf.py *.rst draft make.bat
+recursive-include docs Makefile *.gv *.svg conf.py *.rst make.bat
 recursive-include tests *.py
 recursive-include tools *.py
 recursive-include webplatformcompat/static *.css *.map *.eot *.svg *.ttf *.woff *.js .keep

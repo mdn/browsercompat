@@ -36,16 +36,19 @@ class ReadOnlyModelViewSet(BaseROModelViewSet):
 class BrowserViewSet(ModelViewSet):
     model = Browser
     serializer_class = BrowserSerializer
+    filter_fields = ('slug',)
 
 
 class BrowserVersionViewSet(ModelViewSet):
     model = BrowserVersion
     serializer_class = BrowserVersionSerializer
+    filter_fields = ('browser', 'browser__slug', 'version', 'status')
 
 
 class UserViewSet(ModelViewSet):
     model = User
     serializer_class = UserSerializer
+    filter_fields = ('username',)
 
 
 #
@@ -55,8 +58,10 @@ class UserViewSet(ModelViewSet):
 class HistoricalBrowserViewSet(ReadOnlyModelViewSet):
     model = Browser.history.model
     serializer_class = HistoricalBrowserSerializer
+    filter_fields = ('id', 'slug')
 
 
 class HistoricalBrowserVersionViewSet(ReadOnlyModelViewSet):
     model = BrowserVersion.history.model
     serializer_class = HistoricalBrowserVersionSerializer
+    filter_fields = ('id',)
