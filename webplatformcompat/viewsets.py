@@ -5,10 +5,10 @@ from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.viewsets import ModelViewSet as BaseModelViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet as BaseROModelViewSet
-from rest_framework_json_api.parsers import JsonApiParser
 
 from .mixins import PartialPutMixin
 from .models import Browser, BrowserVersion
+from .parsers import JsonApiParser
 from .renderers import JsonApiRenderer
 from .serializers import (
     BrowserSerializer, BrowserVersionSerializer,
