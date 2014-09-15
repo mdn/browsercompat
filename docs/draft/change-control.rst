@@ -102,8 +102,6 @@ The representation includes:
       historical-browser-versions_, in ID order, changes are ignored.
     - **historical-features** *(many)* - Associated historical-features_,
       in ID order, changes are ignored.
-    - **historical-feature-sets** *(many)* - Associated historical-feature-sets_,
-      in ID order, changes are ignored.
     - **historical-browser-version-features** *(many)* - Associated
       historical-browser-version-features_, in ID order, changes are ignored.
 
@@ -130,14 +128,13 @@ A sample response is:
             "id": "73",
             "created": "1405353048.910000",
             "modified": "1405353048.910000",
-            "target-resource": "feature-sets",
+            "target-resource": "features",
             "target-resource-id": "35",
             "links": {
                 "user": "42",
                 "historical-browsers": [],
                 "historical-browser-versions": [],
                 "historical-features": [],
-                "historical-feature-sets": [],
                 "historical-browser-version-features": ["1789", "1790"]
             }
         },
@@ -158,10 +155,6 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
                 "type": "historical-features"
             },
-            "changesets.historical-feature-sets": {
-                "href": "https://api.compat.mozilla.org/historical-feature-sets/{changesets.historical-feature-sets}",
-                "type": "historical-feature-sets"
-            },
             "changesets.historical-browser-version-features": {
                 "href": "https://api.compat.mozilla.org/historical-browser-version-features/{changesets.historical-browser-version-features}",
                 "type": "historical-browser-version-features"
@@ -177,4 +170,3 @@ A sample response is:
 .. _historical-browser-versions: history.html#historical-browser-versions
 .. _historical-browser-version-features: history.html#historical-browser-version-features
 .. _historical-features: history.html#historical-features
-.. _historical-feature-sets: history.html#historical-feature-sets

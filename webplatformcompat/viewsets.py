@@ -82,7 +82,7 @@ class HistoricalBrowserVersionViewSet(ReadOnlyModelViewSet):
 # Views
 #
 
-class ViewFeatureSetViewSet(ViewSet):
+class ViewFeaturesViewSet(ViewSet):
     '''Return a view for FeatureSets
 
     TODO: Return real data
@@ -91,16 +91,16 @@ class ViewFeatureSetViewSet(ViewSet):
     permission_classes = (AllowAny,)
 
     def get_renderer_context(self):
-        context = super(ViewFeatureSetViewSet, self).get_renderer_context()
+        context = super(ViewFeaturesViewSet, self).get_renderer_context()
         context['jsonapi'] = {'direct': True}
         return context
 
     def list(self, request, *args, **kwargs):
         url = reverse(
-            'viewfeaturesets-detail', request=request,
+            'viewfeatures-detail', request=request,
             kwargs={'pk': 'html-element-address'})
         feature_sets = {
-            'view-feature-sets': OrderedDict((
+            'view-features': OrderedDict((
                 ('html-element-address', url),
             ))
         }
@@ -108,19 +108,20 @@ class ViewFeatureSetViewSet(ViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         feature_set = OrderedDict((
-            ("feature-sets", OrderedDict((
+            ("features", OrderedDict((
                 ("id", "816"),
                 ("slug", "html-element-address"),
+                ("maturity", "standard"),
                 ("mdn-path", "en-US/docs/Web/HTML/Element/address"),
                 ("name", "address"),
                 ("links", OrderedDict((
-                    ("features", ["191"]),
                     ("specification-sections", ["746", "421", "70"]),
+                    ("browser-version-features", []),
                     ("parent", "800"),
                     ("ancestors", ["800", "816"]),
                     ("siblings", ["814", "815", "816", "817", "818"]),
-                    ("children", []),
-                    ("descendants", []),
+                    ("children", ["191"]),
+                    ("descendants", ["816", "191"]),
                     ("history-current", "216"),
                     ("history", ["216"])))),
             ))),
@@ -132,11 +133,15 @@ class ViewFeatureSetViewSet(ViewSet):
                         ("maturity", "standard"),
                         ("name", {"en": "Basic support"}),
                         ("links", OrderedDict((
-                            ("feature-sets", ["816"]),
                             ("specification-sections", []),
                             ("browser-version-features", [
                                 "358", "359", "360", "361", "362", "363",
                                 "364", "365", "366", "367", "368"]),
+                            ("parent", "816"),
+                            ("ancestors", ["800", "816", "191"]),
+                            ("siblings", ["191"]),
+                            ("children", []),
+                            ("descendants", ["191"]),
                             ("history-current", "395"),
                             ("history", ["395"]),
                         ))),
@@ -152,7 +157,7 @@ class ViewFeatureSetViewSet(ViewSet):
                         ("links", OrderedDict((
                             ("specification", "273"),
                             ("features", []),
-                            ("feature-sets", ["816"]),
+                            ("features", ["816"]),
                         ))),
                     )),
                     OrderedDict((
@@ -163,8 +168,7 @@ class ViewFeatureSetViewSet(ViewSet):
                         ("notes", None),
                         ("links", OrderedDict((
                             ("specification", "114"),
-                            ("features", []),
-                            ("feature-sets", ["816"]),
+                            ("features", ["816"]),
                         ))),
                     )),
                     OrderedDict((
@@ -174,8 +178,7 @@ class ViewFeatureSetViewSet(ViewSet):
                         ("notes", None),
                         ("links", OrderedDict((
                             ("specification", "576"),
-                            ("features", []),
-                            ("feature-sets", ["816"]),
+                            ("features", ["816"]),
                         ))),
                     )),
                 ]),
@@ -761,85 +764,60 @@ class ViewFeatureSetViewSet(ViewSet):
                 ]),
             ))),
             ("links", OrderedDict((
-                ("feature-sets.features", OrderedDict((
+                ("feature.features", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/features/"
-                        "{feature-sets.features}")),
+                        "{feature.features}")),
                     ("type", "features"),
-                ))),
-                ("feature-sets.specification-sections", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "specification-sections/"
-                        "{feature-sets.specification-sections}")),
-                    ("type", "specfication-sections"),
-                ))),
-                ("feature-sets.parent", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/feature-sets/"
-                        "{feature-sets.parent}")),
-                    ("type", "feature-sets"),
-                ))),
-                ("feature-sets.ancestors", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/feature-sets/"
-                        "{feature-sets.ancestors}")),
-                    ("type", "feature-sets"),
-                ))),
-                ("feature-sets.siblings", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/feature-sets/"
-                        "{feature-sets.siblings}")),
-                    ("type", "feature-sets"),
-                ))),
-                ("feature-sets.children", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/feature-sets/"
-                        "{feature-sets.children}")),
-                    ("type", "feature-sets"),
-                ))),
-                ("feature-sets.descendants", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/feature-sets/"
-                        "{feature-sets.descendants}")),
-                    ("type", "feature-sets"),
-                ))),
-                ("feature-sets.history-current", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "historical-feature-sets/"
-                        "{feature-sets.history-current}")),
-                    ("type", "historical-feature-sets"),
-                ))),
-                ("feature-sets.history", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "historical-feature-sets/"
-                        "{feature-sets.history}")),
-                    ("type", "historical-feature-sets"),
-                ))),
-                ("features.feature-set", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/feature-sets/"
-                        "{features.feature-set}")),
-                    ("type", "features-sets"),
                 ))),
                 ("features.specification-sections", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
                         "specification-sections/"
                         "{features.specification-sections}")),
-                    ("type", "specification-sections"),
+                    ("type", "specfication-sections"),
+                ))),
+                ("features.parent", OrderedDict((
+                    ("href", (
+                        "https://api.compat.mozilla.org/features/"
+                        "{features.parent}")),
+                    ("type", "features"),
+                ))),
+                ("features.ancestors", OrderedDict((
+                    ("href", (
+                        "https://api.compat.mozilla.org/features/"
+                        "{features.ancestors}")),
+                    ("type", "features"),
+                ))),
+                ("features.siblings", OrderedDict((
+                    ("href", (
+                        "https://api.compat.mozilla.org/features/"
+                        "{features.siblings}")),
+                    ("type", "features"),
+                ))),
+                ("features.children", OrderedDict((
+                    ("href", (
+                        "https://api.compat.mozilla.org/features/"
+                        "{features.children}")),
+                    ("type", "features"),
+                ))),
+                ("features.descendants", OrderedDict((
+                    ("href", (
+                        "https://api.compat.mozilla.org/features/"
+                        "{features.descendants}")),
+                    ("type", "features"),
                 ))),
                 ("features.history-current", OrderedDict((
                     ("href", (
-                        "https://api.compat.mozilla.org/historical-features/"
+                        "https://api.compat.mozilla.org/"
+                        "historical-features/"
                         "{features.history-current}")),
                     ("type", "historical-features"),
                 ))),
                 ("features.history", OrderedDict((
                     ("href", (
-                        "https://api.compat.mozilla.org/historical-features/"
+                        "https://api.compat.mozilla.org/"
+                        "historical-features/"
                         "{features.history}")),
                     ("type", "historical-features"),
                 ))),
@@ -887,31 +865,6 @@ class ViewFeatureSetViewSet(ViewSet):
                         "historical-browser-versions/"
                         "{browser-versions.history}")),
                     ("type", "historical-browser-versions"),
-                ))),
-                ("features.feature-set", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/feature-sets/"
-                        "{features.feature-set}")),
-                    ("type", "features-sets"),
-                ))),
-                ("features.specification-sections", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "specification-sections/"
-                        "{features.specification-sections}")),
-                    ("type", "specification-sections"),
-                ))),
-                ("features.history-current", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/historical-features/"
-                        "{features.history-current}")),
-                    ("type", "historical-features"),
-                ))),
-                ("features.history", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/historical-features/"
-                        "{features.history}")),
-                    ("type", "historical-features"),
                 ))),
                 ("browser-version-features.browser-version", OrderedDict((
                     ("href", (

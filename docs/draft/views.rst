@@ -9,17 +9,17 @@ supporting optional parts of the JSON API spec, such as `Inclusion of Linked
 Resources`_.  These views are written as if they are aliases for a
 fully-fleshed implementation of JSON API.
 
-View a Feature Set
-------------------
+View a Feature
+--------------
 
-This view collects the data for a feature-set_, including the related
+This view collects the data for a feature_, including the related
 resources needed to display it on MDN.
 
 Here is a simple example, the view for the HTML element address_:
 
 .. code-block:: http
 
-    GET /views/view-by-feature-set/html-element-address HTTP/1.1
+    GET /views/view-by-feature/html-element-address HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -33,19 +33,20 @@ A sample response is:
 .. code-block:: json
 
     {
-        "feature-sets": {
+        "features": {
             "id": "816"
             "slug": "html-element-address",
+            "maturity": "standard",
             "mdn-path": "en-US/docs/Web/HTML/Element/address",
             "name": "address",
             "links": {
-                "features": ["191"],
                 "specification-sections": ["746", "421", "70"],
+                "browser-version-features": [],
                 "parent": "800",
                 "ancestors": ["800", "816"],
                 "siblings": ["814", "815", "816", "817", "818"],
-                "children": [],
-                "descendants": [],
+                "children": ["191"],
+                "descendants": ["816", "191"],
                 "history-current": "216",
                 "history": ["216"]
             }
@@ -60,11 +61,15 @@ A sample response is:
                         "en": "Basic support"
                     },
                     "links": {
-                        "feature-sets": ["816"],
                         "specification-sections": [],
                         "browser-version-features": [
                             "358", "359", "360", "361", "362", "363", "364",
                             "365", "366", "367", "368"],
+                        "parent": "816",
+                        "ancestors": ["800", "816", "191"],
+                        "siblings": ["191"],
+                        "children": [],
+                        "descendants": ["191"],
                         "history-current": "395",
                         "history": ["395"]
                     }
@@ -82,8 +87,7 @@ A sample response is:
                     "notes": null,
                     "links": {
                         "specification": "273",
-                        "features": [],
-                        "feature-sets": ["816"]
+                        "features": ["816"],
                     }
                 },{
                     "id": "421",
@@ -96,8 +100,7 @@ A sample response is:
                     "notes": null,
                     "links": {
                         "specification": "114",
-                        "features": [],
-                        "feature-sets": ["816"]
+                        "features": ["816"],
                     }
                 },{
                     "id": "70",
@@ -110,8 +113,7 @@ A sample response is:
                     "notes": null,
                     "links": {
                         "specification": "576",
-                        "features": [],
-                        "feature-sets": ["816"]
+                        "features": ["816"],
                     }
                 }
             ],
@@ -647,49 +649,33 @@ A sample response is:
             ]
         },
         "links": {
-            "feature-sets.features": {
-                "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
+            "features.features": {
+                "href": "https://api.compat.mozilla.org/features/{features.features}",
                 "type": "features"
-            },
-            "feature-sets.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
-                "type": "specfication-sections"
-            },
-            "feature-sets.parent": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
-                "type": "feature-sets"
-            },
-            "feature-sets.ancestors": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
-                "type": "feature-sets"
-            },
-            "feature-sets.siblings": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
-                "type": "feature-sets"
-            },
-            "feature-sets.children": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
-                "type": "feature-sets"
-            },
-            "feature-sets.descendants": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.descendants}",
-                "type": "feature-sets"
-            },
-            "feature-sets.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-feature-sets/{feature-sets.history-current}",
-                "type": "historical-feature-sets"
-            },
-            "feature-sets.history": {
-                "href": "https://api.compat.mozilla.org/historical-feature-sets/{feature-sets.history}",
-                "type": "historical-feature-sets"
-            }
-            "features.feature-set": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
-                "type": "features-sets"
             },
             "features.specification-sections": {
                 "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
                 "type": "specification-sections"
+            },
+            "features.parent": {
+                "href": "https://api.compat.mozilla.org/features/{features.parent}",
+                "type": "features"
+            },
+            "features.ancestors": {
+                "href": "https://api.compat.mozilla.org/features/{features.ancestors}",
+                "type": "features"
+            },
+            "features.siblings": {
+                "href": "https://api.compat.mozilla.org/features/{features.siblings}",
+                "type": "features"
+            },
+            "features.children": {
+                "href": "https://api.compat.mozilla.org/features/{features.children}",
+                "type": "features"
+            },
+            "features.descendants": {
+                "href": "https://api.compat.mozilla.org/features/{features.descendants}",
+                "type": "features"
             },
             "features.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-features/{features.history-current}",
@@ -726,22 +712,6 @@ A sample response is:
             "browser-versions.history": {
                 "href": "https://api.compat.mozilla.org/historical-browser-versions/{browser-versions.history}",
                 "type": "historical-browser-versions"
-            },
-            "features.feature-set": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
-                "type": "features-sets"
-            },
-            "features.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
-                "type": "specification-sections"
-            },
-            "features.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-features/{features.history-current}",
-                "type": "historical-features"
-            },
-            "features.history": {
-                "href": "https://api.compat.mozilla.org/historical-features/{features.history}",
-                "type": "historical-features"
             },
             "browser-version-features.browser-version": {
                 "href": "https://api.compat.mozilla.org/browser-versions/{browser-version-features.browser-version}",
@@ -818,7 +788,7 @@ The process for using this representation is:
 2. Create the "Specifications" section:
     1. Add the ``Specifications`` header
     2. Create an HTML table with a header row "Specification", "Status", "Comment"
-    3. For each id in feature-sets.links.specification-sections (``["746", "421", "70"]``):
+    3. For each id in features.links.specification-sections (``["746", "421", "70"]``):
         * Add the first column: a link to specifications.uri.(lang or en) +
           specifications-sections.subpath.(lang or en), with link text
           specifications.name.(lang or en), with title based on
@@ -835,7 +805,7 @@ The process for using this representation is:
        name ("Desktop", "Mobile")
     3. For each browser id in meta.compat-table.tabs.browsers, add a column with
        the translated browser name.
-    4. For each feature in feature-sets.features:
+    4. For each feature in features.features:
         * Add the first column: the feature name.  If it is a string, then wrap
           in ``<code>``.  Otherwise, use the best translation of feature.name,
           in a ``lang=(lang)`` block.
@@ -880,7 +850,7 @@ The first step is to create a changeset_ as an authenticated user:
 
     {
         "changesets": {
-            "target-resource": "feature-sets",
+            "target-resource": "features",
             "target-resource-id": "816"
         }
     }
@@ -900,14 +870,13 @@ A sample response is:
             "id": "5284",
             "created": "1405360263.670000",
             "modified": "1405360263.670000",
-            "target-resource": "feature-sets",
+            "target-resource": "features",
             "target-resource-id": "816",
             "links": {
                 "user": "42",
                 "historical-browsers": [],
                 "historical-browser-versions": [],
                 "historical-features": [],
-                "historical-feature-sets": [],
                 "historical-browser-version-features": []
             }
         },
@@ -927,10 +896,6 @@ A sample response is:
             "changesets.historical-features": {
                 "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
                 "type": "historical-features"
-            },
-            "changesets.historical-feature-sets": {
-                "href": "https://api.compat.mozilla.org/historical-feature-sets/{changesets.historical-feature-sets}",
-                "type": "historical-feature-sets"
             },
             "changesets.historical-browser-version-features": {
                 "href": "https://api.compat.mozilla.org/historical-browser-version-features/{changesets.historical-browser-version-features}",
@@ -1075,14 +1040,14 @@ A sample response is:
 
 The historical-browser-versions_ and historical-browser-version-features_
 resources will both refer to changeset_ 5284, and this changeset_ is
-linked to feature-set_ 816, despite the fact that no changes were made
-to the feature-set_.  This will facilitate displaying a history of
+linked to feature_ 816, despite the fact that no changes were made
+to the feature_.  This will facilitate displaying a history of
 the compatibility tables, for the purpose of reviewing changes and reverting
 vandalism.
 
 .. _browser-version: resources.html#browser-versions
 .. _browser-version-feature: resources.html#browser-versions-feature
-.. _feature-set: resources.html#feature-sets
+.. _feature: resources.html#features
 
 .. _changeset: change-control#changeset
 

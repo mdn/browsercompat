@@ -32,6 +32,7 @@ These changes are:
     - **note** - added for engine version, etc.
 * features_
     - **slug** - human-friendly unique identifier
+    - **mdn-path** - MDN path that data was scraped from
     - **maturity** - the standards maturity of the feature.  One of
       `"standard"` (no special markup), `"non-standard"` (non-standard flag,
       like the `left` and `right` features of `Web/CSS/caption-side`_), or
@@ -40,11 +41,6 @@ These changes are:
     - **name** - converted to localized text, or a string if the name is
       canonical
     - **specfication-sections** - replaces spec link
-* feature-sets_
-    - **slug** - human-friendly unique identifier
-    - **mdn-path** - MDN path that data was scraped from
-    - **name** - converted to localized text, or a string if the name is
-      canonical
     - **ancestors**, **siblings**, **children**, **descendants** - tree relations
 * browser-version-features_
     - **support** - Added a value "never", for cases where developers have
@@ -183,7 +179,7 @@ Translating from MDN wiki format
 The current compatibility data on developer.mozilla.org in MDN wiki format, a
 combination of HTML and KumaScript.
 
-A MDN page will be imported as a feature-set.
+A MDN page will be imported as a feature with at least one child feature.
 
 Here's the MDN wiki version of the Specifications section for
 `Web/CSS/border-image-width`_:
@@ -222,7 +218,7 @@ The elements of this table are converted into API data:
   and specification-status.name (multiple languages).
 * **Body row, third column** - Format is a text fragment which may include HTML
   markup, becomes the specification-section.name associated with this
-  feature-set.
+  feature.
 
 and here's the Browser compatibility section:
 
@@ -310,7 +306,7 @@ This will be converted to API resources:
 Once the initial conversion has been done for a page, it may be useful to
 perform additional steps:
 
-1. Split large feature-sets_ into smaller ones.  For example,
+1. Split large features_ into smaller ones.  For example,
    here's one way to reorganize `Web/CSS/display`_:
 
 .. image:: ../../_static/canonicalized-display.svg
@@ -355,11 +351,13 @@ To Do
       canonical, and name={"lang": "translation"} means it is non-canonical.*
     * Feature-sets is a cloud, not a heirarchy.  "color=red" is the same
       feature as "background-color=red", so needs to be multiply assigned.
-    * A feature-set can either have sub-feature sets (middle of cloud), or
-      features (edge of cloud).
-    * Add browser-version-feature-sets, to make positive assertions about
+    * *A feature-set can either have sub-feature sets (middle of cloud), or
+      features (edge of cloud).* - Note - implemented by merging features and
+      feature sets.
+    * *Add browser-version-feature-sets, to make positive assertions about
       a browser-version supporting a feature-set.  Only negative assertions
-      can be made based on features.
+      can be made based on features.* - Note - implemented by merging features
+      and feature sets
     * Drop order of features by feature set.  Client will alpha-sort.
     * browser-version-features.support, drop "prefixed" status.  If prefixed,
       support = 'yes', and prefix is set.
@@ -377,7 +375,6 @@ To Do
 .. _browser-versions: resources.html#browser-versions
 .. _browser-version-features: resources.html#browser-versions-features
 .. _features: resources.html#features
-.. _feature-sets: resources.html#feature-sets
 .. _specifications: resources.html#specifications
 .. _specification-sections: resources.html#specification-sections
 .. _specification-statuses: resources.html#specification-statuses

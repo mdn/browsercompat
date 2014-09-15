@@ -35,7 +35,7 @@ class TestViews(TestCase):
                     self.reverse('historicalbrowserversion-list'),
             },
             'views': {
-                'views/feature-sets': self.reverse('viewfeaturesets-list')
+                'views/features': self.reverse('viewfeatures-list')
             },
         }
         self.assertEqual(expected, loads(response.content.decode('utf-8')))

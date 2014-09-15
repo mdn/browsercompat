@@ -854,15 +854,20 @@ A sample response is:
 
 Features
 --------
-
-A **feature** is a precise web technology, such as the value ``cover`` for the
-CSS ``background-size`` property.
+A **feature** is a web technology.  This could be a precise technology, such
+as the value ``cover`` for the CSS ``background-size`` property.  It could be
+a heirarchical group of related technologies, such as the CSS
+``background-size`` property or the set of all CSS properties.  Some features
+correspond to a page on MDN_, which will display the list of specifications
+and a browser compatability table of the sub-features.
 
 The **features** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **slug** *(write-once)* - Unique, human-friendly slug
+    - **mdn-path** - The path to the page on MDN that this feature was
+      first scraped from.  May be used in UX or for debugging import scripts.
     - **maturity** - Is the feature part of a current recommended standard?
       One of the following:
       ``standard`` (default value, feature is defined in a current standard),
@@ -875,25 +880,37 @@ The **features** representation includes:
       wrapped in a ``<code>`` block when displayed.  If the name is a
       description of the feature, then the value is the available
       translations, including at least an ``en`` translation, and may include
-      HTML markup.  For example, ``"display: none"`` is the canonical name for
-      the CSS display property with a value of none, while ``"Basic support"``
-      and ``"<code>none, inline</code> and <code>block</code>"`` are
-      non-canonical names that should be translated.
+      HTML markup.  For example, ``"display"`` and ``"display: none"`` are
+      canonical names for the CSS display property and one of the values for
+      that property, while ``"Basic support"``,
+      ``"<code>none, inline</code> and <code>block</code>"``, and
+      ``"CSS Properties"`` are non-canonical names that should be translated.
+
 * **links**
-    - **feature-sets** *(many)* - Associated feature-sets_.  Ideally, a
-      feature is contained in a single feature-set_ but it may be
-      associated with multiple feature-sets_ during a transition
-      period.  Order is in ID order, changes are ignored.
     - **specification-sections** *(many)* - Associated specification-sections_.
       Order can be changed by the user.
     - **browser-version-features** *(many)* - Associated browser-version-features_,
       Order is in ID order, changes are ignored.
+    - **parent** *(one or null)* - The feature one level up, or null
+      if top-level.  Can be changed by user.
+    - **ancestors** *(many)* - The features that form the path to the top of
+      the tree, including this one, in bread-crumb order (top to self).  Can
+      not be changed by user - set the **parent** instead.
+    - **siblings** *(many)* - The features with the same parent, including
+      including this one, in display order.  Can be re-ordered by the user.
+    - **children** *(many)* - The features that have this feature as parent, in
+      display order.  Can be an empty list, for "leaf" features.  Can be
+      re-ordered by the user.
+    - **descendants** *(many)* - The features in the local tree for this
+      feature. including this one, in tree order.  Can not be changed by the
+      user - set the **parent** on the child feature instead.
     - **history-current** *(one)* - Current historical-features_.  User can
       set to a valid **history** to revert to that version.
     - **history** *(many)* - Associated historical-features_, in time order
       (most recent first).  Changes are ignored.
 
-To get a specific **feature** (in this case, a feature with a canonical name):
+
+To get a specific **feature** (in this case, a leaf feature with a canonical name):
 
 .. code-block:: http
 
@@ -917,21 +934,41 @@ A sample response is:
             "maturity": "standard",
             "name": "background-size: contain"},
             "links": {
-                "feature-sets": ["373"],
                 "specification-sections": ["485"],
                 "browser-version-features": ["1125", "1212", "1536"],
+                "parent": "173",
+                "ancestors": ["2", "12", "173", "276"],
+                "siblings": ["275", "276", "277"],
+                "children": [],
+                "descendants": ["276"],
                 "history-current": "456",
                 "history": ["456"]
             }
         },
         "links": {
-            "features.feature-set": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
-                "type": "features-sets"
-            },
             "features.specification-sections": {
                 "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
                 "type": "specification-sections"
+            },
+            "feature.parent": {
+                "href": "https://api.compat.mozilla.org/features/{feature.parent}",
+                "type": "features"
+            },
+            "features.ancestors": {
+                "href": "https://api.compat.mozilla.org/features/{feature.ancestors}",
+                "type": "features"
+            },
+            "features.siblings": {
+                "href": "https://api.compat.mozilla.org/features/{feature.siblings}",
+                "type": "features"
+            },
+            "features.children": {
+                "href": "https://api.compat.mozilla.org/features/{feature.children}",
+                "type": "features"
+            },
+            "features.descendants": {
+                "href": "https://api.compat.mozilla.org/features/{feature.descendants}",
+                "type": "features"
             },
             "features.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-features/{features.history-current}",
@@ -944,11 +981,12 @@ A sample response is:
         }
     }
 
-Here's an example of a feature with a translated name:
+Here's an example of a branch feature with a translated name (the parent of the
+previous example):
 
 .. code-block:: http
 
-    GET /features/191 HTTP/1.1
+    GET /features/173 HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -963,30 +1001,48 @@ A sample response is:
 
     {
         "features": {
-            "id": "191",
-            "slug": "html-element-address",
+            "id": "173",
+            "slug": "css-property-background",
             "maturity": "standard",
             "name": {
-                "en": "Basic support"
+                "en": "CSS <code>background</code> property"
             },
             "links": {
-                "feature-sets": ["816"],
                 "specification-sections": [],
-                "browser-version-features": [
-                    "358", "359", "360", "361", "362", "363", "364",
-                    "365", "366", "367", "368"],
+                "browser-version-features": [],
+                "parent": ["12"],
+                "ancestors": ["2", "12", "173"]
+                "siblings": ["167", "168", "169", "170", "171", "172", "173", "174", "175"],
+                "children": ["275", "276", "277"],
+                "descendants": ["173", "275", "276", "277"],
                 "history-current": "395",
                 "history": ["395"]
             }
         },
         "links": {
-            "features.feature-set": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{features.feature-set}",
-                "type": "features-sets"
-            },
             "features.specification-sections": {
                 "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
                 "type": "specification-sections"
+            },
+            "feature.parent": {
+                "href": "https://api.compat.mozilla.org/features/{feature.parent}",
+                "type": "features"
+            },
+            "features.ancestors": {
+                "href": "https://api.compat.mozilla.org/features/{feature.ancestors}",
+                "type": "features"
+            },
+            "features.siblings": {
+                "href": "https://api.compat.mozilla.org/features/{feature.siblings}",
+                "type": "features"
+            },
+            "features.children": {
+                "href": "https://api.compat.mozilla.org/features/{feature.children}",
+                "type": "features"
+            },
+            "features.descendants": {
+                "href": "https://api.compat.mozilla.org/features/{feature.descendants}",
+                "type": "features"
             },
             "features.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-features/{features.history-current}",
@@ -995,129 +1051,6 @@ A sample response is:
             "features.history": {
                 "href": "https://api.compat.mozilla.org/historical-features/{features.history}",
                 "type": "historical-features"
-            }
-        }
-    }
-
-Feature Sets
-------------
-
-A **feature-set** organizes features into a heierarchy of logical groups.  A
-**feature-set** corresponds to a page on MDN_, which will display a list of
-specifications and a browser compatibility table.
-
-The **feature-sets** representation includes:
-
-* **attributes**
-    - **id** *(server selected)* - Database ID
-    - **slug** *(write-once)* - Unique, human-friendly slug
-    - **mdn-path** - The path to the page on MDN that this feature-set was
-      first scraped from.  May be used in UX or for debugging import scripts.
-    - **name** *(canonical or localized)* - Feature set name.  If the name is
-      the code used by a developer, then the value is a string, and should be
-      wrapped in a ``<code>`` block when displayed.  If the name is a
-      description of the feature set, then the value is the available
-      translations, including at least an ``en`` translation, and may include
-      HTML markup.  For example, ``"display"`` is a canonical name for the CSS
-      display property, and should not be translated, while ``"CSS"`` and
-      ``"Flexbox Values for <code>display</code>"`` are non-canonical names
-      that should be translated.
-* **links**
-    - **features** *(many)* - Associated features_.  Can be re-ordered by
-      the user.
-    - **specification-sections** *(many)* - Associated
-      specification-sections_.  Can be re-ordered by the user.
-    - **parent** *(one or null)* - The feature-set one level up, or null
-      if top-level.  Can be changed by user.
-    - **ancestors** *(many)* - The feature-sets that form the path to the
-      top of the tree, including this one, in bread-crumb order (top to self).
-      Can not be changed by user - set the **parent** instead.
-    - **siblings** *(many)* - The feature-sets with the same parent,
-      including including this one, in display order.  Can be re-ordered by the
-      user.
-    - **children** *(many)* - The feature-sets that have this
-      feature-set as parent, in display order.  Can be re-ordered by the
-      user.
-    - **descendants** *(many)* - The feature-sets in the local tree for
-      this feature-set. including this one, in tree order.  Can not be
-      changed by the user - set the **parent** on the child feature-set
-      instead.
-    - **history-current** *(one)* - The current historical-feature-sets_
-    - **history** *(many)* - Associated historical-feature-sets_, in time
-      order (most recent first).  Can not be re-ordered by user.
-
-
-To get a single **feature set** (in this case, one with a canonical name):
-
-.. code-block:: http
-
-    GET /features-sets/373 HTTP/1.1
-    Host: api.compat.mozilla.org
-    Accept: application/vnd.api+json
-
-A sample response is:
-
-.. code-block:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "feature-sets": {
-            "id": "373",
-            "slug": "css-property-background-size",
-            "mdn-path": "en-US/docs/Web/CSS/display",
-            "name": "background-size",
-            "links": {
-                "features": ["275", "276", "277"],
-                "specification-sections": [],
-                "parent": "301",
-                "ancestors": ["301", "373"],
-                "siblings": ["372", "373", "374", "375"],
-                "children": [],
-                "descendants": [],
-                "history-current": "648",
-                "history": ["648"]
-            }
-        },
-        "links": {
-            "feature-sets.features": {
-                "href": "https://api.compat.mozilla.org/features/{feature-sets.features}",
-                "type": "features"
-            },
-            "feature-sets.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{feature-sets.specification-sections}",
-                "type": "specfication-sections"
-            },
-            "feature-sets.parent": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.parent}",
-                "type": "feature-sets"
-            },
-            "feature-sets.ancestors": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.ancestors}",
-                "type": "feature-sets"
-            },
-            "feature-sets.siblings": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.siblings}",
-                "type": "feature-sets"
-            },
-            "feature-sets.children": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.children}",
-                "type": "feature-sets"
-            },
-            "feature-sets.descendants": {
-                "href": "https://api.compat.mozilla.org/feature-sets/{feature-sets.descendants}",
-                "type": "feature-sets"
-            },
-            "feature-sets.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-feature-sets/{feature-sets.history-current}",
-                "type": "historical-feature-sets"
-            },
-            "feature-sets.history": {
-                "href": "https://api.compat.mozilla.org/historical-feature-sets/{feature-sets.history}",
-                "type": "historical-feature-sets"
             }
         }
     }
@@ -1287,8 +1220,6 @@ The **specification-section** representation includes:
       the user.
     - **features** *(many)* - The associated features_.  In ID order,
       changes are ignored.
-    - **feature-sets** *(many)* - The associated feature-sets_.  In ID
-      order, changes are ignored.
 
 To get a single **specification-section**:
 
@@ -1322,7 +1253,6 @@ A sample response is:
             "links": {
                 "specification": "273",
                 "features": ["275", "276", "277"],
-                "feature-sets": [],
             }
         },
         "links": {
@@ -1394,8 +1324,6 @@ A sample response is:
 .. _browser-version: `Browser Versions`_
 .. _browser-versions: `Browser Versions`_
 .. _feature: Features_
-.. _feature-set: `Feature Sets`_
-.. _feature-sets: `Feature Sets`_
 .. _specification: Specifications_
 .. _specification-sections: `Specification Sections`_
 .. _specification-status: `Specification Statuses`_
@@ -1405,7 +1333,6 @@ A sample response is:
 .. _historical-browsers: history.html#historical-browsers
 .. _historical-browser-version-features: history.html#historical-browser-version-features
 .. _historical-features: history.html#historical-features
-.. _historical-feature-sets: history.html#historical-feature-sets
 
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601

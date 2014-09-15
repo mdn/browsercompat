@@ -92,13 +92,6 @@ A **historical-features** resource represents the state of a feature_ at a point
 in time, and who is responsible for that representation.  See
 historical-browsers_ and features_ for an idea of the represention.
 
-Historical Feature Sets
------------------------
-
-A **historical-feature-sets** resource represents a state of a feature-set_ at
-a point in time, and who is responsible for that representation.  See
-historical-browsers_ and feature-sets_ for an idea of the represention.
-
 Historical Browser Version Features
 -----------------------------------
 
@@ -117,8 +110,6 @@ idea of the represention.
 .. _browser-version-features: resources.html#browser-versions-features
 .. _feature: resources.html#features
 .. _features: resources.html#features
-.. _feature-set: resources.html#feature-sets
-.. _feature-sets: resources.html#feature-sets
 
 .. _changeset: change-control#changesets
 
