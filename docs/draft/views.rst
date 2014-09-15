@@ -36,7 +36,10 @@ A sample response is:
         "features": {
             "id": "816"
             "slug": "html-element-address",
-            "maturity": "standard",
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
             "mdn-path": "en-US/docs/Web/HTML/Element/address",
             "name": "address",
             "links": {
@@ -56,7 +59,10 @@ A sample response is:
                 {
                     "id": "191",
                     "slug": "html-address",
-                    "maturity": "standard",
+                    "experimental": false,
+                    "standardized": true,
+                    "stable": true,
+                    "obsolete": false,
                     "name": {
                         "en": "Basic support"
                     },
@@ -809,6 +815,8 @@ The process for using this representation is:
         * Add the first column: the feature name.  If it is a string, then wrap
           in ``<code>``.  Otherwise, use the best translation of feature.name,
           in a ``lang=(lang)`` block.
+        * Add any feature flags, such as an obsolete or experimental icon,
+          based on the feature flags.
         * For each browser id in meta.compat-table-important:
             - Get the important browser-version-feature IDs from
               meta.compat-table-important.browser-version-features.<``feature ID``>.<``browser ID``>

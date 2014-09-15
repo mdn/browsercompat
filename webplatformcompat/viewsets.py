@@ -111,7 +111,10 @@ class ViewFeaturesViewSet(ViewSet):
             ("features", OrderedDict((
                 ("id", "816"),
                 ("slug", "html-element-address"),
-                ("maturity", "standard"),
+                ("experimental", False),
+                ("standardized", True),
+                ("stable", True),
+                ("obsolete", False),
                 ("mdn-path", "en-US/docs/Web/HTML/Element/address"),
                 ("name", "address"),
                 ("links", OrderedDict((
@@ -130,7 +133,10 @@ class ViewFeaturesViewSet(ViewSet):
                     OrderedDict((
                         ("id", "191"),
                         ("slug", "html-address"),
-                        ("maturity", "standard"),
+                        ("experimental", False),
+                        ("standardized", True),
+                        ("stable", True),
+                        ("obsolete", False),
                         ("name", {"en": "Basic support"}),
                         ("links", OrderedDict((
                             ("specification-sections", []),

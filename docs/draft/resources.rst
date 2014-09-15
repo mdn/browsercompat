@@ -868,13 +868,13 @@ The **features** representation includes:
     - **slug** *(write-once)* - Unique, human-friendly slug
     - **mdn-path** - The path to the page on MDN that this feature was
       first scraped from.  May be used in UX or for debugging import scripts.
-    - **maturity** - Is the feature part of a current recommended standard?
-      One of the following:
-      ``standard`` (default value, feature is defined in a current standard),
-      ``non-standard`` (feature was never defined in a standard or was
-      explicitly removed by a current standard),
-      ``experimental`` (feature is part of a standard that isn't endorsed,
-      such as a working draft or on the recommendation track)
+    - **experimental** - True if a feature is considered experimental, such as
+      being non-standard or part of an non-ratified spec.
+    - **standardized** - True if a feature is described in a standards-track
+      spec, regardless of the spec's status.
+    - **stable** - True if a feature is considered suitable for production
+      websites.
+    - **obsolete** - True if a feature should not be used in new development.
     - **name** *(canonical or localized)* - Feature name.  If the name is the
       code used by a developer, then the value is a string, and should be
       wrapped in a ``<code>`` block when displayed.  If the name is a
@@ -931,7 +931,10 @@ A sample response is:
         "features": {
             "id": "276",
             "slug": "css-property-background-size-value-contain",
-            "maturity": "standard",
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
             "name": "background-size: contain"},
             "links": {
                 "specification-sections": ["485"],
@@ -1003,7 +1006,10 @@ A sample response is:
         "features": {
             "id": "173",
             "slug": "css-property-background",
-            "maturity": "standard",
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
             "name": {
                 "en": "CSS <code>background</code> property"
             },

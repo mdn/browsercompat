@@ -33,11 +33,20 @@ These changes are:
 * features_
     - **slug** - human-friendly unique identifier
     - **mdn-path** - MDN path that data was scraped from
-    - **maturity** - the standards maturity of the feature.  One of
-      `"standard"` (no special markup), `"non-standard"` (non-standard flag,
-      like the `left` and `right` features of `Web/CSS/caption-side`_), or
-      `"experimental"` (beaker flag, like the `run-in` value of
-      `Web/CSS/display`_).
+    - **experimental** - True if the feature is considered experimental due to
+      being part of a unratified spec such as CSS Transitions, ES6, or the DOM
+      Living Standard.  For example, see the `run-in` value of
+      `Web/CSS/display`_.
+    - **standardized** - True if the feature is described in a standards-track
+      specification, regardless of the maturity of the specification.  Most
+      features are standardized, but some browser-specific features may be
+      non-standard, and some features like the `left` and `right` features
+      of `Web/CSS/caption-side`_ were part of the CSS2 "wishlist" document
+      that was not standardized.
+    - **stable** - True if the feature is considered stable enough for
+      production usage.
+    - **obsolete** - True if the feature should no longer be used in
+      production code.
     - **name** - converted to localized text, or a string if the name is
       canonical
     - **specfication-sections** - replaces spec link
