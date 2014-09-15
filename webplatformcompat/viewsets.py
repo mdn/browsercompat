@@ -112,8 +112,7 @@ class ViewFeatureSetViewSet(ViewSet):
                 ("id", "816"),
                 ("slug", "html-element-address"),
                 ("mdn-path", "en-US/docs/Web/HTML/Element/address"),
-                ("canonical", True),
-                ("name", {"zxx": "address"}),
+                ("name", "address"),
                 ("links", OrderedDict((
                     ("features", ["191"]),
                     ("specification-sections", ["746", "421", "70"]),
@@ -131,7 +130,6 @@ class ViewFeatureSetViewSet(ViewSet):
                         ("id", "191"),
                         ("slug", "html-address"),
                         ("maturity", "standard"),
-                        ("canonical", False),
                         ("name", {"en": "Basic support"}),
                         ("links", OrderedDict((
                             ("feature-sets", ["816"]),

@@ -37,14 +37,14 @@ These changes are:
       like the `left` and `right` features of `Web/CSS/caption-side`_), or
       `"experimental"` (beaker flag, like the `run-in` value of
       `Web/CSS/display`_).
-    - **canonical** - True if the name is the code used by a developer
-    - **name** - converted to localized text, or lang ``"zxx"`` if canonical
+    - **name** - converted to localized text, or a string if the name is
+      canonical
     - **specfication-sections** - replaces spec link
 * feature-sets_
     - **slug** - human-friendly unique identifier
     - **mdn-path** - MDN path that data was scraped from
-    - **canonical** - True if the name is the code used by a developer
-    - **name** - converted to localized text, or lang ``"zxx"`` if canonical
+    - **name** - converted to localized text, or a string if the name is
+      canonical
     - **ancestors**, **siblings**, **children**, **descendants** - tree relations
 * browser-version-features_
     - **support** - Added a value "never", for cases where developers have
@@ -78,20 +78,6 @@ Unresolved Issues
   use case is supported by the API.
 * overholt wants `availability in Web Workers`_.  Is an API enough to support
   that need?
-* I'm not sure if the translatable strings are correct:
-    - browsers.name - Firefox explicitly says `don't localize our brand`_.  I
-      can't find examples of any localized browser names in the wild.
-      Jeremie's opinion is that this is a branding decision that may change
-      in the future, so should be left localizable.
-    - features.name - "Basic usage" and "none, inline and block" should be
-      localized.  But, are those good feature names?  Could you write a bit of
-      JavaScript to test 'Basic usage'?  Should there be three features
-      ("display: none", "display: inline", "display: block") instead?  The
-      need for translated feature names might be a doc smell.  The canonical
-      flag might turn into a list of tables to fix.
-    - feature-sets.name - Not sure if "CSS", "display", etc. should be
-      localized, similar logic to feature names.  The canonical flag will
-      help.
 * I think Niels Leenheer has good points about browsers being different across
   operating systems and OS versions - I'm considering adding this to the model:
   `Mapping browsers to 2.2.1 Dictionary Browser Members`_.
@@ -365,8 +351,8 @@ To Do
     * Drop browser-versions.status.  Doesn't think the MDN team will be able
       to keep up with browser releases.  Will instead rely on users
       figuring out if a browser version is the current release.
-    * Drop feature.canonical.  Instead, name="string" means it is
-      canonical, and name={"lang": "translation"} means it is non-canonical.
+    * *Drop feature.canonical.  Instead, name="string" means it is
+      canonical, and name={"lang": "translation"} means it is non-canonical.*
     * Feature-sets is a cloud, not a heirarchy.  "color=red" is the same
       feature as "background-color=red", so needs to be multiply assigned.
     * A feature-set can either have sub-feature sets (middle of cloud), or

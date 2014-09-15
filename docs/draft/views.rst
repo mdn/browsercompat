@@ -19,7 +19,7 @@ Here is a simple example, the view for the HTML element address_:
 
 .. code-block:: http
 
-    GET /views/view-by-feature-set/html-address HTTP/1.1
+    GET /views/view-by-feature-set/html-element-address HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -37,10 +37,7 @@ A sample response is:
             "id": "816"
             "slug": "html-element-address",
             "mdn-path": "en-US/docs/Web/HTML/Element/address",
-            "canonical": true,
-            "name": {
-                "zxx": "address"
-            },
+            "name": "address",
             "links": {
                 "features": ["191"],
                 "specification-sections": ["746", "421", "70"],
@@ -59,7 +56,6 @@ A sample response is:
                     "id": "191",
                     "slug": "html-address",
                     "maturity": "standard",
-                    "canonical": false,
                     "name": {
                         "en": "Basic support"
                     },
@@ -840,10 +836,9 @@ The process for using this representation is:
     3. For each browser id in meta.compat-table.tabs.browsers, add a column with
        the translated browser name.
     4. For each feature in feature-sets.features:
-        * Add the first column: the feature name.  If feature.canonical,
-          use the ``zxx`` translation of feature.name wrapped in ``<code>``.
-          Otherwise, use the best translation of feature.name, in a
-          ``lang=(lang)`` block.
+        * Add the first column: the feature name.  If it is a string, then wrap
+          in ``<code>``.  Otherwise, use the best translation of feature.name,
+          in a ``lang=(lang)`` block.
         * For each browser id in meta.compat-table-important:
             - Get the important browser-version-feature IDs from
               meta.compat-table-important.browser-version-features.<``feature ID``>.<``browser ID``>

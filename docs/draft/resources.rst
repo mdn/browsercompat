@@ -870,17 +870,15 @@ The **features** representation includes:
       explicitly removed by a current standard),
       ``experimental`` (feature is part of a standard that isn't endorsed,
       such as a working draft or on the recommendation track)
-    - **canonical** - true if the **name** is a canonical name, representing
-      code that a developer could use directly.  For example, ``"display: none"`` is
-      the canonical name for the CSS display property with a value of none,
-      while ``"Basic support"`` and
-      ``"<code>none, inline</code> and <code>block</code>"``
-      are non-canonical names that should be translated.
-    - **name** *(localized)* - Feature name.  When **canonical** is True, the
-      only translated string is in the non-linguistic_ language ``zxx``, and
-      should be wrapped in a ``<code>`` block when displayed.  When
-      **canonical** is false, the name will include at least an ``en``
-      translation, and may include HTML markup.
+    - **name** *(canonical or localized)* - Feature name.  If the name is the
+      code used by a developer, then the value is a string, and should be
+      wrapped in a ``<code>`` block when displayed.  If the name is a
+      description of the feature, then the value is the available
+      translations, including at least an ``en`` translation, and may include
+      HTML markup.  For example, ``"display: none"`` is the canonical name for
+      the CSS display property with a value of none, while ``"Basic support"``
+      and ``"<code>none, inline</code> and <code>block</code>"`` are
+      non-canonical names that should be translated.
 * **links**
     - **feature-sets** *(many)* - Associated feature-sets_.  Ideally, a
       feature is contained in a single feature-set_ but it may be
@@ -895,7 +893,7 @@ The **features** representation includes:
     - **history** *(many)* - Associated historical-features_, in time order
       (most recent first).  Changes are ignored.
 
-To get a specific **feature** (in this case, a canonically-named feature):
+To get a specific **feature** (in this case, a feature with a canonical name):
 
 .. code-block:: http
 
@@ -917,10 +915,7 @@ A sample response is:
             "id": "276",
             "slug": "css-property-background-size-value-contain",
             "maturity": "standard",
-            "canonical": true,
-            "name": {
-                "zxx": "background-size: contain"
-            },
+            "name": "background-size: contain"},
             "links": {
                 "feature-sets": ["373"],
                 "specification-sections": ["485"],
@@ -949,7 +944,7 @@ A sample response is:
         }
     }
 
-Here's an example of a non-canonically named feature:
+Here's an example of a feature with a translated name:
 
 .. code-block:: http
 
@@ -971,7 +966,6 @@ A sample response is:
             "id": "191",
             "slug": "html-element-address",
             "maturity": "standard",
-            "canonical": false,
             "name": {
                 "en": "Basic support"
             },
@@ -1019,17 +1013,15 @@ The **feature-sets** representation includes:
     - **slug** *(write-once)* - Unique, human-friendly slug
     - **mdn-path** - The path to the page on MDN that this feature-set was
       first scraped from.  May be used in UX or for debugging import scripts.
-    - **canonical** - true if the feature set has a canonical name,
-      representing code that a developer could use directly.  For example,
-      ``"display"`` is a canonical name for the CSS display property, and
-      should not be translated, while ``"CSS"`` and ``"Flexbox Values for
-      <code>display</code>"`` are non-canonical names that should be
-      translated.
-    - **name** *(localized)* - Feature set name.  When **canonical** is True,
-      the only translated string is in the non-linguistic_ language ``zxx``,
-      and should be wrapped in a ``<code>`` block when displayed.  When
-      **canonical** is false, the name will include at least an ``en``
-      translation, and may include HTML markup.
+    - **name** *(canonical or localized)* - Feature set name.  If the name is
+      the code used by a developer, then the value is a string, and should be
+      wrapped in a ``<code>`` block when displayed.  If the name is a
+      description of the feature set, then the value is the available
+      translations, including at least an ``en`` translation, and may include
+      HTML markup.  For example, ``"display"`` is a canonical name for the CSS
+      display property, and should not be translated, while ``"CSS"`` and
+      ``"Flexbox Values for <code>display</code>"`` are non-canonical names
+      that should be translated.
 * **links**
     - **features** *(many)* - Associated features_.  Can be re-ordered by
       the user.
@@ -1055,7 +1047,7 @@ The **feature-sets** representation includes:
       order (most recent first).  Can not be re-ordered by user.
 
 
-To get a single **feature set** (in this case, a canonically named feature):
+To get a single **feature set** (in this case, one with a canonical name):
 
 .. code-block:: http
 
@@ -1077,10 +1069,7 @@ A sample response is:
             "id": "373",
             "slug": "css-property-background-size",
             "mdn-path": "en-US/docs/Web/CSS/display",
-            "canonical": true,
-            "name": {
-                "zxx": "background-size"
-            },
+            "name": "background-size",
             "links": {
                 "features": ["275", "276", "277"],
                 "specification-sections": [],
