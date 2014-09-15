@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from .viewsets import (
     BrowserViewSet, BrowserVersionViewSet,
     HistoricalBrowserViewSet, HistoricalBrowserVersionViewSet,
-    UserViewSet)
+    UserViewSet, ViewFeatureSetViewSet)
 
 
 class GroupedRouter(DefaultRouter):
@@ -90,3 +90,6 @@ router.register(
 router.register(
     r'historical-browser-versions', HistoricalBrowserVersionViewSet,
     group='history')
+router.register(
+    r'views/feature-sets', ViewFeatureSetViewSet, base_name='viewfeaturesets',
+    group='views')
