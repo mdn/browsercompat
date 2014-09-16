@@ -22,7 +22,8 @@ These changes are:
     - **slug** - human-friendly unique identifier
     - **name** - converted to localized text.
     - **note** - added for engine, OS, etc. information
-* browser-versions_
+* versions_
+    - Was `browser-versions`
     - **release-day** - Day of release
     - **retirement-day** - Day of "retirement", or when it was superceeded by
       a new release.
@@ -51,7 +52,7 @@ These changes are:
       canonical
     - **specfication-sections** - replaces spec link
     - **ancestors**, **siblings**, **children**, **descendants** - tree relations
-* browser-version-features_
+* version-features_
     - **support** - Added a value "never", for cases where developers have
       announced they will not support a feature.  For example, the `CSS
       @font-face at-rule`_, which has been closed as WONTFIX in `Bugzilla
@@ -70,7 +71,7 @@ There are also additional Resources_:
   and URIs.
 * specification-statuses_ - For identifying the process stage of a spec
 * All the history_ resources (historical-browsers_,
-  historical-browser-versions_, etc.)
+  historical-versions_, etc.)
 * users_ - For identifying the user who made a change
 * changesets_ - Collect several history resources into a logical change
 
@@ -108,7 +109,7 @@ Unresolved Issues
   versions, and the KumaScript parse them for the significant versions, with
   UX for exposing known versions?  The view doc proposes one implementation,
   with a ``<meta>`` section for identifying the important bits.
-* Do we want to add more items to browser-versions?  Wikipedia has interesting
+* Do we want to add more items to versions?  Wikipedia has interesting
   data for `Chrome release history`_ and `Firefox release history`_.
   Some possibly useful additions: release date, retirement date, codename,
   JS engine version, operating system, notes.  It feels like we should import
@@ -158,7 +159,7 @@ features to add, or existing features that will be dropped.
 * `Web/CSS/text-transform`_ - Interesting use of non-ascii unicode in feature
   names, good test case.
 * `Web/CSS/transform-origin`_ - IE may justify a 'alternate' value for
-  browser-version-features.support, or just 'no' with a footnote.
+  version-features.support, or just 'no' with a footnote.
 
 Some pages will require manual intervention to get them into the data store.
 Here's a sample:
@@ -293,23 +294,23 @@ This will be converted to API resources:
   name.  If the format is text w/o KumaScript, it is the non-canonocial name.
   If there is also KumaScript, it varies. **TODO:** doc KumaScript.
 * **Non-header rows, remaining columns** - Usually Kumascript:
-    * ``{{CompatUnknown}}`` - browser-version.version is ``null``, and
-      browser-version-feature.support is ``"unknown"``
-    * ``{{CompatVersionUnknown}}`` - browser-version.version and are ``null``,
-      and browser-version-feature.support in ``"yes"``
-    * ``{{CompatNo}}`` - browser-version.version and are ``null``, and
-      browser-version-feature.support is ``"no"``
-    * ``{{CompatGeckoDesktop("VAL")}}`` - browser-version.version is set to
-      ``"VAL"``, browser-version-feature.support is ``"yes"``.  and
-      browser-version.release-day is set by logic in CompatGeckoDesktop_.
-    * ``{{CompatGeckoMobile("VAL")}}`` - browser-version.version is set to
-      ``"VAL"``, browser-version-feature.support is ``"yes"``.  is set by logic
+    * ``{{CompatUnknown}}`` - version.version is ``null``, and
+      version-feature.support is ``"unknown"``
+    * ``{{CompatVersionUnknown}}`` - version.version and are ``null``,
+      and version-feature.support in ``"yes"``
+    * ``{{CompatNo}}`` - version.version and are ``null``, and
+      version-feature.support is ``"no"``
+    * ``{{CompatGeckoDesktop("VAL")}}`` - version.version is set to
+      ``"VAL"``, version-feature.support is ``"yes"``.  and
+      version.release-day is set by logic in CompatGeckoDesktop_.
+    * ``{{CompatGeckoMobile("VAL")}}`` - version.version is set to
+      ``"VAL"``, version-feature.support is ``"yes"``.  is set by logic
       in CompatGeckoMobile_.
     * Numeric string, such as ``6``, ``15.0``.  This becomes the
-      browser-version.version, and browser-version-feature.support is
+      version.version, and version-feature.support is
       ``"yes"``.
 * **Content after table** - This is usually formatted as a paragraph,
-  containing HTML.  It should become browser-version-features.footnotes,
+  containing HTML.  It should become version-features.footnotes,
   but it will challenging to auto-parse and associate.
 
 Once the initial conversion has been done for a page, it may be useful to
@@ -325,7 +326,7 @@ perform additional steps:
 Data sources for browser versions
 ---------------------------------
 
-The **browser-version** model currently supports a release date and a
+The **version** model currently supports a release date and a
 retirement date, as well as other version data.  Some sources for this data
 include:
 
@@ -341,7 +342,7 @@ To Do
 -----
 
 * Add multi-get to browser doc, after deciding on ``GET
-  /browser-versions/1,2,3,4`` vs.  ``GET /browser/1/browser-versions``
+  /versions/1,2,3,4`` vs.  ``GET /browser/1/versions``
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
 * Jeremie's suggested changes (*italics are done*)
@@ -349,11 +350,11 @@ To Do
       OS, execution contexts (web workers, XUL, etc.).*
     * *Drop browsers.engine attribute.  Not important for searching or
       filtering, instead free text in browsers.notes*
-    * *Add browser-versions.notes, localized, to note things like OS, devices,
+    * *Add versions.notes, localized, to note things like OS, devices,
       engines, etc.*
-    * *Drop browser-versions.engine-version, not important for searching or
+    * *Drop versions.engine-version, not important for searching or
       sorting.*
-    * Drop browser-versions.status.  Doesn't think the MDN team will be able
+    * Drop versions.status.  Doesn't think the MDN team will be able
       to keep up with browser releases.  Will instead rely on users
       figuring out if a browser version is the current release.
     * *Drop feature.canonical.  Instead, name="string" means it is
@@ -363,12 +364,12 @@ To Do
     * *A feature-set can either have sub-feature sets (middle of cloud), or
       features (edge of cloud).* - Note - implemented by merging features and
       feature sets.
-    * *Add browser-version-feature-sets, to make positive assertions about
-      a browser-version supporting a feature-set.  Only negative assertions
+    * *Add version-feature-sets, to make positive assertions about
+      a version supporting a feature-set.  Only negative assertions
       can be made based on features.* - Note - implemented by merging features
       and feature sets
     * Drop order of features by feature set.  Client will alpha-sort.
-    * browser-version-features.support, drop "prefixed" status.  If prefixed,
+    * version-features.support, drop "prefixed" status.  If prefixed,
       support = 'yes', and prefix is set.
     * Add examples of filtering (browser versions in 2010, firefox versions
       before version X).
@@ -381,8 +382,8 @@ To Do
 
 .. _Resources: resources.html
 .. _browsers: resources.html#browsers
-.. _browser-versions: resources.html#browser-versions
-.. _browser-version-features: resources.html#browser-versions-features
+.. _versions: resources.html#versions
+.. _version-features: resources.html#versions-features
 .. _features: resources.html#features
 .. _specifications: resources.html#specifications
 .. _specification-sections: resources.html#specification-sections
@@ -393,7 +394,7 @@ To Do
 
 .. _history: history.html
 .. _historical-browsers: history.html#historical-browsers
-.. _historical-browser-versions: history.html#historical-browser-versions
+.. _historical-versions: history.html#historical-versions
 
 .. _`Browser Compatibility Data Architecture`: https://docs.google.com/document/d/1YF7GJ6kgV5_hx6SJjyrgunqznQU1mKxp5FaLAEzMDl4/edit#
 .. _CompatGeckoDesktop: https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop

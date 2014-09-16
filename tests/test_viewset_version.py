@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Tests for `web-platform-compat.viewsets.BrowserVersionViewSet` class.
+Tests for `web-platform-compat.viewsets.VersionViewSet` class.
 """
 from __future__ import unicode_literals
 from json import loads
 
 from django.core.urlresolvers import reverse
 
-from webplatformcompat.models import Browser, BrowserVersion
+from webplatformcompat.models import Browser, Version
 
 from .base import APITestCase
 
 
-class TestBrowserVersionViewSet(APITestCase):
+class TestVersionViewSet(APITestCase):
     def test_get_minimal(self):
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'})
-        bv = self.create(BrowserVersion, browser=browser, version='1.0')
-        url = reverse('browserversion-detail', kwargs={'pk': bv.pk})
-        bvh = bv.history.all()[0]
-        bvh_url = self.reverse('historicalbrowserversion-detail', pk=bvh.pk)
+        bv = self.create(Version, browser=browser, version='1.0')
+        url = reverse('version-detail', kwargs={'pk': bv.pk})
+        vh = bv.history.all()[0]
+        vh_url = self.reverse('historicalversion-detail', pk=vh.pk)
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
 
@@ -34,14 +34,14 @@ class TestBrowserVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': self.reverse('browser-detail', pk=browser.pk),
-            'history': [bvh_url],
-            'history_current': bvh_url,
+            'history': [vh_url],
+            'history_current': vh_url,
         }
         actual = dict(response.data)
         self.assertDictEqual(expected_data, actual)
 
         expected_json = {
-            "browser-versions": {
+            "versions": {
                 "id": str(bv.id),
                 "version": "1.0",
                 "release_day": None,
@@ -52,28 +52,28 @@ class TestBrowserVersionViewSet(APITestCase):
                 "order": 0,
                 "links": {
                     "browser": str(browser.pk),
-                    "history_current": str(bvh.pk),
-                    "history": [str(bvh.pk)],
+                    "history_current": str(vh.pk),
+                    "history": [str(vh.pk)],
                 },
             },
             "links": {
-                "browser-versions.browser": {
+                "versions.browser": {
                     "href": (
                         "http://testserver/api/browsers/"
-                        "{browser-versions.browser}"),
+                        "{versions.browser}"),
                     "type": "browsers"
                 },
-                "browser-versions.history_current": {
+                "versions.history_current": {
                     "href": (
-                        "http://testserver/api/historical-browser-versions/"
-                        "{browser-versions.history_current}"),
-                    "type": "historical-browser-versions"
+                        "http://testserver/api/historical-versions/"
+                        "{versions.history_current}"),
+                    "type": "historical-versions"
                 },
-                "browser-versions.history": {
+                "versions.history": {
                     "href": (
-                        "http://testserver/api/historical-browser-versions/"
-                        "{browser-versions.history}"),
-                    "type": "historical-browser-versions"
+                        "http://testserver/api/historical-versions/"
+                        "{versions.history}"),
+                    "type": "historical-versions"
                 },
             }
         }
@@ -82,18 +82,18 @@ class TestBrowserVersionViewSet(APITestCase):
 
     def test_filter_by_browser(self):
         browser = self.create(Browser, slug="firefox", name={'en': 'Firefox'})
-        bversion = self.create(BrowserVersion, browser=browser, version="1.0")
+        version = self.create(Version, browser=browser, version="1.0")
         other = self.create(Browser, slug="o", name={'en': 'Other'})
-        self.create(BrowserVersion, browser=other, version="2.0")
-        bvhistory = bversion.history.all()[0]
-        bvhistory_url = self.reverse(
-            'historicalbrowserversion-detail', pk=bvhistory.pk)
+        self.create(Version, browser=other, version="2.0")
+        vhistory = version.history.all()[0]
+        vhistory_url = self.reverse(
+            'historicalversion-detail', pk=vhistory.pk)
 
         response = self.client.get(
-            reverse('browserversion-list'), {'browser': browser.pk})
+            reverse('version-list'), {'browser': browser.pk})
         self.assertEqual(200, response.status_code, response.data)
         expected_data = [{
-            'id': bversion.id,
+            'id': version.id,
             'version': '1.0',
             'release_day': None,
             'retirement_day': None,
@@ -102,26 +102,26 @@ class TestBrowserVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': self.reverse('browser-detail', pk=browser.pk),
-            'history': [bvhistory_url],
-            'history_current': bvhistory_url,
+            'history': [vhistory_url],
+            'history_current': vhistory_url,
         }]
         self.assertEqual([dict(x) for x in response.data], expected_data)
 
     def test_filter_by_browser_slug(self):
         browser = self.create(Browser, slug="firefox", name={'en': 'Firefox'})
-        bversion = self.create(BrowserVersion, browser=browser, version="1.0")
+        version = self.create(Version, browser=browser, version="1.0")
         other = self.create(Browser, slug="o", name={'en': 'Other'})
-        self.create(BrowserVersion, browser=other, version="2.0")
-        bvhistory = bversion.history.all()[0]
-        bvhistory_url = self.reverse(
-            'historicalbrowserversion-detail', pk=bvhistory.pk)
+        self.create(Version, browser=other, version="2.0")
+        vhistory = version.history.all()[0]
+        vhistory_url = self.reverse(
+            'historicalversion-detail', pk=vhistory.pk)
 
         response = self.client.get(
-            reverse('browserversion-list'),
+            reverse('version-list'),
             {'browser__slug': 'firefox'})
         self.assertEqual(200, response.status_code, response.data)
         expected_data = [{
-            'id': bversion.id,
+            'id': version.id,
             'version': '1.0',
             'release_day': None,
             'retirement_day': None,
@@ -130,25 +130,25 @@ class TestBrowserVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': self.reverse('browser-detail', pk=browser.pk),
-            'history': [bvhistory_url],
-            'history_current': bvhistory_url,
+            'history': [vhistory_url],
+            'history_current': vhistory_url,
         }]
         self.assertEqual([dict(x) for x in response.data], expected_data)
 
     def test_filter_by_version(self):
         browser = self.create(Browser, slug="firefox", name={'en': 'Firefox'})
-        bversion = self.create(BrowserVersion, browser=browser, version="1.0")
+        version = self.create(Version, browser=browser, version="1.0")
         other = self.create(Browser, slug="o", name={'en': 'Other'})
-        self.create(BrowserVersion, browser=other, version="2.0")
-        bvhistory = bversion.history.all()[0]
-        bvhistory_url = self.reverse(
-            'historicalbrowserversion-detail', pk=bvhistory.pk)
+        self.create(Version, browser=other, version="2.0")
+        vhistory = version.history.all()[0]
+        vhistory_url = self.reverse(
+            'historicalversion-detail', pk=vhistory.pk)
 
         response = self.client.get(
-            reverse('browserversion-list'), {'version': '1.0'})
+            reverse('version-list'), {'version': '1.0'})
         self.assertEqual(200, response.status_code, response.data)
         expected_data = [{
-            'id': bversion.id,
+            'id': version.id,
             'version': '1.0',
             'release_day': None,
             'retirement_day': None,
@@ -157,27 +157,27 @@ class TestBrowserVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': self.reverse('browser-detail', pk=browser.pk),
-            'history': [bvhistory_url],
-            'history_current': bvhistory_url,
+            'history': [vhistory_url],
+            'history_current': vhistory_url,
         }]
         self.assertEqual([dict(x) for x in response.data], expected_data)
 
     def test_filter_by_status(self):
         browser = self.create(Browser, slug="firefox", name={'en': 'Firefox'})
-        bversion = self.create(
-            BrowserVersion, browser=browser, version="1.0", status="current")
+        version = self.create(
+            Version, browser=browser, version="1.0", status="current")
         other = self.create(Browser, slug="o", name={'en': 'Other'})
         self.create(
-            BrowserVersion, browser=other, version="2.0", status="unknown")
-        bvhistory = bversion.history.all()[0]
-        bvhistory_url = self.reverse(
-            'historicalbrowserversion-detail', pk=bvhistory.pk)
+            Version, browser=other, version="2.0", status="unknown")
+        vhistory = version.history.all()[0]
+        vhistory_url = self.reverse(
+            'historicalversion-detail', pk=vhistory.pk)
 
         response = self.client.get(
-            reverse('browserversion-list'), {'status': 'current'})
+            reverse('version-list'), {'status': 'current'})
         self.assertEqual(200, response.status_code, response.data)
         expected_data = [{
-            'id': bversion.id,
+            'id': version.id,
             'version': '1.0',
             'release_day': None,
             'retirement_day': None,
@@ -186,7 +186,7 @@ class TestBrowserVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': self.reverse('browser-detail', pk=browser.pk),
-            'history': [bvhistory_url],
-            'history_current': bvhistory_url,
+            'history': [vhistory_url],
+            'history_current': vhistory_url,
         }]
         self.assertEqual([dict(x) for x in response.data], expected_data)

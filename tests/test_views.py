@@ -24,15 +24,15 @@ class TestViews(TestCase):
         expected = {
             'resources': {
                 'browsers': self.reverse('browser-list'),
-                'browser-versions': self.reverse('browserversion-list'),
+                'versions': self.reverse('version-list'),
             },
             'change-control': {
                 'users': self.reverse('user-list'),
             },
             'history': {
                 'historical-browsers': self.reverse('historicalbrowser-list'),
-                'historical-browser-versions':
-                    self.reverse('historicalbrowserversion-list'),
+                'historical-versions':
+                    self.reverse('historicalversion-list'),
             },
             'views': {
                 'views/features': self.reverse('viewfeatures-list')

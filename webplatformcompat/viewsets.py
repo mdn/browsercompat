@@ -18,12 +18,12 @@ from rest_framework.viewsets import ReadOnlyModelViewSet as BaseROModelViewSet
 from rest_framework.viewsets import ViewSet
 
 from .mixins import PartialPutMixin
-from .models import Browser, BrowserVersion
+from .models import Browser, Version
 from .parsers import JsonApiParser
 from .renderers import JsonApiRenderer
 from .serializers import (
-    BrowserSerializer, BrowserVersionSerializer,
-    HistoricalBrowserSerializer, HistoricalBrowserVersionSerializer,
+    BrowserSerializer, VersionSerializer,
+    HistoricalBrowserSerializer, HistoricalVersionSerializer,
     UserSerializer)
 
 
@@ -50,9 +50,9 @@ class BrowserViewSet(ModelViewSet):
     filter_fields = ('slug',)
 
 
-class BrowserVersionViewSet(ModelViewSet):
-    model = BrowserVersion
-    serializer_class = BrowserVersionSerializer
+class VersionViewSet(ModelViewSet):
+    model = Version
+    serializer_class = VersionSerializer
     filter_fields = ('browser', 'browser__slug', 'version', 'status')
 
 
@@ -72,9 +72,9 @@ class HistoricalBrowserViewSet(ReadOnlyModelViewSet):
     filter_fields = ('id', 'slug')
 
 
-class HistoricalBrowserVersionViewSet(ReadOnlyModelViewSet):
-    model = BrowserVersion.history.model
-    serializer_class = HistoricalBrowserVersionSerializer
+class HistoricalVersionViewSet(ReadOnlyModelViewSet):
+    model = Version.history.model
+    serializer_class = HistoricalVersionSerializer
     filter_fields = ('id',)
 
 
@@ -119,7 +119,7 @@ class ViewFeaturesViewSet(ViewSet):
                 ("name", "address"),
                 ("links", OrderedDict((
                     ("specification-sections", ["746", "421", "70"]),
-                    ("browser-version-features", []),
+                    ("version-features", []),
                     ("parent", "800"),
                     ("ancestors", ["800", "816"]),
                     ("siblings", ["814", "815", "816", "817", "818"]),
@@ -140,7 +140,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("name", {"en": "Basic support"}),
                         ("links", OrderedDict((
                             ("specification-sections", []),
-                            ("browser-version-features", [
+                            ("version-features", [
                                 "358", "359", "360", "361", "362", "363",
                                 "364", "365", "366", "367", "368"]),
                             ("parent", "816"),
@@ -255,7 +255,7 @@ class ViewFeaturesViewSet(ViewSet):
                         }),
                     )),
                 ]),
-                ("browser-version-features", [
+                ("version-features", [
                     OrderedDict((
                         ("id", "358"),
                         ("support", "yes"),
@@ -263,7 +263,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "758"),
+                            ("version", "758"),
                             ("feature", "191"),
                             ("history-current", "3567"),
                             ("history", ["3567"]),
@@ -276,7 +276,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "759"),
+                            ("version", "759"),
                             ("feature", "191"),
                             ("history-current", "3568"),
                             ("history", ["3568"]),
@@ -289,7 +289,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "760"),
+                            ("version", "760"),
                             ("feature", "191"),
                             ("history-current", "3569"),
                             ("history", ["3569"]),
@@ -302,7 +302,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "761"),
+                            ("version", "761"),
                             ("feature", "191"),
                             ("history-current", "3570"),
                             ("history", ["3570"]),
@@ -315,7 +315,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "762"),
+                            ("version", "762"),
                             ("feature", "191"),
                             ("history-current", "3571"),
                             ("history", ["3571"]),
@@ -328,7 +328,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "762"),
+                            ("version", "762"),
                             ("feature", "191"),
                             ("history-current", "3571"),
                             ("history", ["3571"]),
@@ -341,7 +341,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "762"),
+                            ("version", "762"),
                             ("feature", "191"),
                             ("history-current", "3571"),
                             ("history", ["3571"]),
@@ -354,7 +354,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "763"),
+                            ("version", "763"),
                             ("feature", "191"),
                             ("history-current", "3572"),
                             ("history", ["3572"]),
@@ -367,7 +367,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "764"),
+                            ("version", "764"),
                             ("feature", "191"),
                             ("history-current", "3573"),
                             ("history", ["3573"]),
@@ -380,7 +380,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "765"),
+                            ("version", "765"),
                             ("feature", "191"),
                             ("history-current", "3574"),
                             ("history", ["3574"]),
@@ -393,7 +393,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "766"),
+                            ("version", "766"),
                             ("feature", "191"),
                             ("history-current", "3575"),
                             ("history", ["3575"]),
@@ -406,7 +406,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "767"),
+                            ("version", "767"),
                             ("feature", "191"),
                             ("history-current", "3576"),
                             ("history", ["3576"]),
@@ -419,14 +419,14 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("footnote", None),
                         ("links", OrderedDict((
-                            ("browser-version", "768"),
+                            ("version", "768"),
                             ("feature", "191"),
                             ("history-current", "3577"),
                             ("history", ["3577"]),
                         ))),
                     )),
                 ]),
-                ("browser-versions", [
+                ("versions", [
                     OrderedDict((
                         ("id", "758"),
                         ("version", None),
@@ -437,7 +437,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "1"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["158", "258", "358", "458"]),
                             ("history-current", "1567"),
                             ("history", ["1567"]),
@@ -452,7 +452,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "2"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["159", "259", "359", "459"]),
                             ("history-current", "1568"),
                             ("history", ["1568"]),
@@ -467,7 +467,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "3"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["160", "260", "360", "460"]),
                             ("history-current", "1569"),
                             ("history", ["1569"]),
@@ -482,7 +482,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "4"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["161", "261", "361", "461"]),
                             ("history-current", "1570"),
                             ("history", ["1570"]),
@@ -497,7 +497,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "5"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["162", "262", "362", "462"]),
                             ("history-current", "1571"),
                             ("history", ["1571"]),
@@ -512,7 +512,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "6"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["163", "263", "363", "463"]),
                             ("history-current", "1572"),
                             ("history", ["1572"]),
@@ -527,7 +527,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", "Uses Gecko 1.7"),
                         ("links", OrderedDict((
                             ("browser", "7"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["164", "264", "364", "464"]),
                             ("history-current", "1574"),
                             ("history", ["1574"]),
@@ -542,7 +542,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "8"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["165", "265", "365", "465"]),
                             ("history-current", "1575"),
                             ("history", ["1575"]),
@@ -557,7 +557,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "11"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["166", "266", "366", "466"]),
                             ("history-current", "1576"),
                             ("history", ["1576"]),
@@ -572,7 +572,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "9"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["167", "267", "367", "467"]),
                             ("history-current", "1577"),
                             ("history", ["1577"]),
@@ -587,7 +587,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("note", None),
                         ("links", OrderedDict((
                             ("browser", "10"),
-                            ("browser-version-features",
+                            ("version-features",
                              ["168", "268", "368", "468"]),
                             ("history-current", "1578"),
                             ("history", ["1578"]),
@@ -829,9 +829,9 @@ class ViewFeaturesViewSet(ViewSet):
                 ))),
                 ("browsers.versions", OrderedDict((
                     ("href", (
-                        "https://api.compat.mozilla.org/browser-versions/"
+                        "https://api.compat.mozilla.org/versions/"
                         "{browsers.versions}")),
-                    ("type", "browser-versions"),
+                    ("type", "versions"),
                 ))),
                 ("browsers.history-current", OrderedDict((
                     ("href", (
@@ -845,58 +845,58 @@ class ViewFeaturesViewSet(ViewSet):
                         "{browsers.history}")),
                     ("type", "historical-browsers"),
                 ))),
-                ("browser-versions.browser", OrderedDict((
+                ("versions.browser", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/browsers/"
-                        "{browser-versions.browser}")),
+                        "{versions.browser}")),
                     ("type", "browsers"),
                 ))),
-                ("browser-versions.browser-version-features", OrderedDict((
+                ("versions.version-features", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "browser-version-features/"
-                        "{browser-versions.features}")),
-                    ("type", "browser-version-features"),
+                        "version-features/"
+                        "{versions.features}")),
+                    ("type", "version-features"),
                 ))),
-                ("browser-versions.history-current", OrderedDict((
+                ("versions.history-current", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-browser-versions/"
-                        "{browser-versions.history-current}")),
-                    ("type", "historical-browser-versions"),
+                        "historical-versions/"
+                        "{versions.history-current}")),
+                    ("type", "historical-versions"),
                 ))),
-                ("browser-versions.history", OrderedDict((
+                ("versions.history", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-browser-versions/"
-                        "{browser-versions.history}")),
-                    ("type", "historical-browser-versions"),
+                        "historical-versions/"
+                        "{versions.history}")),
+                    ("type", "historical-versions"),
                 ))),
-                ("browser-version-features.browser-version", OrderedDict((
+                ("version-features.version", OrderedDict((
                     ("href", (
-                        "https://api.compat.mozilla.org/browser-versions/"
-                        "{browser-version-features.browser-version}")),
-                    ("type", "browser-versions"),
+                        "https://api.compat.mozilla.org/versions/"
+                        "{version-features.version}")),
+                    ("type", "versions"),
                 ))),
-                ("browser-version-features.feature", OrderedDict((
+                ("version-features.feature", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/browsers/"
-                        "{browser-version-features.feature}")),
+                        "{version-features.feature}")),
                     ("type", "features"),
                 ))),
-                ("browser-version-features.history-current", OrderedDict((
+                ("version-features.history-current", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-browser-version-features/"
-                        "{browser-version-features.history-current}")),
-                    ("type", "historical-browser-version-features"),
+                        "historical-version-features/"
+                        "{version-features.history-current}")),
+                    ("type", "historical-version-features"),
                 ))),
-                ("browser-version-features.history", OrderedDict((
+                ("version-features.history", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-browser-version-features/"
-                        "{browser-version-features.history}")),
-                    ("type", "historical-browser-version-features"),
+                        "historical-version-features/"
+                        "{version-features.history}")),
+                    ("type", "historical-version-features"),
                 ))),
                 ("specifications.specification-sections", OrderedDict((
                     ("href", (
@@ -948,7 +948,7 @@ class ViewFeaturesViewSet(ViewSet):
                             ("browsers", ["6", "7", "8", "11", "9", "10"]),
                         )),
                     ]),
-                    ("browser-version-features", OrderedDict((
+                    ("version-features", OrderedDict((
                         ("191", OrderedDict((
                             ("1", ["358"]),
                             ("2", ["359"]),

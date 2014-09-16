@@ -11,7 +11,7 @@ from rest_framework.serializers import (
 from .fields import (
     CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
     TranslatedTextField)
-from .models import Browser, BrowserVersion
+from .models import Browser, Version
 
 
 #
@@ -106,9 +106,9 @@ class BrowserSerializer(HistoricalModelSerializer):
 
         if versions:
             v_pks = [v.pk for v in versions]
-            current_order = obj.get_browserversion_order()
+            current_order = obj.get_version_order()
             if v_pks != current_order:
-                obj.set_browserversion_order(v_pks)
+                obj.set_version_order(v_pks)
 
     class Meta:
         model = Browser
@@ -119,7 +119,7 @@ class BrowserSerializer(HistoricalModelSerializer):
             'history', 'history_current', 'versions')
 
 
-class BrowserVersionSerializer(HistoricalModelSerializer):
+class VersionSerializer(HistoricalModelSerializer):
     """Browser Version Serializer"""
 
     release_notes_uri = TranslatedTextField(required=False)
@@ -127,7 +127,7 @@ class BrowserVersionSerializer(HistoricalModelSerializer):
     order = IntegerField(read_only=True, source='_order')
 
     class Meta:
-        model = BrowserVersion
+        model = Version
         fields = (
             'id', 'browser', 'version', 'release_day', 'retirement_day',
             'status', 'release_notes_uri', 'note', 'order', 'history',
@@ -190,16 +190,16 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
             'browser', 'browsers')
 
 
-class HistoricalBrowserVersionSerializer(HistoricalObjectSerializer):
+class HistoricalVersionSerializer(HistoricalObjectSerializer):
 
-    class ArchivedObject(BrowserVersionSerializer):
-        class Meta(BrowserVersionSerializer.Meta):
+    class ArchivedObject(VersionSerializer):
+        class Meta(VersionSerializer.Meta):
             exclude = ('history_current', 'history', 'browser')
 
-    browser_version = HistoricalObjectField(view_name='browserversion-detail')
-    browser_versions = SerializerMethodField('get_archive')
+    version = HistoricalObjectField(view_name='version-detail')
+    versions = SerializerMethodField('get_archive')
 
     class Meta(HistoricalObjectSerializer.Meta):
-        model = BrowserVersion.history.model
+        model = Version.history.model
         fields = HistoricalObjectSerializer.Meta.fields + (
-            'browser_version', 'browser_versions')
+            'version', 'versions')

@@ -77,12 +77,12 @@ A sample response is:
         }
     }
 
-Historical Browser Versions
----------------------------
+Historical Versions
+-------------------
 
-A **historical-browser-versions** resource represents the state of a
-browser-version_ at a point in time, and who is responsible for that
-representation.  See historical-browsers_ and browser-versions_ for an idea of
+A **historical-versions** resource represents the state of a
+version_ at a point in time, and who is responsible for that
+representation.  See historical-browsers_ and versions_ for an idea of
 the represention.
 
 Historical Features
@@ -95,19 +95,19 @@ historical-browsers_ and features_ for an idea of the represention.
 Historical Browser Version Features
 -----------------------------------
 
-A **historical-browser-version-features** resource represents a state of a
-browser-version-feature_ at a point in time, and who is responsible for that
-representation.  See historical-browsers_ and browser-version-features_ for an
+A **historical-version-features** resource represents a state of a
+version-feature_ at a point in time, and who is responsible for that
+representation.  See historical-browsers_ and version-features_ for an
 idea of the represention.
 
 .. _historical-browser: `Historical Browsers`_
 .. _historical-browsers: `Historical Browsers`_
 
 .. _browser: resources.html#browsers
-.. _browser-version: resources.html#browser-versions
-.. _browser-versions: resources.html#browser-versions
-.. _browser-version-feature: resources.html#browser-versions-feature
-.. _browser-version-features: resources.html#browser-versions-features
+.. _version: resources.html#versions
+.. _versions: resources.html#versions
+.. _version-feature: resources.html#versions-feature
+.. _version-features: resources.html#versions-features
 .. _feature: resources.html#features
 .. _features: resources.html#features
 

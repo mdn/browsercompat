@@ -42,7 +42,7 @@ The **browsers** representation includes:
     - **note** *(localized)* - Notes, intended for related data like
       OS, applicable device, engines, etc.
 * **links**
-    - **versions** *(many)* - Associated browser-versions_, ordered roughly
+    - **versions** *(many)* - Associated versions_, ordered roughly
       from earliest to latest.  User can change the order.
     - **history-current** *(one)* - Current historical-browsers_.  Can be
       set to a value from **history** to revert changes.
@@ -210,8 +210,8 @@ A sample response is:
         }],
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -274,8 +274,8 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -327,8 +327,8 @@ A sample response is:
         }],
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -398,8 +398,8 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -492,8 +492,8 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -554,8 +554,8 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -568,7 +568,7 @@ A sample response is:
         }
     }
 
-To change just the browser-versions_ order:
+To change just the versions_ order:
 
 .. code-block:: http
 
@@ -613,8 +613,8 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -627,10 +627,10 @@ A sample response is:
         }
     }
 
-Reverting to a previous version
-*******************************
+Reverting to a previous instance
+********************************
 
-To revert to an earlier version, set the ``history-current`` link to a
+To revert to an earlier instance, set the ``history-current`` link to a
 previous value.  This resets the content and creates a new
 historical-browsers_ object:
 
@@ -677,8 +677,8 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -747,8 +747,8 @@ A sample response is:
         },
         "links": {
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browsers.versions}",
-                "type": "browser-versions"
+                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "type": "versions"
             },
             "browsers.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
@@ -762,12 +762,12 @@ A sample response is:
     }
 
 
-Browser Versions
-----------------
+Versions
+--------
 
-A **browser-version** is a specific release of a Browser.
+A **version** is a specific release of a Browser.
 
-The **browser-versions** representation includes:
+The **versions** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
@@ -791,19 +791,19 @@ The **browser-versions** representation includes:
     - **note** *(localized)* - Engine, OS, etc. information, or null
 * **links**
     - **browser** - The related **browser**
-    - **browser-version-features** *(many)* - Associated **browser-version-features**,
+    - **version-features** *(many)* - Associated **version-features**,
       in ID order.  Changes are ignored; work on the
-      **browser-version-features** to add, change, or remove.
+      **version-features** to add, change, or remove.
     - **history-current** *(one)* - Current **browsers-versions-history**.
       Set to a value from **history** to revert to that version.
-    - **history** *(many)* - Associated **historical-browser-versions**, in time
+    - **history** *(many)* - Associated **historical-versions**, in time
       order (most recent first).  Changes are ignored.
 
-To get a single **browser-version**:
+To get a single **version**:
 
 .. code-block:: http
 
-    GET /browser-versions/123 HTTP/1.1
+    GET /versions/123 HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -817,7 +817,7 @@ A sample response is:
 .. code-block:: json
 
     {
-        "browser-versions": {
+        "versions": {
             "id": "123",
             "version": "1.0.154",
             "release-day": "2008-12-11",
@@ -827,27 +827,27 @@ A sample response is:
             "note": null,
             "links": {
                 "browser": "1",
-                "browser-version-features": ["1125", "1126", "1127", "1128", "1129"],
+                "version-features": ["1125", "1126", "1127", "1128", "1129"],
                 "history-current": "567",
                 "history": ["567"]
             }
         },
         "links": {
-            "browser-versions.browser": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-versions.browser}",
+            "versions.browser": {
+                "href": "https://api.compat.mozilla.org/browsers/{versions.browser}",
                 "type": "browsers"
             },
-            "browser-versions.browser-version-features": {
-                "href": "https://api.compat.mozilla.org/browser-version-features/{browser-versions.features}",
-                "type": "browser-version-features"
+            "versions.version-features": {
+                "href": "https://api.compat.mozilla.org/version-features/{versions.features}",
+                "type": "version-features"
             },
-            "browser-versions.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browser-versions/{browser-versions.history-current}",
-                "type": "historical-browser-versions"
+            "versions.history-current": {
+                "href": "https://api.compat.mozilla.org/historical-versions/{versions.history-current}",
+                "type": "historical-versions"
             },
-            "browser-versions.history": {
-                "href": "https://api.compat.mozilla.org/historical-browser-versions/{browser-versions.history}",
-                "type": "historical-browser-versions"
+            "versions.history": {
+                "href": "https://api.compat.mozilla.org/historical-versions/{versions.history}",
+                "type": "historical-versions"
             }
         }
     }
@@ -889,7 +889,7 @@ The **features** representation includes:
 * **links**
     - **specification-sections** *(many)* - Associated specification-sections_.
       Order can be changed by the user.
-    - **browser-version-features** *(many)* - Associated browser-version-features_,
+    - **version-features** *(many)* - Associated version-features_,
       Order is in ID order, changes are ignored.
     - **parent** *(one or null)* - The feature one level up, or null
       if top-level.  Can be changed by user.
@@ -938,7 +938,7 @@ A sample response is:
             "name": "background-size: contain"},
             "links": {
                 "specification-sections": ["485"],
-                "browser-version-features": ["1125", "1212", "1536"],
+                "version-features": ["1125", "1212", "1536"],
                 "parent": "173",
                 "ancestors": ["2", "12", "173", "276"],
                 "siblings": ["275", "276", "277"],
@@ -1015,7 +1015,7 @@ A sample response is:
             },
             "links": {
                 "specification-sections": [],
-                "browser-version-features": [],
+                "version-features": [],
                 "parent": ["12"],
                 "ancestors": ["2", "12", "173"]
                 "siblings": ["167", "168", "169", "170", "171", "172", "173", "174", "175"],
@@ -1064,14 +1064,14 @@ A sample response is:
 Browser Version Features
 ------------------------
 
-A **browser-version-feature** is an assertion of the feature support for a
+A **version-feature** is an assertion of the feature support for a
 particular version of a browser.
 
-The **browser-version-feature** representation includes:
+The **version-feature** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **support** - Assertion of support of the browser-version_ for the
+    - **support** - Assertion of support of the version_ for the
       feature_, one of ``"yes"``, ``"no"``, ``"prefixed"``, ``"partial"``,
       ``"unknown"``, or ``"never"``
     - **prefix** - Prefix needed, if support is "prefixed"
@@ -1080,22 +1080,22 @@ The **browser-version-feature** representation includes:
     - **footnote** *(localized)* - Long note on support, designed for
       display after a compatibility table, MDN wiki format
 * **links**
-    - **browser-version** *(one)* - The associated browser-version_.  Can
+    - **version** *(one)* - The associated version_.  Can
       be changed by the user.
     - **feature** *(one)* - The associated feature_.  Can be changed by
       the user.
     - **history-current** *(one)* - Current
-      historical-browser-version-features_.  Can be changed to a valid
+      historical-version-features_.  Can be changed to a valid
       **history** to revert to that version.
-    - **history** *(many)* - Associated historical-browser-version-features_
+    - **history** *(many)* - Associated historical-version-features_
       in time order (most recent first).  Changes are ignored.
 
 
-To get a single **browser-version-feature**:
+To get a single **version-feature**:
 
 .. code-block:: http
 
-    GET /browser-version-features/1123 HTTP/1.1
+    GET /version-features/1123 HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -1109,35 +1109,35 @@ A sample response is:
 .. code-block:: json
 
     {
-        "browser-version-features": {
+        "version-features": {
             "id": "1123",
             "support": "yes",
             "prefix": null,
             "note": null,
             "footnote": null,
             "links": {
-                "browser-version": "123",
+                "version": "123",
                 "feature": "276",
                 "history-current": "2567",
                 "history": ["2567"]
             }
         },
         "links": {
-            "browser-version-features.browser-version": {
-                "href": "https://api.compat.mozilla.org/browser-versions/{browser-version-features.browser-version}",
-                "type": "browser-versions"
+            "version-features.version": {
+                "href": "https://api.compat.mozilla.org/versions/{version-features.version}",
+                "type": "versions"
             },
-            "browser-version-features.feature": {
-                "href": "https://api.compat.mozilla.org/browsers/{browser-version-features.feature}",
+            "version-features.feature": {
+                "href": "https://api.compat.mozilla.org/browsers/{version-features.feature}",
                 "type": "features"
             },
-            "browser-version-features.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browser-version-features/{browser-version-features.history-current}",
-                "type": "historical-browser-version-features"
+            "version-features.history-current": {
+                "href": "https://api.compat.mozilla.org/historical-version-features/{version-features.history-current}",
+                "type": "historical-version-features"
             },
-            "browser-version-features.history": {
-                "href": "https://api.compat.mozilla.org/historical-browser-version-features/{browser-version-features.history}",
-                "type": "historical-browser-version-features"
+            "version-features.history": {
+                "href": "https://api.compat.mozilla.org/historical-version-features/{version-features.history}",
+                "type": "historical-version-features"
             }
         }
     }
@@ -1326,9 +1326,8 @@ A sample response is:
         }
     }
 
-.. _browser-version-features: `Browser Version Features`_
-.. _browser-version: `Browser Versions`_
-.. _browser-versions: `Browser Versions`_
+.. _version-features: `Browser Version Features`_
+.. _version: `Versions`_
 .. _feature: Features_
 .. _specification: Specifications_
 .. _specification-sections: `Specification Sections`_
@@ -1337,7 +1336,7 @@ A sample response is:
 .. _changeset: change-control.html#changesets
 
 .. _historical-browsers: history.html#historical-browsers
-.. _historical-browser-version-features: history.html#historical-browser-version-features
+.. _historical-version-features: history.html#historical-version-features
 .. _historical-features: history.html#historical-features
 
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic

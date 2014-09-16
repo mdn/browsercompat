@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Tests for `web-platform-compat.viewsets.HistoricalBrowserVersionViewSet` class.
+Tests for `web-platform-compat.viewsets.HistoricalVersionViewSet` class.
 """
 from __future__ import unicode_literals
 from datetime import datetime
@@ -10,41 +10,40 @@ from pytz import UTC
 
 from django.core.urlresolvers import reverse
 
-from webplatformcompat.models import Browser, BrowserVersion
+from webplatformcompat.models import Browser, Version
 
 from .base import APITestCase
 
 
-class TestHistoricalBrowserVersionViewset(APITestCase):
+class TestHistoricalVersionViewset(APITestCase):
 
     def fix_data(self, data):
         '''Fix response.data dictionary'''
         out = dict(data)
-        out['browser_versions'] = dict(out['browser_versions'])
+        out['versions'] = dict(out['versions'])
         return out
 
     def test_get(self):
         user = self.login_superuser()
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'})
-        bversion = self.create(
-            BrowserVersion, browser=browser, version="1.0",
+        version = self.create(
+            Version, browser=browser, version="1.0",
             _history_user=user,
             _history_date=datetime(2014, 9, 4, 19, 13, 25, 857510, UTC))
-        bvh = bversion.history.all()[0]
-        url = reverse('historicalbrowserversion-detail', kwargs={'pk': bvh.pk})
+        vh = version.history.all()[0]
+        url = reverse('historicalversion-detail', kwargs={'pk': vh.pk})
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': bvh.history_id,
-            'date': bversion._history_date,
+            'id': vh.history_id,
+            'date': version._history_date,
             'event': 'created',
             'user': self.reverse('user-detail', pk=user.pk),
-            'browser_version': self.reverse(
-                'browserversion-detail', pk=bversion.pk),
-            'browser_versions': {
-                'id': str(bversion.id),
+            'version': self.reverse('version-detail', pk=version.pk),
+            'versions': {
+                'id': str(version.id),
                 'version': '1.0',
                 'release_day': None,
                 'retirement_day': None,
@@ -53,18 +52,18 @@ class TestHistoricalBrowserVersionViewset(APITestCase):
                 'note': None,
                 'order': 0,
                 'links': {
-                    'history_current': str(bvh.id),
+                    'history_current': str(vh.id),
                 }
             },
         }
         self.assertDictEqual(expected_data, self.fix_data(response.data))
         expected_json = {
-            'historical-browser-versions': {
-                'id': str(bvh.history_id),
+            'historical-versions': {
+                'id': str(vh.history_id),
                 'date': '2014-09-04T19:13:25.857Z',
                 'event': 'created',
-                'browser_versions': {
-                    'id': str(bversion.id),
+                'versions': {
+                    'id': str(version.id),
                     'version': '1.0',
                     'release_day': None,
                     'retirement_day': None,
@@ -73,25 +72,25 @@ class TestHistoricalBrowserVersionViewset(APITestCase):
                     'note': None,
                     'order': 0,
                     'links': {
-                        'history_current': str(bvh.id),
+                        'history_current': str(vh.id),
                     },
                 },
                 'links': {
-                    'browser_version': str(bversion.pk),
+                    'version': str(version.pk),
                     'user': str(user.pk),
                 },
             },
             'links': {
-                'historical-browser-versions.browser_version': {
+                'historical-versions.version': {
                     'href': (
-                        'http://testserver/api/browser-versions/'
-                        '{historical-browser-versions.browser_version}'),
-                    'type': 'browser-versions'
+                        'http://testserver/api/versions/'
+                        '{historical-versions.version}'),
+                    'type': 'versions'
                 },
-                'historical-browser-versions.user': {
+                'historical-versions.user': {
                     'href': (
                         'http://testserver/api/users/'
-                        '{historical-browser-versions.user}'),
+                        '{historical-versions.user}'),
                     'type': 'users'
                 },
             }
@@ -103,23 +102,23 @@ class TestHistoricalBrowserVersionViewset(APITestCase):
         user = self.login_superuser()
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'})
-        self.create(BrowserVersion, browser=browser, version="1.0")
-        bversion = self.create(
-            BrowserVersion, browser=browser, version="2.0",
+        self.create(Version, browser=browser, version="1.0")
+        version = self.create(
+            Version, browser=browser, version="2.0",
             _history_user=user,
             _history_date=datetime(2014, 9, 4, 20, 46, 28, 479175, UTC))
-        bvh = bversion.history.all()[0]
-        url = reverse('historicalbrowserversion-list')
-        response = self.client.get(url, {'id': bversion.id})
+        vh = version.history.all()[0]
+        url = reverse('historicalversion-list')
+        response = self.client.get(url, {'id': version.id})
         expected_data = {
-            'id': bvh.history_id,
-            'date': bversion._history_date,
+            'id': vh.history_id,
+            'date': version._history_date,
             'event': 'created',
             'user': self.reverse('user-detail', pk=user.pk),
-            'browser_version': self.reverse(
-                'browserversion-detail', pk=bversion.pk),
-            'browser_versions': {
-                'id': str(bversion.pk),
+            'version': self.reverse(
+                'version-detail', pk=version.pk),
+            'versions': {
+                'id': str(version.pk),
                 'version': '2.0',
                 'release_day': None,
                 'retirement_day': None,
@@ -128,7 +127,7 @@ class TestHistoricalBrowserVersionViewset(APITestCase):
                 'note': None,
                 'order': 1,
                 'links': {
-                    'history_current': str(bvh.id),
+                    'history_current': str(vh.id),
                 }
             },
         }

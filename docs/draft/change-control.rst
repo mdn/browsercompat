@@ -19,7 +19,7 @@ The representation includes:
     - **agreement-version** - The version of the contribution agreement the
       user has accepted.  "0" for not agreed, "1" for first version, etc.
     - **permissions** - A list of permissions.  Permissions include
-      ``"change-browser-version-feature"`` (add or change a browser-version-feature_)
+      ``"change-version-feature"`` (add or change a version-feature_)
       ``"change-resource"`` (add or change any resource except users_ or
       history resources)
       ``"change-user"`` (change a user_ resource)
@@ -51,7 +51,7 @@ A sample response is:
             "username": "askDNA@tdv.com",
             "created": "1405000551.750000",
             "agreement-version": "1",
-            "permissions": ["change-browser-version-feature"],
+            "permissions": ["change-version-feature"],
             "links": {
                 "changesets": ["73"]
             }
@@ -90,7 +90,7 @@ The representation includes:
     - **modified** *(server selected)* - UTC timestamp of when this changeset
       was last modified
     - **target-resource** *(write-once)* - The name of the primary resource
-      for this changeset, for example "browsers", "browser-versions", etc.
+      for this changeset, for example "browsers", "versions", etc.
     - **target-resource-id** *(write-once)* - The ID of the primary resource
       for this changeset.
 * **links**
@@ -98,12 +98,12 @@ The representation includes:
       changed.
     - **historical-browsers** *(many)* - Associated historical-browsers_, in ID
       order, changes are ignored.
-    - **historical-browser-versions** *(many)* - Associated
-      historical-browser-versions_, in ID order, changes are ignored.
+    - **historical-versions** *(many)* - Associated
+      historical-versions_, in ID order, changes are ignored.
     - **historical-features** *(many)* - Associated historical-features_,
       in ID order, changes are ignored.
-    - **historical-browser-version-features** *(many)* - Associated
-      historical-browser-version-features_, in ID order, changes are ignored.
+    - **historical-version-features** *(many)* - Associated
+      historical-version-features_, in ID order, changes are ignored.
 
 
 To get a single **changeset** representation:
@@ -133,9 +133,9 @@ A sample response is:
             "links": {
                 "user": "42",
                 "historical-browsers": [],
-                "historical-browser-versions": [],
+                "historical-versions": [],
                 "historical-features": [],
-                "historical-browser-version-features": ["1789", "1790"]
+                "historical-version-features": ["1789", "1790"]
             }
         },
         "links": {
@@ -147,26 +147,26 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/historical-browsers/{changesets.historical-browsers}",
                 "type": "historical-browsers"
             },
-            "changesets.historical-browser-versions": {
-                "href": "https://api.compat.mozilla.org/historical-browser-versions/{changesets.historical-browser-versions}",
-                "type": "historical-browser-versions"
+            "changesets.historical-versions": {
+                "href": "https://api.compat.mozilla.org/historical-versions/{changesets.historical-versions}",
+                "type": "historical-versions"
             },
             "changesets.historical-features": {
                 "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
                 "type": "historical-features"
             },
-            "changesets.historical-browser-version-features": {
-                "href": "https://api.compat.mozilla.org/historical-browser-version-features/{changesets.historical-browser-version-features}",
-                "type": "historical-browser-version-features"
+            "changesets.historical-version-features": {
+                "href": "https://api.compat.mozilla.org/historical-version-features/{changesets.historical-version-features}",
+                "type": "historical-version-features"
             }
         }
     }
 
 .. _user: Users_
 
-.. _browser-version-feature: resources.html#browser-version-features
+.. _version-feature: resources.html#version-features
 
 .. _historical-browsers: history.html#historical-browsers
-.. _historical-browser-versions: history.html#historical-browser-versions
-.. _historical-browser-version-features: history.html#historical-browser-version-features
+.. _historical-versions: history.html#historical-versions
+.. _historical-version-features: history.html#historical-version-features
 .. _historical-features: history.html#historical-features
