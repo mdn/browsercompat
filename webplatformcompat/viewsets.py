@@ -200,7 +200,7 @@ class ViewFeaturesViewSet(ViewSet):
                         }),
                         ("links", OrderedDict((
                             ("sections", ["745", "746", "747"]),
-                            ("specification-status", "23"),
+                            ("maturity", "23"),
                         ))),
                     )),
                     OrderedDict((
@@ -210,7 +210,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("uri", {"en": "http://www.w3.org/TR/html5/"}),
                         ("links", OrderedDict((
                             ("sections", ["420", "421", "422"]),
-                            ("specification-status", "52"),
+                            ("maturity", "52"),
                         ))),
                     )),
                     OrderedDict((
@@ -220,11 +220,11 @@ class ViewFeaturesViewSet(ViewSet):
                         ("uri", {"en": "http://www.w3.org/TR/html401/"}),
                         ("links", OrderedDict((
                             ("sections", ["69", "70", "71"]),
-                            ("specification-status", "49"),
+                            ("maturity", "49"),
                         ))),
                     )),
                 ]),
-                ("specification-statuses", [
+                ("maturities", [
                     OrderedDict((
                         ("id", "23"),
                         ("mdn-key", "Living"),
@@ -898,12 +898,11 @@ class ViewFeaturesViewSet(ViewSet):
                         "sections/{specifications.sections}")),
                     ("type", "sections"),
                 ))),
-                ("specifications.specification-status", OrderedDict((
+                ("specifications.maturity", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "specification-statuses/"
-                        "{specifications.specification-status}")),
-                    ("type", "specification-statuses"),
+                        "maturities/{specifications.maturity}")),
+                    ("type", "maturities"),
                 ))),
                 ("sections.specification", OrderedDict((
                     ("href", (
@@ -917,10 +916,10 @@ class ViewFeaturesViewSet(ViewSet):
                         "sections/{sections.features}")),
                     ("type", "features"),
                 ))),
-                ("specification-statuses.specifications", OrderedDict((
+                ("maturities.specifications", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/specifications/"
-                        "{specification-statuses.specifications}")),
+                        "{maturities.specifications}")),
                     ("type", "specifications"),
                 ))),
             ))),

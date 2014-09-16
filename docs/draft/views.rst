@@ -135,7 +135,7 @@ A sample response is:
                     },
                     "links": {
                         "sections": ["745", "746", "747"]
-                        "specification-status": "23"
+                        "maturity": "23"
                     }
                 },{
                     "id": "114",
@@ -148,7 +148,7 @@ A sample response is:
                     },
                     "links": {
                         "sections": ["420", "421", "422"]
-                        "specification-status": "52"
+                        "maturity": "52"
                     }
                 },{
                     "id": "576",
@@ -161,11 +161,11 @@ A sample response is:
                     },
                     "links": {
                         "sections": ["69", "70", "71"]
-                        "specification-status": "49"
+                        "maturity": "49"
                     }
                 }
             ],
-            "specification-statuses": [
+            "maturities": [
                 {
                     "id": "23",
                     "mdn-key": "Living",
@@ -739,9 +739,9 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/sections/{specifications.sections}",
                 "type": "sections"
             },
-            "specifications.specification-status": {
-                "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
-                "type": "specification-statuses"
+            "specifications.maturity": {
+                "href": "https://api.compat.mozilla.org/maturities/{specifications.maturity}",
+                "type": "maturities"
             },
             "sections.specification": {
                 "href": "https://api.compat.mozilla.org/specifications/{sections.specification}",
@@ -751,8 +751,8 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/sections/{sections.features}",
                 "type": "features"
             },
-            "specification-statuses.specifications": {
-                "href": "https://api.compat.mozilla.org/specifications/{specification-statuses.specifications}",
+            "maturities.specifications": {
+                "href": "https://api.compat.mozilla.org/specifications/{maturities.specifications}",
                 "type": "specifications"
             }
         },
@@ -800,10 +800,10 @@ The process for using this representation is:
           specifications.name.(lang or en), with title based on
           sections.name.(lang or en) or feature.name.(lang or en).
         * Add the second column: A span with class
-          "spec-" + specification-statuses.mdn-key, and the text
-          specification-statuses.name.(lang or en).
+          "spec-" + maturities.mdn-key, and the text
+          maturities.name.(lang or en).
         * Add the third column:
-          specification-statuses.notes.(lang or en), or empty string
+          maturities.notes.(lang or en), or empty string
     4. Close the table, and add an edit button.
 3. Create the Browser Compatibility section:
     1. Add The "Browser compatibility" header

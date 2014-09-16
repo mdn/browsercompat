@@ -70,7 +70,7 @@ There are also additional Resources_:
   and URIs.
 * sections_ - For referring to a section of a specification, with
   translated titles and anchors
-* specification-statuses_ - For identifying the process stage of a spec
+* maturities_ - For identifying the process stage of a specification
 * All the history_ resources (historical-browsers_,
   historical-versions_, etc.)
 * users_ - For identifying the user who made a change
@@ -225,8 +225,8 @@ The elements of this table are converted into API data:
   (en language only).
 * **Body row, second column** - Format is ``Spec2('KEY')``.  ``KEY`` is the
   specification.mdn-key, and should match the one from column one.  The macro
-  Spec2_ has additional lookups on ``KEY`` for specification-status.mdn-key,
-  and specification-status.name (multiple languages).
+  Spec2_ has additional lookups on ``KEY`` for maturity.mdn-key,
+  and maturity.name (multiple languages).
 * **Body row, third column** - Format is a text fragment which may include HTML
   markup, becomes the section.name associated with this
   feature.
@@ -386,7 +386,7 @@ To Do
 .. _features: resources.html#features
 .. _sections: resources.html#sections
 .. _specifications: resources.html#specifications
-.. _specification-statuses: resources.html#specification-statuses
+.. _maturities: resources.html#maturities
 .. _supports: resources.html#supports
 .. _versions: resources.html#versions
 

@@ -870,7 +870,7 @@ The **features** representation includes:
     - **experimental** - True if a feature is considered experimental, such as
       being non-standard or part of an non-ratified spec.
     - **standardized** - True if a feature is described in a standards-track
-      spec, regardless of the spec's status.
+      spec, regardless of the spec's maturity.
     - **stable** - True if a feature is considered suitable for production
       websites.
     - **obsolete** - True if a feature should not be used in new development.
@@ -1157,7 +1157,7 @@ The **specification** representation includes:
 * **links**
     - **sections** *(many)* - Associated sections_.  The order can be changed
       by the user.
-    - **specification-status** *(one)* - Associated specification-status_.
+    - **maturity** *(one)* - Associated maturity_.
       Can be changed by the user.
 
 To get a single **specification**:
@@ -1191,7 +1191,7 @@ A sample response is:
             },
             "links": {
                 "sections": ["792", "793"]
-                "specification-status": "23"
+                "maturity": "23"
             }
         },
         "links": {
@@ -1199,9 +1199,9 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/sections/{specifications.sections}",
                 "type": "sections"
             },
-            "specifications.specification-status": {
-                "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
-                "type": "specification-statuses"
+            "specifications.maturity": {
+                "href": "https://api.compat.mozilla.org/maturities/{specifications.maturity}",
+                "type": "maturities"
             }
         }
     }
@@ -1271,13 +1271,12 @@ A sample response is:
         }
     }
 
-Specification Statuses
-----------------------
+Maturities
+----------
 
-A **specification-status** refers to the status of a specification_
-document.
+A **maturity** refers to the maturity of a specification_ document.
 
-The **specification-status** representation includes:
+The **maturity** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
@@ -1287,11 +1286,11 @@ The **specification-status** representation includes:
     - **specifications** *(many)* - Associated specifications_.  In ID order,
       changes are ignored.
 
-To get a single **specification-status**:
+To get a single **maturity**:
 
 .. code-block:: http
 
-    GET /specification-statuses/49 HTTP/1.1
+    GET /maturities/49 HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vn.api+json
 
@@ -1305,7 +1304,7 @@ A sample response is:
 .. code-block:: json
 
     {
-        "specification-statuses": {
+        "maturities": {
             "id": "49",
             "mdn-key": "REC",
             "name": {
@@ -1317,8 +1316,8 @@ A sample response is:
             }
         },
         "links": {
-            "specification-statuses.specifications": {
-                "href": "https://api.compat.mozilla.org/specifications/{specification-statuses.specifications}",
+            "maturities.specifications": {
+                "href": "https://api.compat.mozilla.org/specifications/{maturities.specifications}",
                 "type": "specifications"
             }
         }
@@ -1326,7 +1325,7 @@ A sample response is:
 
 .. _feature: Features_
 .. _specification: Specifications_
-.. _specification-status: `Specification Statuses`_
+.. _maturity: `Maturities`_
 .. _version: `Versions`_
 
 .. _changeset: change-control.html#changesets
