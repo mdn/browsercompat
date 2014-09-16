@@ -23,7 +23,7 @@ These changes are:
     - **name** - converted to localized text.
     - **note** - added for engine, OS, etc. information
 * versions_
-    - Was `browser-versions`
+    - Was `browser-versions`, but multi-word resources are problematic.
     - **release-day** - Day of release
     - **retirement-day** - Day of "retirement", or when it was superceeded by
       a new release.
@@ -52,7 +52,8 @@ These changes are:
       canonical
     - **specfication-sections** - replaces spec link
     - **ancestors**, **siblings**, **children**, **descendants** - tree relations
-* version-features_
+* supports_
+    - Was `browser-version-features`, but multi-word resources are problematic.
     - **support** - Added a value "never", for cases where developers have
       announced they will not support a feature.  For example, the `CSS
       @font-face at-rule`_, which has been closed as WONTFIX in `Bugzilla
@@ -159,7 +160,7 @@ features to add, or existing features that will be dropped.
 * `Web/CSS/text-transform`_ - Interesting use of non-ascii unicode in feature
   names, good test case.
 * `Web/CSS/transform-origin`_ - IE may justify a 'alternate' value for
-  version-features.support, or just 'no' with a footnote.
+  supports.support, or just 'no' with a footnote.
 
 Some pages will require manual intervention to get them into the data store.
 Here's a sample:
@@ -295,22 +296,22 @@ This will be converted to API resources:
   If there is also KumaScript, it varies. **TODO:** doc KumaScript.
 * **Non-header rows, remaining columns** - Usually Kumascript:
     * ``{{CompatUnknown}}`` - version.version is ``null``, and
-      version-feature.support is ``"unknown"``
+      support.support is ``"unknown"``
     * ``{{CompatVersionUnknown}}`` - version.version and are ``null``,
-      and version-feature.support in ``"yes"``
+      and support.support in ``"yes"``
     * ``{{CompatNo}}`` - version.version and are ``null``, and
-      version-feature.support is ``"no"``
+      support.support is ``"no"``
     * ``{{CompatGeckoDesktop("VAL")}}`` - version.version is set to
-      ``"VAL"``, version-feature.support is ``"yes"``.  and
+      ``"VAL"``, support.support is ``"yes"``.  and
       version.release-day is set by logic in CompatGeckoDesktop_.
     * ``{{CompatGeckoMobile("VAL")}}`` - version.version is set to
-      ``"VAL"``, version-feature.support is ``"yes"``.  is set by logic
+      ``"VAL"``, support.support is ``"yes"``.  is set by logic
       in CompatGeckoMobile_.
     * Numeric string, such as ``6``, ``15.0``.  This becomes the
-      version.version, and version-feature.support is
+      version.version, and support.support is
       ``"yes"``.
 * **Content after table** - This is usually formatted as a paragraph,
-  containing HTML.  It should become version-features.footnotes,
+  containing HTML.  It should become supports.footnotes,
   but it will challenging to auto-parse and associate.
 
 Once the initial conversion has been done for a page, it may be useful to
@@ -364,12 +365,12 @@ To Do
     * *A feature-set can either have sub-feature sets (middle of cloud), or
       features (edge of cloud).* - Note - implemented by merging features and
       feature sets.
-    * *Add version-feature-sets, to make positive assertions about
+    * *Add support-sets, to make positive assertions about
       a version supporting a feature-set.  Only negative assertions
       can be made based on features.* - Note - implemented by merging features
       and feature sets
     * Drop order of features by feature set.  Client will alpha-sort.
-    * version-features.support, drop "prefixed" status.  If prefixed,
+    * supports.support, drop "prefixed" status.  If prefixed,
       support = 'yes', and prefix is set.
     * Add examples of filtering (browser versions in 2010, firefox versions
       before version X).
@@ -382,12 +383,12 @@ To Do
 
 .. _Resources: resources.html
 .. _browsers: resources.html#browsers
-.. _versions: resources.html#versions
-.. _version-features: resources.html#versions-features
 .. _features: resources.html#features
 .. _specifications: resources.html#specifications
 .. _specification-sections: resources.html#specification-sections
 .. _specification-statuses: resources.html#specification-statuses
+.. _supports: resources.html#supports
+.. _versions: resources.html#versions
 
 .. _changesets: change-control#changesets
 .. _users: change-control#users

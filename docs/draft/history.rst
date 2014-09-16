@@ -92,13 +92,12 @@ A **historical-features** resource represents the state of a feature_ at a point
 in time, and who is responsible for that representation.  See
 historical-browsers_ and features_ for an idea of the represention.
 
-Historical Browser Version Features
------------------------------------
+Historical Supports
+-------------------
 
-A **historical-version-features** resource represents a state of a
-version-feature_ at a point in time, and who is responsible for that
-representation.  See historical-browsers_ and version-features_ for an
-idea of the represention.
+A **historical-supports** resource represents a state of a support_ at a point
+in time, and who is responsible for that representation.  See
+historical-browsers_ and supports_ for an idea of the represention.
 
 .. _historical-browser: `Historical Browsers`_
 .. _historical-browsers: `Historical Browsers`_
@@ -106,8 +105,8 @@ idea of the represention.
 .. _browser: resources.html#browsers
 .. _version: resources.html#versions
 .. _versions: resources.html#versions
-.. _version-feature: resources.html#versions-feature
-.. _version-features: resources.html#versions-features
+.. _support: resources.html#supports
+.. _supports: resources.html#supports
 .. _feature: resources.html#features
 .. _features: resources.html#features
 

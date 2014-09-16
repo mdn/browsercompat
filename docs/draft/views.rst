@@ -44,7 +44,7 @@ A sample response is:
             "name": "address",
             "links": {
                 "specification-sections": ["746", "421", "70"],
-                "version-features": [],
+                "supports": [],
                 "parent": "800",
                 "ancestors": ["800", "816"],
                 "siblings": ["814", "815", "816", "817", "818"],
@@ -68,7 +68,7 @@ A sample response is:
                     },
                     "links": {
                         "specification-sections": [],
-                        "version-features": [
+                        "supports": [
                             "358", "359", "360", "361", "362", "363", "364",
                             "365", "366", "367", "368"],
                         "parent": "816",
@@ -197,7 +197,7 @@ A sample response is:
                     }
                 }
             ],
-            "version-features": [
+            "supports": [
                 {
                     "id": "358",
                     "support": "yes",
@@ -355,7 +355,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "1",
-                        "version-features": ["158", "258", "358", "458"],
+                        "supports": ["158", "258", "358", "458"],
                         "history-current": "1567",
                         "history": ["1567"]
                     }
@@ -369,7 +369,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "2",
-                        "version-features": ["159", "259", "359", "459"],
+                        "supports": ["159", "259", "359", "459"],
                         "history-current": "1568",
                         "history": ["1568"]
                     }
@@ -383,7 +383,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "3",
-                        "version-features": ["160", "260", "360", "460"],
+                        "supports": ["160", "260", "360", "460"],
                         "history-current": "1569",
                         "history": ["1569"]
                     }
@@ -397,7 +397,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "4",
-                        "version-features": ["161", "261", "361", "461"],
+                        "supports": ["161", "261", "361", "461"],
                         "history-current": "1570",
                         "history": ["1570"]
                     }
@@ -411,7 +411,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "5",
-                        "version-features": ["162", "262", "362", "462"],
+                        "supports": ["162", "262", "362", "462"],
                         "history-current": "1571",
                         "history": ["1571"]
                     }
@@ -425,7 +425,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "6",
-                        "version-features": ["163", "263", "363", "463"],
+                        "supports": ["163", "263", "363", "463"],
                         "history-current": "1572",
                         "history": ["1572"]
                     }
@@ -439,7 +439,7 @@ A sample response is:
                     "note": "Uses Gecko 1.7",
                     "links": {
                         "browser": "7",
-                        "version-features": ["164", "264", "364", "464"],
+                        "supports": ["164", "264", "364", "464"],
                         "history-current": "1574",
                         "history": ["1574"]
                     }
@@ -453,7 +453,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "8",
-                        "version-features": ["165", "265", "365", "465"],
+                        "supports": ["165", "265", "365", "465"],
                         "history-current": "1575",
                         "history": ["1575"]
                     }
@@ -467,7 +467,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "11",
-                        "version-features": ["166", "266", "366", "466"],
+                        "supports": ["166", "266", "366", "466"],
                         "history-current": "1576",
                         "history": ["1576"]
                     }
@@ -481,7 +481,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "9",
-                        "version-features": ["167", "267", "367", "467"],
+                        "supports": ["167", "267", "367", "467"],
                         "history-current": "1577",
                         "history": ["1577"]
                     }
@@ -495,7 +495,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "browser": "10",
-                        "version-features": ["168", "268", "368", "468"],
+                        "supports": ["168", "268", "368", "468"],
                         "history-current": "1578",
                         "history": ["1578"]
                     }
@@ -707,9 +707,9 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/browsers/{versions.browser}",
                 "type": "browsers"
             },
-            "versions.version-features": {
-                "href": "https://api.compat.mozilla.org/version-features/{versions.features}",
-                "type": "version-features"
+            "versions.supports": {
+                "href": "https://api.compat.mozilla.org/supports/{versions.features}",
+                "type": "supports"
             },
             "versions.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-versions/{versions.history-current}",
@@ -719,21 +719,21 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/historical-versions/{versions.history}",
                 "type": "historical-versions"
             },
-            "version-features.version": {
-                "href": "https://api.compat.mozilla.org/versions/{version-features.version}",
+            "supports.version": {
+                "href": "https://api.compat.mozilla.org/versions/{supports.version}",
                 "type": "versions"
             },
-            "version-features.feature": {
-                "href": "https://api.compat.mozilla.org/browsers/{version-features.feature}",
+            "supports.feature": {
+                "href": "https://api.compat.mozilla.org/browsers/{supports.feature}",
                 "type": "features"
             },
-            "version-features.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-version-features/{version-features.history-current}",
-                "type": "historical-version-features"
+            "supports.history-current": {
+                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history-current}",
+                "type": "historical-supports"
             },
-            "version-features.history": {
-                "href": "https://api.compat.mozilla.org/historical-version-features/{version-features.history}",
-                "type": "historical-version-features"
+            "supports.history": {
+                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history}",
+                "type": "historical-supports"
             },
             "specifications.specification-sections": {
                 "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
@@ -769,7 +769,7 @@ A sample response is:
                     },
                     "browsers": ["6", "7", "8", "11", "9", "10"]
                 }],
-                "version-features": {
+                "supports": {
                     "191": {
                         "1": ["358"],
                         "2": ["359"],
@@ -818,15 +818,15 @@ The process for using this representation is:
         * Add any feature flags, such as an obsolete or experimental icon,
           based on the feature flags.
         * For each browser id in meta.compat-table-important:
-            - Get the important version-feature IDs from
-              meta.compat-table-important.version-features.<``feature ID``>.<``browser ID``>
+            - Get the important support IDs from
+              meta.compat-table-important.supports.<``feature ID``>.<``browser ID``>
             - If null, then display "?"
             - If just one, display "<``version``>", or "<``support``>",
               depending on the defined attributes
             - If multiple, display as subcells
             - Add prefixes, notes, and footnotes links as appropriate
     5. Close each table, add an edit button
-    6. Add footnotes for displayed version-features
+    6. Add footnotes for displayed supports
 
 This may be done by including the JSON in the page as sent over the wire,
 or loaded asynchronously, with the tables built after initial page load.
@@ -842,7 +842,7 @@ Updating Views with Changesets
 Updating the page requires a sequence of requests.  For example, if a user
 wants to change Chrome support for ``<address>`` from an unknown version to
 version 1, you'll have to create the version_ for that version,
-then add the version-feature_ for the support.
+then add the support_ for the support.
 
 The first step is to create a changeset_ as an authenticated user:
 
@@ -885,7 +885,7 @@ A sample response is:
                 "historical-browsers": [],
                 "historical-versions": [],
                 "historical-features": [],
-                "historical-version-features": []
+                "historical-supports": []
             }
         },
         "links": {
@@ -905,9 +905,9 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
                 "type": "historical-features"
             },
-            "changesets.historical-version-features": {
-                "href": "https://api.compat.mozilla.org/historical-version-features/{changesets.historical-version-features}",
-                "type": "historical-version-features"
+            "changesets.historical-supports": {
+                "href": "https://api.compat.mozilla.org/historical-supports/{changesets.historical-supports}",
+                "type": "historical-supports"
             }
         }
     }
@@ -955,7 +955,7 @@ A sample response is:
             "note": null,
             "links": {
                 "browser": "1",
-                "version-features": [],
+                "supports": [],
                 "history-current": "3052",
                 "history": ["3052"]
             }
@@ -965,9 +965,9 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/browsers/{versions.browser}",
                 "type": "browsers"
             },
-            "versions.version-features": {
-                "href": "https://api.compat.mozilla.org/version-features/{versions.features}",
-                "type": "version-features"
+            "versions.supports": {
+                "href": "https://api.compat.mozilla.org/supports/{versions.features}",
+                "type": "supports"
             },
             "versions.history-current": {
                 "href": "https://api.compat.mozilla.org/historical-versions/{versions.history-current}",
@@ -980,11 +980,11 @@ A sample response is:
         }
     }
 
-Finally, create the version-feature_:
+Finally, create the support_:
 
 .. code-block:: http
 
-    POST /version-features/?changeset=5284 HTTP/1.1
+    POST /supports/?changeset=5284 HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
@@ -993,7 +993,7 @@ Finally, create the version-feature_:
 .. code-block:: json
 
     {
-        "version-features": {
+        "supports": {
             "support": "yes",
             "links": {
                 "version": "4477",
@@ -1008,12 +1008,12 @@ A sample response is:
 
     HTTP/1.1 201 Created
     Content-Type: application/vnd.api+json
-    Location: https://api.compat.mozilla.org/version-features/8219
+    Location: https://api.compat.mozilla.org/supports/8219
 
 .. code-block:: json
 
     {
-        "version-features": {
+        "supports": {
             "id": "8219",
             "support": "yes",
             "prefix": null,
@@ -1027,40 +1027,40 @@ A sample response is:
             }
         },
         "links": {
-            "version-features.version": {
-                "href": "https://api.compat.mozilla.org/versions/{version-features.version}",
+            "supports.version": {
+                "href": "https://api.compat.mozilla.org/versions/{supports.version}",
                 "type": "versions"
             },
-            "version-features.feature": {
-                "href": "https://api.compat.mozilla.org/browsers/{version-features.feature}",
+            "supports.feature": {
+                "href": "https://api.compat.mozilla.org/browsers/{supports.feature}",
                 "type": "features"
             },
-            "version-features.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-version-features/{version-features.history-current}",
-                "type": "historical-version-features"
+            "supports.history-current": {
+                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history-current}",
+                "type": "historical-supports"
             },
-            "version-features.history": {
-                "href": "https://api.compat.mozilla.org/historical-version-features/{version-features.history}",
-                "type": "historical-version-features"
+            "supports.history": {
+                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history}",
+                "type": "historical-supports"
             }
         }
     }
 
-The historical-versions_ and historical-version-features_
+The historical-versions_ and historical-supports_
 resources will both refer to changeset_ 5284, and this changeset_ is
 linked to feature_ 816, despite the fact that no changes were made
 to the feature_.  This will facilitate displaying a history of
 the compatibility tables, for the purpose of reviewing changes and reverting
 vandalism.
 
-.. _version: resources.html#versions
-.. _version-feature: resources.html#versions-feature
 .. _feature: resources.html#features
+.. _support: resources.html#versions-feature
+.. _version: resources.html#versions
 
 .. _changeset: change-control#changeset
 
 .. _historical-versions: history.html#historical-versions
-.. _historical-version-features: history.html#historical-version-features
+.. _historical-supports: history.html#historical-supports
 
 .. _address: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address
 .. _`Inclusion of Linked Resources`: http://jsonapi.org/format/#fetching-includes

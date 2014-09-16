@@ -19,10 +19,10 @@ The representation includes:
     - **agreement-version** - The version of the contribution agreement the
       user has accepted.  "0" for not agreed, "1" for first version, etc.
     - **permissions** - A list of permissions.  Permissions include
-      ``"change-version-feature"`` (add or change a version-feature_)
+      ``"change-support"`` (add or change a support_),
       ``"change-resource"`` (add or change any resource except users_ or
-      history resources)
-      ``"change-user"`` (change a user_ resource)
+      history resources),
+      ``"change-user"`` (change a user_ resource), and
       ``"delete-resource"`` (delete any resource)
 * **links**
     - **changesets** *(many)* - Associated changesets_, in ID order, changes
@@ -51,7 +51,7 @@ A sample response is:
             "username": "askDNA@tdv.com",
             "created": "1405000551.750000",
             "agreement-version": "1",
-            "permissions": ["change-version-feature"],
+            "permissions": ["change-support"],
             "links": {
                 "changesets": ["73"]
             }
@@ -102,8 +102,8 @@ The representation includes:
       historical-versions_, in ID order, changes are ignored.
     - **historical-features** *(many)* - Associated historical-features_,
       in ID order, changes are ignored.
-    - **historical-version-features** *(many)* - Associated
-      historical-version-features_, in ID order, changes are ignored.
+    - **historical-supports** *(many)* - Associated historical-supports_, in ID
+      order, changes are ignored.
 
 
 To get a single **changeset** representation:
@@ -135,7 +135,7 @@ A sample response is:
                 "historical-browsers": [],
                 "historical-versions": [],
                 "historical-features": [],
-                "historical-version-features": ["1789", "1790"]
+                "historical-supports": ["1789", "1790"]
             }
         },
         "links": {
@@ -155,18 +155,18 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
                 "type": "historical-features"
             },
-            "changesets.historical-version-features": {
-                "href": "https://api.compat.mozilla.org/historical-version-features/{changesets.historical-version-features}",
-                "type": "historical-version-features"
+            "changesets.historical-supports": {
+                "href": "https://api.compat.mozilla.org/historical-supports/{changesets.historical-supports}",
+                "type": "historical-supports"
             }
         }
     }
 
 .. _user: Users_
 
-.. _version-feature: resources.html#version-features
+.. _support: resources.html#supports
 
 .. _historical-browsers: history.html#historical-browsers
-.. _historical-versions: history.html#historical-versions
-.. _historical-version-features: history.html#historical-version-features
 .. _historical-features: history.html#historical-features
+.. _historical-supports: history.html#historical-supports
+.. _historical-versions: history.html#historical-versions
