@@ -66,10 +66,10 @@ These changes are:
 
 There are also additional Resources_:
 
-* specification-sections_ - For referring to a section of a specification, with
-  translated titles and anchors
 * specifications_ - For referring to a specification, with translated titles
   and URIs.
+* sections_ - For referring to a section of a specification, with
+  translated titles and anchors
 * specification-statuses_ - For identifying the process stage of a spec
 * All the history_ resources (historical-browsers_,
   historical-versions_, etc.)
@@ -219,8 +219,8 @@ The elements of this table are converted into API data:
 
 * **Body row, first column** - Format is ``SpecName('KEY', 'PATH', 'NAME')``.
   ``KEY`` is the specification.mdn-key, ``PATH`` is
-  specification-section.subpath, in the page language, and ``NAME`` is
-  specification-section.name, in the page language.  The macro SpecName_ has
+  section.subpath, in the page language, and ``NAME`` is
+  section.name, in the page language.  The macro SpecName_ has
   additional lookups on ``KEY`` for specification.name and specification.uri
   (en language only).
 * **Body row, second column** - Format is ``Spec2('KEY')``.  ``KEY`` is the
@@ -228,7 +228,7 @@ The elements of this table are converted into API data:
   Spec2_ has additional lookups on ``KEY`` for specification-status.mdn-key,
   and specification-status.name (multiple languages).
 * **Body row, third column** - Format is a text fragment which may include HTML
-  markup, becomes the specification-section.name associated with this
+  markup, becomes the section.name associated with this
   feature.
 
 and here's the Browser compatibility section:
@@ -384,8 +384,8 @@ To Do
 .. _Resources: resources.html
 .. _browsers: resources.html#browsers
 .. _features: resources.html#features
+.. _sections: resources.html#sections
 .. _specifications: resources.html#specifications
-.. _specification-sections: resources.html#specification-sections
 .. _specification-statuses: resources.html#specification-statuses
 .. _supports: resources.html#supports
 .. _versions: resources.html#versions

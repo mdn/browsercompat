@@ -886,8 +886,8 @@ The **features** representation includes:
       ``"CSS Properties"`` are non-canonical names that should be translated.
 
 * **links**
-    - **specification-sections** *(many)* - Associated specification-sections_.
-      Order can be changed by the user.
+    - **sections** *(many)* - Associated sections_.  Order can be changed by
+      the user.
     - **supports** *(many)* - Associated supports_, Order is in ID order,
       changes are ignored.
     - **parent** *(one or null)* - The feature one level up, or null
@@ -936,7 +936,7 @@ A sample response is:
             "obsolete": false,
             "name": "background-size: contain"},
             "links": {
-                "specification-sections": ["485"],
+                "sections": ["485"],
                 "supports": ["1125", "1212", "1536"],
                 "parent": "173",
                 "ancestors": ["2", "12", "173", "276"],
@@ -948,9 +948,9 @@ A sample response is:
             }
         },
         "links": {
-            "features.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
-                "type": "specification-sections"
+            "features.sections": {
+                "href": "https://api.compat.mozilla.org/sections/{features.sections}",
+                "type": "sections"
             },
             "feature.parent": {
                 "href": "https://api.compat.mozilla.org/features/{feature.parent}",
@@ -1013,7 +1013,7 @@ A sample response is:
                 "en": "CSS <code>background</code> property"
             },
             "links": {
-                "specification-sections": [],
+                "sections": [],
                 "supports": [],
                 "parent": ["12"],
                 "ancestors": ["2", "12", "173"]
@@ -1025,9 +1025,9 @@ A sample response is:
             }
         },
         "links": {
-            "features.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
-                "type": "specification-sections"
+            "features.sections": {
+                "href": "https://api.compat.mozilla.org/sections/{features.sections}",
+                "type": "sections"
             },
             "feature.parent": {
                 "href": "https://api.compat.mozilla.org/features/{feature.parent}",
@@ -1155,8 +1155,8 @@ The **specification** representation includes:
     - **name** *(localized)* - Specification name
     - **uri** *(localized)* - Specification URI, without subpath and anchor
 * **links**
-    - **specification-sections** *(many)* - Associated specification-sections_.
-      The order can be changed by the user.
+    - **sections** *(many)* - Associated sections_.  The order can be changed
+      by the user.
     - **specification-status** *(one)* - Associated specification-status_.
       Can be changed by the user.
 
@@ -1190,14 +1190,14 @@ A sample response is:
                 "fr": "http://www.yoyodesign.org/doc/w3c/css1/index.html"
             },
             "links": {
-                "specification-sections": ["792", "793"]
+                "sections": ["792", "793"]
                 "specification-status": "23"
             }
         },
         "links": {
-            "specifications.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
-                "type": "specification-sections"
+            "specifications.sections": {
+                "href": "https://api.compat.mozilla.org/sections/{specifications.sections}",
+                "type": "sections"
             },
             "specifications.specification-status": {
                 "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
@@ -1206,13 +1206,12 @@ A sample response is:
         }
     }
 
-Specification Sections
-----------------------
+Sections
+--------
 
-A **specification-section** refers to a specific area of a specification_
-document.
+A **section** refers to a specific area of a specification_ document.
 
-The **specification-section** representation includes:
+The **section** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
@@ -1226,11 +1225,11 @@ The **specification-section** representation includes:
     - **features** *(many)* - The associated features_.  In ID order,
       changes are ignored.
 
-To get a single **specification-section**:
+To get a single **section**:
 
 .. code-block:: http
 
-    GET /specification-sections/792 HTTP/1.1
+    GET /sections/792 HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vn.api+json
 
@@ -1244,7 +1243,7 @@ A sample response is:
 .. code-block:: json
 
     {
-        "specification-sections": {
+        "sections": {
             "id": "792",
             "name": {
                 "en": "'display'"
@@ -1261,12 +1260,12 @@ A sample response is:
             }
         },
         "links": {
-            "specification-sections.specification": {
-                "href": "https://api.compat.mozilla.org/specifications/{specification-sections.specification}",
+            "sections.specification": {
+                "href": "https://api.compat.mozilla.org/specifications/{sections.specification}",
                 "type": "specifications"
             },
-            "specification-sections.features": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{specification-sections.features}",
+            "sections.features": {
+                "href": "https://api.compat.mozilla.org/sections/{sections.features}",
                 "type": "features"
             }
         }
@@ -1327,7 +1326,6 @@ A sample response is:
 
 .. _feature: Features_
 .. _specification: Specifications_
-.. _specification-sections: `Specification Sections`_
 .. _specification-status: `Specification Statuses`_
 .. _version: `Versions`_
 

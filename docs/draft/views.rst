@@ -43,7 +43,7 @@ A sample response is:
             "mdn-path": "en-US/docs/Web/HTML/Element/address",
             "name": "address",
             "links": {
-                "specification-sections": ["746", "421", "70"],
+                "sections": ["746", "421", "70"],
                 "supports": [],
                 "parent": "800",
                 "ancestors": ["800", "816"],
@@ -67,7 +67,7 @@ A sample response is:
                         "en": "Basic support"
                     },
                     "links": {
-                        "specification-sections": [],
+                        "sections": [],
                         "supports": [
                             "358", "359", "360", "361", "362", "363", "364",
                             "365", "366", "367", "368"],
@@ -81,7 +81,7 @@ A sample response is:
                     }
                 }
             ],
-            "specification-sections": [
+            "sections": [
                 {
                     "id": "746",
                     "name": {
@@ -134,7 +134,7 @@ A sample response is:
                         "en": "http://www.whatwg.org/specs/web-apps/current-work/multipage/",
                     },
                     "links": {
-                        "specification-sections": ["745", "746", "747"]
+                        "sections": ["745", "746", "747"]
                         "specification-status": "23"
                     }
                 },{
@@ -147,7 +147,7 @@ A sample response is:
                         "en": "http://www.w3.org/TR/html5/",
                     },
                     "links": {
-                        "specification-sections": ["420", "421", "422"]
+                        "sections": ["420", "421", "422"]
                         "specification-status": "52"
                     }
                 },{
@@ -160,7 +160,7 @@ A sample response is:
                         "en": "http://www.w3.org/TR/html401/",
                     },
                     "links": {
-                        "specification-sections": ["69", "70", "71"]
+                        "sections": ["69", "70", "71"]
                         "specification-status": "49"
                     }
                 }
@@ -659,9 +659,9 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/features/{features.features}",
                 "type": "features"
             },
-            "features.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{features.specification-sections}",
-                "type": "specification-sections"
+            "features.sections": {
+                "href": "https://api.compat.mozilla.org/sections/{features.sections}",
+                "type": "sections"
             },
             "features.parent": {
                 "href": "https://api.compat.mozilla.org/features/{features.parent}",
@@ -735,20 +735,20 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/historical-supports/{supports.history}",
                 "type": "historical-supports"
             },
-            "specifications.specification-sections": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{specifications.specification-sections}",
-                "type": "specification-sections"
+            "specifications.sections": {
+                "href": "https://api.compat.mozilla.org/sections/{specifications.sections}",
+                "type": "sections"
             },
             "specifications.specification-status": {
                 "href": "https://api.compat.mozilla.org/specification-statuses/{specifications.specification-status}",
                 "type": "specification-statuses"
             },
-            "specification-sections.specification": {
-                "href": "https://api.compat.mozilla.org/specifications/{specification-sections.specification}",
+            "sections.specification": {
+                "href": "https://api.compat.mozilla.org/specifications/{sections.specification}",
                 "type": "specifications"
             },
-            "specification-sections.features": {
-                "href": "https://api.compat.mozilla.org/specification-sections/{specification-sections.features}",
+            "sections.features": {
+                "href": "https://api.compat.mozilla.org/sections/{sections.features}",
                 "type": "features"
             },
             "specification-statuses.specifications": {
@@ -794,11 +794,11 @@ The process for using this representation is:
 2. Create the "Specifications" section:
     1. Add the ``Specifications`` header
     2. Create an HTML table with a header row "Specification", "Status", "Comment"
-    3. For each id in features.links.specification-sections (``["746", "421", "70"]``):
+    3. For each id in features.links.sections (``["746", "421", "70"]``):
         * Add the first column: a link to specifications.uri.(lang or en) +
-          specifications-sections.subpath.(lang or en), with link text
+          sections.subpath.(lang or en), with link text
           specifications.name.(lang or en), with title based on
-          specification-sections.name.(lang or en) or feature.name.(lang or en).
+          sections.name.(lang or en) or feature.name.(lang or en).
         * Add the second column: A span with class
           "spec-" + specification-statuses.mdn-key, and the text
           specification-statuses.name.(lang or en).

@@ -118,7 +118,7 @@ class ViewFeaturesViewSet(ViewSet):
                 ("mdn-path", "en-US/docs/Web/HTML/Element/address"),
                 ("name", "address"),
                 ("links", OrderedDict((
-                    ("specification-sections", ["746", "421", "70"]),
+                    ("sections", ["746", "421", "70"]),
                     ("supports", []),
                     ("parent", "800"),
                     ("ancestors", ["800", "816"]),
@@ -139,7 +139,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("obsolete", False),
                         ("name", {"en": "Basic support"}),
                         ("links", OrderedDict((
-                            ("specification-sections", []),
+                            ("sections", []),
                             ("supports", [
                                 "358", "359", "360", "361", "362", "363",
                                 "364", "365", "366", "367", "368"]),
@@ -153,7 +153,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ))),
                     )),
                 ]),
-                ("specification-sections", [
+                ("sections", [
                     OrderedDict((
                         ("id", "746"),
                         ("name", {"en": "The address element"}),
@@ -199,7 +199,7 @@ class ViewFeaturesViewSet(ViewSet):
                                 "current-work/multipage/"),
                         }),
                         ("links", OrderedDict((
-                            ("specification-sections", ["745", "746", "747"]),
+                            ("sections", ["745", "746", "747"]),
                             ("specification-status", "23"),
                         ))),
                     )),
@@ -209,7 +209,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("name", {"en": "HTML5"}),
                         ("uri", {"en": "http://www.w3.org/TR/html5/"}),
                         ("links", OrderedDict((
-                            ("specification-sections", ["420", "421", "422"]),
+                            ("sections", ["420", "421", "422"]),
                             ("specification-status", "52"),
                         ))),
                     )),
@@ -219,7 +219,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("name", {"en": "HTML 4.01 Specification"}),
                         ("uri", {"en": "http://www.w3.org/TR/html401/"}),
                         ("links", OrderedDict((
-                            ("specification-sections", ["69", "70", "71"]),
+                            ("sections", ["69", "70", "71"]),
                             ("specification-status", "49"),
                         ))),
                     )),
@@ -776,11 +776,11 @@ class ViewFeaturesViewSet(ViewSet):
                         "{feature.features}")),
                     ("type", "features"),
                 ))),
-                ("features.specification-sections", OrderedDict((
+                ("features.sections", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "specification-sections/"
-                        "{features.specification-sections}")),
+                        "sections/"
+                        "{features.sections}")),
                     ("type", "specfication-sections"),
                 ))),
                 ("features.parent", OrderedDict((
@@ -816,8 +816,7 @@ class ViewFeaturesViewSet(ViewSet):
                 ("features.history-current", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-features/"
-                        "{features.history-current}")),
+                        "historical-features/{features.history-current}")),
                     ("type", "historical-features"),
                 ))),
                 ("features.history", OrderedDict((
@@ -854,22 +853,19 @@ class ViewFeaturesViewSet(ViewSet):
                 ("versions.supports", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "supports/"
-                        "{versions.features}")),
+                        "supports/{versions.features}")),
                     ("type", "supports"),
                 ))),
                 ("versions.history-current", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-versions/"
-                        "{versions.history-current}")),
+                        "historical-versions/{versions.history-current}")),
                     ("type", "historical-versions"),
                 ))),
                 ("versions.history", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-versions/"
-                        "{versions.history}")),
+                        "historical-versions/{versions.history}")),
                     ("type", "historical-versions"),
                 ))),
                 ("supports.version", OrderedDict((
@@ -887,23 +883,20 @@ class ViewFeaturesViewSet(ViewSet):
                 ("supports.history-current", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-supports/"
-                        "{supports.history-current}")),
+                        "historical-supports/{supports.history-current}")),
                     ("type", "historical-supports"),
                 ))),
                 ("supports.history", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "historical-supports/"
-                        "{supports.history}")),
+                        "historical-supports/{supports.history}")),
                     ("type", "historical-supports"),
                 ))),
-                ("specifications.specification-sections", OrderedDict((
+                ("specifications.sections", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "specification-sections/"
-                        "{specifications.specification-sections}")),
-                    ("type", "specification-sections"),
+                        "sections/{specifications.sections}")),
+                    ("type", "sections"),
                 ))),
                 ("specifications.specification-status", OrderedDict((
                     ("href", (
@@ -912,17 +905,16 @@ class ViewFeaturesViewSet(ViewSet):
                         "{specifications.specification-status}")),
                     ("type", "specification-statuses"),
                 ))),
-                ("specification-sections.specification", OrderedDict((
+                ("sections.specification", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/specifications/"
-                        "{specification-sections.specification}")),
+                        "{sections.specification}")),
                     ("type", "specifications"),
                 ))),
-                ("specification-sections.features", OrderedDict((
+                ("sections.features", OrderedDict((
                     ("href", (
                         "https://api.compat.mozilla.org/"
-                        "specification-sections/"
-                        "{specification-sections.features}")),
+                        "sections/{sections.features}")),
                     ("type", "features"),
                 ))),
                 ("specification-statuses.specifications", OrderedDict((
