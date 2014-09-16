@@ -53,7 +53,7 @@ class TestHistoricalBrowserViewset(APITestCase):
         }
         self.assertDictEqual(expected_data, self.fix_data(response.data))
         expected_json = {
-            'historical-browsers': {
+            'historical_browsers': {
                 'id': '1',
                 'date': '2014-08-25T20:50:38.868Z',
                 'event': 'created',
@@ -75,16 +75,16 @@ class TestHistoricalBrowserViewset(APITestCase):
                 }
             },
             'links': {
-                'historical-browsers.browser': {
+                'historical_browsers.browser': {
                     'href': (
                         'http://testserver/api/browsers/'
-                        '{historical-browsers.browser}'),
+                        '{historical_browsers.browser}'),
                     'type': 'browsers'
                 },
-                'historical-browsers.user': {
+                'historical_browsers.user': {
                     'href': (
                         'http://testserver/api/users/'
-                        '{historical-browsers.user}'),
+                        '{historical_browsers.user}'),
                     'type': 'users'
                 }
             }

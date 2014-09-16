@@ -86,10 +86,10 @@ router.register(r'browsers', BrowserViewSet, group='resources')
 router.register(r'versions', VersionViewSet, group='resources')
 router.register(r'users', UserViewSet, group='change-control')
 router.register(
-    r'historical-browsers', HistoricalBrowserViewSet, group='history')
+    r'historical_browsers', HistoricalBrowserViewSet, group='history')
 router.register(
-    r'historical-versions', HistoricalVersionViewSet,
+    r'historical_versions', HistoricalVersionViewSet,
     group='history')
 router.register(
-    r'views/features', ViewFeaturesViewSet, base_name='viewfeatures',
+    r'view_features', ViewFeaturesViewSet, base_name='viewfeatures',
     group='views')

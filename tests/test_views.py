@@ -30,12 +30,12 @@ class TestViews(TestCase):
                 'users': self.reverse('user-list'),
             },
             'history': {
-                'historical-browsers': self.reverse('historicalbrowser-list'),
-                'historical-versions':
+                'historical_browsers': self.reverse('historicalbrowser-list'),
+                'historical_versions':
                     self.reverse('historicalversion-list'),
             },
             'views': {
-                'views/features': self.reverse('viewfeatures-list')
+                'view_features': self.reverse('viewfeatures-list')
             },
         }
         self.assertEqual(expected, loads(response.content.decode('utf-8')))

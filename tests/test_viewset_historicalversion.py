@@ -58,7 +58,7 @@ class TestHistoricalVersionViewset(APITestCase):
         }
         self.assertDictEqual(expected_data, self.fix_data(response.data))
         expected_json = {
-            'historical-versions': {
+            'historical_versions': {
                 'id': str(vh.history_id),
                 'date': '2014-09-04T19:13:25.857Z',
                 'event': 'created',
@@ -81,16 +81,16 @@ class TestHistoricalVersionViewset(APITestCase):
                 },
             },
             'links': {
-                'historical-versions.version': {
+                'historical_versions.version': {
                     'href': (
                         'http://testserver/api/versions/'
-                        '{historical-versions.version}'),
+                        '{historical_versions.version}'),
                     'type': 'versions'
                 },
-                'historical-versions.user': {
+                'historical_versions.user': {
                     'href': (
                         'http://testserver/api/users/'
-                        '{historical-versions.user}'),
+                        '{historical_versions.user}'),
                     'type': 'users'
                 },
             }

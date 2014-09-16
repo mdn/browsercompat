@@ -16,7 +16,7 @@ The representation includes:
     - **username** - The user's email or ID
     - **created** *(server selected)* - UTC timestamp of when this user
       account was created
-    - **agreement-version** - The version of the contribution agreement the
+    - **agreement** - The version of the contribution agreement the
       user has accepted.  "0" for not agreed, "1" for first version, etc.
     - **permissions** - A list of permissions.  Permissions include
       ``"change-support"`` (add or change a support_),
@@ -50,7 +50,7 @@ A sample response is:
             "id": "42",
             "username": "askDNA@tdv.com",
             "created": "1405000551.750000",
-            "agreement-version": "1",
+            "agreement": "1",
             "permissions": ["change-support"],
             "links": {
                 "changesets": ["73"]
@@ -89,20 +89,20 @@ The representation includes:
       was created
     - **modified** *(server selected)* - UTC timestamp of when this changeset
       was last modified
-    - **target-resource** *(write-once)* - The name of the primary resource
+    - **target_resource** *(write-once)* - The name of the primary resource
       for this changeset, for example "browsers", "versions", etc.
-    - **target-resource-id** *(write-once)* - The ID of the primary resource
+    - **target_resource_id** *(write-once)* - The ID of the primary resource
       for this changeset.
 * **links**
     - **user** *(one)* - The user who initiated this changeset, can not be
       changed.
-    - **historical-browsers** *(many)* - Associated historical-browsers_, in ID
+    - **historical_browsers** *(many)* - Associated historical_browsers_, in ID
       order, changes are ignored.
-    - **historical-versions** *(many)* - Associated
-      historical-versions_, in ID order, changes are ignored.
-    - **historical-features** *(many)* - Associated historical-features_,
+    - **historical_versions** *(many)* - Associated
+      historical_versions_, in ID order, changes are ignored.
+    - **historical_features** *(many)* - Associated historical_features_,
       in ID order, changes are ignored.
-    - **historical-supports** *(many)* - Associated historical-supports_, in ID
+    - **historical_supports** *(many)* - Associated historical_supports_, in ID
       order, changes are ignored.
 
 
@@ -128,14 +128,14 @@ A sample response is:
             "id": "73",
             "created": "1405353048.910000",
             "modified": "1405353048.910000",
-            "target-resource": "features",
-            "target-resource-id": "35",
+            "target_resource": "features",
+            "target_resource_id": "35",
             "links": {
                 "user": "42",
-                "historical-browsers": [],
-                "historical-versions": [],
-                "historical-features": [],
-                "historical-supports": ["1789", "1790"]
+                "historical_browsers": [],
+                "historical_versions": [],
+                "historical_features": [],
+                "historical_supports": ["1789", "1790"]
             }
         },
         "links": {
@@ -143,21 +143,21 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/users/{changesets.user}",
                 "type": "users"
             },
-            "changesets.historical-browsers": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{changesets.historical-browsers}",
-                "type": "historical-browsers"
+            "changesets.historical_browsers": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{changesets.historical_browsers}",
+                "type": "historical_browsers"
             },
-            "changesets.historical-versions": {
-                "href": "https://api.compat.mozilla.org/historical-versions/{changesets.historical-versions}",
-                "type": "historical-versions"
+            "changesets.historical_versions": {
+                "href": "https://api.compat.mozilla.org/historical_versions/{changesets.historical_versions}",
+                "type": "historical_versions"
             },
-            "changesets.historical-features": {
-                "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
-                "type": "historical-features"
+            "changesets.historical_features": {
+                "href": "https://api.compat.mozilla.org/historical_features/{changesets.historical_features}",
+                "type": "historical_features"
             },
-            "changesets.historical-supports": {
-                "href": "https://api.compat.mozilla.org/historical-supports/{changesets.historical-supports}",
-                "type": "historical-supports"
+            "changesets.historical_supports": {
+                "href": "https://api.compat.mozilla.org/historical_supports/{changesets.historical_supports}",
+                "type": "historical_supports"
             }
         }
     }
@@ -166,7 +166,7 @@ A sample response is:
 
 .. _support: resources.html#supports
 
-.. _historical-browsers: history.html#historical-browsers
-.. _historical-features: history.html#historical-features
-.. _historical-supports: history.html#historical-supports
-.. _historical-versions: history.html#historical-versions
+.. _historical_browsers: history.html#historical-browsers
+.. _historical_features: history.html#historical-features
+.. _historical_supports: history.html#historical-supports
+.. _historical_versions: history.html#historical-versions

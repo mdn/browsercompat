@@ -44,9 +44,9 @@ The **browsers** representation includes:
 * **links**
     - **versions** *(many)* - Associated versions_, ordered roughly
       from earliest to latest.  User can change the order.
-    - **history-current** *(one)* - Current historical-browsers_.  Can be
+    - **history_current** *(one)* - Current historical_browsers_.  Can be
       set to a value from **history** to revert changes.
-    - **history** *(many)* - Associated historical-browsers_ in time order
+    - **history** *(many)* - Associated historical_browsers_ in time order
       (most recent first). Changes are ignored.
 
 
@@ -81,7 +81,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["123", "758"],
-                "history-current": "1001",
+                "history_current": "1001",
                 "history": ["1001"]
             }
         },{
@@ -96,7 +96,7 @@ A sample response is:
             },
             "links": {
                 "versions": ["124", "759"],
-                "history-current": "1002",
+                "history_current": "1002",
                 "history": ["1002"]
             }
         },{
@@ -109,7 +109,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["125", "167", "178", "760"],
-                "history-current": "1003",
+                "history_current": "1003",
                 "history": ["1003"]
             }
         },{
@@ -122,7 +122,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["126", "761"],
-                "history-current": "1004",
+                "history_current": "1004",
                 "history": ["1004"]
             }
         },{
@@ -137,7 +137,7 @@ A sample response is:
             },
             "links": {
                 "versions": ["127", "762"],
-                "history-current": "1005",
+                "history_current": "1005",
                 "history": ["1005"]
             }
         },{
@@ -150,7 +150,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["128", "763"],
-                "history-current": "1006",
+                "history_current": "1006",
                 "history": ["1006"]
             }
         },{
@@ -165,7 +165,7 @@ A sample response is:
             },
             "links": {
                 "versions": ["129", "764"],
-                "history-current": "1007",
+                "history_current": "1007",
                 "history": ["1007"]
             }
         },{
@@ -178,7 +178,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["130", "765"],
-                "history-current": "1008",
+                "history_current": "1008",
                 "history": ["1008"]
             }
         },{
@@ -191,7 +191,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["131", "767"],
-                "history-current": "1009",
+                "history_current": "1009",
                 "history": ["1009"]
             }
         },{
@@ -204,7 +204,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["132", "768"],
-                "history-current": "1010",
+                "history_current": "1010",
                 "history": ["1010"]
             }
         }],
@@ -213,13 +213,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         },
         "meta": {
@@ -268,7 +268,7 @@ A sample response is:
             },
             "links": {
                 "versions": ["124"],
-                "history-current": "1002",
+                "history_current": "1002",
                 "history": ["1002"]
             }
         },
@@ -277,13 +277,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         }
     }
@@ -321,7 +321,7 @@ A sample response is:
             },
             "links": {
                 "versions": ["124"],
-                "history-current": "1002",
+                "history_current": "1002",
                 "history": ["1002"]
             }
         }],
@@ -330,13 +330,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         }
     }
@@ -347,7 +347,7 @@ Create
 Creating **browser** instances require authentication with create privileges.
 To create a new **browser** instance, ``POST`` a representation with at least
 the required parameters.  Some items (such as the ``id`` attribute and the
-``history-current`` link) will be picked by the server, and will be ignored if
+``history_current`` link) will be picked by the server, and will be ignored if
 included.
 
 Here's an example of creating a **browser** instance:
@@ -392,7 +392,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": [],
-                "history-current": "1027",
+                "history_current": "1027",
                 "history": ["1027"]
             }
         },
@@ -401,19 +401,19 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         }
     }
 
 This, and other methods that change resources, will create a new changeset_,
-and associate the new historical-browsers_ with that changeset_.  To assign to an
+and associate the new historical_browsers_ with that changeset_.  To assign to an
 existing changeset, add it to the URI:
 
 .. code-block:: http
@@ -442,7 +442,7 @@ Updating a **browser** instance require authentication with create privileges.
 Some items (such as the ``id`` attribute and ``history`` links) can not be
 changed, and will be ignored if included.  A successful update will return a
 ``200 OK``, add a new ID to the ``history`` links list, and update the
-``history-current`` link.
+``history_current`` link.
 
 To update a **browser**:
 
@@ -486,7 +486,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["125", "167", "178"],
-                "history-current": "1033",
+                "history_current": "1033",
                 "history": ["1033", "1003"]
             }
         },
@@ -495,13 +495,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         }
     }
@@ -548,7 +548,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["125", "167", "178"],
-                "history-current": "1034",
+                "history_current": "1034",
                 "history": ["1034", "1033", "1003"]
             }
         },
@@ -557,13 +557,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         }
     }
@@ -607,7 +607,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["178", "167", "125"],
-                "history-current": "1035",
+                "history_current": "1035",
                 "history": ["1035", "1034", "1033", "1003"]
             }
         },
@@ -616,13 +616,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         }
     }
@@ -630,9 +630,9 @@ A sample response is:
 Reverting to a previous instance
 ********************************
 
-To revert to an earlier instance, set the ``history-current`` link to a
+To revert to an earlier instance, set the ``history_current`` link to a
 previous value.  This resets the content and creates a new
-historical-browsers_ object:
+historical_browsers_ object:
 
 .. code-block:: http
 
@@ -646,7 +646,7 @@ historical-browsers_ object:
     {
         "browsers": {
             "links": {
-                "history-current": "1003"
+                "history_current": "1003"
             }
         }
     }
@@ -671,7 +671,7 @@ A sample response is:
             "note": none,
             "links": {
                 "versions": ["125", "167", "178"],
-                "history-current": "1036",
+                "history_current": "1036",
                 "history": ["1036", "1035", "1034", "1033", "1003"]
             }
         },
@@ -680,13 +680,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         }
     }
@@ -741,7 +741,7 @@ A sample response is:
             "note": null,
             "links": {
                 "versions": ["124"],
-                "history-current": "1104",
+                "history_current": "1104",
                 "history": ["1104", "1103", "1002"]
             }
         },
@@ -750,13 +750,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             }
         }
     }
@@ -773,9 +773,9 @@ The **versions** representation includes:
     - **id** *(server selected)* - Database ID
     - **version** *(write-once)* - Version of browser, or null
       if unknown (for example, to document support for features in early HTML)
-    - **release-day** - Day that browser was released in `ISO 8601`_ format, or
+    - **release_day** - Day that browser was released in `ISO 8601`_ format, or
       null if unknown.
-    - **retirement-day** - Approximate day the browser was "retired" (stopped
+    - **retirement_day** - Approximate day the browser was "retired" (stopped
       being a current browser), in `ISO 8601`_ format, or null if unknown.
     - **status** - One of
       ``retired`` (old version, no longer the preferred download for any
@@ -786,16 +786,16 @@ The **versions** representation includes:
       users),
       ``beta`` (a release candidate suggested for early adopters or testers),
       ``future`` (a planned future release).
-    - **release-notes-uri** *(localized)* - URI of release notes for this
+    - **release_notes_uri** *(localized)* - URI of release notes for this
       version, or null if none.
     - **note** *(localized)* - Engine, OS, etc. information, or null
 * **links**
     - **browser** - The related **browser**
     - **supports** *(many)* - Associated **supports**, in ID order.  Changes
       are ignored; work on the **supports** to add, change, or remove.
-    - **history-current** *(one)* - Current **versions-history**.
+    - **history_current** *(one)* - Current **historical_versions**.
       Set to a value from **history** to revert to that version.
-    - **history** *(many)* - Associated **historical-versions**, in time
+    - **history** *(many)* - Associated **historical_versions**, in time
       order (most recent first).  Changes are ignored.
 
 To get a single **version**:
@@ -819,15 +819,15 @@ A sample response is:
         "versions": {
             "id": "123",
             "version": "1.0.154",
-            "release-day": "2008-12-11",
-            "retirement-day": "2009-05-24",
+            "release_day": "2008-12-11",
+            "retirement_day": "2009-05-24",
             "status": "retired",
-            "release-notes-uri": null,
+            "release_notes_uri": null,
             "note": null,
             "links": {
                 "browser": "1",
                 "supports": ["1125", "1126", "1127", "1128", "1129"],
-                "history-current": "567",
+                "history_current": "567",
                 "history": ["567"]
             }
         },
@@ -840,13 +840,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/supports/{versions.supports}",
                 "type": "supports"
             },
-            "versions.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-versions/{versions.history-current}",
-                "type": "historical-versions"
+            "versions.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history_current}",
+                "type": "historical_versions"
             },
             "versions.history": {
-                "href": "https://api.compat.mozilla.org/historical-versions/{versions.history}",
-                "type": "historical-versions"
+                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history}",
+                "type": "historical_versions"
             }
         }
     }
@@ -865,8 +865,9 @@ The **features** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **slug** *(write-once)* - Unique, human-friendly slug
-    - **mdn-path** - The path to the page on MDN that this feature was
-      first scraped from.  May be used in UX or for debugging import scripts.
+    - **mdn_path** *(optional)* - The path to the page on MDN that this feature
+      was first scraped from.  May be used in UX or for debugging import
+      scripts.
     - **experimental** - True if a feature is considered experimental, such as
       being non-standard or part of an non-ratified spec.
     - **standardized** - True if a feature is described in a standards-track
@@ -903,9 +904,9 @@ The **features** representation includes:
     - **descendants** *(many)* - The features in the local tree for this
       feature. including this one, in tree order.  Can not be changed by the
       user - set the **parent** on the child feature instead.
-    - **history-current** *(one)* - Current historical-features_.  User can
+    - **history_current** *(one)* - Current historical_features_.  User can
       set to a valid **history** to revert to that version.
-    - **history** *(many)* - Associated historical-features_, in time order
+    - **history** *(many)* - Associated historical_features_, in time order
       (most recent first).  Changes are ignored.
 
 
@@ -929,6 +930,7 @@ A sample response is:
     {
         "features": {
             "id": "276",
+            "mdn_path": null,
             "slug": "css-property-background-size-value-contain",
             "experimental": false,
             "standardized": true,
@@ -943,7 +945,7 @@ A sample response is:
                 "siblings": ["275", "276", "277"],
                 "children": [],
                 "descendants": ["276"],
-                "history-current": "456",
+                "history_current": "456",
                 "history": ["456"]
             }
         },
@@ -972,13 +974,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/features/{feature.descendants}",
                 "type": "features"
             },
-            "features.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-features/{features.history-current}",
-                "type": "historical-features"
+            "features.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_features/{features.history_current}",
+                "type": "historical_features"
             },
             "features.history": {
-                "href": "https://api.compat.mozilla.org/historical-features/{features.history}",
-                "type": "historical-features"
+                "href": "https://api.compat.mozilla.org/historical_features/{features.history}",
+                "type": "historical_features"
             }
         }
     }
@@ -1004,6 +1006,7 @@ A sample response is:
     {
         "features": {
             "id": "173",
+            "mdn_path": "en-US/docs/Web/CSS/background",
             "slug": "css-property-background",
             "experimental": false,
             "standardized": true,
@@ -1020,7 +1023,7 @@ A sample response is:
                 "siblings": ["167", "168", "169", "170", "171", "172", "173", "174", "175"],
                 "children": ["275", "276", "277"],
                 "descendants": ["173", "275", "276", "277"],
-                "history-current": "395",
+                "history_current": "395",
                 "history": ["395"]
             }
         },
@@ -1049,13 +1052,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/features/{feature.descendants}",
                 "type": "features"
             },
-            "features.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-features/{features.history-current}",
-                "type": "historical-features"
+            "features.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_features/{features.history_current}",
+                "type": "historical_features"
             },
             "features.history": {
-                "href": "https://api.compat.mozilla.org/historical-features/{features.history}",
-                "type": "historical-features"
+                "href": "https://api.compat.mozilla.org/historical_features/{features.history}",
+                "type": "historical_features"
             }
         }
     }
@@ -1074,15 +1077,15 @@ The **support** representation includes:
       feature_, one of ``"yes"``, ``"no"``, ``"partial"``,
       ``"unknown"``, or ``"never"``
     - **prefix** - Prefix used to enable support, such as `"moz"`
-    - **prefix-mandatory** - True if the prefix is required
-    - **alternate-name** - An alternate name associated with this feature,
-      such as `"RTCPeerConnectionIdentityEvent"`
-    - **alternate-name-mandatory** - True if the alternate name is required
-    - **requires-config** - A configuration string
-       required to enable the feature, such as
-       `"media.peerconnection.enabled=on"`
-    - **default-config** - The configuration string in the shipping
-      browser, such as `"media.peerconnection.enabled=off"`
+    - **prefix_mandatory** - True if the prefix is required
+    - **alternate_name** - An alternate name associated with this feature,
+      such as ``"RTCPeerConnectionIdentityEvent"``
+    - **alternate_name_mandatory** - True if the alternate name is required
+    - **requires_config** - A configuration string
+      required to enable the feature, such as
+      ``"media.peerconnection.enabled=on"``
+    - **default_config** - The configuration string in the shipping
+      browser, such as ``"media.peerconnection.enabled=off"``
     - **note** *(localized)* - Short note on support, designed for inline
       display, max 20 characters
     - **footnote** *(localized)* - Long note on support, designed for
@@ -1092,10 +1095,10 @@ The **support** representation includes:
       be changed by the user.
     - **feature** *(one)* - The associated feature_.  Can be changed by
       the user.
-    - **history-current** *(one)* - Current
-      historical-supports_.  Can be changed to a valid
+    - **history_current** *(one)* - Current
+      historical_supports_.  Can be changed to a valid
       **history** to revert to that version.
-    - **history** *(many)* - Associated historical-supports_
+    - **history** *(many)* - Associated historical_supports_
       in time order (most recent first).  Changes are ignored.
 
 
@@ -1121,17 +1124,17 @@ A sample response is:
             "id": "1123",
             "support": "yes",
             "prefix": null,
-            "prefix-mandatory": false,
-            "alternate-name": null,
-            "alternate-name-mandatory": false,
-            "requires-config": null,
-            "default-config": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_name_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
             "note": null,
             "footnote": null,
             "links": {
                 "version": "123",
                 "feature": "276",
-                "history-current": "2567",
+                "history_current": "2567",
                 "history": ["2567"]
             }
         },
@@ -1144,13 +1147,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/browsers/{supports.feature}",
                 "type": "features"
             },
-            "supports.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history-current}",
-                "type": "historical-supports"
+            "supports.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history_current}",
+                "type": "historical_supports"
             },
             "supports.history": {
-                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history}",
-                "type": "historical-supports"
+                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history}",
+                "type": "historical_supports"
             }
         }
     }
@@ -1164,7 +1167,7 @@ The **specification** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **mdn-key** - The key for the KumaScript macros SpecName_ and Spec2_
+    - **mdn_key** - The key for the KumaScript macros SpecName_ and Spec2_
       used as a data source.
     - **name** *(localized)* - Specification name
     - **uri** *(localized)* - Specification URI, without subpath and anchor
@@ -1194,7 +1197,7 @@ A sample response is:
     {
         "specifications": {
             "id": "273",
-            "mdn-key": "CSS1",
+            "mdn_key": "CSS1",
             "name": {
                 "en": "Cascading Style Sheets, level 1",
                 "fr": "Les feuilles de style en cascade, niveau 1"
@@ -1294,7 +1297,7 @@ The **maturity** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **mdn-key** - The value for this status in the KumaScript macro Spec2_
+    - **mdn_key** - The value for this status in the KumaScript macro Spec2_
     - **name** *(localized)* - Status name
 * **links**
     - **specifications** *(many)* - Associated specifications_.  In ID order,
@@ -1320,7 +1323,7 @@ A sample response is:
     {
         "maturities": {
             "id": "49",
-            "mdn-key": "REC",
+            "mdn_key": "REC",
             "name": {
                 "en": "Recommendation",
                 "jp": "勧告"
@@ -1344,9 +1347,9 @@ A sample response is:
 
 .. _changeset: change-control.html#changesets
 
-.. _historical-browsers: history.html#historical-browsers
-.. _historical-features: history.html#historical-features
-.. _historical-supports: history.html#historical-supports
+.. _historical_browsers: history.html#historical-browsers
+.. _historical_features: history.html#historical-features
+.. _historical_supports: history.html#historical-supports
 
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601

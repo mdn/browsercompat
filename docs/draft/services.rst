@@ -37,7 +37,7 @@ A final endpoint is used to delete the credential and log out the user:
 Browser Identification
 ----------------------
 
-The ``/browser-ident`` endpoint provides browser identification based on the
+The ``/browser_ident`` endpoint provides browser identification based on the
 User Agent and other parameters.
 
 Two potential sources for this information:

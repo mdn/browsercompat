@@ -19,7 +19,7 @@ Here is a simple example, the view for the HTML element address_:
 
 .. code-block:: http
 
-    GET /views/view-by-feature/html-element-address HTTP/1.1
+    GET /view_features/html-element-address HTTP/1.1
     Host: api.compat.mozilla.org
     Accept: application/vnd.api+json
 
@@ -34,13 +34,13 @@ A sample response is:
 
     {
         "features": {
-            "id": "816"
+            "id": "816",
+            "mdn_path": "en-US/docs/Web/HTML/Element/address",
             "slug": "html-element-address",
             "experimental": false,
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "mdn-path": "en-US/docs/Web/HTML/Element/address",
             "name": "address",
             "links": {
                 "sections": ["746", "421", "70"],
@@ -50,7 +50,7 @@ A sample response is:
                 "siblings": ["814", "815", "816", "817", "818"],
                 "children": ["191"],
                 "descendants": ["816", "191"],
-                "history-current": "216",
+                "history_current": "216",
                 "history": ["216"]
             }
         },
@@ -58,6 +58,7 @@ A sample response is:
             "features": [
                 {
                     "id": "191",
+                    "mdn_path": null,
                     "slug": "html-address",
                     "experimental": false,
                     "standardized": true,
@@ -76,7 +77,7 @@ A sample response is:
                         "siblings": ["191"],
                         "children": [],
                         "descendants": ["191"],
-                        "history-current": "395",
+                        "history_current": "395",
                         "history": ["395"]
                     }
                 }
@@ -126,7 +127,7 @@ A sample response is:
             "specifications": [
                 {
                     "id": "62",
-                    "kumu-key": "HTML WHATWG",
+                    "mdn_key": "HTML WHATWG",
                     "name": {
                         "en": "WHATWG HTML Living Standard",
                     },
@@ -139,7 +140,7 @@ A sample response is:
                     }
                 },{
                     "id": "114",
-                    "kumu-key": "HTML5 W3C",
+                    "mdn_key": "HTML5 W3C",
                     "name": {
                         "en": "HTML5",
                     },
@@ -152,7 +153,7 @@ A sample response is:
                     }
                 },{
                     "id": "576",
-                    "kumu-key": "HTML4.01",
+                    "mdn_key": "HTML4.01",
                     "name": {
                         "en": "HTML 4.01 Specification",
                     },
@@ -168,7 +169,7 @@ A sample response is:
             "maturities": [
                 {
                     "id": "23",
-                    "mdn-key": "Living",
+                    "mdn_key": "Living",
                     "name": {
                         "en": "Living Standard",
                     },
@@ -177,7 +178,7 @@ A sample response is:
                     }
                 }, {
                     "id": "49",
-                    "mdn-key": "REC",
+                    "mdn_key": "REC",
                     "name": {
                         "en": "Recommendation",
                         "jp": "勧告"
@@ -187,7 +188,7 @@ A sample response is:
                     }
                 }, {
                     "id": "52",
-                    "mdn-key": "CR",
+                    "mdn_key": "CR",
                     "name": {
                         "en": "Candidate Recommendation",
                         "ja": "勧告候補",
@@ -202,204 +203,204 @@ A sample response is:
                     "id": "358",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "758",
                         "feature": "191",
-                        "history-current": "3567",
+                        "history_current": "3567",
                         "history": ["3567"]
                     }
                 }, {
                     "id": "359",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "759",
                         "feature": "191",
-                        "history-current": "3568",
+                        "history_current": "3568",
                         "history": ["3568"]
                     }
                 }, {
                     "id": "360",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "760",
                         "feature": "191",
-                        "history-current": "3569",
+                        "history_current": "3569",
                         "history": ["3569"]
                     }
                 }, {
                     "id": "361",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "761",
                         "feature": "191",
-                        "history-current": "3570",
+                        "history_current": "3570",
                         "history": ["3570"]
                     }
                 }, {
                     "id": "362",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "762",
                         "feature": "191",
-                        "history-current": "3571",
+                        "history_current": "3571",
                         "history": ["3571"]
                     }
                 }, {
                     "id": "362",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "762",
                         "feature": "191",
-                        "history-current": "3571",
+                        "history_current": "3571",
                         "history": ["3571"]
                     }
                 }, {
                     "id": "363",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "763",
                         "feature": "191",
-                        "history-current": "3572",
+                        "history_current": "3572",
                         "history": ["3572"]
                     }
                 }, {
                     "id": "364",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "764",
                         "feature": "191",
-                        "history-current": "3573",
+                        "history_current": "3573",
                         "history": ["3573"]
                     }
                 }, {
                     "id": "365",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "765",
                         "feature": "191",
-                        "history-current": "3574",
+                        "history_current": "3574",
                         "history": ["3574"]
                     }
                 }, {
                     "id": "366",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "766",
                         "feature": "191",
-                        "history-current": "3575",
+                        "history_current": "3575",
                         "history": ["3575"]
                     }
                 }, {
                     "id": "367",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "767",
                         "feature": "191",
-                        "history-current": "3576",
+                        "history_current": "3576",
                         "history": ["3576"]
                     }
                 }, {
                     "id": "368",
                     "support": "yes",
                     "prefix": null,
-                    "prefix-mandatory": false,
-                    "alternate-name": null,
-                    "alternate-name-mandatory": false,
-                    "requires-config": null,
-                    "default-config": null,
+                    "prefix_mandatory": false,
+                    "alternate_name": null,
+                    "alternate_name_mandatory": false,
+                    "requires_config": null,
+                    "default_config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
                         "version": "768",
                         "feature": "191",
-                        "history-current": "3577",
+                        "history_current": "3577",
                         "history": ["3577"]
                     }
                 }
@@ -408,159 +409,159 @@ A sample response is:
                 {
                     "id": "758",
                     "version": null,
-                    "release-day": null,
-                    "retirement-day": null,
+                    "release_day": null,
+                    "retirement_day": null,
                     "status": "current",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "1",
                         "supports": ["158", "258", "358", "458"],
-                        "history-current": "1567",
+                        "history_current": "1567",
                         "history": ["1567"]
                     }
                 }, {
                     "id": "759",
                     "version": "1.0",
-                    "release-day": "2004-12-09",
-                    "retirement-day": "2005-02-24",
+                    "release_day": "2004-12-09",
+                    "retirement_day": "2005-02-24",
                     "status": "retired",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "2",
                         "supports": ["159", "259", "359", "459"],
-                        "history-current": "1568",
+                        "history_current": "1568",
                         "history": ["1568"]
                     }
                 }, {
                     "id": "760",
                     "version": "1.0",
-                    "release-day": "1995-08-16",
-                    "retirement-day": null,
+                    "release_day": "1995-08-16",
+                    "retirement_day": null,
                     "status": "retired",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "3",
                         "supports": ["160", "260", "360", "460"],
-                        "history-current": "1569",
+                        "history_current": "1569",
                         "history": ["1569"]
                     }
                 }, {
                     "id": "761",
                     "version": "5.12",
-                    "release-day": "2001-06-27",
-                    "retirement-day": null,
+                    "release_day": "2001-06-27",
+                    "retirement_day": null,
                     "status": "retired",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "4",
                         "supports": ["161", "261", "361", "461"],
-                        "history-current": "1570",
+                        "history_current": "1570",
                         "history": ["1570"]
                     }
                 }, {
                     "id": "762",
                     "version": "1.0",
-                    "release-day": "2003-06-23",
-                    "retirement-day": null,
+                    "release_day": "2003-06-23",
+                    "retirement_day": null,
                     "status": "retired",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "5",
                         "supports": ["162", "262", "362", "462"],
-                        "history-current": "1571",
+                        "history_current": "1571",
                         "history": ["1571"]
                     }
                 }, {
                     "id": "763",
                     "version": null,
-                    "release-day": null,
-                    "retirement-day": null,
+                    "release_day": null,
+                    "retirement_day": null,
                     "status": "current",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "6",
                         "supports": ["163", "263", "363", "463"],
-                        "history-current": "1572",
+                        "history_current": "1572",
                         "history": ["1572"]
                     }
                 }, {
                     "id": "764",
                     "version": "1.0",
-                    "release-day": null,
-                    "retirement-day": null,
+                    "release_day": null,
+                    "retirement_day": null,
                     "status": "retired",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": "Uses Gecko 1.7",
                     "links": {
                         "browser": "7",
                         "supports": ["164", "264", "364", "464"],
-                        "history-current": "1574",
+                        "history_current": "1574",
                         "history": ["1574"]
                     }
                 }, {
                     "id": "765",
                     "version": null,
-                    "release-day": null,
-                    "retirement-day": null,
+                    "release_day": null,
+                    "retirement_day": null,
                     "status": "current",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "8",
                         "supports": ["165", "265", "365", "465"],
-                        "history-current": "1575",
+                        "history_current": "1575",
                         "history": ["1575"]
                     }
                 }, {
                     "id": "766",
                     "version": null,
-                    "release-day": null,
-                    "retirement-day": null,
+                    "release_day": null,
+                    "retirement_day": null,
                     "status": "current",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "11",
                         "supports": ["166", "266", "366", "466"],
-                        "history-current": "1576",
+                        "history_current": "1576",
                         "history": ["1576"]
                     }
                 }, {
                     "id": "767",
                     "version": null,
-                    "release-day": null,
-                    "retirement-day": null,
+                    "release_day": null,
+                    "retirement_day": null,
                     "status": "current",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "9",
                         "supports": ["167", "267", "367", "467"],
-                        "history-current": "1577",
+                        "history_current": "1577",
                         "history": ["1577"]
                     }
                 }, {
                     "id": "768",
                     "version": null,
-                    "release-day": null,
-                    "retirement-day": null,
+                    "release_day": null,
+                    "retirement_day": null,
                     "status": "current",
-                    "release-notes-uri": null,
+                    "release_notes_uri": null,
                     "note": null,
                     "links": {
                         "browser": "10",
                         "supports": ["168", "268", "368", "468"],
-                        "history-current": "1578",
+                        "history_current": "1578",
                         "history": ["1578"]
                     }
                 }
-            ]
+            ],
             "browsers": [
                 {
                     "id": "1",
@@ -572,7 +573,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "versions": ["123", "758"],
-                        "history-current": "1001",
+                        "history_current": "1001",
                         "history": ["1001"]
                     }
                 },{
@@ -587,7 +588,7 @@ A sample response is:
                     },
                     "links": {
                         "versions": ["124", "759"],
-                        "history-current": "1002",
+                        "history_current": "1002",
                         "history": ["1002"]
                     }
                 },{
@@ -600,7 +601,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "versions": ["125", "167", "178", "760"],
-                        "history-current": "1003",
+                        "history_current": "1003",
                         "history": ["1003"]
                     }
                 },{
@@ -613,7 +614,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "versions": ["126", "761"],
-                        "history-current": "1004",
+                        "history_current": "1004",
                         "history": ["1004"]
                     }
                 },{
@@ -628,7 +629,7 @@ A sample response is:
                     },
                     "links": {
                         "versions": ["127", "762"],
-                        "history-current": "1005",
+                        "history_current": "1005",
                         "history": ["1005"]
                     }
                 },{
@@ -641,7 +642,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "versions": ["128", "763"],
-                        "history-current": "1006",
+                        "history_current": "1006",
                         "history": ["1006"]
                     }
                 },{
@@ -656,7 +657,7 @@ A sample response is:
                     },
                     "links": {
                         "versions": ["129", "764"],
-                        "history-current": "1007",
+                        "history_current": "1007",
                         "history": ["1007"]
                     }
                 },{
@@ -669,7 +670,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "versions": ["130", "765"],
-                        "history-current": "1008",
+                        "history_current": "1008",
                         "history": ["1008"]
                     }
                 },{
@@ -682,7 +683,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "versions": ["131", "767"],
-                        "history-current": "1009",
+                        "history_current": "1009",
                         "history": ["1009"]
                     }
                 },{
@@ -695,7 +696,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "versions": ["132", "768"],
-                        "history-current": "1010",
+                        "history_current": "1010",
                         "history": ["1010"]
                     }
                 },{
@@ -708,7 +709,7 @@ A sample response is:
                     "note": null,
                     "links": {
                         "versions": ["131", "766"],
-                        "history-current": "1019",
+                        "history_current": "1019",
                         "history": ["1019"]
                     }
                 }
@@ -743,25 +744,25 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/features/{features.descendants}",
                 "type": "features"
             },
-            "features.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-features/{features.history-current}",
-                "type": "historical-features"
+            "features.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_features/{features.history_current}",
+                "type": "historical_features"
             },
             "features.history": {
-                "href": "https://api.compat.mozilla.org/historical-features/{features.history}",
-                "type": "historical-features"
+                "href": "https://api.compat.mozilla.org/historical_features/{features.history}",
+                "type": "historical_features"
             },
             "browsers.versions": {
                 "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
                 "type": "versions"
             },
-            "browsers.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history-current}",
-                "type": "historical-browsers"
+            "browsers.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{browsers.history}",
-                "type": "historical-browsers"
+                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "type": "historical_browsers"
             },
             "versions.browser": {
                 "href": "https://api.compat.mozilla.org/browsers/{versions.browser}",
@@ -771,13 +772,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/supports/{versions.features}",
                 "type": "supports"
             },
-            "versions.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-versions/{versions.history-current}",
-                "type": "historical-versions"
+            "versions.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history_current}",
+                "type": "historical_versions"
             },
             "versions.history": {
-                "href": "https://api.compat.mozilla.org/historical-versions/{versions.history}",
-                "type": "historical-versions"
+                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history}",
+                "type": "historical_versions"
             },
             "supports.version": {
                 "href": "https://api.compat.mozilla.org/versions/{supports.version}",
@@ -787,13 +788,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/browsers/{supports.feature}",
                 "type": "features"
             },
-            "supports.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history-current}",
-                "type": "historical-supports"
+            "supports.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history_current}",
+                "type": "historical_supports"
             },
             "supports.history": {
-                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history}",
-                "type": "historical-supports"
+                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history}",
+                "type": "historical_supports"
             },
             "specifications.sections": {
                 "href": "https://api.compat.mozilla.org/sections/{specifications.sections}",
@@ -817,7 +818,7 @@ A sample response is:
             }
         },
         "meta": {
-            "compat-table": {
+            "compat_table": {
                 "tabs": [{
                     "name": {
                         "en": "Desktop"
@@ -860,7 +861,7 @@ The process for using this representation is:
           specifications.name.(lang or en), with title based on
           sections.name.(lang or en) or feature.name.(lang or en).
         * Add the second column: A span with class
-          "spec-" + maturities.mdn-key, and the text
+          "spec-" + maturities.mdn_key, and the text
           maturities.name.(lang or en).
         * Add the third column:
           maturities.notes.(lang or en), or empty string
@@ -919,8 +920,8 @@ The first step is to create a changeset_ as an authenticated user:
 
     {
         "changesets": {
-            "target-resource": "features",
-            "target-resource-id": "816"
+            "target_resource": "features",
+            "target_resource_id": "816"
         }
     }
 
@@ -939,14 +940,14 @@ A sample response is:
             "id": "5284",
             "created": "1405360263.670000",
             "modified": "1405360263.670000",
-            "target-resource": "features",
-            "target-resource-id": "816",
+            "target_resource": "features",
+            "target_resource_id": "816",
             "links": {
                 "user": "42",
-                "historical-browsers": [],
-                "historical-versions": [],
-                "historical-features": [],
-                "historical-supports": []
+                "historical_browsers": [],
+                "historical_versions": [],
+                "historical_features": [],
+                "historical_supports": []
             }
         },
         "links": {
@@ -954,21 +955,21 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/users/{changesets.user}",
                 "type": "users"
             },
-            "changesets.historical-browsers": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{changesets.historical-browsers}",
-                "type": "historical-browsers"
+            "changesets.historical_browsers": {
+                "href": "https://api.compat.mozilla.org/historical_browsers/{changesets.historical_browsers}",
+                "type": "historical_browsers"
             },
-            "changesets.historical-versions": {
-                "href": "https://api.compat.mozilla.org/historical-versions/{changesets.historical-versions}",
-                "type": "historical-versions"
+            "changesets.historical_versions": {
+                "href": "https://api.compat.mozilla.org/historical_versions/{changesets.historical_versions}",
+                "type": "historical_versions"
             },
-            "changesets.historical-features": {
-                "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
-                "type": "historical-features"
+            "changesets.historical_features": {
+                "href": "https://api.compat.mozilla.org/historical_features/{changesets.historical_features}",
+                "type": "historical_features"
             },
-            "changesets.historical-supports": {
-                "href": "https://api.compat.mozilla.org/historical-supports/{changesets.historical-supports}",
-                "type": "historical-supports"
+            "changesets.historical_supports": {
+                "href": "https://api.compat.mozilla.org/historical_supports/{changesets.historical_supports}",
+                "type": "historical_supports"
             }
         }
     }
@@ -1009,15 +1010,15 @@ A sample response is:
         "versions": {
             "id": "4477",
             "version": "1",
-            "release-day": null,
-            "retirement-day": null,
+            "release_day": null,
+            "retirement_day": null,
             "status": "retired",
-            "release-notes-uri": null,
+            "release_notes_uri": null,
             "note": null,
             "links": {
                 "browser": "1",
                 "supports": [],
-                "history-current": "3052",
+                "history_current": "3052",
                 "history": ["3052"]
             }
         },
@@ -1030,13 +1031,13 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/supports/{versions.features}",
                 "type": "supports"
             },
-            "versions.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-versions/{versions.history-current}",
-                "type": "historical-versions"
+            "versions.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history_current}",
+                "type": "historical_versions"
             },
             "versions.history": {
-                "href": "https://api.compat.mozilla.org/historical-versions/{versions.history}",
-                "type": "historical-versions"
+                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history}",
+                "type": "historical_versions"
             }
         }
     }
@@ -1078,17 +1079,17 @@ A sample response is:
             "id": "8219",
             "support": "yes",
             "prefix": null,
-            "prefix-mandatory": false,
-            "alternate-name": null,
-            "alternate-name-mandatory": false,
-            "requires-config": null,
-            "default-config": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_name_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
             "note": null,
             "footnote": null,
             "links": {
                 "version": "4477",
                 "feature": "191",
-                "history-current": "7164",
+                "history_current": "7164",
                 "history": ["7164"]
             }
         },
@@ -1101,18 +1102,18 @@ A sample response is:
                 "href": "https://api.compat.mozilla.org/browsers/{supports.feature}",
                 "type": "features"
             },
-            "supports.history-current": {
-                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history-current}",
-                "type": "historical-supports"
+            "supports.history_current": {
+                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history_current}",
+                "type": "historical_supports"
             },
             "supports.history": {
-                "href": "https://api.compat.mozilla.org/historical-supports/{supports.history}",
-                "type": "historical-supports"
+                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history}",
+                "type": "historical_supports"
             }
         }
     }
 
-The historical-versions_ and historical-supports_
+The historical_versions_ and historical_supports_
 resources will both refer to changeset_ 5284, and this changeset_ is
 linked to feature_ 816, despite the fact that no changes were made
 to the feature_.  This will facilitate displaying a history of
@@ -1125,8 +1126,8 @@ vandalism.
 
 .. _changeset: change-control#changeset
 
-.. _historical-versions: history.html#historical-versions
-.. _historical-supports: history.html#historical-supports
+.. _historical_versions: history.html#historical-versions
+.. _historical_supports: history.html#historical-supports
 
 .. _address: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address
 .. _`Inclusion of Linked Resources`: http://jsonapi.org/format/#fetching-includes

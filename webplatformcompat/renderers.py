@@ -2,7 +2,7 @@ from rest_framework.utils.encoders import JSONEncoder
 from rest_framework_json_api.renderers import JsonApiRenderer \
     as BaseJsonApiRender
 from rest_framework_json_api.renderers import WrapperNotApplicable
-from rest_framework_json_api.utils import slug
+from rest_framework_json_api.utils import snakecase
 
 
 class JsonApiRenderer(BaseJsonApiRender):
@@ -19,4 +19,4 @@ class JsonApiRenderer(BaseJsonApiRender):
 
     def model_to_resource_type(self, model):
         assert model
-        return slug(model._meta.verbose_name_plural)
+        return snakecase(model._meta.verbose_name_plural)

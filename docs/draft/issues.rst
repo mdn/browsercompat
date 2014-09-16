@@ -24,16 +24,16 @@ These changes are:
     - **note** - added for engine, OS, etc. information
 * versions_
     - Was `browser-versions`, but multi-word resources are problematic.
-    - **release-day** - Day of release
-    - **retirement-day** - Day of "retirement", or when it was superceeded by
+    - **release_day** - Day of release
+    - **retirement_day** - Day of "retirement", or when it was superceeded by
       a new release.
     - **status** - One of `"retired"`, `"retired-beta"`, `"current"`, `"beta"`,
       `"future"`
-    - **relese-notes-uri** - For Mozilla releases, as specified in CompatGeckoDesktop_.
+    - **relese_notes_uri** - For Mozilla releases, as specified in CompatGeckoDesktop_.
     - **note** - added for engine version, etc.
 * features_
     - **slug** - human-friendly unique identifier
-    - **mdn-path** - MDN path that data was scraped from
+    - **mdn_path** - MDN path that data was scraped from
     - **experimental** - True if the feature is considered experimental due to
       being part of a unratified spec such as CSS Transitions, ES6, or the DOM
       Living Standard.  For example, see the `run-in` value of
@@ -50,7 +50,7 @@ These changes are:
       production code.
     - **name** - converted to localized text, or a string if the name is
       canonical
-    - **specfication-sections** - replaces spec link
+    - **sections** - replaces spec link
     - **ancestors**, **siblings**, **children**, **descendants** - tree relations
 * supports_
     - Was `browser-version-features`, but multi-word resources are problematic.
@@ -59,6 +59,15 @@ These changes are:
       @font-face at-rule`_, which has been closed as WONTFIX in `Bugzilla
       119490`_, appears as ``{{CompatNo}}{{unimplemented_inline(119490)}}``.
     - **prefix** - string prefix to enable, or null if no prefix
+    - **prefix_mandatory** - True if the prefix is required
+    - **alternate_name** - An alternate name associated with this feature,
+      such as `"RTCPeerConnectionIdentityEvent"`
+    - **alternate_name_mandatory** - True if the alternate name is required
+    - **requires_config** - A configuration string
+      required to enable the feature, such as
+      `"media.peerconnection.enabled=on"`
+    - **default_config** - The configuration string in the shipping
+      browser, such as `"media.peerconnection.enabled=off"`
     - **note** - short note, length limited, translated, or null.  Supports
       inline notes currently in use on MDN
     - **footnote** - longer note, may include code samples, translated, or null.
@@ -71,8 +80,8 @@ There are also additional Resources_:
 * sections_ - For referring to a section of a specification, with
   translated titles and anchors
 * maturities_ - For identifying the process stage of a specification
-* All the history_ resources (historical-browsers_,
-  historical-versions_, etc.)
+* All the history_ resources (historical_browsers_,
+  historical_versions_, etc.)
 * users_ - For identifying the user who made a change
 * changesets_ - Collect several history resources into a logical change
 
@@ -218,14 +227,14 @@ Here's the MDN wiki version of the Specifications section for
 The elements of this table are converted into API data:
 
 * **Body row, first column** - Format is ``SpecName('KEY', 'PATH', 'NAME')``.
-  ``KEY`` is the specification.mdn-key, ``PATH`` is
+  ``KEY`` is the specification.mdn_key, ``PATH`` is
   section.subpath, in the page language, and ``NAME`` is
   section.name, in the page language.  The macro SpecName_ has
   additional lookups on ``KEY`` for specification.name and specification.uri
   (en language only).
 * **Body row, second column** - Format is ``Spec2('KEY')``.  ``KEY`` is the
-  specification.mdn-key, and should match the one from column one.  The macro
-  Spec2_ has additional lookups on ``KEY`` for maturity.mdn-key,
+  specification.mdn_key, and should match the one from column one.  The macro
+  Spec2_ has additional lookups on ``KEY`` for maturity.mdn_key,
   and maturity.name (multiple languages).
 * **Body row, third column** - Format is a text fragment which may include HTML
   markup, becomes the section.name associated with this
@@ -303,7 +312,7 @@ This will be converted to API resources:
       support.support is ``"no"``
     * ``{{CompatGeckoDesktop("VAL")}}`` - version.version is set to
       ``"VAL"``, support.support is ``"yes"``.  and
-      version.release-day is set by logic in CompatGeckoDesktop_.
+      version.release_day is set by logic in CompatGeckoDesktop_.
     * ``{{CompatGeckoMobile("VAL")}}`` - version.version is set to
       ``"VAL"``, support.support is ``"yes"``.  is set by logic
       in CompatGeckoMobile_.
@@ -370,8 +379,8 @@ To Do
       can be made based on features.* - Note - implemented by merging features
       and feature sets
     * Drop order of features by feature set.  Client will alpha-sort.
-    * supports.support, drop "prefixed" status.  If prefixed,
-      support = 'yes', and prefix is set.
+    * *supports.support, drop "prefixed" status.  If prefixed,
+      support = 'yes', and prefix is set.*
     * Add examples of filtering (browser versions in 2010, firefox versions
       before version X).
 * Holly's suggestions
@@ -394,8 +403,8 @@ To Do
 .. _users: change-control#users
 
 .. _history: history.html
-.. _historical-browsers: history.html#historical-browsers
-.. _historical-versions: history.html#historical-versions
+.. _historical_browsers: history.html#historical-browsers
+.. _historical_versions: history.html#historical-versions
 
 .. _`Browser Compatibility Data Architecture`: https://docs.google.com/document/d/1YF7GJ6kgV5_hx6SJjyrgunqznQU1mKxp5FaLAEzMDl4/edit#
 .. _CompatGeckoDesktop: https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop

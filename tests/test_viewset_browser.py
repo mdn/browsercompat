@@ -49,12 +49,12 @@ class TestBrowserViewset(APITestCase):
             },
             "links": {
                 "browsers.history": {
-                    "type": "historical-browsers",
+                    "type": "historical_browsers",
                     "href": history_url.replace(
                         str(history.pk), "{browsers.history}"),
                 },
                 "browsers.history_current": {
-                    "type": "historical-browsers",
+                    "type": "historical_browsers",
                     "href": history_url.replace(
                         str(history.pk), "{browsers.history_current}"),
                 },
@@ -135,15 +135,15 @@ class TestBrowserViewset(APITestCase):
             'links': {
                 'browsers.history': {
                     'href': (
-                        'http://testserver/api/historical-browsers/'
+                        'http://testserver/api/historical_browsers/'
                         '{browsers.history}'),
-                    'type': 'historical-browsers',
+                    'type': 'historical_browsers',
                 },
                 'browsers.history_current': {
                     'href': (
-                        'http://testserver/api/historical-browsers/'
+                        'http://testserver/api/historical_browsers/'
                         '{browsers.history_current}'),
-                    'type': 'historical-browsers',
+                    'type': 'historical_browsers',
                 },
                 'browsers.versions': {
                     'href': (

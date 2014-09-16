@@ -65,15 +65,15 @@ class TestVersionViewSet(APITestCase):
                 },
                 "versions.history_current": {
                     "href": (
-                        "http://testserver/api/historical-versions/"
+                        "http://testserver/api/historical_versions/"
                         "{versions.history_current}"),
-                    "type": "historical-versions"
+                    "type": "historical_versions"
                 },
                 "versions.history": {
                     "href": (
-                        "http://testserver/api/historical-versions/"
+                        "http://testserver/api/historical_versions/"
                         "{versions.history}"),
-                    "type": "historical-versions"
+                    "type": "historical_versions"
                 },
             }
         }
