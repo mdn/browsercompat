@@ -12,9 +12,9 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.views import APIView
 
 from .viewsets import (
-    BrowserViewSet, BrowserVersionViewSet,
-    HistoricalBrowserViewSet, HistoricalBrowserVersionViewSet,
-    UserViewSet)
+    BrowserViewSet, VersionViewSet,
+    HistoricalBrowserViewSet, HistoricalVersionViewSet,
+    UserViewSet, ViewFeaturesViewSet)
 
 
 class GroupedRouter(DefaultRouter):
@@ -22,6 +22,10 @@ class GroupedRouter(DefaultRouter):
 
     view_groups = {}
     allowed_ext = ['api', 'json']
+
+    def __init__(self, version, *args, **kwargs):
+        self.version = version
+        super(GroupedRouter, self).__init__(*args, **kwargs)
 
     def register(self, prefix, viewset, base_name=None, group=None):
         assert group
@@ -81,12 +85,15 @@ class GroupedRouter(DefaultRouter):
         return urls + redirect_urls
 
 
-router = GroupedRouter(trailing_slash=False)
+router = GroupedRouter(trailing_slash=False, version='v1')
 router.register(r'browsers', BrowserViewSet, group='resources')
-router.register(r'browser-versions', BrowserVersionViewSet, group='resources')
+router.register(r'versions', VersionViewSet, group='resources')
 router.register(r'users', UserViewSet, group='change-control')
 router.register(
-    r'historical-browsers', HistoricalBrowserViewSet, group='history')
+    r'historical_browsers', HistoricalBrowserViewSet, group='history')
 router.register(
-    r'historical-browser-versions', HistoricalBrowserVersionViewSet,
+    r'historical_versions', HistoricalVersionViewSet,
     group='history')
+router.register(
+    r'view_features', ViewFeaturesViewSet, base_name='viewfeatures',
+    group='views')

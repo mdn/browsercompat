@@ -9,7 +9,7 @@ Authentication
 
 Several endpoint handle user authentication.
 
-https://api.compat.mozilla.org/auth is an HTML page that shows the user's
+https://browsersupports.org/auth is an HTML page that shows the user's
 current authentication status, and includes a button for starting a Persona_
 login.
 
@@ -37,7 +37,7 @@ A final endpoint is used to delete the credential and log out the user:
 Browser Identification
 ----------------------
 
-The ``/browser-ident`` endpoint provides browser identification based on the
+The ``/browser_ident`` endpoint provides browser identification based on the
 User Agent and other parameters.
 
 Two potential sources for this information:

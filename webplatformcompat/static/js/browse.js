@@ -78,7 +78,7 @@ Browse.ApplicationAdapter = DS.JsonApiAdapter.extend({
     }
 */
 });
-//DS._routes['browserVersion'] = "browser-versions/{browsers.versions}"
+//DS._routes['browserVersion'] = "versions/{browsers.versions}"
 
 
 /* Routes */
@@ -96,10 +96,10 @@ Browse.Browser = DS.Model.extend({
     icon: attr(),
     name: attr(),
     note: attr(),
-    versions: DS.hasMany('browser-version', {async: true}),
+    versions: DS.hasMany('version', {async: true}),
 });
 
-Browse.BrowserVersion = DS.Model.extend({
+Browse.Version = DS.Model.extend({
     browser: DS.belongsTo('browser'),
     version: attr('string'),
     release_day: attr('date'),

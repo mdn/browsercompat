@@ -1,4 +1,4 @@
-digraph "display broken into feature sets" {
+digraph "display broken into heirarchical features" {
 
   node [ shape=rect];
   "CSS properties";

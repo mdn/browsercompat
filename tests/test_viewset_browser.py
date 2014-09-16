@@ -8,7 +8,7 @@ from json import dumps, loads
 
 from django.core.urlresolvers import reverse
 
-from webplatformcompat.models import Browser, BrowserVersion
+from webplatformcompat.models import Browser, Version
 
 from .base import APITestCase
 
@@ -49,20 +49,22 @@ class TestBrowserViewset(APITestCase):
             },
             "links": {
                 "browsers.history": {
-                    "type": "historical-browsers",
-                    "href": history_url.replace(
-                        str(history.pk), "{browsers.history}"),
+                    "type": "historical_browsers",
+                    "href": (
+                        "http://testserver/api/v1"
+                        "/historical_browsers/{browsers.history}"),
                 },
                 "browsers.history_current": {
-                    "type": "historical-browsers",
-                    "href": history_url.replace(
-                        str(history.pk), "{browsers.history_current}"),
+                    "type": "historical_browsers",
+                    "href": (
+                        "http://testserver/api/v1"
+                        "/historical_browsers/{browsers.history_current}"),
                 },
                 "browsers.versions": {
-                    'href': (
-                        'http://testserver/api/browser-versions/'
-                        '{browsers.versions}'),
-                    "type": "browser-versions",
+                    "type": "versions",
+                    "href": (
+                        "http://testserver/api/v1"
+                        "/versions/{browsers.versions}"),
                 },
             }
         }
@@ -135,21 +137,21 @@ class TestBrowserViewset(APITestCase):
             'links': {
                 'browsers.history': {
                     'href': (
-                        'http://testserver/api/historical-browsers/'
+                        'http://testserver/api/v1/historical_browsers/'
                         '{browsers.history}'),
-                    'type': 'historical-browsers',
+                    'type': 'historical_browsers',
                 },
                 'browsers.history_current': {
                     'href': (
-                        'http://testserver/api/historical-browsers/'
+                        'http://testserver/api/v1/historical_browsers/'
                         '{browsers.history_current}'),
-                    'type': 'historical-browsers',
+                    'type': 'historical_browsers',
                 },
                 'browsers.versions': {
                     'href': (
-                        'http://testserver/api/browser-versions/'
+                        'http://testserver/api/v1/versions/'
                         '{browsers.versions}'),
-                    'type': 'browser-versions',
+                    'type': 'versions',
                 },
             }
         }
@@ -452,14 +454,14 @@ class TestBrowserViewset(APITestCase):
 
     def test_versions_are_ordered(self):
         browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
-        v2 = self.create(BrowserVersion, browser=browser, version='2.0')
-        v1 = self.create(BrowserVersion, browser=browser, version='1.0')
+        v2 = self.create(Version, browser=browser, version='2.0')
+        v1 = self.create(Version, browser=browser, version='1.0')
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         response = self.client.get(url, HTTP_ACCEPT='application/vnd.api+json')
         self.assertEqual(200, response.status_code, response.data)
         history = browser.history.all()
         history_view = 'historicalbrowser-detail'
-        version_view = 'browserversion-detail'
+        version_view = 'version-detail'
         expected_data = {
             "id": browser.pk,
             "slug": 'browser',
@@ -476,8 +478,8 @@ class TestBrowserViewset(APITestCase):
 
     def test_versions_are_reordered(self):
         browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
-        v1 = self.create(BrowserVersion, browser=browser, version='1.0')
-        v2 = self.create(BrowserVersion, browser=browser, version='2.0')
+        v1 = self.create(Version, browser=browser, version='1.0')
+        v2 = self.create(Version, browser=browser, version='2.0')
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         data = dumps({
             'browsers': {
@@ -492,7 +494,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
         history = browser.history.all()
         history_view = 'historicalbrowser-detail'
-        version_view = 'browserversion-detail'
+        version_view = 'version-detail'
         expected_data = {
             "id": browser.pk,
             "slug": 'browser',
@@ -509,8 +511,8 @@ class TestBrowserViewset(APITestCase):
 
     def test_versions_same_order(self):
         browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
-        v1 = self.create(BrowserVersion, browser=browser, version='1.0')
-        v2 = self.create(BrowserVersion, browser=browser, version='2.0')
+        v1 = self.create(Version, browser=browser, version='1.0')
+        v2 = self.create(Version, browser=browser, version='2.0')
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         data = dumps({
             'browsers': {
@@ -525,7 +527,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
         history = browser.history.all()
         history_view = 'historicalbrowser-detail'
-        version_view = 'browserversion-detail'
+        version_view = 'version-detail'
         expected_data = {
             "id": browser.pk,
             "slug": 'browser',
