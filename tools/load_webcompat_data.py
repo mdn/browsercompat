@@ -24,7 +24,7 @@ COMPAT_DATA_URL = (
 def get_session(base_url, user, password):
     '''Create an authenticated connection to the API'''
     session = requests.Session()
-    next_path = '/api/browsers'
+    next_path = '/api/v1/browsers'
     params = {'next': next_path}
     response = session.get(base_url + '/api-auth/login/', params=params)
     try:
@@ -50,7 +50,7 @@ def get_session(base_url, user, password):
 def verify_empty_api(session):
     '''Verify that no data is loaded into this API'''
     response = session.get(
-        session.base_url + '/api/browsers',
+        session.base_url + '/api/v1/browsers',
         headers={'content-type': 'application/vnd.api+json'})
     expected = {'browsers': []}
     actual = response.json()
@@ -180,7 +180,7 @@ def upload_compat_data(session, parsed_data):
         }
         browser_json = json.dumps({"browsers": data})
         response = session.post(
-            session.base_url + '/api/browsers', data=browser_json,
+            session.base_url + '/api/v1/browsers', data=browser_json,
             headers={
                 'content-type': 'application/vnd.api+json',
                 'X-CSRFToken': session.cookies['csrftoken']})
@@ -189,8 +189,8 @@ def upload_compat_data(session, parsed_data):
         if len(browser_ids) % 100 == 0:
             logger.info("Imported %d browsers..." % len(browser_ids))
 
-    bv_ids = {}
-    logger.info("Importing browser-versions...")
+    version_ids = {}
+    logger.info("Importing versions...")
     for ident, bv in parsed_data['browser_versions'].items():
         browser_slug, version = ident
         data = {
@@ -200,20 +200,20 @@ def upload_compat_data(session, parsed_data):
                 "browser": browser_ids[browser_slug]
             }
         }
-        bv_json = json.dumps({"browser versions": data})
+        version_json = json.dumps({"versions": data})
         response = session.post(
-            session.base_url + '/api/browser-versions', data=bv_json,
+            session.base_url + '/api/v1/versions', data=version_json,
             headers={
                 'content-type': 'application/vnd.api+json',
                 'X-CSRFToken': session.cookies['csrftoken']})
-        assert response.status_code == 201
-        bv_ids[ident] = response.json()['browser versions']['id']
-        if len(bv_ids) % 100 == 0:
-            logger.info("Imported %d browser-versions..." % len(bv_ids))
+        assert response.status_code == 201, response.content
+        version_ids[ident] = response.json()['versions']['id']
+        if len(version_ids) % 100 == 0:
+            logger.info("Imported %d versions..." % len(version_ids))
 
     return (
         ('browsers', len(browser_ids)),
-        ('browser_versions', len(bv_ids)),
+        ('browser_versions', len(version_ids)),
     )
 
 
@@ -259,6 +259,7 @@ if __name__ == '__main__':
     api = args.api
     if api.endswith('/'):
         api = api[:-1]
+    logger.info("Loading data into %s" % api)
     user = args.user or raw_input("API username: ")
     password = getpass.getpass("API password: ")
     session = get_session(api, user, password)

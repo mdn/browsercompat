@@ -10,7 +10,7 @@ Tests for `web-platform-compat` models module.
 
 import unittest
 
-from webplatformcompat.models import Browser, BrowserVersion
+from webplatformcompat.models import Browser, Version
 
 
 class TestBrowser(unittest.TestCase):
@@ -20,9 +20,9 @@ class TestBrowser(unittest.TestCase):
         self.assertEqual('browser', str(browser))
 
 
-class TestBrowserVersion(unittest.TestCase):
+class TestVersion(unittest.TestCase):
 
     def test_str(self):
         browser = Browser(slug="browser")
-        bv = BrowserVersion(browser=browser, version='1.0')
+        bv = Version(browser=browser, version='1.0')
         self.assertEqual('browser 1.0', str(bv))

@@ -11,6 +11,7 @@ from .validators import LanguageDictValidator, SecureURLValidator
 
 @python_2_unicode_compatible
 class Browser(models.Model):
+    '''A browser or other web client'''
     slug = models.SlugField(unique=True)
     icon = models.URLField(blank=True, validators=[SecureURLValidator()])
     name = JSONField(validators=[LanguageDictValidator()])
@@ -23,7 +24,8 @@ class Browser(models.Model):
 
 
 @python_2_unicode_compatible
-class BrowserVersion(models.Model):
+class Version(models.Model):
+    '''A version of a browser'''
     STATUS_CHOICES = [(k, k) for k in (
         'unknown',
         'current',

@@ -24,15 +24,18 @@ class TestViews(TestCase):
         expected = {
             'resources': {
                 'browsers': self.reverse('browser-list'),
-                'browser-versions': self.reverse('browserversion-list'),
+                'versions': self.reverse('version-list'),
             },
             'change-control': {
                 'users': self.reverse('user-list'),
             },
             'history': {
-                'historical-browsers': self.reverse('historicalbrowser-list'),
-                'historical-browser-versions':
-                    self.reverse('historicalbrowserversion-list'),
+                'historical_browsers': self.reverse('historicalbrowser-list'),
+                'historical_versions':
+                    self.reverse('historicalversion-list'),
+            },
+            'views': {
+                'view_features': self.reverse('viewfeatures-list')
             },
         }
         self.assertEqual(expected, loads(response.content.decode('utf-8')))

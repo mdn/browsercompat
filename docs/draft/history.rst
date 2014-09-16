@@ -11,7 +11,7 @@ determine the pattern.
 Historical Browsers
 -------------------
 
-A **historical-browser** resource represents the state of a browser_ at a point
+A **historical_browser** resource represents the state of a browser_ at a point
 in time, and who is responsible for that state.  The representation includes:
 
 * **attributes**
@@ -24,12 +24,12 @@ in time, and who is responsible for that state.  The representation includes:
     - **browser** *(one)* - Associated browser_, can not be changed
     - **changeset** *(one)* - Associated changeset_, can not be changed.
 
-To get a single **historical-browsers** representation:
+To get a single **historical_browsers** representation:
 
 .. code-block:: http
 
-    GET /historical-browsers/1002 HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/historical_browsers/1002 HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -42,14 +42,14 @@ A sample response is:
 .. code-block:: json
 
     {
-        "historical-browsers": {
+        "historical_browsers": {
             "id": "1002",
             "timestamp": "1404919464.559140",
             "event": "created",
             "browsers": {
                 "id": "2",
                 "slug": "firefox",
-                "icon": "https://compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+                "icon": "https://cdn.browsersupports.org/media/img/browsers/firefox.png",
                 "name": {
                     "en": "Firefox"
                 },
@@ -57,7 +57,7 @@ A sample response is:
                     "en": "Uses Gecko for its web browser engine."
                 },
                 "links": {
-                    "history-current": "1002",
+                    "history_current": "1002",
                 }
             },
             "links": {
@@ -66,59 +66,49 @@ A sample response is:
             }
         },
         "links": {
-            "historical-browsers.browser": {
-                "href": "https://api.compat.mozilla.org/browser-history/{historical-browsers.browser}",
+            "historical_browsers.browser": {
+                "href": "https://browsersupports.org/api/v1/historical_browsers/{historical_browsers.browser}",
                 "type": "browsers"
             },
-            "historical-browsers.changeset": {
-                "href": "https://api.compat.mozilla.org/changesets/{historical-browsers.changeset}",
+            "historical_browsers.changeset": {
+                "href": "https://browsersupports.org/api/v1/changesets/{historical_browsers.changeset}",
                 "type": "changeset"
             }
         }
     }
 
-Historical Browser Versions
----------------------------
+Historical Versions
+-------------------
 
-A **historical-browser-versions** resource represents the state of a
-browser-version_ at a point in time, and who is responsible for that
-representation.  See historical-browsers_ and browser-versions_ for an idea of
+A **historical_versions** resource represents the state of a
+version_ at a point in time, and who is responsible for that
+representation.  See historical_browsers_ and versions_ for an idea of
 the represention.
 
 Historical Features
 -------------------
 
-A **historical-features** resource represents the state of a feature_ at a point
+A **historical_features** resource represents the state of a feature_ at a point
 in time, and who is responsible for that representation.  See
-historical-browsers_ and features_ for an idea of the represention.
+historical_browsers_ and features_ for an idea of the represention.
 
-Historical Feature Sets
------------------------
+Historical Supports
+-------------------
 
-A **historical-feature-sets** resource represents a state of a feature-set_ at
-a point in time, and who is responsible for that representation.  See
-historical-browsers_ and feature-sets_ for an idea of the represention.
+A **historical_supports** resource represents a state of a support_ at a point
+in time, and who is responsible for that representation.  See
+historical_browsers_ and supports_ for an idea of the represention.
 
-Historical Browser Version Features
------------------------------------
-
-A **historical-browser-version-features** resource represents a state of a
-browser-version-feature_ at a point in time, and who is responsible for that
-representation.  See historical-browsers_ and browser-version-features_ for an
-idea of the represention.
-
-.. _historical-browser: `Historical Browsers`_
-.. _historical-browsers: `Historical Browsers`_
+.. _historical_browser: `Historical Browsers`_
+.. _historical_browsers: `Historical Browsers`_
 
 .. _browser: resources.html#browsers
-.. _browser-version: resources.html#browser-versions
-.. _browser-versions: resources.html#browser-versions
-.. _browser-version-feature: resources.html#browser-versions-feature
-.. _browser-version-features: resources.html#browser-versions-features
+.. _version: resources.html#versions
+.. _versions: resources.html#versions
+.. _support: resources.html#supports
+.. _supports: resources.html#supports
 .. _feature: resources.html#features
 .. _features: resources.html#features
-.. _feature-set: resources.html#feature-sets
-.. _feature-sets: resources.html#feature-sets
 
 .. _changeset: change-control#changesets
 

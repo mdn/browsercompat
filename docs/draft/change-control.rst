@@ -16,13 +16,13 @@ The representation includes:
     - **username** - The user's email or ID
     - **created** *(server selected)* - UTC timestamp of when this user
       account was created
-    - **agreement-version** - The version of the contribution agreement the
+    - **agreement** - The version of the contribution agreement the
       user has accepted.  "0" for not agreed, "1" for first version, etc.
     - **permissions** - A list of permissions.  Permissions include
-      ``"change-browser-version-feature"`` (add or change a browser-version-feature_)
+      ``"change-support"`` (add or change a support_),
       ``"change-resource"`` (add or change any resource except users_ or
-      history resources)
-      ``"change-user"`` (change a user_ resource)
+      history resources),
+      ``"change-user"`` (change a user_ resource), and
       ``"delete-resource"`` (delete any resource)
 * **links**
     - **changesets** *(many)* - Associated changesets_, in ID order, changes
@@ -32,8 +32,8 @@ To get a single **user** representation:
 
 .. code-block:: http
 
-    GET /users/42 HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/users/42 HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -50,15 +50,15 @@ A sample response is:
             "id": "42",
             "username": "askDNA@tdv.com",
             "created": "1405000551.750000",
-            "agreement-version": "1",
-            "permissions": ["change-browser-version-feature"],
+            "agreement": "1",
+            "permissions": ["change-support"],
             "links": {
                 "changesets": ["73"]
             }
         },
         "links": {
             "users.changesets": {
-                "href": "https://api.compat.mozilla.org/changesets/{users.changesets}",
+                "href": "https://browsersupports.org/api/v1/changesets/{users.changesets}",
                 "type": "changesets"
             }
         }
@@ -68,8 +68,8 @@ If a client is authenticated, the logged-in user's account can be retrieved with
 
 .. code-block:: http
 
-    GET /users/me HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/users/me HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 Changesets
@@ -89,31 +89,29 @@ The representation includes:
       was created
     - **modified** *(server selected)* - UTC timestamp of when this changeset
       was last modified
-    - **target-resource** *(write-once)* - The name of the primary resource
-      for this changeset, for example "browsers", "browser-versions", etc.
-    - **target-resource-id** *(write-once)* - The ID of the primary resource
+    - **target_resource** *(write-once)* - The name of the primary resource
+      for this changeset, for example "browsers", "versions", etc.
+    - **target_resource_id** *(write-once)* - The ID of the primary resource
       for this changeset.
 * **links**
     - **user** *(one)* - The user who initiated this changeset, can not be
       changed.
-    - **historical-browsers** *(many)* - Associated historical-browsers_, in ID
+    - **historical_browsers** *(many)* - Associated historical_browsers_, in ID
       order, changes are ignored.
-    - **historical-browser-versions** *(many)* - Associated
-      historical-browser-versions_, in ID order, changes are ignored.
-    - **historical-features** *(many)* - Associated historical-features_,
+    - **historical_versions** *(many)* - Associated
+      historical_versions_, in ID order, changes are ignored.
+    - **historical_features** *(many)* - Associated historical_features_,
       in ID order, changes are ignored.
-    - **historical-feature-sets** *(many)* - Associated historical-feature-sets_,
-      in ID order, changes are ignored.
-    - **historical-browser-version-features** *(many)* - Associated
-      historical-browser-version-features_, in ID order, changes are ignored.
+    - **historical_supports** *(many)* - Associated historical_supports_, in ID
+      order, changes are ignored.
 
 
 To get a single **changeset** representation:
 
 .. code-block:: http
 
-    GET /changeset/73 HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/changeset/73 HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -130,51 +128,45 @@ A sample response is:
             "id": "73",
             "created": "1405353048.910000",
             "modified": "1405353048.910000",
-            "target-resource": "feature-sets",
-            "target-resource-id": "35",
+            "target_resource": "features",
+            "target_resource_id": "35",
             "links": {
                 "user": "42",
-                "historical-browsers": [],
-                "historical-browser-versions": [],
-                "historical-features": [],
-                "historical-feature-sets": [],
-                "historical-browser-version-features": ["1789", "1790"]
+                "historical_browsers": [],
+                "historical_versions": [],
+                "historical_features": [],
+                "historical_supports": ["1789", "1790"]
             }
         },
         "links": {
             "changesets.user": {
-                "href": "https://api.compat.mozilla.org/users/{changesets.user}",
+                "href": "https://browsersupports.org/api/v1/users/{changesets.user}",
                 "type": "users"
             },
-            "changesets.historical-browsers": {
-                "href": "https://api.compat.mozilla.org/historical-browsers/{changesets.historical-browsers}",
-                "type": "historical-browsers"
+            "changesets.historical_browsers": {
+                "href": "https://browsersupports.org/api/v1/historical_browsers/{changesets.historical_browsers}",
+                "type": "historical_browsers"
             },
-            "changesets.historical-browser-versions": {
-                "href": "https://api.compat.mozilla.org/historical-browser-versions/{changesets.historical-browser-versions}",
-                "type": "historical-browser-versions"
+            "changesets.historical_versions": {
+                "href": "https://browsersupports.org/api/v1/historical_versions/{changesets.historical_versions}",
+                "type": "historical_versions"
             },
-            "changesets.historical-features": {
-                "href": "https://api.compat.mozilla.org/historical-features/{changesets.historical-features}",
-                "type": "historical-features"
+            "changesets.historical_features": {
+                "href": "https://browsersupports.org/api/v1/historical_features/{changesets.historical_features}",
+                "type": "historical_features"
             },
-            "changesets.historical-feature-sets": {
-                "href": "https://api.compat.mozilla.org/historical-feature-sets/{changesets.historical-feature-sets}",
-                "type": "historical-feature-sets"
-            },
-            "changesets.historical-browser-version-features": {
-                "href": "https://api.compat.mozilla.org/historical-browser-version-features/{changesets.historical-browser-version-features}",
-                "type": "historical-browser-version-features"
+            "changesets.historical_supports": {
+                "href": "https://browsersupports.org/api/v1/historical_supports/{changesets.historical_supports}",
+                "type": "historical_supports"
             }
         }
     }
 
 .. _user: Users_
 
-.. _browser-version-feature: resources.html#browser-version-features
+.. _support: resources.html#supports
 
-.. _historical-browsers: history.html#historical-browsers
-.. _historical-browser-versions: history.html#historical-browser-versions
-.. _historical-browser-version-features: history.html#historical-browser-version-features
-.. _historical-features: history.html#historical-features
-.. _historical-feature-sets: history.html#historical-feature-sets
+.. _historical_browsers: history.html#historical-browsers
+.. _historical_features: history.html#historical-features
+.. _historical_supports: history.html#historical-supports
+.. _historical_versions: history.html#historical-versions
