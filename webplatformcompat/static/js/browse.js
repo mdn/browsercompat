@@ -18,7 +18,7 @@ Browse.Router.map(function() {
 
 /* Serializer - JsonApiSerializer with modifictions */
 DS.JsonApiNamespacedSerializer = DS.JsonApiSerializer.extend({
-    namespace: 'api',
+    namespace: 'api/v1',
     extractLinks: function(links) {
         // Modifications:
         // Strip the namespace from links as well
@@ -68,7 +68,7 @@ DS.JsonApiNamespacedSerializer = DS.JsonApiSerializer.extend({
 
 /* Adapter - JsonApiAdapter with modifictions */
 Browse.ApplicationAdapter = DS.JsonApiAdapter.extend({
-    namespace: 'api',
+    namespace: 'api/v1',
     defaultSerializer: 'DS/jsonApiNamespaced'
 /*
     buildURL: function(typeName, id) {
