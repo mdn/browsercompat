@@ -23,6 +23,10 @@ class GroupedRouter(DefaultRouter):
     view_groups = {}
     allowed_ext = ['api', 'json']
 
+    def __init__(self, version, *args, **kwargs):
+        self.version = version
+        super(GroupedRouter, self).__init__(*args, **kwargs)
+
     def register(self, prefix, viewset, base_name=None, group=None):
         assert group
         self.view_groups[prefix] = group
@@ -81,7 +85,7 @@ class GroupedRouter(DefaultRouter):
         return urls + redirect_urls
 
 
-router = GroupedRouter(trailing_slash=False)
+router = GroupedRouter(trailing_slash=False, version='v1')
 router.register(r'browsers', BrowserViewSet, group='resources')
 router.register(r'versions', VersionViewSet, group='resources')
 router.register(r'users', UserViewSet, group='change-control')

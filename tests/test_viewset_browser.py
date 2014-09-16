@@ -50,19 +50,21 @@ class TestBrowserViewset(APITestCase):
             "links": {
                 "browsers.history": {
                     "type": "historical_browsers",
-                    "href": history_url.replace(
-                        str(history.pk), "{browsers.history}"),
+                    "href": (
+                        "http://testserver/api/v1"
+                        "/historical_browsers/{browsers.history}"),
                 },
                 "browsers.history_current": {
                     "type": "historical_browsers",
-                    "href": history_url.replace(
-                        str(history.pk), "{browsers.history_current}"),
+                    "href": (
+                        "http://testserver/api/v1"
+                        "/historical_browsers/{browsers.history_current}"),
                 },
                 "browsers.versions": {
-                    'href': (
-                        'http://testserver/api/versions/'
-                        '{browsers.versions}'),
                     "type": "versions",
+                    "href": (
+                        "http://testserver/api/v1"
+                        "/versions/{browsers.versions}"),
                 },
             }
         }
@@ -135,19 +137,19 @@ class TestBrowserViewset(APITestCase):
             'links': {
                 'browsers.history': {
                     'href': (
-                        'http://testserver/api/historical_browsers/'
+                        'http://testserver/api/v1/historical_browsers/'
                         '{browsers.history}'),
                     'type': 'historical_browsers',
                 },
                 'browsers.history_current': {
                     'href': (
-                        'http://testserver/api/historical_browsers/'
+                        'http://testserver/api/v1/historical_browsers/'
                         '{browsers.history_current}'),
                     'type': 'historical_browsers',
                 },
                 'browsers.versions': {
                     'href': (
-                        'http://testserver/api/versions/'
+                        'http://testserver/api/v1/versions/'
                         '{browsers.versions}'),
                     'type': 'versions',
                 },

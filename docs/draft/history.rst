@@ -28,8 +28,8 @@ To get a single **historical_browsers** representation:
 
 .. code-block:: http
 
-    GET /historical_browsers/1002 HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/historical_browsers/1002 HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -49,7 +49,7 @@ A sample response is:
             "browsers": {
                 "id": "2",
                 "slug": "firefox",
-                "icon": "https://compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+                "icon": "https://cdn.browsersupports.org/media/img/browsers/firefox.png",
                 "name": {
                     "en": "Firefox"
                 },
@@ -67,11 +67,11 @@ A sample response is:
         },
         "links": {
             "historical_browsers.browser": {
-                "href": "https://api.compat.mozilla.org/historical_browsers/{historical_browsers.browser}",
+                "href": "https://browsersupports.org/api/v1/historical_browsers/{historical_browsers.browser}",
                 "type": "browsers"
             },
             "historical_browsers.changeset": {
-                "href": "https://api.compat.mozilla.org/changesets/{historical_browsers.changeset}",
+                "href": "https://browsersupports.org/api/v1/changesets/{historical_browsers.changeset}",
                 "type": "changeset"
             }
         }

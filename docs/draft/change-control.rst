@@ -32,8 +32,8 @@ To get a single **user** representation:
 
 .. code-block:: http
 
-    GET /users/42 HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/users/42 HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -58,7 +58,7 @@ A sample response is:
         },
         "links": {
             "users.changesets": {
-                "href": "https://api.compat.mozilla.org/changesets/{users.changesets}",
+                "href": "https://browsersupports.org/api/v1/changesets/{users.changesets}",
                 "type": "changesets"
             }
         }
@@ -68,8 +68,8 @@ If a client is authenticated, the logged-in user's account can be retrieved with
 
 .. code-block:: http
 
-    GET /users/me HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/users/me HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 Changesets
@@ -110,8 +110,8 @@ To get a single **changeset** representation:
 
 .. code-block:: http
 
-    GET /changeset/73 HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/changeset/73 HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -140,23 +140,23 @@ A sample response is:
         },
         "links": {
             "changesets.user": {
-                "href": "https://api.compat.mozilla.org/users/{changesets.user}",
+                "href": "https://browsersupports.org/api/v1/users/{changesets.user}",
                 "type": "users"
             },
             "changesets.historical_browsers": {
-                "href": "https://api.compat.mozilla.org/historical_browsers/{changesets.historical_browsers}",
+                "href": "https://browsersupports.org/api/v1/historical_browsers/{changesets.historical_browsers}",
                 "type": "historical_browsers"
             },
             "changesets.historical_versions": {
-                "href": "https://api.compat.mozilla.org/historical_versions/{changesets.historical_versions}",
+                "href": "https://browsersupports.org/api/v1/historical_versions/{changesets.historical_versions}",
                 "type": "historical_versions"
             },
             "changesets.historical_features": {
-                "href": "https://api.compat.mozilla.org/historical_features/{changesets.historical_features}",
+                "href": "https://browsersupports.org/api/v1/historical_features/{changesets.historical_features}",
                 "type": "historical_features"
             },
             "changesets.historical_supports": {
-                "href": "https://api.compat.mozilla.org/historical_supports/{changesets.historical_supports}",
+                "href": "https://browsersupports.org/api/v1/historical_supports/{changesets.historical_supports}",
                 "type": "historical_supports"
             }
         }

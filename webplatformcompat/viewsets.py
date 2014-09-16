@@ -107,6 +107,7 @@ class ViewFeaturesViewSet(ViewSet):
         return Response(feature_sets)
 
     def retrieve(self, request, *args, **kwargs):
+        a = "https://browsersupports.org/api/v1"
         feature_set = OrderedDict((
             ("features", OrderedDict((
                 ("id", "816"),
@@ -664,7 +665,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "1"),
                         ("slug", "chrome"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/chrome.png")),
                         ("name", OrderedDict((
                             ("en", "Chrome"),
@@ -679,7 +680,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "2"),
                         ("slug", "firefox"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/firefox.png")),
                         ("name", OrderedDict((
                             ("en", "Firefox"),
@@ -696,7 +697,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "3"),
                         ("slug", "ie"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/ie.png")),
                         ("name", OrderedDict((
                             ("en", "Internet Explorer"),
@@ -711,7 +712,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "4"),
                         ("slug", "opera"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/opera.png")),
                         ("name", OrderedDict((
                             ("en", "Opera"),
@@ -726,7 +727,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "5"),
                         ("slug", "safari"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/safari.png")),
                         ("name", OrderedDict((
                             ("en", "Safari"),
@@ -743,7 +744,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "6"),
                         ("slug", "android"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/android.png")),
                         ("name", OrderedDict((
                             ("en", "Android"),
@@ -758,7 +759,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "7"),
                         ("slug", "firefox-mobile"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/firefox-mobile.png")),
                         ("name", OrderedDict((
                             ("en", "Firefox Mobile"),
@@ -775,7 +776,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "8"),
                         ("slug", "ie-phone"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/ie-phone.png")),
                         ("name", OrderedDict((
                             ("en", "IE Phone"),
@@ -790,7 +791,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "9"),
                         ("slug", "opera-mobile"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/opera-mobile.png")),
                         ("name", OrderedDict((
                             ("en", "Opera Mobile"),
@@ -805,7 +806,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "10"),
                         ("slug", "safari-mobile"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/safari-mobile.png")),
                         ("name", OrderedDict((
                             ("en", "Safari Mobile"),
@@ -820,7 +821,7 @@ class ViewFeaturesViewSet(ViewSet):
                         ("id", "11"),
                         ("slug", "opera-mini"),
                         ("icon", (
-                            "https://compat.cdn.mozilla.net/media/img/"
+                            "https://cdn.browsersupports.org/media/img/"
                             "browsers/opera-mini.png")),
                         ("name", OrderedDict((
                             ("en", "Opera Mini"),
@@ -836,155 +837,108 @@ class ViewFeaturesViewSet(ViewSet):
             ))),
             ("links", OrderedDict((
                 ("feature.features", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/features/"
-                        "{feature.features}")),
+                    ("href", a + "/features/{feature.features}"),
                     ("type", "features"),
                 ))),
                 ("features.sections", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "sections/"
-                        "{features.sections}")),
+                    ("href", a + "sections/{features.sections}"),
                     ("type", "specfication-sections"),
                 ))),
                 ("features.parent", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/features/"
-                        "{features.parent}")),
+                    ("href", a + "/features/{features.parent}"),
                     ("type", "features"),
                 ))),
                 ("features.ancestors", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/features/"
-                        "{features.ancestors}")),
+                    ("href", a + "/features/{features.ancestors}"),
                     ("type", "features"),
                 ))),
                 ("features.siblings", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/features/"
-                        "{features.siblings}")),
+                    ("href", a + "/features/{features.siblings}"),
                     ("type", "features"),
                 ))),
                 ("features.children", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/features/"
-                        "{features.children}")),
+                    ("href", a + "/features/{features.children}"),
                     ("type", "features"),
                 ))),
                 ("features.descendants", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/features/"
-                        "{features.descendants}")),
+                    ("href", a + "/features/{features.descendants}"),
                     ("type", "features"),
                 ))),
                 ("features.history_current", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "historical-features/{features.history_current}")),
+                    ("href",
+                     a + "/historical-features/{features.history_current}"),
                     ("type", "historical-features"),
                 ))),
                 ("features.history", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "historical-features/"
-                        "{features.history}")),
+                    ("href", a + "/historical-features/{features.history}"),
                     ("type", "historical-features"),
                 ))),
                 ("browsers.versions", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/versions/"
-                        "{browsers.versions}")),
+                    ("href", a + "/versions/{browsers.versions}"),
                     ("type", "versions"),
                 ))),
                 ("browsers.history_current", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/historical-browsers/"
-                        "{browsers.history_current}")),
+                    ("href",
+                     a + "/historical-browsers/{browsers.history_current}"),
                     ("type", "historical-browsers"),
                 ))),
                 ("browsers.history", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/historical-browsers/"
-                        "{browsers.history}")),
+                    ("href", a + "/historical-browsers/{browsers.history}"),
                     ("type", "historical-browsers"),
                 ))),
                 ("versions.browser", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/browsers/"
-                        "{versions.browser}")),
+                    ("href", a + "/browsers/{versions.browser}"),
                     ("type", "browsers"),
                 ))),
                 ("versions.supports", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "supports/{versions.features}")),
+                    ("href", a + "/supports/{versions.features}"),
                     ("type", "supports"),
                 ))),
                 ("versions.history_current", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "historical-versions/{versions.history_current}")),
+                    ("href",
+                     a + "/historical-versions/{versions.history_current}"),
                     ("type", "historical-versions"),
                 ))),
                 ("versions.history", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "historical-versions/{versions.history}")),
+                    ("href", a + "/historical-versions/{versions.history}"),
                     ("type", "historical-versions"),
                 ))),
                 ("supports.version", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/versions/"
-                        "{supports.version}")),
+                    ("href", a + "/versions/{supports.version}"),
                     ("type", "versions"),
                 ))),
                 ("supports.feature", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/browsers/"
-                        "{supports.feature}")),
+                    ("href", a + "/browsers/{supports.feature}"),
                     ("type", "features"),
                 ))),
                 ("supports.history_current", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "historical-supports/{supports.history_current}")),
+                    ("href",
+                     a + "/historical-supports/{supports.history_current}"),
                     ("type", "historical-supports"),
                 ))),
                 ("supports.history", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "historical-supports/{supports.history}")),
+                    ("href", a + "/historical-supports/{supports.history}"),
                     ("type", "historical-supports"),
                 ))),
                 ("specifications.sections", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "sections/{specifications.sections}")),
+                    ("href", a + "/sections/{specifications.sections}"),
                     ("type", "sections"),
                 ))),
                 ("specifications.maturity", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "maturities/{specifications.maturity}")),
+                    ("href", a + "/maturities/{specifications.maturity}"),
                     ("type", "maturities"),
                 ))),
                 ("sections.specification", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/specifications/"
-                        "{sections.specification}")),
+                    ("href", a + "/specifications/{sections.specification}"),
                     ("type", "specifications"),
                 ))),
                 ("sections.features", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/"
-                        "sections/{sections.features}")),
+                    ("href", a + "/sections/{sections.features}"),
                     ("type", "features"),
                 ))),
                 ("maturities.specifications", OrderedDict((
-                    ("href", (
-                        "https://api.compat.mozilla.org/specifications/"
-                        "{maturities.specifications}")),
+                    ("href",
+                     a + "/specifications/{maturities.specifications}"),
                     ("type", "specifications"),
                 ))),
             ))),

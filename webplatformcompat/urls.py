@@ -1,4 +1,5 @@
 from django.conf.urls import include, patterns, url
+from django.views.generic.base import RedirectView
 from webplatformcompat.routers import router
 
 from .views import RequestView
@@ -14,5 +15,6 @@ webplatformcompat_urlpatterns = patterns(
         name='browse'),
     url(r'^api-auth/', include('rest_framework.urls',
         namespace='rest_framework')),
-    url(r'^api/', include(router.urls)),
+    url(r'^api/$', RedirectView.as_view(url='/api/v1/', permanent=False)),
+    url(r'^api/v1/', include(router.urls)),
 )

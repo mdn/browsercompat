@@ -24,7 +24,7 @@ COMPAT_DATA_URL = (
 def get_session(base_url, user, password):
     '''Create an authenticated connection to the API'''
     session = requests.Session()
-    next_path = '/api/browsers'
+    next_path = '/api/v1/browsers'
     params = {'next': next_path}
     response = session.get(base_url + '/api-auth/login/', params=params)
     try:
@@ -50,7 +50,7 @@ def get_session(base_url, user, password):
 def verify_empty_api(session):
     '''Verify that no data is loaded into this API'''
     response = session.get(
-        session.base_url + '/api/browsers',
+        session.base_url + '/api/v1/browsers',
         headers={'content-type': 'application/vnd.api+json'})
     expected = {'browsers': []}
     actual = response.json()
@@ -180,7 +180,7 @@ def upload_compat_data(session, parsed_data):
         }
         browser_json = json.dumps({"browsers": data})
         response = session.post(
-            session.base_url + '/api/browsers', data=browser_json,
+            session.base_url + '/api/v1/browsers', data=browser_json,
             headers={
                 'content-type': 'application/vnd.api+json',
                 'X-CSRFToken': session.cookies['csrftoken']})
@@ -202,7 +202,7 @@ def upload_compat_data(session, parsed_data):
         }
         version_json = json.dumps({"versions": data})
         response = session.post(
-            session.base_url + '/api/versions', data=version_json,
+            session.base_url + '/api/v1/versions', data=version_json,
             headers={
                 'content-type': 'application/vnd.api+json',
                 'X-CSRFToken': session.cookies['csrftoken']})

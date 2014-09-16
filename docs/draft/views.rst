@@ -19,8 +19,8 @@ Here is a simple example, the view for the HTML element address_:
 
 .. code-block:: http
 
-    GET /view_features/html-element-address HTTP/1.1
-    Host: api.compat.mozilla.org
+    GET /api/v1/view_features/html-element-address HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
 
 A sample response is:
@@ -566,7 +566,7 @@ A sample response is:
                 {
                     "id": "1",
                     "slug": "chrome",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/chrome.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/chrome.png",
                     "name": {
                         "en": "Chrome"
                     },
@@ -579,7 +579,7 @@ A sample response is:
                 },{
                     "id": "2",
                     "slug": "firefox",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/firefox.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/firefox.png",
                     "name": {
                         "en": "Firefox"
                     },
@@ -594,7 +594,7 @@ A sample response is:
                 },{
                     "id": "3",
                     "slug": "ie",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/ie.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/ie.png",
                     "name": {
                         "en": "Internet Explorer"
                     },
@@ -607,7 +607,7 @@ A sample response is:
                 },{
                     "id": "4",
                     "slug": "opera",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/opera.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/opera.png",
                     "name": {
                         "en": "Opera"
                     },
@@ -620,7 +620,7 @@ A sample response is:
                 },{
                     "id": "5",
                     "slug": "safari",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/safari.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/safari.png",
                     "name": {
                         "en": "Safari"
                     },
@@ -635,7 +635,7 @@ A sample response is:
                 },{
                     "id": "6",
                     "slug": "android",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/android.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/android.png",
                     "name": {
                         "en": "Android"
                     },
@@ -648,7 +648,7 @@ A sample response is:
                 },{
                     "id": "7",
                     "slug": "firefox-mobile",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/firefox-mobile.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/firefox-mobile.png",
                     "name": {
                         "en": "Firefox Mobile"
                     },
@@ -663,7 +663,7 @@ A sample response is:
                 },{
                     "id": "8",
                     "slug": "ie-phone",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/ie-phone.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/ie-phone.png",
                     "name": {
                         "en": "IE Phone"
                     },
@@ -676,7 +676,7 @@ A sample response is:
                 },{
                     "id": "9",
                     "slug": "opera-mobile",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/opera-mobile.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/opera-mobile.png",
                     "name": {
                         "en": "Opera Mobile"
                     },
@@ -689,7 +689,7 @@ A sample response is:
                 },{
                     "id": "10",
                     "slug": "safari-mobile",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/safari-mobile.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/safari-mobile.png",
                     "name": {
                         "en": "Safari Mobile"
                     },
@@ -702,7 +702,7 @@ A sample response is:
                 },{
                     "id": "11",
                     "slug": "opera-mini",
-                    "icon": "https://compat.cdn.mozilla.net/media/img/browsers/opera-mini.png",
+                    "icon": "https://cdn.browsersupports.org/media/img/browsers/opera-mini.png",
                     "name": {
                         "en": "Opera Mini"
                     },
@@ -717,103 +717,103 @@ A sample response is:
         },
         "links": {
             "features.features": {
-                "href": "https://api.compat.mozilla.org/features/{features.features}",
+                "href": "https://browsersupports.org/api/v1/features/{features.features}",
                 "type": "features"
             },
             "features.sections": {
-                "href": "https://api.compat.mozilla.org/sections/{features.sections}",
+                "href": "https://browsersupports.org/api/v1/sections/{features.sections}",
                 "type": "sections"
             },
             "features.parent": {
-                "href": "https://api.compat.mozilla.org/features/{features.parent}",
+                "href": "https://browsersupports.org/api/v1/features/{features.parent}",
                 "type": "features"
             },
             "features.ancestors": {
-                "href": "https://api.compat.mozilla.org/features/{features.ancestors}",
+                "href": "https://browsersupports.org/api/v1/features/{features.ancestors}",
                 "type": "features"
             },
             "features.siblings": {
-                "href": "https://api.compat.mozilla.org/features/{features.siblings}",
+                "href": "https://browsersupports.org/api/v1/features/{features.siblings}",
                 "type": "features"
             },
             "features.children": {
-                "href": "https://api.compat.mozilla.org/features/{features.children}",
+                "href": "https://browsersupports.org/api/v1/features/{features.children}",
                 "type": "features"
             },
             "features.descendants": {
-                "href": "https://api.compat.mozilla.org/features/{features.descendants}",
+                "href": "https://browsersupports.org/api/v1/features/{features.descendants}",
                 "type": "features"
             },
             "features.history_current": {
-                "href": "https://api.compat.mozilla.org/historical_features/{features.history_current}",
+                "href": "https://browsersupports.org/api/v1/historical_features/{features.history_current}",
                 "type": "historical_features"
             },
             "features.history": {
-                "href": "https://api.compat.mozilla.org/historical_features/{features.history}",
+                "href": "https://browsersupports.org/api/v1/historical_features/{features.history}",
                 "type": "historical_features"
             },
             "browsers.versions": {
-                "href": "https://api.compat.mozilla.org/versions/{browsers.versions}",
+                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
                 "type": "versions"
             },
             "browsers.history_current": {
-                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history_current}",
+                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
                 "type": "historical_browsers"
             },
             "browsers.history": {
-                "href": "https://api.compat.mozilla.org/historical_browsers/{browsers.history}",
+                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
                 "type": "historical_browsers"
             },
             "versions.browser": {
-                "href": "https://api.compat.mozilla.org/browsers/{versions.browser}",
+                "href": "https://browsersupports.org/api/v1/browsers/{versions.browser}",
                 "type": "browsers"
             },
             "versions.supports": {
-                "href": "https://api.compat.mozilla.org/supports/{versions.features}",
+                "href": "https://browsersupports.org/api/v1/supports/{versions.features}",
                 "type": "supports"
             },
             "versions.history_current": {
-                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history_current}",
+                "href": "https://browsersupports.org/api/v1/historical_versions/{versions.history_current}",
                 "type": "historical_versions"
             },
             "versions.history": {
-                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history}",
+                "href": "https://browsersupports.org/api/v1/historical_versions/{versions.history}",
                 "type": "historical_versions"
             },
             "supports.version": {
-                "href": "https://api.compat.mozilla.org/versions/{supports.version}",
+                "href": "https://browsersupports.org/api/v1/versions/{supports.version}",
                 "type": "versions"
             },
             "supports.feature": {
-                "href": "https://api.compat.mozilla.org/browsers/{supports.feature}",
+                "href": "https://browsersupports.org/api/v1/browsers/{supports.feature}",
                 "type": "features"
             },
             "supports.history_current": {
-                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history_current}",
+                "href": "https://browsersupports.org/api/v1/historical_supports/{supports.history_current}",
                 "type": "historical_supports"
             },
             "supports.history": {
-                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history}",
+                "href": "https://browsersupports.org/api/v1/historical_supports/{supports.history}",
                 "type": "historical_supports"
             },
             "specifications.sections": {
-                "href": "https://api.compat.mozilla.org/sections/{specifications.sections}",
+                "href": "https://browsersupports.org/api/v1/sections/{specifications.sections}",
                 "type": "sections"
             },
             "specifications.maturity": {
-                "href": "https://api.compat.mozilla.org/maturities/{specifications.maturity}",
+                "href": "https://browsersupports.org/api/v1/maturities/{specifications.maturity}",
                 "type": "maturities"
             },
             "sections.specification": {
-                "href": "https://api.compat.mozilla.org/specifications/{sections.specification}",
+                "href": "https://browsersupports.org/api/v1/specifications/{sections.specification}",
                 "type": "specifications"
             },
             "sections.features": {
-                "href": "https://api.compat.mozilla.org/sections/{sections.features}",
+                "href": "https://browsersupports.org/api/v1/sections/{sections.features}",
                 "type": "features"
             },
             "maturities.specifications": {
-                "href": "https://api.compat.mozilla.org/specifications/{maturities.specifications}",
+                "href": "https://browsersupports.org/api/v1/specifications/{maturities.specifications}",
                 "type": "specifications"
             }
         },
@@ -910,8 +910,8 @@ The first step is to create a changeset_ as an authenticated user:
 
 .. code-block:: http
 
-    POST /changesets/ HTTP/1.1
-    Host: api.compat.mozilla.org
+    POST /api/v1/changesets/ HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
     Content-Type: application/vnd.api+json
@@ -931,7 +931,7 @@ A sample response is:
 
     HTTP/1.1 201 Created
     Content-Type: application/vnd.api+json
-    Location: https://api.compat.mozilla.org/changesets/5284
+    Location: https://browsersupports.org/changesets/5284
 
 .. code-block:: json
 
@@ -952,23 +952,23 @@ A sample response is:
         },
         "links": {
             "changesets.user": {
-                "href": "https://api.compat.mozilla.org/users/{changesets.user}",
+                "href": "https://browsersupports.org/api/v1/users/{changesets.user}",
                 "type": "users"
             },
             "changesets.historical_browsers": {
-                "href": "https://api.compat.mozilla.org/historical_browsers/{changesets.historical_browsers}",
+                "href": "https://browsersupports.org/api/v1/historical_browsers/{changesets.historical_browsers}",
                 "type": "historical_browsers"
             },
             "changesets.historical_versions": {
-                "href": "https://api.compat.mozilla.org/historical_versions/{changesets.historical_versions}",
+                "href": "https://browsersupports.org/api/v1/historical_versions/{changesets.historical_versions}",
                 "type": "historical_versions"
             },
             "changesets.historical_features": {
-                "href": "https://api.compat.mozilla.org/historical_features/{changesets.historical_features}",
+                "href": "https://browsersupports.org/api/v1/historical_features/{changesets.historical_features}",
                 "type": "historical_features"
             },
             "changesets.historical_supports": {
-                "href": "https://api.compat.mozilla.org/historical_supports/{changesets.historical_supports}",
+                "href": "https://browsersupports.org/api/v1/historical_supports/{changesets.historical_supports}",
                 "type": "historical_supports"
             }
         }
@@ -978,8 +978,8 @@ Next, use the changeset_ ID when creating the version_:
 
 .. code-block:: http
 
-    POST /versions/?changeset=5284 HTTP/1.1
-    Host: api.compat.mozilla.org
+    POST /api/v1/versions/?changeset=5284 HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
     Content-Type: application/vnd.api+json
@@ -1002,7 +1002,7 @@ A sample response is:
 
     HTTP/1.1 201 Created
     Content-Type: application/vnd.api+json
-    Location: https://api.compat.mozilla.org/versions/4477
+    Location: https://browsersupports.org/versions/4477
 
 .. code-block:: json
 
@@ -1024,19 +1024,19 @@ A sample response is:
         },
         "links": {
             "versions.browser": {
-                "href": "https://api.compat.mozilla.org/browsers/{versions.browser}",
+                "href": "https://browsersupports.org/api/v1/browsers/{versions.browser}",
                 "type": "browsers"
             },
             "versions.supports": {
-                "href": "https://api.compat.mozilla.org/supports/{versions.features}",
+                "href": "https://browsersupports.org/api/v1/supports/{versions.features}",
                 "type": "supports"
             },
             "versions.history_current": {
-                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history_current}",
+                "href": "https://browsersupports.org/api/v1/historical_versions/{versions.history_current}",
                 "type": "historical_versions"
             },
             "versions.history": {
-                "href": "https://api.compat.mozilla.org/historical_versions/{versions.history}",
+                "href": "https://browsersupports.org/api/v1/historical_versions/{versions.history}",
                 "type": "historical_versions"
             }
         }
@@ -1046,8 +1046,8 @@ Finally, create the support_:
 
 .. code-block:: http
 
-    POST /supports/?changeset=5284 HTTP/1.1
-    Host: api.compat.mozilla.org
+    POST /api/v1/supports/?changeset=5284 HTTP/1.1
+    Host: browsersupports.org
     Accept: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
     Content-Type: application/vnd.api+json
@@ -1070,7 +1070,7 @@ A sample response is:
 
     HTTP/1.1 201 Created
     Content-Type: application/vnd.api+json
-    Location: https://api.compat.mozilla.org/supports/8219
+    Location: https://browsersupports.org/supports/8219
 
 .. code-block:: json
 
@@ -1095,19 +1095,19 @@ A sample response is:
         },
         "links": {
             "supports.version": {
-                "href": "https://api.compat.mozilla.org/versions/{supports.version}",
+                "href": "https://browsersupports.org/api/v1/versions/{supports.version}",
                 "type": "versions"
             },
             "supports.feature": {
-                "href": "https://api.compat.mozilla.org/browsers/{supports.feature}",
+                "href": "https://browsersupports.org/api/v1/browsers/{supports.feature}",
                 "type": "features"
             },
             "supports.history_current": {
-                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history_current}",
+                "href": "https://browsersupports.org/api/v1/historical_supports/{supports.history_current}",
                 "type": "historical_supports"
             },
             "supports.history": {
-                "href": "https://api.compat.mozilla.org/historical_supports/{supports.history}",
+                "href": "https://browsersupports.org/api/v1/historical_supports/{supports.history}",
                 "type": "historical_supports"
             }
         }

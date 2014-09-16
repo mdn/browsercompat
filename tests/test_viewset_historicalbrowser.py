@@ -77,13 +77,13 @@ class TestHistoricalBrowserViewset(APITestCase):
             'links': {
                 'historical_browsers.browser': {
                     'href': (
-                        'http://testserver/api/browsers/'
+                        'http://testserver/api/v1/browsers/'
                         '{historical_browsers.browser}'),
                     'type': 'browsers'
                 },
                 'historical_browsers.user': {
                     'href': (
-                        'http://testserver/api/users/'
+                        'http://testserver/api/v1/users/'
                         '{historical_browsers.user}'),
                     'type': 'users'
                 }

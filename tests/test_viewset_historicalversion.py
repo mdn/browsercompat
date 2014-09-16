@@ -83,13 +83,13 @@ class TestHistoricalVersionViewset(APITestCase):
             'links': {
                 'historical_versions.version': {
                     'href': (
-                        'http://testserver/api/versions/'
+                        'http://testserver/api/v1/versions/'
                         '{historical_versions.version}'),
                     'type': 'versions'
                 },
                 'historical_versions.user': {
                     'href': (
-                        'http://testserver/api/users/'
+                        'http://testserver/api/v1/users/'
                         '{historical_versions.user}'),
                     'type': 'users'
                 },

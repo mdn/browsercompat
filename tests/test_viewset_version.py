@@ -59,19 +59,19 @@ class TestVersionViewSet(APITestCase):
             "links": {
                 "versions.browser": {
                     "href": (
-                        "http://testserver/api/browsers/"
+                        "http://testserver/api/v1/browsers/"
                         "{versions.browser}"),
                     "type": "browsers"
                 },
                 "versions.history_current": {
                     "href": (
-                        "http://testserver/api/historical_versions/"
+                        "http://testserver/api/v1/historical_versions/"
                         "{versions.history_current}"),
                     "type": "historical_versions"
                 },
                 "versions.history": {
                     "href": (
-                        "http://testserver/api/historical_versions/"
+                        "http://testserver/api/v1/historical_versions/"
                         "{versions.history}"),
                     "type": "historical_versions"
                 },
