@@ -1071,9 +1071,18 @@ The **support** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **support** - Assertion of support of the version_ for the
-      feature_, one of ``"yes"``, ``"no"``, ``"prefixed"``, ``"partial"``,
+      feature_, one of ``"yes"``, ``"no"``, ``"partial"``,
       ``"unknown"``, or ``"never"``
-    - **prefix** - Prefix needed, if support is "prefixed"
+    - **prefix** - Prefix used to enable support, such as `"moz"`
+    - **prefix-mandatory** - True if the prefix is required
+    - **alternate-name** - An alternate name associated with this feature,
+      such as `"RTCPeerConnectionIdentityEvent"`
+    - **alternate-name-mandatory** - True if the alternate name is required
+    - **requires-config** - A configuration string
+       required to enable the feature, such as
+       `"media.peerconnection.enabled=on"`
+    - **default-config** - The configuration string in the shipping
+      browser, such as `"media.peerconnection.enabled=off"`
     - **note** *(localized)* - Short note on support, designed for inline
       display, max 20 characters
     - **footnote** *(localized)* - Long note on support, designed for
@@ -1112,6 +1121,11 @@ A sample response is:
             "id": "1123",
             "support": "yes",
             "prefix": null,
+            "prefix-mandatory": false,
+            "alternate-name": null,
+            "alternate-name-mandatory": false,
+            "requires-config": null,
+            "default-config": null,
             "note": null,
             "footnote": null,
             "links": {

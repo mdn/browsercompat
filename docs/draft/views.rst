@@ -202,6 +202,11 @@ A sample response is:
                     "id": "358",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -214,6 +219,11 @@ A sample response is:
                     "id": "359",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -226,6 +236,11 @@ A sample response is:
                     "id": "360",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -238,6 +253,11 @@ A sample response is:
                     "id": "361",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -250,6 +270,11 @@ A sample response is:
                     "id": "362",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -262,6 +287,11 @@ A sample response is:
                     "id": "362",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -274,6 +304,11 @@ A sample response is:
                     "id": "363",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -286,6 +321,11 @@ A sample response is:
                     "id": "364",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -298,6 +338,11 @@ A sample response is:
                     "id": "365",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -310,6 +355,11 @@ A sample response is:
                     "id": "366",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -322,6 +372,11 @@ A sample response is:
                     "id": "367",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -334,6 +389,11 @@ A sample response is:
                     "id": "368",
                     "support": "yes",
                     "prefix": null,
+                    "prefix-mandatory": false,
+                    "alternate-name": null,
+                    "alternate-name-mandatory": false,
+                    "requires-config": null,
+                    "default-config": null,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -824,7 +884,8 @@ The process for using this representation is:
             - If just one, display "<``version``>", or "<``support``>",
               depending on the defined attributes
             - If multiple, display as subcells
-            - Add prefixes, notes, and footnotes links as appropriate
+            - Add prefixes, alternate names, config, notes, and footnotes links
+              as appropriate
     5. Close each table, add an edit button
     6. Add footnotes for displayed supports
 
@@ -1017,6 +1078,11 @@ A sample response is:
             "id": "8219",
             "support": "yes",
             "prefix": null,
+            "prefix-mandatory": false,
+            "alternate-name": null,
+            "alternate-name-mandatory": false,
+            "requires-config": null,
+            "default-config": null,
             "note": null,
             "footnote": null,
             "links": {
@@ -1065,4 +1131,3 @@ vandalism.
 .. _address: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address
 .. _`Inclusion of Linked Resources`: http://jsonapi.org/format/#fetching-includes
 .. _`"caniuse" table layout`: https://wiki.mozilla.org/MDN/Development/CompatibilityTables/Data_Requirements#1._CanIUse_table_layout
-
