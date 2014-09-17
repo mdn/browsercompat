@@ -37,8 +37,7 @@ class TestVersionViewSet(APITestCase):
             'history': [vh_url],
             'history_current': vh_url,
         }
-        actual = dict(response.data)
-        self.assertDictEqual(expected_data, actual)
+        self.assertDataEqual(expected_data, response.data)
 
         expected_json = {
             "versions": {
@@ -77,8 +76,8 @@ class TestVersionViewSet(APITestCase):
                 },
             }
         }
-        self.assertDictEqual(
-            expected_json, loads(response.content.decode('utf-8')))
+        actual_json = loads(response.content.decode('utf-8'))
+        self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_browser(self):
         browser = self.create(Browser, slug="firefox", name={'en': 'Firefox'})
@@ -105,7 +104,7 @@ class TestVersionViewSet(APITestCase):
             'history': [vhistory_url],
             'history_current': vhistory_url,
         }]
-        self.assertEqual([dict(x) for x in response.data], expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_filter_by_browser_slug(self):
         browser = self.create(Browser, slug="firefox", name={'en': 'Firefox'})
@@ -133,7 +132,7 @@ class TestVersionViewSet(APITestCase):
             'history': [vhistory_url],
             'history_current': vhistory_url,
         }]
-        self.assertEqual([dict(x) for x in response.data], expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_filter_by_version(self):
         browser = self.create(Browser, slug="firefox", name={'en': 'Firefox'})
@@ -160,7 +159,7 @@ class TestVersionViewSet(APITestCase):
             'history': [vhistory_url],
             'history_current': vhistory_url,
         }]
-        self.assertEqual([dict(x) for x in response.data], expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_filter_by_status(self):
         browser = self.create(Browser, slug="firefox", name={'en': 'Firefox'})
@@ -189,4 +188,4 @@ class TestVersionViewSet(APITestCase):
             'history': [vhistory_url],
             'history_current': vhistory_url,
         }]
-        self.assertEqual([dict(x) for x in response.data], expected_data)
+        self.assertDataEqual(response.data, expected_data)

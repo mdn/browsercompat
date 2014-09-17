@@ -6,15 +6,11 @@ Tests for `web-platform-compat` views module.
 from json import loads
 
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+
+from .base import TestCase
 
 
 class TestViews(TestCase):
-    maxDiff = None
-
-    def reverse(self, viewname, **kwargs):
-        return 'http://testserver' + reverse(viewname, kwargs=kwargs)
-
     def test_home(self):
         response = self.client.get('')
         self.assertEqual(response.status_code, 200)
@@ -38,4 +34,5 @@ class TestViews(TestCase):
                 'view_features': self.reverse('viewfeatures-list')
             },
         }
-        self.assertEqual(expected, loads(response.content.decode('utf-8')))
+        actual = loads(response.content.decode('utf-8'))
+        self.assertDataEqual(expected, actual)

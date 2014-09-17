@@ -17,12 +17,6 @@ from .base import APITestCase
 
 class TestHistoricalVersionViewset(APITestCase):
 
-    def fix_data(self, data):
-        '''Fix response.data dictionary'''
-        out = dict(data)
-        out['versions'] = dict(out['versions'])
-        return out
-
     def test_get(self):
         user = self.login_superuser()
         browser = self.create(
@@ -56,7 +50,7 @@ class TestHistoricalVersionViewset(APITestCase):
                 }
             },
         }
-        self.assertDictEqual(expected_data, self.fix_data(response.data))
+        self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_versions': {
                 'id': str(vh.history_id),
@@ -95,8 +89,8 @@ class TestHistoricalVersionViewset(APITestCase):
                 },
             }
         }
-        self.assertDictEqual(
-            expected_json, loads(response.content.decode('utf-8')))
+        actual_json = loads(response.content.decode('utf-8'))
+        self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_id(self):
         user = self.login_superuser()
@@ -110,7 +104,7 @@ class TestHistoricalVersionViewset(APITestCase):
         vh = version.history.all()[0]
         url = reverse('historicalversion-list')
         response = self.client.get(url, {'id': version.id})
-        expected_data = {
+        expected_data = [{
             'id': vh.history_id,
             'date': version._history_date,
             'event': 'created',
@@ -130,6 +124,5 @@ class TestHistoricalVersionViewset(APITestCase):
                     'history_current': str(vh.id),
                 }
             },
-        }
-        self.assertEqual(1, len(response.data))
-        self.assertEqual(expected_data, self.fix_data(response.data[0]))
+        }]
+        self.assertDataEqual(expected_data, response.data)

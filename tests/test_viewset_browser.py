@@ -33,7 +33,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': history_url,
             'versions': [],
         }
-        self.assertEqual(dict(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
         expected_content = {
             "browsers": {
                 "id": str(browser.pk),
@@ -69,7 +69,7 @@ class TestBrowserViewset(APITestCase):
             }
         }
         actual_content = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_content, actual_content)
+        self.assertDataEqual(expected_content, actual_content)
 
     def test_get_populated(self):
         browser = self.create(
@@ -94,7 +94,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': history_url,
             'versions': [],
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_get_list(self):
         firefox = self.create(
@@ -156,7 +156,7 @@ class TestBrowserViewset(APITestCase):
             }
         }
         actual_content = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_content, actual_content)
+        self.assertDataEqual(expected_content, actual_content)
 
     def test_filter_by_slug(self):
         browser = self.create(
@@ -178,7 +178,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': history_url,
             'versions': [],
         }]
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_get_browsable_api(self):
         browser = self.create(Browser)
@@ -196,7 +196,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': history_url,
             'versions': [],
         }]
-        self.assertEqual(list(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
         self.assertTrue(response['content-type'].startswith('text/html'))
 
     def test_post_not_authorized(self):
@@ -205,7 +205,7 @@ class TestBrowserViewset(APITestCase):
         expected_data = {
             'detail': 'Authentication credentials were not provided.'
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_post_empty(self):
         self.login_superuser()
@@ -215,7 +215,7 @@ class TestBrowserViewset(APITestCase):
             "slug": ["This field is required."],
             "name": ["This field is required."],
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_post_minimal(self):
         self.login_superuser()
@@ -235,7 +235,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': history_url,
             'versions': [],
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_post_minimal_json_api(self):
         self.login_superuser()
@@ -264,7 +264,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': history_url,
             'versions': [],
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_post_full(self):
         self.login_superuser()
@@ -291,7 +291,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': history_url,
             'versions': [],
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_post_bad_data(self):
         self.login_superuser()
@@ -314,7 +314,7 @@ class TestBrowserViewset(APITestCase):
                 " strings."],
             'note': ["Missing required language code 'en'."],
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_put_as_json_api(self):
         '''If content is application/vnd.api+json, put is partial'''
@@ -345,7 +345,7 @@ class TestBrowserViewset(APITestCase):
             "history_current": self.reverse(view, pk=current_history.pk),
             "versions": [],
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_put_as_json(self):
         '''If content is application/json, put is full put'''
@@ -359,7 +359,7 @@ class TestBrowserViewset(APITestCase):
         expected_data = {
             "slug": ["This field is required."],
         }
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_put_history_current(self):
         browser = self.create(Browser, slug='browser', name={'en': 'Old Name'})
@@ -393,7 +393,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': self.reverse(view, pk=current_history.pk),
             'versions': [],
         }
-        self.assertEqual(dict(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_put_history_current_wrong_browser_fails(self):
         browser = self.create(
@@ -416,7 +416,7 @@ class TestBrowserViewset(APITestCase):
         expected_data = {
             'history_current': ['history is for a different object']
         }
-        self.assertEqual(dict(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_put_history_same(self):
         browser = self.create(Browser, slug='browser', name={'en': 'Old Name'})
@@ -450,7 +450,7 @@ class TestBrowserViewset(APITestCase):
             'history_current': self.reverse(view, pk=new_history.pk),
             'versions': [],
         }
-        self.assertEqual(dict(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_versions_are_ordered(self):
         browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
@@ -474,7 +474,7 @@ class TestBrowserViewset(APITestCase):
             "versions": [
                 self.reverse(version_view, pk=v.pk) for v in (v2, v1)],
         }
-        self.assertEqual(dict(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_versions_are_reordered(self):
         browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
@@ -507,7 +507,7 @@ class TestBrowserViewset(APITestCase):
             "versions": [
                 self.reverse(version_view, pk=v.pk) for v in (v1, v2)],
         }
-        self.assertEqual(dict(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
 
     def test_versions_same_order(self):
         browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
@@ -540,4 +540,4 @@ class TestBrowserViewset(APITestCase):
             "versions": [
                 self.reverse(version_view, pk=v.pk) for v in (v2, v1)],
         }
-        self.assertEqual(dict(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
