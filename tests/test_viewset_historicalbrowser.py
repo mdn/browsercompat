@@ -33,8 +33,8 @@ class TestHistoricalBrowserViewset(APITestCase):
             'id': bh.history_id,
             'date': browser._history_date,
             'event': 'created',
-            'user': self.reverse('user-detail', pk=user.pk),
-            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'user': user.pk,
+            'browser': browser.pk,
             'browsers': {
                 'id': '1',
                 'slug': 'browser',
@@ -100,8 +100,8 @@ class TestHistoricalBrowserViewset(APITestCase):
             'id': bh.history_id,
             'date': browser._history_date,
             'event': 'created',
-            'user': self.reverse('user-detail', pk=user.pk),
-            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'user': user.pk,
+            'browser': browser.pk,
             'browsers': {
                 'id': str(browser.pk),
                 'slug': 'browser',
@@ -128,8 +128,8 @@ class TestHistoricalBrowserViewset(APITestCase):
             'id': bh.history_id,
             'date': browser._history_date,
             'event': 'created',
-            'user': self.reverse('user-detail', pk=user.pk),
-            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'user': user.pk,
+            'browser': browser.pk,
             'browsers': {
                 'id': str(browser.pk),
                 'slug': 'browser',

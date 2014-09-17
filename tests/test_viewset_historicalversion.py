@@ -34,8 +34,8 @@ class TestHistoricalVersionViewset(APITestCase):
             'id': vh.history_id,
             'date': version._history_date,
             'event': 'created',
-            'user': self.reverse('user-detail', pk=user.pk),
-            'version': self.reverse('version-detail', pk=version.pk),
+            'user': user.pk,
+            'version': version.pk,
             'versions': {
                 'id': str(version.id),
                 'version': '1.0',
@@ -108,9 +108,8 @@ class TestHistoricalVersionViewset(APITestCase):
             'id': vh.history_id,
             'date': version._history_date,
             'event': 'created',
-            'user': self.reverse('user-detail', pk=user.pk),
-            'version': self.reverse(
-                'version-detail', pk=version.pk),
+            'user': user.pk,
+            'version': version.pk,
             'versions': {
                 'id': str(version.pk),
                 'version': '2.0',
