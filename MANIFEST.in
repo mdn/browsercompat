@@ -8,4 +8,5 @@ recursive-include tests *.py
 recursive-include tools *.py
 recursive-include webplatformcompat/static *.css *.map *.eot *.svg *.ttf *.woff *.js .keep
 recursive-include webplatformcompat/templates *.html *.jinja2
+recursive-include webplatformcompat/tests *.py
 recursive-include wpcsite *.py

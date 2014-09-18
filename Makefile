@@ -28,7 +28,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 webplatformcompat tests
+	flake8 .
 
 test:
 	./manage.py test
