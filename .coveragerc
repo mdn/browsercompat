@@ -2,4 +2,4 @@
 branch = True
 
 [report]
-include = ./webplatformcompat/*
+source = webplatformcompat,drf_cached_reads
