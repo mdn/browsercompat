@@ -17,6 +17,9 @@ from rest_framework.viewsets import ModelViewSet as BaseModelViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet as BaseROModelViewSet
 from rest_framework.viewsets import ViewSet
 
+from drf_cached_reads.mixins import CachedViewMixin as BaseCacheViewMixin
+
+from .cache import Cache
 from .mixins import PartialPutMixin
 from .models import Browser, Version
 from .parsers import JsonApiParser
@@ -31,7 +34,11 @@ from .serializers import (
 # Base classes
 #
 
-class ModelViewSet(PartialPutMixin, BaseModelViewSet):
+class CachedViewMixin(BaseCacheViewMixin):
+    cache_class = Cache
+
+
+class ModelViewSet(PartialPutMixin, CachedViewMixin, BaseModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
 
@@ -46,6 +53,7 @@ class ReadOnlyModelViewSet(BaseROModelViewSet):
 
 class BrowserViewSet(ModelViewSet):
     model = Browser
+    queryset = Browser.objects.order_by('id')
     serializer_class = BrowserSerializer
     filter_fields = ('slug',)
 

@@ -8,7 +8,6 @@ from rest_framework.serializers import (
     DateField, DateTimeField, IntegerField, ModelSerializer,
     PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
 
-
 from .fields import (
     CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
     TranslatedTextField)

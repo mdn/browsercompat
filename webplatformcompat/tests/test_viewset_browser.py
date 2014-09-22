@@ -515,3 +515,10 @@ class TestBrowserViewset(APITestCase):
             "versions": [v.pk for v in (v2, v1)],
         }
         self.assertDataEqual(response.data, expected_data)
+
+    def test_delete(self):
+        browser = self.create(Browser, slug='firesux', name={'en': 'Firesux'})
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.delete(url)
+        self.assertEqual(204, response.status_code, response.content)
+        self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())

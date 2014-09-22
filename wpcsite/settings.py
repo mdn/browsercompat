@@ -27,6 +27,9 @@ ALLOWED_HOSTS - comma-separated list of allowed hosts
 DATABASE_URL - See https://github.com/kennethreitz/dj-database-url
 DJANGO_DEBUG - 1 to enable, 0 to disable, default disabled
 EXTRA_INSTALLED_APPS - comma-separated list of apps to add to INSTALLED_APPS
+MEMCACHE_SERVERS - semicolon-separated list of memcache servers
+MEMCACHE_USERNAME - username for memcache servers
+MEMCACHE_PASSWORD - password for memcache servers
 SECRET_KEY - Overrides SECRET_KEY
 SECURE_PROXY_SSL_HEADER - "HTTP_X_FORWARDED_PROTOCOL,https" to enable
 STATIC_ROOT - Overrides STATIC_ROOT
@@ -74,6 +77,7 @@ INSTALLED_APPS = [
     'simple_history',
     'rest_framework',
 
+    'drf_cached_reads',
     'webplatformcompat',
 ]
 if environ.get('EXTRA_INSTALLED_APPS'):
@@ -127,6 +131,51 @@ if environ.get('STATIC_ROOT'):
 STATIC_URL = '/static/'
 
 #
+# Caching
+#
+# In Heroku, use MemCachier and load from environment
+# https://devcenter.heroku.com/articles/django-memcache
+# Otherwise, use django-pylibmc environment variables or locmen
+# https://github.com/jbalogh/django-pylibmc
+
+# In Heroku, load Memcachier settings into django-pylibmc
+if environ.get('MEMCACHIER_SERVERS'):
+    environ['MEMCACHE_SERVERS'] = environ.get(
+        'MEMCACHIER_SERVERS', '').replace(',', ';')
+if environ.get('MEMCACHIER_USERNAME'):
+    environ['MEMCACHE_USERNAME'] = environ.get('MEMCACHIER_USERNAME', '')
+if environ.get('MEMCACHIER_PASSWORD'):
+    environ['MEMCACHE_PASSWORD'] = environ.get('MEMCACHIER_PASSWORD', '')
+
+if environ.get('MEMCACHE_SERVERS'):
+    # Use memcache
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
+            'TIMEOUT': 500,
+            'BINARY': True,
+            'OPTIONS': {
+                'no_block': True,
+                'tcp_nodelay': True,
+                'tcp_keepalive': True,
+                'remove_failed': 4,
+                'retry_timeout': 2,
+                'dead_timeout': 10,
+                '_poll_timeout': 2000,
+            },
+        },
+    }
+else:
+    # Use local cache
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        },
+    }
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
+
+#
 # 3rd Party Libraries
 #
 
@@ -163,3 +212,11 @@ if DEBUG:
     else:
         assert debug_toolbar
         INSTALLED_APPS.append('debug_toolbar')
+
+# Celery - async task management
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ENABLE_UTC = True
+CELERY_ALWAYS_EAGER = True
+CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
