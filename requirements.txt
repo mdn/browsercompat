@@ -47,7 +47,7 @@ dj-static==0.0.6
 pytz==2014.4
 
 # Fast Memcache connections, and tell Heroku to install C dependencies
-git+https://github.com/lericson/pylibmc.git@py3k#egg=pylibmc
+git+https://github.com/lericson/pylibmc.git@3ee8e00f3ab#egg=pylibmc
 django-pylibmc==0.5.0
 django-pylibmc-sasl==0.2.4
 
