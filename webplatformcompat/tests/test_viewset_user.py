@@ -27,7 +27,7 @@ class TestUserViewset(APITestCase):
             'username': 'user',
             'created': date_joined,
         }
-        self.assertEqual(dict(response.data), expected_data)
+        self.assertDataEqual(response.data, expected_data)
         expected_content = {
             "users": {
                 "id": str(user.pk),
@@ -36,7 +36,7 @@ class TestUserViewset(APITestCase):
             }
         }
         actual_content = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_content, actual_content)
+        self.assertDataEqual(expected_content, actual_content)
 
     def test_filter_by_username(self):
         date_joined = datetime(2014, 9, 4, 17, 10, 21, 827311, UTC)
@@ -49,4 +49,4 @@ class TestUserViewset(APITestCase):
             'username': 'user',
             'created': date_joined,
         }]
-        self.assertEqual(response.data, expected_data)
+        self.assertDataEqual(response.data, expected_data)

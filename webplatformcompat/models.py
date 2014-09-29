@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django_extensions.db.fields.json import JSONField
 from simple_history.models import HistoricalRecords
@@ -50,3 +52,29 @@ class Version(models.Model):
 
     class Meta:
         order_with_respect_to = 'browser'
+
+
+#
+# Cache invalidation signals
+#
+
+cached_model_names = (
+    'Browser', 'Version', 'User', 'HistoricalBrowser')
+
+
+@receiver(post_save, dispatch_uid='post_save_update_cache')
+def post_save_update_cache(sender, instance, created, raw, **kwargs):
+    if raw:
+        return
+    name = sender.__name__
+    if name in cached_model_names:
+        from .tasks import update_cache_for_instance
+        update_cache_for_instance(name, instance.pk, instance)
+
+
+@receiver(post_delete, dispatch_uid='post_delete_update_cache')
+def post_delete_update_cache(sender, instance, **kwargs):
+    name = sender.__name__
+    if name in cached_model_names:
+        from .tasks import update_cache_for_instance
+        update_cache_for_instance(name, instance.pk, instance)

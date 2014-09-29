@@ -33,6 +33,7 @@ setup(
     url='https://github.com/jwhitlock/web-platform-compat',
     packages=[
         'webplatformcompat',
+        'drf_cached_reads',
     ],
     include_package_data=True,
     install_requires=[

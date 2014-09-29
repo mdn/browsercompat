@@ -28,7 +28,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 webplatformcompat tests
+	flake8 .
 
 test:
 	./manage.py test
@@ -38,7 +38,7 @@ test-all:
 
 coverage:
 	coverage erase
-	coverage run --source webplatformcompat setup.py test
+	coverage run --source webplatformcompat,drf_cached_reads setup.py test
 	coverage report -m
 	coverage html
 	open htmlcov/index.html

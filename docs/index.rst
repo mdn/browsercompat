@@ -11,7 +11,6 @@ Contents:
    :maxdepth: 3
 
    installation
-   usage
    contributing
    draft/intro
    tools

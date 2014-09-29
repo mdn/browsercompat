@@ -17,13 +17,6 @@ from .base import APITestCase
 
 class TestHistoricalBrowserViewset(APITestCase):
 
-    def fix_data(self, data):
-        '''Fix response.data dictionary'''
-        out = dict(data)
-        out['browsers'] = dict(out['browsers'])
-        out['browsers']['name'] = dict(out['browsers']['name'])
-        return out
-
     def test_get(self):
         user = self.login_superuser()
         browser = self.create(
@@ -40,8 +33,8 @@ class TestHistoricalBrowserViewset(APITestCase):
             'id': bh.history_id,
             'date': browser._history_date,
             'event': 'created',
-            'user': self.reverse('user-detail', pk=user.pk),
-            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'user': user.pk,
+            'browser': browser.pk,
             'browsers': {
                 'id': '1',
                 'slug': 'browser',
@@ -51,7 +44,7 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'links': {'history_current': '1'}
             },
         }
-        self.assertDictEqual(expected_data, self.fix_data(response.data))
+        self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_browsers': {
                 'id': '1',
@@ -89,8 +82,8 @@ class TestHistoricalBrowserViewset(APITestCase):
                 }
             }
         }
-        self.assertDictEqual(
-            expected_json, loads(response.content.decode('utf-8')))
+        actual_json = loads(response.content.decode('utf-8'))
+        self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_id(self):
         user = self.login_superuser()
@@ -103,12 +96,12 @@ class TestHistoricalBrowserViewset(APITestCase):
         bh = browser.history.all()[0]
         url = reverse('historicalbrowser-list')
         response = self.client.get(url, {'id': browser.id})
-        expected_data = {
+        expected_data = [{
             'id': bh.history_id,
             'date': browser._history_date,
             'event': 'created',
-            'user': self.reverse('user-detail', pk=user.pk),
-            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'user': user.pk,
+            'browser': browser.pk,
             'browsers': {
                 'id': str(browser.pk),
                 'slug': 'browser',
@@ -117,9 +110,8 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'note': None,
                 'links': {'history_current': str(bh.pk)}
             },
-        }
-        self.assertEqual(1, len(response.data))
-        self.assertEqual(expected_data, self.fix_data(response.data[0]))
+        }]
+        self.assertDataEqual(expected_data, response.data)
 
     def test_filter_by_slug(self):
         user = self.login_superuser()
@@ -132,12 +124,12 @@ class TestHistoricalBrowserViewset(APITestCase):
         bh = browser.history.all()[0]
         url = reverse('historicalbrowser-list')
         response = self.client.get(url, {'slug': 'browser'})
-        expected_data = {
+        expected_data = [{
             'id': bh.history_id,
             'date': browser._history_date,
             'event': 'created',
-            'user': self.reverse('user-detail', pk=user.pk),
-            'browser': self.reverse('browser-detail', pk=browser.pk),
+            'user': user.pk,
+            'browser': browser.pk,
             'browsers': {
                 'id': str(browser.pk),
                 'slug': 'browser',
@@ -146,6 +138,5 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'note': None,
                 'links': {'history_current': str(bh.pk)}
             },
-        }
-        self.assertEqual(1, len(response.data))
-        self.assertEqual(expected_data, self.fix_data(response.data[0]))
+        }]
+        self.assertDataEqual(expected_data, response.data)
