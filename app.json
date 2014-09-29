@@ -6,7 +6,7 @@
     "env": {
         "ALLOWED_HOSTS": {
             "description": "Comma-separaed list of hostnames to allow",
-            "value": "*"
+            "value": "*",
         },
         "DJANGO_DEBUG": {
             "description": "Setting to 1 enables debug features, such as tracebacks",
@@ -31,5 +31,9 @@
     },
     "scripts": {
         "postdeploy": "./manage.py syncdb --noinput && ./manage.py migrate"
-    }
+    },
+    "success_url": "/",
+    "addons": [
+        "memcachier:dev"
+    ]
 }
