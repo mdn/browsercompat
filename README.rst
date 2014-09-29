@@ -45,6 +45,7 @@ Development
 -----------
 
 :Code:           https://github.com/jwhitlock/web-platform-compat
+:Dev Server:     http://doesitwork-dev.allizom.org
 :Issues:         https://bugzilla.mozilla.org/buglist.cgi?quicksearch=compat-data (tracking bug)
 
                  https://github.com/jwhitlock/web-platform-compat/issues?state=open (documentation issues)
@@ -53,14 +54,3 @@ Development
 :Dev Docs:       https://web-platform-compat.readthedocs.org
 :Mailing list:   https://lists.mozilla.org/listinfo/dev-mdn
 :IRC:            irc://irc.mozilla.org/mdndev
-
-Quickstart
-----------
-
-Install web-platform-compat::
-
-    pip install web-platform-compat
-
-Then use it in a project::
-
-    import web-platform-compat

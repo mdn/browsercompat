@@ -5,9 +5,9 @@ API Serializers
 
 from django.contrib.auth.models import User
 from rest_framework.serializers import (
-    DateField, DateTimeField, HyperlinkedModelSerializer,
-    HyperlinkedModelSerializerOptions, HyperlinkedRelatedField, IntegerField,
-    ModelSerializer, SerializerMethodField, ValidationError)
+    DateField, DateTimeField, IntegerField, ModelSerializer,
+    PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
+
 from .fields import (
     CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
     TranslatedTextField)
@@ -18,7 +18,7 @@ from .models import Browser, Version
 # "Regular" Serializers
 #
 
-class UpdateOnlySerializerOptions(HyperlinkedModelSerializerOptions):
+class UpdateOnlySerializerOptions(ModelSerializer._options_class):
     def __init__(self, meta):
         super(UpdateOnlySerializerOptions, self).__init__(meta)
         self.update_only_fields = getattr(meta, 'update_only_fields', ())
@@ -39,7 +39,7 @@ class UpdateOnlyMixin(object):
         return fields
 
 
-class HistoricalModelSerializer(UpdateOnlyMixin, HyperlinkedModelSerializer):
+class HistoricalModelSerializer(UpdateOnlyMixin, ModelSerializer):
     """Model serializer with history manager"""
 
     def get_default_fields(self):
@@ -65,7 +65,7 @@ class HistoricalModelSerializer(UpdateOnlyMixin, HyperlinkedModelSerializer):
     def from_native(self, data, files=None):
         """If history_current in data, load historical data into instance"""
         if data and 'history_current' in data:
-            history_id = int(data['history_current'].split('/')[-1])
+            history_id = int(data['history_current'])
             current_history = self.object.history.all()[0]
             if current_history.history_id != history_id:
                 try:
@@ -147,13 +147,12 @@ class UserSerializer(ModelSerializer):
 #
 # Historical object serializers
 #
-class HistoricalObjectSerializer(HyperlinkedModelSerializer):
+class HistoricalObjectSerializer(ModelSerializer):
     '''Common serializer attributes for Historical models'''
     id = IntegerField(source="history_id")
     date = DateTimeField(source="history_date")
     event = SerializerMethodField('get_event')
-    user = HyperlinkedRelatedField(
-        source="history_user", view_name='user-detail')
+    user = PrimaryKeyRelatedField(source="history_user")
 
     EVENT_CHOICES = {
         '+': 'created',
@@ -181,7 +180,7 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
         class Meta(BrowserSerializer.Meta):
             exclude = ('history_current', 'history', 'versions')
 
-    browser = HistoricalObjectField(view_name='browser-detail')
+    browser = HistoricalObjectField()
     browsers = SerializerMethodField('get_archive')
 
     class Meta(HistoricalObjectSerializer.Meta):
@@ -196,7 +195,7 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
         class Meta(VersionSerializer.Meta):
             exclude = ('history_current', 'history', 'browser')
 
-    version = HistoricalObjectField(view_name='version-detail')
+    version = HistoricalObjectField()
     versions = SerializerMethodField('get_archive')
 
     class Meta(HistoricalObjectSerializer.Meta):

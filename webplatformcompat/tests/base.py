@@ -1,11 +1,13 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.test import TestCase
+from django.utils import encoding, six
 
 from rest_framework.test import APITestCase as BaseAPITestCase
 
 
-class APITestCase(BaseAPITestCase):
-    '''APITestCase with useful methods'''
+class TestMixin(object):
+    '''Useful methods for testing'''
     maxDiff = None
     baseUrl = 'http://testserver'
 
@@ -33,3 +35,32 @@ class APITestCase(BaseAPITestCase):
             obj._history_date = _history_date
         obj.save()
         return obj
+
+    def normalizeData(self, data):
+        '''Attempt to recursively turn data into a normalized representation'''
+        if isinstance(data, six.string_types):
+            return encoding.smart_text(data)
+        elif hasattr(data, 'items'):
+            return dict([
+                (self.normalizeData(key), self.normalizeData(value))
+                for key, value in data.items()])
+        elif isinstance(data, list):
+            return [self.normalizeData(x) for x in data]
+        else:
+            return data
+
+    def assertDataEqual(self, first, second):
+        '''Normalize two values to basic types before testing equality'''
+        n_first = self.normalizeData(first)
+        n_second = self.normalizeData(second)
+        self.assertEqual(n_first, n_second)
+
+
+class TestCase(TestMixin, TestCase):
+    '''TestCase with useful methods'''
+    pass
+
+
+class APITestCase(TestMixin, BaseAPITestCase):
+    '''APITestCase with useful methods'''
+    pass
