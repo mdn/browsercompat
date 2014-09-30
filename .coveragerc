@@ -1,0 +1,5 @@
+[run]
+branch = True
+
+[report]
+source = webplatformcompat,drf_cached_reads

@@ -1,0 +1,12 @@
+# Config file for automatic testing at travis-ci.org
+
+language: python
+
+python:
+  - "3.4"
+  - "2.7"
+  - "2.6"
+
+install: pip install -r requirements.txt coveralls
+script: python manage.py test --with-coverage
+after_success: coveralls

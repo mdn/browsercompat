@@ -1,5 +1,12 @@
-Issues to Resolve Before Code
-=============================
+Issues
+======
+
+This draft API reflects a good guess at a useful, efficent API for storing
+user-contributed compatability data.  Some of the guesses are better than
+others.  This section highlights the areas where more experienced opinions
+are welcome, and areas where more work is expected.
+
+.. contents:: 
 
 Additions to Browser Compatibility Data Architecture
 ----------------------------------------------------
@@ -14,40 +21,53 @@ These changes are:
 * browsers_
     - **slug** - human-friendly unique identifier
     - **name** - converted to localized text.
-    - **environment** - either `"desktop"` or `"mobile"`.  Supports current
-      division of browser types on MDN.
-    - **engine** - either the localized engine name or null.  Supports current
-      engine version callouts on MDN tables.
-* browser-versions_
-    - **engine-version** - Engine version, used in Firefox version numbers
-    - **release-day** - Day of release
-    - **retirement-day** - Day of "retirement", or when it was superceeded by
+    - **note** - added for engine, OS, etc. information
+* versions_
+    - Was `browser-versions`, but multi-word resources are problematic.
+    - **release_day** - Day of release
+    - **retirement_day** - Day of "retirement", or when it was superceeded by
       a new release.
     - **status** - One of `"retired"`, `"retired-beta"`, `"current"`, `"beta"`,
       `"future"`
-    - **relese-notes-uri** - For Mozilla releases, as specified in CompatGeckoDesktop_.
+    - **relese_notes_uri** - For Mozilla releases, as specified in CompatGeckoDesktop_.
+    - **note** - added for engine version, etc.
 * features_
     - **slug** - human-friendly unique identifier
-    - **maturity** - the standards maturity of the feature.  One of
-      `"standard"` (no special markup), `"non-standard"` (non-standard flag,
-      like the `left` and `right` features of `Web/CSS/caption-side`_), or
-      `"experimental"` (beaker flag, like the `run-in` value of
-      `Web/CSS/display`_).
-    - **canonical** - True if the name is the code used by a developer
-    - **name** - converted to localized text, or lang ``"zxx"`` if canonical
-    - **specfication-sections** - replaces spec link
-* feature-sets_
-    - **slug** - human-friendly unique identifier
-    - **kuma-path** - MDN path that data was scraped from
-    - **canonical** - True if the name is the code used by a developer
-    - **name** - converted to localized text, or lang ``"zxx"`` if canonical
-    - **ancestors**, **siblings**, **children**, **decendants** - tree relations
-* browser-version-features_
+    - **mdn_path** - MDN path that data was scraped from
+    - **experimental** - True if the feature is considered experimental due to
+      being part of a unratified spec such as CSS Transitions, ES6, or the DOM
+      Living Standard.  For example, see the `run-in` value of
+      `Web/CSS/display`_.
+    - **standardized** - True if the feature is described in a standards-track
+      specification, regardless of the maturity of the specification.  Most
+      features are standardized, but some browser-specific features may be
+      non-standard, and some features like the `left` and `right` features
+      of `Web/CSS/caption-side`_ were part of the CSS2 "wishlist" document
+      that was not standardized.
+    - **stable** - True if the feature is considered stable enough for
+      production usage.
+    - **obsolete** - True if the feature should no longer be used in
+      production code.
+    - **name** - converted to localized text, or a string if the name is
+      canonical
+    - **sections** - replaces spec link
+    - **ancestors**, **siblings**, **children**, **descendants** - tree relations
+* supports_
+    - Was `browser-version-features`, but multi-word resources are problematic.
     - **support** - Added a value "never", for cases where developers have
       announced they will not support a feature.  For example, the `CSS
       @font-face at-rule`_, which has been closed as WONTFIX in `Bugzilla
       119490`_, appears as ``{{CompatNo}}{{unimplemented_inline(119490)}}``.
     - **prefix** - string prefix to enable, or null if no prefix
+    - **prefix_mandatory** - True if the prefix is required
+    - **alternate_name** - An alternate name associated with this feature,
+      such as `"RTCPeerConnectionIdentityEvent"`
+    - **alternate_name_mandatory** - True if the alternate name is required
+    - **requires_config** - A configuration string
+      required to enable the feature, such as
+      `"media.peerconnection.enabled=on"`
+    - **default_config** - The configuration string in the shipping
+      browser, such as `"media.peerconnection.enabled=off"`
     - **note** - short note, length limited, translated, or null.  Supports
       inline notes currently in use on MDN
     - **footnote** - longer note, may include code samples, translated, or null.
@@ -55,13 +75,13 @@ These changes are:
 
 There are also additional Resources_:
 
-* specification-sections_ - For referring to a section of a specification, with
-  translated titles and anchors
 * specifications_ - For referring to a specification, with translated titles
   and URIs.
-* specification-statuses_ - For identifying the process stage of a spec
-* All the history_ resources (browsers-history_,
-  browser-versions-history_, etc.)
+* sections_ - For referring to a section of a specification, with
+  translated titles and anchors
+* maturities_ - For identifying the process stage of a specification
+* All the history_ resources (historical_browsers_,
+  historical_versions_, etc.)
 * users_ - For identifying the user who made a change
 * changesets_ - Collect several history resources into a logical change
 
@@ -74,19 +94,6 @@ Unresolved Issues
   use case is supported by the API.
 * overholt wants `availability in Web Workers`_.  Is an API enough to support
   that need?
-* I'm not sure if the translatable strings are correct:
-    - browsers.name - Firefox explicitly says `don't localize our brand`_.  I
-      can't find examples of any localized browser names in the wild.
-    - browsers.engine - Same
-    - features.name - "Basic usage" and "none, inline and block" should be
-      localized.  But, are those good feature names?  Could you write a bit of
-      JavaScript to test 'Basic usage'?  Should there be three features
-      ("display: none", "display: inline", "display: block") instead?  The
-      need for translated feature names might be a doc smell.  The canonical
-      flag might turn into a list of tables to fix.
-    - feature-sets.name - Not sure if "CSS", "display", etc. should be
-      localized, similar logic to feature names.  The canonical flag will
-      help.
 * I think Niels Leenheer has good points about browsers being different across
   operating systems and OS versions - I'm considering adding this to the model:
   `Mapping browsers to 2.2.1 Dictionary Browser Members`_.
@@ -112,7 +119,7 @@ Unresolved Issues
   versions, and the KumaScript parse them for the significant versions, with
   UX for exposing known versions?  The view doc proposes one implementation,
   with a ``<meta>`` section for identifying the important bits.
-* Do we want to add more items to browser-versions?  Wikipedia has interesting
+* Do we want to add more items to versions?  Wikipedia has interesting
   data for `Chrome release history`_ and `Firefox release history`_.
   Some possibly useful additions: release date, retirement date, codename,
   JS engine version, operating system, notes.  It feels like we should import
@@ -125,16 +132,11 @@ Unresolved Issues
   test conflicts, etc.  It might be easier to move all those wishlist items to
   a different project, that talks to this API when it's ready to assert
   browser support for a feature.
-* groovecoder says that api.compat.mozilla.org is a non-starter with Mozilla
-  IT - too hard to provision a new domain.  He suggests a subpath under
-  developer.mozilla.org.  Should we go with:
-
-      1. https://api.compat.mozila.org and https://compat.mozilla.org
-      2. https://developer.mozilla.org/compat-api and
-         https://developer.mozilla.org/en-US/compat-api
-      3. https://api.compat.developer.mozilla.org and
-         https://compat.developer.mozilla.org
-      4. Something else?
+* We need to decide on the URIs for the API and the developer resources.
+  This is being tracked by `Bugzilla 1050458`_.
+* In browsers_, it seems like icon won't be generally useful.  What format
+  should the icon be?  What size?  It may be more useful to use the slug for
+  deciding between icons designed for the local implementation.
 
 
 Interesting MDN Pages
@@ -167,7 +169,7 @@ features to add, or existing features that will be dropped.
 * `Web/CSS/text-transform`_ - Interesting use of non-ascii unicode in feature
   names, good test case.
 * `Web/CSS/transform-origin`_ - IE may justify a 'alternate' value for
-  browser-version-features.support, or just 'no' with a footnote.
+  supports.support, or just 'no' with a footnote.
 
 Some pages will require manual intervention to get them into the data store.
 Here's a sample:
@@ -197,7 +199,7 @@ Translating from MDN wiki format
 The current compatibility data on developer.mozilla.org in MDN wiki format, a
 combination of HTML and KumaScript.
 
-A MDN page will be imported as a feature-set.
+A MDN page will be imported as a feature with at least one child feature.
 
 Here's the MDN wiki version of the Specifications section for
 `Web/CSS/border-image-width`_:
@@ -225,18 +227,18 @@ Here's the MDN wiki version of the Specifications section for
 The elements of this table are converted into API data:
 
 * **Body row, first column** - Format is ``SpecName('KEY', 'PATH', 'NAME')``.
-  ``KEY`` is the specification.kuma-key, ``PATH`` is
-  specification-section.subpath, in the page language, and ``NAME`` is
-  specification-section.name, in the page language.  The macro SpecName_ has
+  ``KEY`` is the specification.mdn_key, ``PATH`` is
+  section.subpath, in the page language, and ``NAME`` is
+  section.name, in the page language.  The macro SpecName_ has
   additional lookups on ``KEY`` for specification.name and specification.uri
   (en language only).
 * **Body row, second column** - Format is ``Spec2('KEY')``.  ``KEY`` is the
-  specification.kuma-key, and should match the one from column one.  The macro
-  Spec2_ has additional lookups on ``KEY`` for specification-status.kuma-key,
-  and specification-status.name (multiple languages).
+  specification.mdn_key, and should match the one from column one.  The macro
+  Spec2_ has additional lookups on ``KEY`` for maturity.mdn_key,
+  and maturity.name (multiple languages).
 * **Body row, third column** - Format is a text fragment which may include HTML
-  markup, becomes the specification-section.name associated with this
-  feature-set.
+  markup, becomes the section.name associated with this
+  feature.
 
 and here's the Browser compatibility section:
 
@@ -292,44 +294,49 @@ and here's the Browser compatibility section:
 
 This will be converted to API resources:
 
-* **Table class** - one of ``"compat-desktop"`` or ``"compat-mobile"``, sets
-  browser.environment.
+* **Table class** - one of ``"compat-desktop"`` or ``"compat-mobile"``.
+  Representation in API is TBD.
 * **Header row, all but the first column** - format is either ``Browser Name
-  (Engine Name)`` or ``Browser Name``.  Used for browser.name,
-  browser.engine-name (set or ``null``).  Other formats or KumaScript halt
-  import.
+  (Engine Name)`` or ``Browser Name``.  Used for browser.name, engine name is
+  discarded.  Other formats or KumaScript halt import.
 * **Non-header rows, first column** - If the format is ``<code>some
   text</code>``, then feature.canonical=true and the string is the canonical
   name.  If the format is text w/o KumaScript, it is the non-canonocial name.
   If there is also KumaScript, it varies. **TODO:** doc KumaScript.
 * **Non-header rows, remaining columns** - Usually Kumascript:
-    * ``{{CompatUnknown}}`` - browser-version.version and
-      browser-version.engine-version are ``null``, and
-      browser-version-feature.support is ``"unknown"``
-    * ``{{CompatVersionUnknown}}`` - browser-version.version and
-      browser-version.engine-version are ``null``, and
-      browser-version-feature.support in ``"yes"``
-    * ``{{CompatNo}}`` - browser-version.version and
-      browser-version.engine-version are ``null``, and
-      browser-version-feature.support is ``"no"``
-    * ``{{CompatGeckoDesktop("VAL")}}`` - browser-version.version is
-      set to ``"VAL"``, browser-version-feature.support is ``"yes"``.
-      browser-version.engine-version and browser-version.release-day is set by
-      logic in CompatGeckoDesktop_.
-    * ``{{CompatGeckoMobile("VAL")}}`` - browser-version.version is set to
-      ``"VAL"``, browser-version-feature.support is ``"yes"``.
-      browser-version.engine-version is set by logic in CompatGeckoMobile_.
+    * ``{{CompatUnknown}}`` - version.version is ``null``, and
+      support.support is ``"unknown"``
+    * ``{{CompatVersionUnknown}}`` - version.version and are ``null``,
+      and support.support in ``"yes"``
+    * ``{{CompatNo}}`` - version.version and are ``null``, and
+      support.support is ``"no"``
+    * ``{{CompatGeckoDesktop("VAL")}}`` - version.version is set to
+      ``"VAL"``, support.support is ``"yes"``.  and
+      version.release_day is set by logic in CompatGeckoDesktop_.
+    * ``{{CompatGeckoMobile("VAL")}}`` - version.version is set to
+      ``"VAL"``, support.support is ``"yes"``.  is set by logic
+      in CompatGeckoMobile_.
     * Numeric string, such as ``6``, ``15.0``.  This becomes the
-      browser-version.version, browser-version.engine-version is ``null``, and
-      browser-version-feature.support is ``"yes"``.
+      version.version, and support.support is
+      ``"yes"``.
 * **Content after table** - This is usually formatted as a paragraph,
-  containing HTML.  It should become browser-version-features.footnotes,
+  containing HTML.  It should become supports.footnotes,
   but it will challenging to auto-parse and associate.
+
+Once the initial conversion has been done for a page, it may be useful to
+perform additional steps:
+
+1. Split large features_ into smaller ones.  For example,
+   here's one way to reorganize `Web/CSS/display`_:
+
+.. image:: ../../_static/canonicalized-display.svg
+   :alt: Reorganization of Web/CSS/display
+   :target: https://rawgit.com/jwhitlock/web-platform-compat/master/docs/_static/canonicalized-display.svg
 
 Data sources for browser versions
 ---------------------------------
 
-The **browser-version** model currently supports a release date and a
+The **version** model currently supports a release date and a
 retirement date, as well as other version data.  Some sources for this data
 include:
 
@@ -345,36 +352,35 @@ To Do
 -----
 
 * Add multi-get to browser doc, after deciding on ``GET
-  /browser-versions/1,2,3,4`` vs.  ``GET /browser/1/browser-versions``
+  /versions/1,2,3,4`` vs.  ``GET /browser/1/versions``
 * Look at additional MDN content for items in common use
 * Move to developers.mozilla.org subpath, auth changes
-* Jeremie's suggested changes:
-    * Add browsers.notes, localized, to note things like engine, applicable
-      OS, execution contexts (web workers, XUL, etc.).
-    * Drop browsers.environment attribute.  "deskop", "mobile" doesn't cover
-      the world of browsers.  This is a UX change to MDN Browser compatability
-      tables.
-    * Drop browsers.engine attribute.  Not important for searching or
-      filtering, instead free text in browsers.notes
-    * Add browser-versions.notes, localized, to note things like OS, devices,
-      engines, etc.
-    * Drop browser-versions.engine-version, not important for searching or
-      sorting.
-    * Drop browser-versions.status.  Doesn't think the MDN team will be able
+* Jeremie's suggested changes (*italics are done*)
+    * *Add browsers.notes, localized, to note things like engine, applicable
+      OS, execution contexts (web workers, XUL, etc.).*
+    * *Drop browsers.engine attribute.  Not important for searching or
+      filtering, instead free text in browsers.notes*
+    * *Add versions.notes, localized, to note things like OS, devices,
+      engines, etc.*
+    * *Drop versions.engine-version, not important for searching or
+      sorting.*
+    * Drop versions.status.  Doesn't think the MDN team will be able
       to keep up with browser releases.  Will instead rely on users
       figuring out if a browser version is the current release.
-    * Drop feature.canonical.  Instead, name="string" means it is
-      canonical, and name={"lang": "translation"} means it is non-canonical.
+    * *Drop feature.canonical.  Instead, name="string" means it is
+      canonical, and name={"lang": "translation"} means it is non-canonical.*
     * Feature-sets is a cloud, not a heirarchy.  "color=red" is the same
       feature as "background-color=red", so needs to be multiply assigned.
-    * A feature-set can either have sub-feature sets (middle of cloud), or
-      features (edge of cloud).
-    * Add browser-version-feature-sets, to make positive assertions about
-      a browser-version supporting a feature-set.  Only negative assertions
-      can be made based on features.
+    * *A feature-set can either have sub-feature sets (middle of cloud), or
+      features (edge of cloud).* - Note - implemented by merging features and
+      feature sets.
+    * *Add support-sets, to make positive assertions about
+      a version supporting a feature-set.  Only negative assertions
+      can be made based on features.* - Note - implemented by merging features
+      and feature sets
     * Drop order of features by feature set.  Client will alpha-sort.
-    * browser-version-features.support, drop "prefixed" status.  If prefixed,
-      support = 'yes', and prefix is set.
+    * *supports.support, drop "prefixed" status.  If prefixed,
+      support = 'yes', and prefix is set.*
     * Add examples of filtering (browser versions in 2010, firefox versions
       before version X).
 * Holly's suggestions
@@ -382,29 +388,30 @@ To Do
     * sheppy or jms will have experience with how users use tables and
       contribute to them, how frequently.
 * Add history resources for specifications, etc.
+* Add empty resource for deleted items?
 
 .. _Resources: resources.html
 .. _browsers: resources.html#browsers
-.. _browser-versions: resources.html#browser-versions
-.. _browser-version-features: resources.html#browser-versions-features
 .. _features: resources.html#features
-.. _feature-sets: resources.html#feature-sets
+.. _sections: resources.html#sections
 .. _specifications: resources.html#specifications
-.. _specification-sections: resources.html#specification-sections
-.. _specification-statuses: resources.html#specification-statuses
+.. _maturities: resources.html#maturities
+.. _supports: resources.html#supports
+.. _versions: resources.html#versions
 
 .. _changesets: change-control#changesets
 .. _users: change-control#users
 
 .. _history: history.html
-.. _browsers-history: history.html#browsers-history
-.. _browser-versions-history: history.html#browser-versions-history
+.. _historical_browsers: history.html#historical-browsers
+.. _historical_versions: history.html#historical-versions
 
 .. _`Browser Compatibility Data Architecture`: https://docs.google.com/document/d/1YF7GJ6kgV5_hx6SJjyrgunqznQU1mKxp5FaLAEzMDl4/edit#
 .. _CompatGeckoDesktop: https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop
 .. _CompatGeckoMobile: https://developer.mozilla.org/en-US/docs/Template:CompatGeckoMobile
 .. _`CSS @font-face at-rule`: https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face#Specifications
 .. _`Bugzilla 119490`: https://bugzilla.mozilla.org/show_bug.cgi?id=119490
+.. _`Bugzilla 1050458`: https://bugzilla.mozilla.org/show_bug.cgi?id=1050458
 .. _`availability in Web Workers`: https://bugzilla.mozilla.org/show_bug.cgi?id=996570#c14
 .. _`don't localize our brand`: http://www.mozilla.org/en-US/styleguide/communications/translation/#branding
 .. _`Mapping browsers to 2.2.1 Dictionary Browser Members`: http://lists.w3.org/Archives/Public/public-webplatform-tests/2013OctDec/0007.html
