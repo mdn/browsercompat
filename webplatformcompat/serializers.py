@@ -18,28 +18,35 @@ from .models import Browser, Version
 # "Regular" Serializers
 #
 
-class UpdateOnlySerializerOptions(ModelSerializer._options_class):
+class WriteRestrictedOptions(ModelSerializer._options_class):
     def __init__(self, meta):
-        super(UpdateOnlySerializerOptions, self).__init__(meta)
+        super(WriteRestrictedOptions, self).__init__(meta)
         self.update_only_fields = getattr(meta, 'update_only_fields', ())
+        self.write_once_fields = getattr(meta, 'write_once_fields', ())
 
 
-class UpdateOnlyMixin(object):
-    _options_class = UpdateOnlySerializerOptions
+class WriteRestrictedMixin(object):
+    _options_class = WriteRestrictedOptions
 
     def get_fields(self):
-        fields = super(UpdateOnlyMixin, self).get_fields()
-
+        '''Add read_only flag for write-restricted fields'''
+        fields = super(WriteRestrictedMixin, self).get_fields()
         view = self.context.get('view', None)
+
         if view and view.action in ('list', 'create'):
             update_only_fields = getattr(self.opts, 'update_only_fields', [])
             for field_name in update_only_fields:
                 fields[field_name].read_only = True
 
+        if view and view.action in ('update', 'partial_update'):
+            write_once_fields = getattr(self.opts, 'write_once_fields', [])
+            for field_name in write_once_fields:
+                fields[field_name].read_only = True
+
         return fields
 
 
-class HistoricalModelSerializer(UpdateOnlyMixin, ModelSerializer):
+class HistoricalModelSerializer(WriteRestrictedMixin, ModelSerializer):
     """Model serializer with history manager"""
 
     def get_default_fields(self):
@@ -117,6 +124,7 @@ class BrowserSerializer(HistoricalModelSerializer):
             'history_current', 'versions')
         update_only_fields = (
             'history', 'history_current', 'versions')
+        write_once_fields = ('slug',)
 
 
 class VersionSerializer(HistoricalModelSerializer):

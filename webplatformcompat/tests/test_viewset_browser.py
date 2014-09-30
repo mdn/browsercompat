@@ -343,11 +343,18 @@ class TestBrowserViewset(APITestCase):
             Browser, slug='browser', name={'en': 'Old Name'})
         data = {'name': '{"en": "New Name"}'}
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
-        response = self.client.put(
-            url, data=data)
-        self.assertEqual(400, response.status_code, response.data)
+        response = self.client.put(url, data=data)
+        self.assertEqual(200, response.status_code, response.data)
+        histories = browser.history.all()
         expected_data = {
-            "slug": ["This field is required."],
+            "id": browser.pk,
+            "slug": "browser",
+            "icon": None,
+            "name": {"en": "New Name"},
+            "note": None,
+            "history": [h.pk for h in histories],
+            "history_current": histories[0].pk,
+            "versions": [],
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -513,6 +520,31 @@ class TestBrowserViewset(APITestCase):
             "history": [h.pk for h in history],
             "history_current": history[0].pk,
             "versions": [v.pk for v in (v2, v1)],
+        }
+        self.assertDataEqual(response.data, expected_data)
+
+    def test_slug_is_write_only(self):
+        browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        data = dumps({
+            'browsers': {
+                'slug': 'new-slug'
+            }
+        })
+        response = self.client.put(
+            url, data=data, content_type='application/vnd.api+json',
+            HTTP_ACCEPT='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.data)
+        history = browser.history.all()
+        expected_data = {
+            "id": browser.pk,
+            "slug": 'browser',
+            "icon": None,
+            "name": {"en": "Browser"},
+            "note": None,
+            "history": [h.pk for h in history],
+            "history_current": history[0].pk,
+            "versions": [],
         }
         self.assertDataEqual(response.data, expected_data)
 
