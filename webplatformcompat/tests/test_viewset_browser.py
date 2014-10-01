@@ -232,6 +232,28 @@ class TestBrowserViewset(APITestCase):
         }
         self.assertDataEqual(response.data, expected_data)
 
+    def test_post_empty_slug_not_allowed(self):
+        self.login_superuser()
+        data = {'slug': '', 'name': '{"en": "Firefox"}'}
+        response = self.client.post(reverse('browser-list'), data)
+        self.assertEqual(400, response.status_code, response.data)
+        expected_data = {
+            "slug": ["This field is required."],
+        }
+        self.assertDataEqual(response.data, expected_data)
+
+    def test_post_whitespace_slug_not_allowed(self):
+        self.login_superuser()
+        data = {'slug': ' ', 'name': '{"en": "Firefox"}'}
+        response = self.client.post(reverse('browser-list'), data)
+        self.assertEqual(400, response.status_code, response.data)
+        expected_data = {
+            "slug": [
+                "Enter a valid 'slug' consisting of letters, numbers,"
+                " underscores or hyphens."],
+        }
+        self.assertDataEqual(response.data, expected_data)
+
     def test_post_minimal_json_api(self):
         self.login_superuser()
         data = dumps({

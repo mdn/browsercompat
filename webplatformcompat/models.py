@@ -62,7 +62,7 @@ class Feature(MPTTModel):
 
     slug = models.SlugField(
         help_text="Unique, human-friendly slug.",
-        unique=True, blank=False)
+        unique=True)
     mdn_path = models.CharField(
         help_text=(
             "The path to the page on MDN that this feature was first"
