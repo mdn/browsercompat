@@ -11,7 +11,7 @@ import mock
 import unittest
 
 from webplatformcompat.models import (
-    Browser, Version, post_save_update_cache)
+    Browser, Feature, Version, post_save_update_cache)
 
 
 class TestBrowser(unittest.TestCase):
@@ -19,6 +19,13 @@ class TestBrowser(unittest.TestCase):
     def test_str(self):
         browser = Browser(slug="browser")
         self.assertEqual('browser', str(browser))
+
+
+class TestFeature(unittest.TestCase):
+
+    def test_str(self):
+        feature = Feature(slug="feature")
+        self.assertEqual('feature', str(feature))
 
 
 class TestVersion(unittest.TestCase):

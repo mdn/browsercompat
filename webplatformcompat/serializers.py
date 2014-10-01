@@ -9,9 +9,9 @@ from rest_framework.serializers import (
     PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
 
 from .fields import (
-    CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
-    TranslatedTextField)
-from .models import Browser, Version
+    CurrentHistoryField, HistoricalObjectField, HistoryField,
+    MPTTRelationField, OptionalCharField, SecureURLField, TranslatedTextField)
+from .models import Browser, Feature, Version
 
 
 #
@@ -127,6 +127,25 @@ class BrowserSerializer(HistoricalModelSerializer):
         write_once_fields = ('slug',)
 
 
+class FeatureSerializer(HistoricalModelSerializer):
+    """Feature Serializer"""
+
+    mdn_path = OptionalCharField()
+    name = TranslatedTextField()
+    ancestors = MPTTRelationField(many=True, source='ancestors')
+    siblings = MPTTRelationField(many=True, source='siblings')
+    descendants = MPTTRelationField(many=True, source='descendants')
+    children = MPTTRelationField(many=True, source='children')
+
+    class Meta:
+        model = Feature
+        fields = (
+            'id', 'slug', 'mdn_path', 'experimental', 'standardized',
+            'stable', 'obsolete', 'name',
+            'parent', 'ancestors', 'siblings', 'children',
+            'descendants', 'history_current', 'history')
+
+
 class VersionSerializer(HistoricalModelSerializer):
     """Browser Version Serializer"""
 
@@ -195,6 +214,23 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
         model = Browser.history.model
         fields = HistoricalObjectSerializer.Meta.fields + (
             'browser', 'browsers')
+
+
+class HistoricalFeatureSerializer(HistoricalObjectSerializer):
+
+    class ArchivedObject(FeatureSerializer):
+        class Meta(FeatureSerializer.Meta):
+            exclude = (
+                'history_current', 'history', 'parent', 'ancestors',
+                'children', 'descendants', 'siblings')
+
+    feature = HistoricalObjectField()
+    features = SerializerMethodField('get_archive')
+
+    class Meta(HistoricalObjectSerializer.Meta):
+        model = Feature.history.model
+        fields = HistoricalObjectSerializer.Meta.fields + (
+            'feature', 'features')
 
 
 class HistoricalVersionSerializer(HistoricalObjectSerializer):

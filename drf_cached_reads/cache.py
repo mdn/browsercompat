@@ -246,7 +246,7 @@ class BaseCache(object):
         instance - The Django model instance, or None to load it
         versions - Version to update, or None for all
 
-        Return is a list of tuples (model name, pk, version) that also needs
+        Return is a list of tuples (model name, pk, immediate) that also needs
         to be updated.
         '''
         versions = [version] if version else self.versions

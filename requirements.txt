@@ -57,3 +57,6 @@ amqp==1.4.6
 anyjson==0.3.3
 kombu==3.0.22
 celery==3.1.14
+
+# Modified Preorder Tree Traversal
+django-mptt==0.6.1

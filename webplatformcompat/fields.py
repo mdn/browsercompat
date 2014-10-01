@@ -119,6 +119,61 @@ class HistoryField(PrimaryKeyRelatedField):
         return super(HistoryField, self).field_to_native(obj, field_name)
 
 
+class MPTTRelationField(PrimaryKeyRelatedField):
+    """Field is a property returning an MPTT related queryset
+
+    Used against a property, such as:
+
+    class MyModel(MPTTModel):
+        parent = TreeForeignKey(
+            'self', null=True, blank=True, related_name='children')
+
+        @property
+        def ancestors(self):
+            return self.get_ancestors(include_self=True)
+
+    ancestors = MPTTRelationField(many=True, source="ancestors")
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.relation = kwargs.pop('source', None)
+        read_only = kwargs.pop('read_only', True)
+        assert read_only, 'read_only must be True'
+        super(MPTTRelationField, self).__init__(
+            read_only=read_only, *args, **kwargs)
+
+    def field_to_native(self, obj, field_name):
+        """Convert a field to the native represenation
+
+        With a valid object, the queryset can be set to the related object's
+        queryset, which may be more limited than the generic queryset.
+        """
+        assert obj
+        self.queryset = getattr(obj, self.relation)
+        return super(MPTTRelationField, self).field_to_native(obj, field_name)
+
+
+class OptionalCharField(CharField):
+    """Field is a CharField that serializes as None when omitted"""
+    def __init__(self, *args, **kwargs):
+        required = kwargs.pop('required', False)
+        assert not required, "OptionalCharField must not be required"
+        super(OptionalCharField, self).__init__(
+            required=required, *args, **kwargs)
+
+    def to_native(self, value):
+        if value:
+            return value
+        else:
+            return None
+
+    def from_native(self, value):
+        if value:
+            return value
+        else:
+            return ''
+
+
 class SecureURLField(URLField):
     """Field is a URL using secure HTTP (https) protocol"""
     def __init__(self, *args, **kwargs):

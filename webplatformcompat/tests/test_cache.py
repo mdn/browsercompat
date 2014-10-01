@@ -8,7 +8,7 @@ from pytz import UTC
 
 from django.contrib.auth.models import User
 
-from webplatformcompat.models import Browser, Version
+from webplatformcompat.models import Browser, Feature, Version
 from webplatformcompat.cache import Cache
 
 from .base import TestCase
@@ -64,6 +64,83 @@ class TestCache(TestCase):
     def test_browser_v1_invalidator(self):
         browser = self.create(Browser)
         self.assertEqual([], self.cache.browser_v1_invalidator(browser))
+
+    def test_feature_v1_serializer(self):
+        feature = self.create(
+            Feature, slug='the-slug', name='{"en": "A Name"}')
+        out = self.cache.feature_v1_serializer(feature)
+        expected = {
+            'id': feature.id,
+            'slug': 'the-slug',
+            'mdn_path': '',
+            'experimental': False,
+            'standardized': True,
+            'stable': True,
+            'obsolete': False,
+            'name': {'en': 'A Name'},
+            'parent:PK': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pk': None,
+            },
+            'ancestors:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [feature.id],
+            },
+            'siblings:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [feature.id],
+            },
+            'children:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [],
+            },
+            'descendants:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [feature.id],
+            },
+            'history:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalfeature',
+                'pks': [1],
+            },
+            'history_current:PK': {
+                'app': u'webplatformcompat',
+                'model': 'historicalfeature',
+                'pk': 1,
+            },
+        }
+        self.assertEqual(out, expected)
+
+    def test_feature_v1_serializer_empty(self):
+        self.assertEqual(None, self.cache.feature_v1_serializer(None))
+
+    def test_feature_v1_loader(self):
+        feature = self.create(Feature)
+        self.assertNumQueries(1)
+        obj = self.cache.feature_v1_loader(feature.pk)
+        self.assertNumQueries(3)
+        serialized = self.cache.feature_v1_serializer(obj)
+        self.assertTrue(serialized)
+        self.assertNumQueries(3)
+
+    def test_feature_v1_loader_not_exist(self):
+        self.assertFalse(Feature.objects.filter(pk=666).exists())
+        self.assertIsNone(self.cache.feature_v1_loader(666))
+
+    def test_feature_v1_invalidator_basic(self):
+        feature = self.create(Feature)
+        self.assertEqual([], self.cache.feature_v1_invalidator(feature))
+
+    def test_feature_v1_invalidator_with_relation(self):
+        parent = self.create(Feature, slug='parent')
+        feature = self.create(Feature, slug='child', parent=parent)
+        expected = [('Feature', parent.id, False)]
+        self.assertEqual(expected, self.cache.feature_v1_invalidator(feature))
 
     def test_version_v1_serializer(self):
         browser = self.create(Browser)

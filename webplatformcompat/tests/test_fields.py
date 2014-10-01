@@ -7,7 +7,7 @@ Tests for `web-platform-compat` fields module.
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from webplatformcompat.fields import TranslatedTextField
+from webplatformcompat.fields import OptionalCharField, TranslatedTextField
 
 
 class TestTranslatedTextField(TestCase):
@@ -42,3 +42,20 @@ class TestTranslatedTextField(TestCase):
         '''Converting from serialized form, bad JSON becomes ValidationError'''
         bad_json = "{'quotes': 'wrong ones'}"
         self.assertRaises(ValidationError, self.ttf.from_native, bad_json)
+
+
+class TestOptionalCharField(TestCase):
+    def setUp(self):
+        self.ocf = OptionalCharField()
+
+    def test_to_native_string(self):
+        self.assertEqual('foo', self.ocf.to_native('foo'))
+
+    def test_to_native_empty_string(self):
+        self.assertEqual(None, self.ocf.to_native(''))
+
+    def test_from_native_string(self):
+        self.assertEqual('foo', self.ocf.from_native('foo'))
+
+    def test_from_native_null(self):
+        self.assertEqual('', self.ocf.from_native(None))

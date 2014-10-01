@@ -74,6 +74,7 @@ INSTALLED_APPS = [
 
     'django_extensions',
     'django_nose',
+    'mptt',
     'simple_history',
     'rest_framework',
 
