@@ -108,7 +108,7 @@ class TestFeatureViewSet(APITestCase):
     def test_get_maximal(self):
         parent = self.create(Feature, slug='html-element')
         feature = self.create(
-            Feature, slug='html-element-input', name={'en': 'input'},
+            Feature, slug='html-element-input', name={'zxx': 'input'},
             mdn_path="/en-US/docs/Web/HTML/Element/input",
             experimental=True, standardized=False, stable=False, obsolete=True,
             parent=parent)
@@ -125,7 +125,7 @@ class TestFeatureViewSet(APITestCase):
             'standardized': False,
             'stable': False,
             'obsolete': True,
-            'name': {'en': 'input'},
+            'name': 'input',
             'parent': parent.id,
             'ancestors': [parent.id, feature.id],
             'siblings': [feature.id],
@@ -145,7 +145,7 @@ class TestFeatureViewSet(APITestCase):
                 "standardized": False,
                 "stable": False,
                 "obsolete": True,
-                'name': {'en': 'input'},
+                'name': 'input',
                 "links": {
                     "parent": str(parent.id),
                     "ancestors": [str(parent.id), str(feature.id)],
@@ -204,7 +204,7 @@ class TestFeatureViewSet(APITestCase):
     def test_filter_by_slug(self):
         feature = self.create(
             Feature, slug='feature', name={'en': 'A Feature'})
-        self.create(Feature, slug="other", name={'en': 'Other'})
+        other = self.create(Feature, slug="other", name={'en': 'Other'})
         fhistory_pk = feature.history.all()[0].pk
 
         response = self.client.get(
@@ -221,7 +221,7 @@ class TestFeatureViewSet(APITestCase):
             'name': {'en': 'A Feature'},
             'parent': None,
             'ancestors': [feature.id],
-            'siblings': [feature.id],
+            'siblings': [feature.id, other.id],
             'children': [],
             'descendants': [feature.id],
             'history': [fhistory_pk],

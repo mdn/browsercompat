@@ -5,6 +5,7 @@ import json
 
 from django.core.exceptions import ValidationError
 from django.forms import Textarea
+from django.utils import six
 from rest_framework.serializers import (
     CharField, PrimaryKeyRelatedField, URLField)
 
@@ -186,27 +187,54 @@ class SecureURLField(URLField):
 
 
 class TranslatedTextField(CharField):
-    """Field is a dictionary of language codes to text"""
+    """Field is a dictionary of language codes to text
+
+    If allow_canonical=True (default False), then a non-linguistic string is
+    allowed, such as an HTML attribute like "<input>".  This is stored in the
+    backend as the dictionary {"zxx": "<input>"}, so that is allowed as an
+    alternate represenation.
+
+    If blank=True, then empty strings and other falsy values are allowed, and
+    are serialized as null.
+    """
     def __init__(self, *args, **kwargs):
+        self.allow_canonical = kwargs.pop('allow_canonical', False)
         widget = kwargs.pop('widget', Textarea)
-        validators = kwargs.pop('validators', [LanguageDictValidator()])
+        validators = kwargs.pop(
+            'validators',
+            [LanguageDictValidator(allow_canonical=self.allow_canonical)])
         super(TranslatedTextField, self).__init__(
             widget=widget, validators=validators, *args, **kwargs)
 
     def to_native(self, value):
+        '''Convert from model Python to serializable data'''
         if value:
-            return value
+            if list(value.keys()) == ['zxx']:
+                if self.allow_canonical:
+                    return value['zxx']
+                else:
+                    return None
+            else:
+                return value
         else:
             return None
 
     def from_native(self, value):
+        '''Convert from serializable data to model'''
         if isinstance(value, dict):
             return value
         value = value.strip()
         if value:
             try:
-                return json.loads(value)
+                native = json.loads(value)
             except ValueError as e:
-                raise ValidationError(str(e))
+                if self.allow_canonical:
+                    native = str(value)
+                else:
+                    raise ValidationError(str(e))
+            if isinstance(native, six.string_types) and self.allow_canonical:
+                return {'zxx': native}
+            else:
+                return native
         else:
             return None

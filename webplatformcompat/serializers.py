@@ -131,7 +131,7 @@ class FeatureSerializer(HistoricalModelSerializer):
     """Feature Serializer"""
 
     mdn_path = OptionalCharField()
-    name = TranslatedTextField()
+    name = TranslatedTextField(allow_canonical=True)
     ancestors = MPTTRelationField(many=True, source='ancestors')
     siblings = MPTTRelationField(many=True, source='siblings')
     descendants = MPTTRelationField(many=True, source='descendants')

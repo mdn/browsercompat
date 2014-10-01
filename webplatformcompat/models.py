@@ -13,14 +13,24 @@ from simple_history.models import HistoricalRecords
 from .validators import LanguageDictValidator, SecureURLValidator
 
 
+class TranslatedField(JSONField):
+    '''A JSONField that holds translated strings'''
+
+    def __init__(self, *args, **kwargs):
+        self.allow_canonical = kwargs.pop('allow_canonical', False)
+        validators = kwargs.pop(
+            'validators', [LanguageDictValidator(self.allow_canonical)])
+        super(TranslatedField, self).__init__(
+            validators=validators, *args, **kwargs)
+
+
 @python_2_unicode_compatible
 class Browser(models.Model):
     '''A browser or other web client'''
     slug = models.SlugField(unique=True)
     icon = models.URLField(blank=True, validators=[SecureURLValidator()])
-    name = JSONField(validators=[LanguageDictValidator()])
-    note = JSONField(
-        blank=True, null=True, validators=[LanguageDictValidator()])
+    name = TranslatedField()
+    note = TranslatedField(blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -45,8 +55,8 @@ class Version(models.Model):
     retirement_day = models.DateField(blank=True, null=True)
     status = models.CharField(
         max_length=15, choices=STATUS_CHOICES, default='unknown')
-    release_notes_uri = JSONField(blank=True)
-    note = JSONField(blank=True)
+    release_notes_uri = TranslatedField(blank=True, null=True)
+    note = TranslatedField(blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -88,9 +98,9 @@ class Feature(MPTTModel):
         help_text=(
             "True if a feature should not be used in new development."),
         default=False)
-    name = JSONField(
+    name = TranslatedField(
         help_text="Feature name, in canonical or localized form.",
-        blank=True, validators=[LanguageDictValidator()])
+        allow_canonical=True)
     parent = TreeForeignKey(
         'self', help_text="Feature set that contains this feature",
         null=True, blank=True, related_name='children')
