@@ -260,7 +260,11 @@ if __name__ == '__main__':
     if api.endswith('/'):
         api = api[:-1]
     logger.info("Loading data into %s" % api)
-    user = args.user or raw_input("API username: ")
+    try:
+        input = raw_input  # Get the Py2 raw_input
+    except NameError:
+        pass  # We're in Py3
+    user = args.user or input("API username: ")
     password = getpass.getpass("API password: ")
     session = get_session(api, user, password)
     compat_data = get_compat_data(COMPAT_DATA_FILENAME, COMPAT_DATA_URL)
