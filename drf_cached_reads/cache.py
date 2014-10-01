@@ -53,7 +53,9 @@ class CachedModel(object):
         if name in self._data:
             return self._data[name]
         else:
-            return super(CachedModel, self).__getattr__(name)
+            raise AttributeError(
+                "%r object has no attribute %r" %
+                (self.__class__, name))
 
 
 class CachedQueryset(object):
@@ -99,8 +101,14 @@ class CachedQueryset(object):
         model_name = self.model.__name__
         object_spec = (model_name, pk, None)
         instances = self.cache.get_instances((object_spec,))
-        model_data = instances.get((model_name, pk), {})[0]
-        return CachedModel(self.model, model_data)
+        try:
+            model_data = instances[(model_name, pk)][0]
+        except KeyError:
+            raise self.model.DoesNotExist(
+                "No match for %r with args %r, kwargs %r" %
+                (self.model, args, kwargs))
+        else:
+            return CachedModel(self.model, model_data)
 
 
 class BaseCache(object):
