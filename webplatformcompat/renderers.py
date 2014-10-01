@@ -49,10 +49,20 @@ class JsonApiRenderer(BaseJsonApiRender):
         }
 
         if field.many:
-            link_data = [
-                encoding.force_text(pk) for pk in resource[field_name]]
+            pks = resource[field_name]
         else:
-            link_data = encoding.force_text(resource[field_name])
-        linked_ids[field_name] = link_data
+            pks = [resource[field_name]]
+
+        link_data = []
+        for pk in pks:
+            if pk is None:
+                link_data.append(None)
+            else:
+                link_data.append(encoding.force_text(pk))
+
+        if field.many:
+            linked_ids[field_name] = link_data
+        else:
+            linked_ids[field_name] = link_data[0]
 
         return {"linked_ids": linked_ids, "links": links}
