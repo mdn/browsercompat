@@ -7,6 +7,7 @@ import json
 import logging
 import os.path
 import re
+import string
 import sys
 import urllib
 
@@ -102,6 +103,8 @@ def load_compat_data(session, compat_data):
 def parse_compat_data(compat_data):
     parsed_data = {
         'browsers': dict(),
+        'features': dict(),
+        'feature_slugs': set(),
         'versions': dict(),
     }
 
@@ -111,8 +114,33 @@ def parse_compat_data(compat_data):
     return parsed_data
 
 
-def slugify(word):
-    return word.lower().replace(' ', '_')
+def slugify(word, attempt=0):
+    raw = word.lower().encode('utf-8')
+    out = []
+    acceptable = string.ascii_lowercase + string.digits + '_-'
+    for c in raw:
+        if c in acceptable:
+            out += str(c)
+        else:
+            out += '_'
+    slugged = ''.join(out)
+    while '__' in slugged:
+        slugged = slugged.replace('__', '_')
+    if attempt:
+        suffix = str(attempt)
+    else:
+        suffix = ""
+    return slugged[slice(50-len(suffix))] + suffix
+
+
+def unique_slugify(word, existing):
+    slug = slugify(word)
+    attempt = 0
+    while slug in existing:
+        attempt += 1
+        slug = slugify(word, attempt)
+    existing.add(slug)
+    return slug
 
 
 def parse_compat_data_item(key, item, parsed_data):
@@ -136,9 +164,44 @@ def parse_compat_data_item(key, item, parsed_data):
     if "breadcrumb" in item:
         assert "contents" in item
         assert "jsonselect" in item
+        assert "links" in item
+
+        # Feature heirarchy
+        url = item['links'][0]["url"]
+        assert url.startswith('https://developer.mozilla.org/en-US/docs/')
+        mdn_path = url.split('mozilla.org/', 1)[1]
+        mdn_subpath = url.split('en-US/docs/', 1)[1]
+        path_bits = mdn_subpath.split('/')
+        feature_id = ()
+        for bit in path_bits:
+            last_feature_id = feature_id
+            feature_id += (bit,)
+            if feature_id not in parsed_data['features']:
+                parsed_data['features'][feature_id] = {
+                    'slug': unique_slugify(
+                        '-'.join(feature_id), parsed_data['feature_slugs']),
+                    'mdn_path': '/en-US/docs/' + '/'.join(path_bits),
+                    'name': {'en': bit},
+                    'parent_id': last_feature_id,
+                }
+        parent_feature_id = feature_id
+
         for env, rows in item['contents'].items():
             assert env in ('desktop', 'mobile')
             for feature, columns in rows.items():
+                # Add feature
+                feature_id = parent_feature_id + (feature,)
+                if feature_id not in parsed_data['features']:
+                    parsed_data['features'][feature_id] = {
+                        'slug': unique_slugify(
+                            '-'.join(feature_id),
+                            parsed_data['feature_slugs']),
+                        'mdn_path': mdn_path,
+                        'name': {'en': feature},
+                        'parent_id': parent_feature_id,
+                    }
+
+                # Add browser
                 for raw_browser, versions in columns.items():
                     browser = browser_conversions.get(raw_browser, raw_browser)
                     assert browser in known_browsers, raw_browser
@@ -148,6 +211,8 @@ def parse_compat_data_item(key, item, parsed_data):
                             'slug': slugify(browser),
                             'name': browser,
                         }
+
+                    # Add version
                     for raw_version in versions:
                         if raw_version in version_ignore:
                             continue
@@ -225,9 +290,33 @@ def upload_compat_data(session, parsed_data):
         if len(version_api_ids) % 100 == 0:
             logger.info("Imported %d versions..." % len(version_api_ids))
 
+    feature_api_ids = {(): None}
+    logger.info("Importing features...")
+    for feature_id in sorted(parsed_data['features'].keys()):
+        feature = parsed_data['features'][feature_id]
+        data = {
+            "slug": feature["slug"],
+            "mdn_path": feature["mdn_path"],
+            "name": feature["name"],
+            "links": {
+                "parent": feature_api_ids[feature["parent_id"]]
+            }
+        }
+        feature_json = json.dumps({"features": data})
+        response = session.post(
+            session.base_url + '/api/v1/features', data=feature_json,
+            headers={
+                'content-type': 'application/vnd.api+json',
+                'X-CSRFToken': session.cookies['csrftoken']})
+        assert response.status_code == 201, response.content
+        feature_api_ids[feature_id] = response.json()['features']['id']
+        if len(feature_api_ids) % 100 == 0:
+            logger.info("Imported %d features..." % len(feature_api_ids))
+
     return (
         ('browsers', len(browser_api_ids)),
         ('versions', len(version_api_ids)),
+        ('features', len(feature_api_ids)),
     )
 
 
