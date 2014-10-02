@@ -46,6 +46,7 @@ class TestHistoricalVersionViewset(APITestCase):
                 'note': None,
                 'order': 0,
                 'links': {
+                    'browser': str(browser.id),
                     'history_current': str(vh.id),
                 }
             },
@@ -66,6 +67,7 @@ class TestHistoricalVersionViewset(APITestCase):
                     'note': None,
                     'order': 0,
                     'links': {
+                        'browser': str(browser.id),
                         'history_current': str(vh.id),
                     },
                 },
@@ -120,6 +122,7 @@ class TestHistoricalVersionViewset(APITestCase):
                 'note': None,
                 'order': 1,
                 'links': {
+                    'browser': str(browser.id),
                     'history_current': str(vh.id),
                 }
             },

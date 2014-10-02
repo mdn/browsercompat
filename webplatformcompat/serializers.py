@@ -174,8 +174,16 @@ class UserSerializer(ModelSerializer):
 #
 # Historical object serializers
 #
+class HistoricalOptions(ModelSerializer._options_class):
+    def __init__(self, meta):
+        super(HistoricalOptions, self).__init__(meta)
+        self.archive_link_fields = getattr(meta, 'archive_link_fields', [])
+
+
 class HistoricalObjectSerializer(ModelSerializer):
     '''Common serializer attributes for Historical models'''
+    _options_class = HistoricalOptions
+
     id = IntegerField(source="history_id")
     date = DateTimeField(source="history_date")
     event = SerializerMethodField('get_event')
@@ -194,7 +202,16 @@ class HistoricalObjectSerializer(ModelSerializer):
         serializer = self.ArchivedObject(obj)
         data = serializer.data
         data['id'] = str(data['id'])
-        data['links'] = {'history_current': str(obj.history_id)}
+
+        data['links'] = type(data)()  # Use dict-like type of serializer.data
+        for field in self.opts.archive_link_fields:
+            del data[field]
+            value = getattr(obj, field + '_id')
+            if value is not None:
+                value = str(value)
+            data['links'][field] = value
+        data['links']['history_current'] = str(obj.history_id)
+
         return data
 
     class Meta:
@@ -221,7 +238,7 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
     class ArchivedObject(FeatureSerializer):
         class Meta(FeatureSerializer.Meta):
             exclude = (
-                'history_current', 'history', 'parent', 'ancestors',
+                'history_current', 'history', 'ancestors',
                 'children', 'descendants', 'siblings')
 
     feature = HistoricalObjectField()
@@ -231,13 +248,14 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
         model = Feature.history.model
         fields = HistoricalObjectSerializer.Meta.fields + (
             'feature', 'features')
+        archive_link_fields = ('parent',)
 
 
 class HistoricalVersionSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(VersionSerializer):
         class Meta(VersionSerializer.Meta):
-            exclude = ('history_current', 'history', 'browser')
+            exclude = ('history_current', 'history')
 
     version = HistoricalObjectField()
     versions = SerializerMethodField('get_archive')
@@ -246,3 +264,4 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
         model = Version.history.model
         fields = HistoricalObjectSerializer.Meta.fields + (
             'version', 'versions')
+        archive_link_fields = ('browser',)

@@ -44,6 +44,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                 'obsolete': False,
                 'name': {'en': 'The Feature'},
                 'links': {
+                    'parent': None,
                     'history_current': str(history.id),
                 }
             },
@@ -64,6 +65,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                     'obsolete': False,
                     'name': {'en': 'The Feature'},
                     'links': {
+                        'parent': None,
                         'history_current': str(history.id),
                     }
                 },
@@ -92,9 +94,9 @@ class TestHistoricalFeatureViewset(APITestCase):
 
     def test_filter_by_id(self):
         user = self.login_superuser()
-        self.create(Feature, slug="other-feature")
+        parent = self.create(Feature, slug="parent-feature")
         feature = self.create(
-            Feature, slug="a-feature",
+            Feature, slug="a-feature", parent=parent,
             _history_user=user,
             _history_date=datetime(2014, 10, 1, 14, 29, 33, 22803, UTC))
         history = feature.history.all()[0]
@@ -116,6 +118,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                 'obsolete': False,
                 'name': None,
                 'links': {
+                    'parent': str(parent.id),
                     'history_current': str(history.id),
                 }
             },
