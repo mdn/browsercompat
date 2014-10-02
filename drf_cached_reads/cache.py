@@ -5,6 +5,7 @@ from datetime import date, datetime
 from pytz import utc
 import json
 
+from django.conf import settings
 from django.db.models.loading import get_model
 
 
@@ -128,7 +129,7 @@ class BaseCache(object):
 
     @property
     def cache(self):
-        if not self._cache:
+        if not self._cache and settings.USE_INSTANCE_CACHE:
             # Delay import of cache so that Django Debug Toolbar sees requests
             from django.core.cache import cache
             self._cache = cache
@@ -196,7 +197,7 @@ class BaseCache(object):
             cache_keys.append(obj_key)
 
         # Fetch the cache keys
-        if cache_keys:
+        if cache_keys and self.cache:
             cache_vals = self.cache.get_many(cache_keys)
         else:
             cache_vals = {}
@@ -232,7 +233,7 @@ class BaseCache(object):
                 ret[(model_name, obj_pk)] = (obj_native, obj_key, obj)
 
         # Save any new cached representations
-        if cache_to_set:
+        if cache_to_set and self.cache:
             self.cache.set_many(cache_to_set)
 
         return ret
@@ -257,6 +258,9 @@ class BaseCache(object):
             invalidator = self.model_function(
                 model_name, version, 'invalidator')
             if serializer is None and loader is None and invalidator is None:
+                continue
+
+            if self.cache is None:
                 continue
 
             # Try to load the instance

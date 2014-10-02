@@ -30,6 +30,7 @@ EXTRA_INSTALLED_APPS - comma-separated list of apps to add to INSTALLED_APPS
 MEMCACHE_SERVERS - semicolon-separated list of memcache servers
 MEMCACHE_USERNAME - username for memcache servers
 MEMCACHE_PASSWORD - password for memcache servers
+USE_INSTANCE_CACHE - 1 to enable, 0 to disable, default enabled
 SECRET_KEY - Overrides SECRET_KEY
 SECURE_PROXY_SSL_HEADER - "HTTP_X_FORWARDED_PROTOCOL,https" to enable
 STATIC_ROOT - Overrides STATIC_ROOT
@@ -173,6 +174,7 @@ else:
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         },
     }
+USE_INSTANCE_CACHE = environ.get('USE_INSTANCE_CACHE', '1') not in (0, '0')
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 

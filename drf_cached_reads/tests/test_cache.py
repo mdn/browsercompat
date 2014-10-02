@@ -11,6 +11,7 @@ import mock
 
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
+from django.test.utils import override_settings
 from pytz import UTC
 
 from drf_cached_reads.cache import (
@@ -52,12 +53,7 @@ class UserCache(BaseCache):
     bar_default_invalidator = None
 
 
-class TestCache(TestCase):
-    def setUp(self):
-        self.cache = UserCache()
-        self.cache.cache.clear()
-        self.mock_delete = mock.Mock()
-        self.cache.cache.delete = self.mock_delete
+class SharedCacheTests(object):
 
     def test_get_instances_no_specs(self):
         instances = self.cache.get_instances([])
@@ -111,6 +107,15 @@ class TestCache(TestCase):
         instances = self.cache.update_instance('Bar', 666)
         self.assertEqual([], instances)
 
+
+@override_settings(USE_INSTANCE_CACHE=True)
+class TestCache(SharedCacheTests, TestCase):
+    def setUp(self):
+        self.cache = UserCache()
+        self.cache.cache.clear()
+        self.mock_delete = mock.Mock()
+        self.cache.cache.delete = self.mock_delete
+
     def test_update_instance_invalidator_only(self):
         user = User.objects.create(username='A user')
         group = Group.objects.create()
@@ -129,6 +134,12 @@ class TestCache(TestCase):
         invalid = self.cache.update_instance('User', user.pk)
         self.assertEqual([], invalid)
         self.mock_delete.assertCalledOnce('drfc_user_count')
+
+
+@override_settings(USE_INSTANCE_CACHE=False)
+class TestCacheDisabled(SharedCacheTests, TestCase):
+    def setUp(self):
+        self.cache = UserCache()
 
 
 class TestCachedModel(TestCase):
