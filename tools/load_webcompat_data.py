@@ -2,7 +2,6 @@
 
 from __future__ import print_function
 
-from collections import OrderedDict
 import getpass
 import json
 import logging
@@ -13,12 +12,35 @@ import urllib
 
 import requests
 
+try:
+    input = raw_input  # Get the Py2 raw_input
+except NameError:
+    pass  # We're in Py3
+
 
 logger = logging.getLogger('populate_data')
 COMPAT_DATA_FILENAME = "data-human.json"
 COMPAT_DATA_URL = (
     "https://raw.githubusercontent.com/webplatform/compatibility-data"
     "/master/data-human.json")
+known_browsers = [
+    "Chrome",
+    "Firefox",
+    "Internet Explorer",
+    "Opera",
+    "Safari",
+    "Android",
+    "Chrome for Android",
+    "Chrome Mobile",
+    "Firefox Mobile",
+    "IE Mobile",
+    "Opera Mini",
+    "Opera Mobile",
+    "Safari Mobile",
+    "BlackBerry",
+    "Firefox OS",
+]
+version_re = re.compile("^[.\d]+$")
 
 
 def get_session(base_url, user, password):
@@ -79,8 +101,8 @@ def load_compat_data(session, compat_data):
 
 def parse_compat_data(compat_data):
     parsed_data = {
-        'browsers': OrderedDict(),
-        'browser_versions': OrderedDict(),
+        'browsers': dict(),
+        'versions': dict(),
     }
 
     for key, value in compat_data['data'].items():
@@ -88,31 +110,12 @@ def parse_compat_data(compat_data):
 
     return parsed_data
 
-version_re = re.compile("^[.\d]+$")
-
 
 def slugify(word):
-    return word.lower().replace(' ', '-')
+    return word.lower().replace(' ', '_')
 
 
 def parse_compat_data_item(key, item, parsed_data):
-    known_browsers = [
-        "Chrome",
-        "Firefox",
-        "Internet Explorer",
-        "Opera",
-        "Safari",
-        "Android",
-        "Chrome for Android",
-        "Chrome Mobile",
-        "Firefox Mobile",
-        "IE Mobile",
-        "Opera Mobile",
-        "Safari Mobile",
-        "BlackBerry",
-        "Firefox OS",
-        "Opera Mini",
-    ]
     browser_conversions = {
         "IE Phone": "IE Mobile",
         "Chrome for Andriod": "Chrome for Android",
@@ -129,12 +132,6 @@ def parse_compat_data_item(key, item, parsed_data):
     version_ignore = [
         'notes',
     ]
-    version_conversions = {
-        "?": ""
-    }
-    known_versions = [
-        "",
-    ]
 
     if "breadcrumb" in item:
         assert "contents" in item
@@ -145,24 +142,20 @@ def parse_compat_data_item(key, item, parsed_data):
                 for raw_browser, versions in columns.items():
                     browser = browser_conversions.get(raw_browser, raw_browser)
                     assert browser in known_browsers, raw_browser
-                    browser_slug = slugify(browser)
-                    if browser_slug not in parsed_data['browsers']:
-                        parsed_data['browsers'][browser_slug] = {
-                            'slug': browser_slug,
+                    browser_id = known_browsers.index(browser)
+                    if browser_id not in parsed_data['browsers']:
+                        parsed_data['browsers'][browser_id] = {
+                            'slug': slugify(browser),
                             'name': browser,
                         }
                     for raw_version in versions:
                         if raw_version in version_ignore:
                             continue
-                        version = version_conversions.get(
-                            raw_version, raw_version)
-                        if version not in known_versions:
-                            assert version_re.match(version), raw_version
-                        v_ident = (browser_slug, version)
-                        if v_ident not in parsed_data['browser_versions']:
-                            parsed_data['browser_versions'][v_ident] = {
+                        version, version_id = convert_version(
+                            browser_id, raw_version)
+                        if version_id not in parsed_data['versions']:
+                            parsed_data['versions'][version_id] = {
                                 'version': version,
-                                'status': 'unknown',
                             }
 
     else:
@@ -170,12 +163,32 @@ def parse_compat_data_item(key, item, parsed_data):
             parse_compat_data_item(subkey, subitem, parsed_data)
 
 
+def convert_version(browser_id, raw_version):
+    version = "" if raw_version == "?" else raw_version
+    if raw_version == '?':
+        version = ""
+    else:
+        version = raw_version
+    if version == "":
+        version_id = (browser_id,)
+    else:
+        assert version_re.match(version), raw_version
+        bits = tuple(int(x) for x in version.split('.'))
+        if len(bits) == 1:
+            # Prefer 12.0 format to 12 format
+            version += '.0'
+            bits += (0,)
+        version_id = (browser_id,) + bits
+    return version, version_id
+
+
 def upload_compat_data(session, parsed_data):
-    browser_ids = {}
+    browser_api_ids = {}
     logger.info("Importing browsers...")
-    for slug, browser in parsed_data['browsers'].items():
+    for browser_id in sorted(parsed_data['browsers'].keys()):
+        browser = parsed_data['browsers'][browser_id]
         data = {
-            "slug": slug,
+            "slug": browser['slug'],
             "name": {'en': browser['name']}
         }
         browser_json = json.dumps({"browsers": data})
@@ -185,19 +198,20 @@ def upload_compat_data(session, parsed_data):
                 'content-type': 'application/vnd.api+json',
                 'X-CSRFToken': session.cookies['csrftoken']})
         assert response.status_code == 201, response.content
-        browser_ids[slug] = response.json()['browsers']['id']
-        if len(browser_ids) % 100 == 0:
-            logger.info("Imported %d browsers..." % len(browser_ids))
+        browser_api_ids[browser_id] = response.json()['browsers']['id']
+        if len(browser_api_ids) % 100 == 0:
+            logger.info("Imported %d browsers..." % len(browser_api_ids))
 
-    version_ids = {}
+    version_api_ids = {}
     logger.info("Importing versions...")
-    for ident, bv in parsed_data['browser_versions'].items():
-        browser_slug, version = ident
+    for version_id in sorted(parsed_data['versions'].keys()):
+        version = parsed_data['versions'][version_id]
+        browser_id = version_id[0]
         data = {
-            "version": version,
-            "status": bv.get('status', 0),
+            "version": version['version'],
+            "status": version.get('status', 'unknown'),
             "links": {
-                "browser": browser_ids[browser_slug]
+                "browser": browser_api_ids[browser_id]
             }
         }
         version_json = json.dumps({"versions": data})
@@ -207,13 +221,13 @@ def upload_compat_data(session, parsed_data):
                 'content-type': 'application/vnd.api+json',
                 'X-CSRFToken': session.cookies['csrftoken']})
         assert response.status_code == 201, response.content
-        version_ids[ident] = response.json()['versions']['id']
-        if len(version_ids) % 100 == 0:
-            logger.info("Imported %d versions..." % len(version_ids))
+        version_api_ids[version_id] = response.json()['versions']['id']
+        if len(version_api_ids) % 100 == 0:
+            logger.info("Imported %d versions..." % len(version_api_ids))
 
     return (
-        ('browsers', len(browser_ids)),
-        ('browser_versions', len(version_ids)),
+        ('browsers', len(browser_api_ids)),
+        ('versions', len(version_api_ids)),
     )
 
 
@@ -229,25 +243,28 @@ if __name__ == '__main__':
         '-u', '--user',
         help='Username on API (default: prompt for username)')
     parser.add_argument(
-        '-v', '--verbosity', action="count", default=0)
+        '-v', '--verbose', action="store_true",
+        help='Print extra debug information')
+    parser.add_argument(
+        '-q', '--quiet', action="store_true",
+        help='Only print warnings')
     args = parser.parse_args()
 
     # Setup logging
-    verbosity = args.verbosity
+    verbose = args.verbose
+    quiet = args.quiet
     console = logging.StreamHandler(sys.stderr)
     formatter = logging.Formatter('%(levelname)s - %(message)s')
     logger_name = 'populate_data'
     fmat = '%(levelname)s - %(message)s'
-    if verbosity <= 0:
+    if quiet:
         level = logging.WARNING
-    elif verbosity == 1:
-        level = logging.INFO
-    elif verbosity == 2:
-        level = logging.DEBUG
-    else:
+    elif verbose:
         level = logging.DEBUG
         logger_name = ''
         fmat = '%(name)s - %(levelname)s - %(message)s'
+    else:
+        level = logging.INFO
     formatter = logging.Formatter(fmat)
     console.setLevel(level)
     console.setFormatter(formatter)
@@ -260,10 +277,6 @@ if __name__ == '__main__':
     if api.endswith('/'):
         api = api[:-1]
     logger.info("Loading data into %s" % api)
-    try:
-        input = raw_input  # Get the Py2 raw_input
-    except NameError:
-        pass  # We're in Py3
     user = args.user or input("API username: ")
     password = getpass.getpass("API password: ")
     session = get_session(api, user, password)
