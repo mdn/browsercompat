@@ -26,6 +26,7 @@
 </p>
 <ul>
     <li>{{#link-to 'browsers'}}Browsers{{/link-to}}</li>
+    <li>{{#link-to 'features'}}Features{{/link-to}}</li>
 </ul>
 {% endraw %}
 </script>
@@ -109,6 +110,42 @@
                 <td>{{order}}</td>
             </tr>
           {{/with}}
+          {{/each}}
+        </tbody>
+    </table>
+</div>
+{% endraw %}
+</script>
+
+<script type="text/x-handlebars" data-template-name="features">
+{% raw %}
+<h2>{{length}} Features</h2>
+<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>slug</th>
+                <th>flags</th>
+                <th>name</th>
+                <th>on MDN</th>
+            </tr>
+        </thead>
+        <tbody>
+          {{#each}}
+            <tr>
+                <td>{{id}}</td>
+                <td><code>{{slug}}</code></td>
+                <td>
+                    {{#if experimental}}<b>experimental</b>{{/if}}
+                    {{#unless standardized}}<b>not standardized</b>{{/unless}}
+                    {{#unless stable}}<b>not stable</b>{{/unless}}
+                    {{#if obsolete}}<b>obsolete</b>{{/if}}
+                </td>
+                <td>{{#if name.en}}{{name.en}}{{else}}{{#if name}}<code>{{name}}</code>{{else}}<em>none</em>{{/if}}{{/if}}</td>
+                <td>{{#if mdn_path}}<a href="https://developer.mozilla.org/{{unbound mdn_path}}#Browser_compatibility">{{mdn_path}}</a>{{/if}}</td>
+            </tr>
           {{/each}}
         </tbody>
     </table>

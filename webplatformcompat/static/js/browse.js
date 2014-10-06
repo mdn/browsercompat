@@ -14,6 +14,7 @@ Browse.Router.reopen({
 Browse.Router.map(function() {
     this.resource('browsers');
     this.resource('browser', {path: '/browsers/:browser_id'});
+    this.resource('features');
 });
 
 /* Serializer - JsonApiSerializer with modifictions */
@@ -88,6 +89,12 @@ Browse.BrowsersRoute = Ember.Route.extend({
     }
 });
 
+Browse.FeaturesRoute = Ember.Route.extend({
+    model: function() {
+        return this.store.find('feature');
+    }
+});
+
 /* Models */
 var attr = DS.attr;
 
@@ -97,6 +104,18 @@ Browse.Browser = DS.Model.extend({
     name: attr(),
     note: attr(),
     versions: DS.hasMany('version', {async: true}),
+});
+
+Browse.Feature = DS.Model.extend({
+    slug: attr('string'),
+    mdn_path: attr('string'),
+    experimental: attr(),
+    standardized: attr(),
+    stable: attr(),
+    obsolete: attr(),
+    name: attr(),
+    parent: DS.belongsTo('feature', {inverse: 'children', async: true}),
+    children: DS.hasMany('feature', {inverse: 'parent', async: true}),
 });
 
 Browse.Version = DS.Model.extend({
