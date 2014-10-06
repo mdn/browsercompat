@@ -105,18 +105,6 @@ class Feature(MPTTModel):
         'self', help_text="Feature set that contains this feature",
         null=True, blank=True, related_name='children')
 
-    @property
-    def ancestors(self):
-        return self.get_ancestors(include_self=True)
-
-    @property
-    def siblings(self):
-        return self.get_siblings(include_self=True)
-
-    @property
-    def descendants(self):
-        return self.get_descendants(include_self=True)
-
     def __str__(self):
         return self.slug
 

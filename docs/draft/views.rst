@@ -46,10 +46,7 @@ A sample response is:
                 "sections": ["746", "421", "70"],
                 "supports": [],
                 "parent": "800",
-                "ancestors": ["800", "816"],
-                "siblings": ["814", "815", "816", "817", "818"],
                 "children": ["191"],
-                "descendants": ["816", "191"],
                 "history_current": "216",
                 "history": ["216"]
             }
@@ -73,10 +70,7 @@ A sample response is:
                             "358", "359", "360", "361", "362", "363", "364",
                             "365", "366", "367", "368"],
                         "parent": "816",
-                        "ancestors": ["800", "816", "191"],
-                        "siblings": ["191"],
                         "children": [],
-                        "descendants": ["191"],
                         "history_current": "395",
                         "history": ["395"]
                     }
@@ -728,20 +722,8 @@ A sample response is:
                 "href": "https://browsersupports.org/api/v1/features/{features.parent}",
                 "type": "features"
             },
-            "features.ancestors": {
-                "href": "https://browsersupports.org/api/v1/features/{features.ancestors}",
-                "type": "features"
-            },
-            "features.siblings": {
-                "href": "https://browsersupports.org/api/v1/features/{features.siblings}",
-                "type": "features"
-            },
             "features.children": {
                 "href": "https://browsersupports.org/api/v1/features/{features.children}",
-                "type": "features"
-            },
-            "features.descendants": {
-                "href": "https://browsersupports.org/api/v1/features/{features.descendants}",
                 "type": "features"
             },
             "features.history_current": {

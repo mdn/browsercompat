@@ -143,10 +143,7 @@ class ViewFeaturesViewSet(ViewSet):
                     ("sections", ["746", "421", "70"]),
                     ("supports", []),
                     ("parent", "800"),
-                    ("ancestors", ["800", "816"]),
-                    ("siblings", ["814", "815", "816", "817", "818"]),
                     ("children", ["191"]),
-                    ("descendants", ["816", "191"]),
                     ("history_current", "216"),
                     ("history", ["216"])))),
             ))),
@@ -166,10 +163,7 @@ class ViewFeaturesViewSet(ViewSet):
                                 "358", "359", "360", "361", "362", "363",
                                 "364", "365", "366", "367", "368"]),
                             ("parent", "816"),
-                            ("ancestors", ["800", "816", "191"]),
-                            ("siblings", ["191"]),
                             ("children", []),
-                            ("descendants", ["191"]),
                             ("history_current", "395"),
                             ("history", ["395"]),
                         ))),
@@ -869,20 +863,8 @@ class ViewFeaturesViewSet(ViewSet):
                     ("href", a + "/features/{features.parent}"),
                     ("type", "features"),
                 ))),
-                ("features.ancestors", OrderedDict((
-                    ("href", a + "/features/{features.ancestors}"),
-                    ("type", "features"),
-                ))),
-                ("features.siblings", OrderedDict((
-                    ("href", a + "/features/{features.siblings}"),
-                    ("type", "features"),
-                ))),
                 ("features.children", OrderedDict((
                     ("href", a + "/features/{features.children}"),
-                    ("type", "features"),
-                ))),
-                ("features.descendants", OrderedDict((
-                    ("href", a + "/features/{features.descendants}"),
                     ("type", "features"),
                 ))),
                 ("features.history_current", OrderedDict((

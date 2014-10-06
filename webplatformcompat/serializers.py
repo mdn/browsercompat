@@ -132,9 +132,6 @@ class FeatureSerializer(HistoricalModelSerializer):
 
     mdn_path = OptionalCharField()
     name = TranslatedTextField(allow_canonical=True)
-    ancestors = MPTTRelationField(many=True, source='ancestors')
-    siblings = MPTTRelationField(many=True, source='siblings')
-    descendants = MPTTRelationField(many=True, source='descendants')
     children = MPTTRelationField(many=True, source='children')
 
     class Meta:
@@ -142,8 +139,7 @@ class FeatureSerializer(HistoricalModelSerializer):
         fields = (
             'id', 'slug', 'mdn_path', 'experimental', 'standardized',
             'stable', 'obsolete', 'name',
-            'parent', 'ancestors', 'siblings', 'children',
-            'descendants', 'history_current', 'history')
+            'parent', 'children', 'history_current', 'history')
 
 
 class VersionSerializer(HistoricalModelSerializer):
@@ -237,9 +233,7 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(FeatureSerializer):
         class Meta(FeatureSerializer.Meta):
-            exclude = (
-                'history_current', 'history', 'ancestors',
-                'children', 'descendants', 'siblings')
+            exclude = ('history_current', 'history', 'children')
 
     feature = HistoricalObjectField()
     features = SerializerMethodField('get_archive')

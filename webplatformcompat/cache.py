@@ -54,18 +54,9 @@ class Cache(BaseCache):
         history_pks = getattr(
             obj, '_history_pks',
             list(obj.history.all().values_list('history_id', flat=True)))
-        ancestor_pks = getattr(
-            obj, '_ancestor_pks',
-            list(obj.ancestors.values_list('pk', flat=True)))
-        sibling_pks = getattr(
-            obj, '_sibling_pks',
-            list(obj.siblings.values_list('pk', flat=True)))
         children_pks = getattr(
             obj, '_children_pks',
             list(obj.children.values_list('pk', flat=True)))
-        descendants_pks = getattr(
-            obj, '_descendants_pks',
-            list(obj.descendants.values_list('pk', flat=True)))
         return dict((
             ('id', obj.pk),
             ('slug', obj.slug),
@@ -78,13 +69,7 @@ class Cache(BaseCache):
             self.field_to_json(
                 'PK', 'parent', model=Feature, pk=obj.parent_id),
             self.field_to_json(
-                'PKList', 'ancestors', model=Feature, pks=ancestor_pks),
-            self.field_to_json(
-                'PKList', 'siblings', model=Feature, pks=sibling_pks),
-            self.field_to_json(
                 'PKList', 'children', model=Feature, pks=children_pks),
-            self.field_to_json(
-                'PKList', 'descendants', model=Feature, pks=descendants_pks),
             self.field_to_json(
                 'PKList', 'history', model=obj.history.model,
                 pks=history_pks),
@@ -102,13 +87,8 @@ class Cache(BaseCache):
         else:
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
-            obj._ancestor_pks = list(
-                obj.ancestors.values_list('pk', flat=True))
-            obj._sibling_pks = list(obj.siblings.values_list('pk', flat=True))
             obj._children_pks = list(
                 obj.children.values_list('pk', flat=True))
-            obj._descendants_pks = list(
-                obj.descendants.values_list('pk', flat=True))
             return obj
 
     def feature_v1_invalidator(self, obj):
@@ -116,11 +96,7 @@ class Cache(BaseCache):
         if obj.parent_id:
             pks.append(obj.parent_id)
         else:
-            sibling_pks = getattr(
-                obj, '_sibling_pks',
-                list(obj.siblings.values_list('pk', flat=True)))
-            pks += sibling_pks
-            pks.remove(obj.id)
+            pks += list(obj.get_siblings().values_list('pk', flat=True))
         children_pks = getattr(
             obj, '_children_pks',
             list(obj.children.values_list('pk', flat=True)))

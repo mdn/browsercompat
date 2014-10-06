@@ -31,10 +31,7 @@ class TestFeatureViewSet(APITestCase):
             'obsolete': False,
             'name': None,
             'parent': None,
-            'ancestors': [feature.id],
-            'siblings': [feature.id],
             'children': [],
-            'descendants': [feature.id],
             'history': [fh_pk],
             'history_current': fh_pk,
         }
@@ -52,10 +49,7 @@ class TestFeatureViewSet(APITestCase):
                 "name": None,
                 "links": {
                     "parent": None,
-                    "ancestors": [str(feature.id)],
-                    "siblings": [str(feature.id)],
                     "children": [],
-                    "descendants": [str(feature.id)],
                     "history_current": str(fh_pk),
                     "history": [str(fh_pk)],
                 },
@@ -66,26 +60,9 @@ class TestFeatureViewSet(APITestCase):
                         self.baseUrl + "/api/v1/features/{features.parent}"),
                     "type": "features",
                 },
-                "features.ancestors": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{features.ancestors}"),
-                    "type": "features",
-                },
-                "features.siblings": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/{features.siblings}"),
-                    "type": "features",
-                },
                 "features.children": {
                     "href": (
                         self.baseUrl + "/api/v1/features/{features.children}"),
-                    "type": "features",
-                },
-                "features.descendants": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{features.descendants}"),
                     "type": "features",
                 },
                 "features.history_current": {
@@ -127,10 +104,7 @@ class TestFeatureViewSet(APITestCase):
             'obsolete': True,
             'name': 'input',
             'parent': parent.id,
-            'ancestors': [parent.id, feature.id],
-            'siblings': [feature.id],
             'children': [],
-            'descendants': [feature.id],
             'history': [fh_pk],
             'history_current': fh_pk,
         }
@@ -148,10 +122,7 @@ class TestFeatureViewSet(APITestCase):
                 'name': 'input',
                 "links": {
                     "parent": str(parent.id),
-                    "ancestors": [str(parent.id), str(feature.id)],
-                    "siblings": [str(feature.id)],
                     "children": [],
-                    "descendants": [str(feature.id)],
                     "history_current": str(fh_pk),
                     "history": [str(fh_pk)],
                 },
@@ -162,26 +133,9 @@ class TestFeatureViewSet(APITestCase):
                         self.baseUrl + "/api/v1/features/{features.parent}"),
                     "type": "features",
                 },
-                "features.ancestors": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{features.ancestors}"),
-                    "type": "features",
-                },
-                "features.siblings": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/{features.siblings}"),
-                    "type": "features",
-                },
                 "features.children": {
                     "href": (
                         self.baseUrl + "/api/v1/features/{features.children}"),
-                    "type": "features",
-                },
-                "features.descendants": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{features.descendants}"),
                     "type": "features",
                 },
                 "features.history_current": {
@@ -204,7 +158,7 @@ class TestFeatureViewSet(APITestCase):
     def test_filter_by_slug(self):
         feature = self.create(
             Feature, slug='feature', name={'en': 'A Feature'})
-        other = self.create(Feature, slug="other", name={'en': 'Other'})
+        self.create(Feature, slug="other", name={'en': 'Other'})
         fhistory_pk = feature.history.all()[0].pk
 
         response = self.client.get(
@@ -220,10 +174,7 @@ class TestFeatureViewSet(APITestCase):
             'obsolete': False,
             'name': {'en': 'A Feature'},
             'parent': None,
-            'ancestors': [feature.id],
-            'siblings': [feature.id, other.id],
             'children': [],
-            'descendants': [feature.id],
             'history': [fhistory_pk],
             'history_current': fhistory_pk,
         }]

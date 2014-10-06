@@ -83,25 +83,10 @@ class TestCache(TestCase):
                 'model': 'feature',
                 'pk': None,
             },
-            'ancestors:PKList': {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [feature.id],
-            },
-            'siblings:PKList': {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [feature.id],
-            },
             'children:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'feature',
                 'pks': [],
-            },
-            'descendants:PKList': {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [feature.id],
             },
             'history:PKList': {
                 'app': u'webplatformcompat',
