@@ -38,6 +38,7 @@ STATIC_ROOT - Overrides STATIC_ROOT
 
 # Build paths inside the project like this: rel_path('folder', 'file')
 from os import environ, path
+import sys
 import dj_database_url
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -45,6 +46,10 @@ BASE_DIR = path.dirname(path.dirname(__file__))
 
 def rel_path(*subpaths):
     return path.join(BASE_DIR, *subpaths)
+
+
+# Detect that we're running tests
+TESTING = sys.argv[1:2] == ['test']
 
 
 # Quick-start development settings - unsuitable for production
@@ -149,7 +154,7 @@ if environ.get('MEMCACHIER_USERNAME'):
 if environ.get('MEMCACHIER_PASSWORD'):
     environ['MEMCACHE_PASSWORD'] = environ.get('MEMCACHIER_PASSWORD', '')
 
-if environ.get('MEMCACHE_SERVERS'):
+if environ.get('MEMCACHE_SERVERS') and not TESTING:
     # Use memcache
     CACHES = {
         'default': {
