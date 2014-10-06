@@ -180,6 +180,72 @@ class TestFeatureViewSet(APITestCase):
         }]
         self.assertDataEqual(response.data, expected_data)
 
+    def test_filter_by_parent(self):
+        parent = self.create(Feature, slug='parent', name={'en': 'Parent'})
+        feature = self.create(
+            Feature, slug='feature', parent=parent, name={'en': 'A Feature'})
+        self.create(Feature, slug="other", name={'en': 'Other'})
+        fhistory_pk = feature.history.all()[0].pk
+
+        response = self.client.get(
+            reverse('feature-list'), {'parent': str(parent.id)})
+        self.assertEqual(200, response.status_code, response.data)
+        expected_data = [{
+            'id': feature.id,
+            'slug': 'feature',
+            'mdn_path': None,
+            'experimental': False,
+            'standardized': True,
+            'stable': True,
+            'obsolete': False,
+            'name': {'en': 'A Feature'},
+            'parent': parent.id,
+            'children': [],
+            'history': [fhistory_pk],
+            'history_current': fhistory_pk,
+        }]
+        self.assertDataEqual(response.data, expected_data)
+
+    def test_filter_by_no_parent(self):
+        parent = self.create(Feature, slug='parent', name={'en': 'Parent'})
+        feature = self.create(
+            Feature, slug='feature', parent=parent, name={'en': 'The Feature'})
+        other = self.create(Feature, slug="other", name={'en': 'Other'})
+        phistory_pk = parent.history.all()[0].pk
+        ohistory_pk = other.history.all()[0].pk
+
+        response = self.client.get(
+            reverse('feature-list'), {'parent': ''})
+        self.assertEqual(200, response.status_code, response.data)
+        expected_data = [{
+            'id': parent.id,
+            'slug': 'parent',
+            'mdn_path': None,
+            'experimental': False,
+            'standardized': True,
+            'stable': True,
+            'obsolete': False,
+            'name': {'en': 'Parent'},
+            'parent': None,
+            'children': [feature.id],
+            'history': [phistory_pk],
+            'history_current': phistory_pk,
+        }, {
+            'id': other.id,
+            'slug': 'other',
+            'mdn_path': None,
+            'experimental': False,
+            'standardized': True,
+            'stable': True,
+            'obsolete': False,
+            'name': {'en': 'Other'},
+            'parent': None,
+            'children': [],
+            'history': [ohistory_pk],
+            'history_current': ohistory_pk,
+        }]
+        self.assertDataEqual(response.data, expected_data)
+
     def test_post_empty(self):
         self.login_superuser()
         response = self.client.post(reverse('feature-list'), {})
