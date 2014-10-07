@@ -9,15 +9,14 @@ from mptt.models import MPTTModel, TreeForeignKey
 from simple_history import register
 from simple_history.models import HistoricalRecords
 
-from .fields import TranslatedField
-from .validators import SecureURLValidator
+from .fields import TranslatedField, SecureURLField
 
 
 @python_2_unicode_compatible
 class Browser(models.Model):
     '''A browser or other web client'''
     slug = models.SlugField(unique=True)
-    icon = models.URLField(blank=True, validators=[SecureURLValidator()])
+    icon = SecureURLField(blank=True)
     name = TranslatedField()
     note = TranslatedField(blank=True, null=True)
     history = HistoricalRecords()
