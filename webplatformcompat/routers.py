@@ -12,9 +12,9 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.views import APIView
 
 from .viewsets import (
-    BrowserViewSet, FeatureViewSet, VersionViewSet,
+    BrowserViewSet, FeatureViewSet, SupportViewSet, VersionViewSet,
     HistoricalBrowserViewSet, HistoricalFeatureViewSet,
-    HistoricalVersionViewSet,
+    HistoricalSupportViewSet, HistoricalVersionViewSet,
     UserViewSet, ViewFeaturesViewSet)
 
 
@@ -90,13 +90,16 @@ router = GroupedRouter(trailing_slash=False, version='v1')
 router.register(r'browsers', BrowserViewSet, group='resources')
 router.register(r'versions', VersionViewSet, group='resources')
 router.register(r'features', FeatureViewSet, group='resources')
+router.register(r'supports', SupportViewSet, group='resources')
 router.register(r'users', UserViewSet, group='change-control')
 router.register(
     r'historical_browsers', HistoricalBrowserViewSet, group='history')
 router.register(
+    r'historical_versions', HistoricalVersionViewSet, group='history')
+router.register(
     r'historical_features', HistoricalFeatureViewSet, group='history')
 router.register(
-    r'historical_versions', HistoricalVersionViewSet, group='history')
+    r'historical_supports', HistoricalSupportViewSet, group='history')
 router.register(
     r'view_features', ViewFeaturesViewSet, base_name='viewfeatures',
     group='views')

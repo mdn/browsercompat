@@ -3,7 +3,7 @@
 from django.contrib.auth.models import User
 
 from drf_cached_reads.cache import BaseCache
-from .models import Browser, Feature, Version
+from .models import Browser, Feature, Support, Version
 
 
 class Cache(BaseCache):
@@ -102,6 +102,52 @@ class Cache(BaseCache):
             list(obj.children.values_list('pk', flat=True)))
         pks += children_pks
         return [('Feature', pk, False) for pk in pks]
+
+    def support_v1_serializer(self, obj):
+        if not obj:
+            return None
+        history_pks = getattr(
+            obj, '_history_pks',
+            list(obj.history.all().values_list('history_id', flat=True)))
+        return dict((
+            ('id', obj.pk),
+            ('support', obj.support),
+            ('prefix', obj.prefix),
+            ('prefix_mandatory', obj.prefix_mandatory),
+            ('alternate_name', obj.alternate_name),
+            ('alternate_mandatory', obj.alternate_mandatory),
+            ('requires_config', obj.requires_config),
+            ('default_config', obj.default_config),
+            ('note', obj.note),
+            ('footnote', obj.footnote),
+            self.field_to_json(
+                'PK', 'version', model=Version, pk=obj.version_id),
+            self.field_to_json(
+                'PK', 'feature', model=Feature, pk=obj.feature_id),
+            self.field_to_json(
+                'PKList', 'history', model=obj.history.model,
+                pks=history_pks),
+            self.field_to_json(
+                'PK', 'history_current', model=obj.history.model,
+                pk=history_pks[0]),
+        ))
+
+    def support_v1_loader(self, pk):
+        queryset = Support.objects
+        try:
+            obj = queryset.get(pk=pk)
+        except Support.DoesNotExist:
+            return None
+        else:
+            obj._history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+            return obj
+
+    def support_v1_invalidator(self, obj):
+        return [
+            ("Version", obj.version_id, True),
+            ("Feature", obj.feature_id, True),
+        ]
 
     def version_v1_serializer(self, obj):
         if not obj:

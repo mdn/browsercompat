@@ -11,7 +11,7 @@ from rest_framework.serializers import (
 from .fields import (
     CurrentHistoryField, HistoricalObjectField, HistoryField,
     MPTTRelationField, OptionalCharField, SecureURLField, TranslatedTextField)
-from .models import Browser, Feature, Version
+from .models import Browser, Feature, Support, Version
 
 
 #
@@ -142,6 +142,25 @@ class FeatureSerializer(HistoricalModelSerializer):
             'parent', 'children', 'history_current', 'history')
 
 
+class SupportSerializer(HistoricalModelSerializer):
+    """Support Serializer"""
+
+    prefix = OptionalCharField()
+    alternate_name = OptionalCharField()
+    requires_config = OptionalCharField()
+    default_config = OptionalCharField()
+    note = TranslatedTextField(required=False)
+    footnote = TranslatedTextField(required=False)
+
+    class Meta:
+        model = Support
+        fields = (
+            'id', 'version', 'feature', 'support', 'prefix',
+            'prefix_mandatory', 'alternate_name', 'alternate_mandatory',
+            'requires_config', 'default_config', 'note', 'footnote',
+            'history_current', 'history')
+
+
 class VersionSerializer(HistoricalModelSerializer):
     """Browser Version Serializer"""
 
@@ -243,6 +262,22 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
         fields = HistoricalObjectSerializer.Meta.fields + (
             'feature', 'features')
         archive_link_fields = ('parent',)
+
+
+class HistoricalSupportSerializer(HistoricalObjectSerializer):
+
+    class ArchivedObject(SupportSerializer):
+        class Meta(SupportSerializer.Meta):
+            exclude = ('history_current', 'history')
+
+    support = HistoricalObjectField()
+    supports = SerializerMethodField('get_archive')
+
+    class Meta(HistoricalObjectSerializer.Meta):
+        model = Support.history.model
+        fields = HistoricalObjectSerializer.Meta.fields + (
+            'support', 'supports')
+        archive_link_fields = ('version', 'feature')
 
 
 class HistoricalVersionSerializer(HistoricalObjectSerializer):

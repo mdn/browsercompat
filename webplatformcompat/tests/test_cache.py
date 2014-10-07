@@ -8,7 +8,7 @@ from pytz import UTC
 
 from django.contrib.auth.models import User
 
-from webplatformcompat.models import Browser, Feature, Version
+from webplatformcompat.models import Browser, Feature, Support, Version
 from webplatformcompat.cache import Cache
 
 from .base import TestCase
@@ -126,6 +126,76 @@ class TestCache(TestCase):
         feature = self.create(Feature, slug='child', parent=parent)
         expected = [('Feature', parent.id, False)]
         self.assertEqual(expected, self.cache.feature_v1_invalidator(feature))
+
+    def test_support_v1_serializer(self):
+        browser = self.create(Browser)
+        version = self.create(Version, browser=browser, version='1.0')
+        feature = self.create(Feature, slug='feature')
+        support = self.create(Support, version=version, feature=feature)
+        out = self.cache.support_v1_serializer(support)
+        expected = {
+            'id': support.id,
+            "support": u"yes",
+            "prefix": u"",
+            "prefix_mandatory": False,
+            "alternate_name": u"",
+            "alternate_mandatory": False,
+            "requires_config": u"",
+            "default_config": u"",
+            "note": {},
+            "footnote": {},
+            'version:PK': {
+                'app': u'webplatformcompat',
+                'model': 'version',
+                'pk': version.id,
+            },
+            'feature:PK': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pk': feature.id,
+            },
+            'history:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalsupport',
+                'pks': [1],
+            },
+            'history_current:PK': {
+                'app': u'webplatformcompat',
+                'model': 'historicalsupport',
+                'pk': 1,
+            },
+        }
+        self.assertEqual(out, expected)
+
+    def test_support_v1_serializer_empty(self):
+        self.assertEqual(None, self.cache.support_v1_serializer(None))
+
+    def test_support_v1_loader(self):
+        browser = self.create(Browser)
+        version = self.create(Version, browser=browser, version='1.0')
+        feature = self.create(Feature, slug='feature')
+        support = self.create(Support, version=version, feature=feature)
+        self.assertNumQueries(1)
+        obj = self.cache.support_v1_loader(support.pk)
+        self.assertNumQueries(3)
+        serialized = self.cache.support_v1_serializer(obj)
+        self.assertTrue(serialized)
+        self.assertNumQueries(3)
+
+    def test_support_v1_loader_not_exist(self):
+        self.assertFalse(Support.objects.filter(pk=666).exists())
+        self.assertIsNone(self.cache.support_v1_loader(666))
+
+    def test_support_v1_invalidator(self):
+        browser = self.create(Browser)
+        version = self.create(Version, browser=browser, version='1.0')
+        feature = self.create(Feature, slug='feature')
+        support = self.create(Support, version=version, feature=feature)
+        expected = [
+            ('Version', version.id, True),
+            ('Feature', feature.id, True),
+        ]
+        self.assertEqual(expected, self.cache.support_v1_invalidator(support))
 
     def test_version_v1_serializer(self):
         browser = self.create(Browser)

@@ -108,10 +108,59 @@ class Feature(MPTTModel):
     def __str__(self):
         return self.slug
 
-
 # Must be done after class declaration due to coordination with MPTT
 # https://github.com/treyhunner/django-simple-history/issues/87
 register(Feature)
+
+
+@python_2_unicode_compatible
+class Support(models.Model):
+    '''Does a browser version support a feature?'''
+
+    SUPPORT_CHOICES = [(k, k) for k in (
+        'yes',
+        'no',
+        'partial',
+        'unknown',
+        'never'
+    )]
+
+    version = models.ForeignKey(Version, related_name='supports')
+    feature = models.ForeignKey(Feature, related_name='supports')
+    support = models.CharField(
+        help_text="Does the browser version support this feature?",
+        max_length=10, choices=SUPPORT_CHOICES, default='yes')
+    prefix = models.CharField(
+        help_text="Prefix to apply to the feature name.",
+        max_length=20, blank=True)
+    prefix_mandatory = models.BooleanField(
+        help_text="Is the prefix required?", default=False)
+    alternate_name = models.CharField(
+        help_text="Alternate name for this feature.",
+        max_length=50, blank=True)
+    alternate_mandatory = models.BooleanField(
+        help_text="Is the alternate name required?", default=False)
+    requires_config = models.CharField(
+        help_text="A configuration string to enable the feature.",
+        max_length=100, blank=True)
+    default_config = models.CharField(
+        help_text="The configuration string in the shipping browser.",
+        max_length=100, blank=True)
+    note = TranslatedField(
+        help_text="Short note on support, designed for inline display.",
+        null=True, blank=True)
+    footnote = TranslatedField(
+        help_text=(
+            "Long note on support, designed for display after a compatiblity"
+            " table, in MDN wiki format."),
+        null=True, blank=True)
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return (
+            "%s support for feature %s is %s" %
+            (self.version, self.feature, self.support))
+
 
 #
 # Cache invalidation signals
