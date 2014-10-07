@@ -109,6 +109,7 @@ def parse_compat_data(compat_data):
         'features': dict(),
         'feature_slugs': set(),
         'versions': dict(),
+        'supports': dict(),
     }
 
     for key, value in compat_data['data'].items():
@@ -163,6 +164,28 @@ def parse_compat_data_item(key, item, parsed_data):
     version_ignore = [
         'notes',
     ]
+    support_map = {
+        'y': 'yes',
+        'u': 'unknown',
+        'x': 'prefix',
+        'n': 'no',
+        'a': 'unknown',
+    }
+    support_prefix = {
+        'Chrome': '-webkit',
+        'Safari': '-webkit',
+        'Android': '-webkit',
+        'Chrome Mobile': '-webkit',
+        'Chrome for Android': '-webkit',
+        'BlackBerry': '-webkit',
+        'Firefox': '-moz',
+        'Firefox OS': '-moz',
+        'Safari Mobile': '-moz',
+        'Firefox Mobile': '-moz',
+        'Opera': '-o',
+        'Opera Mobile': '-o',
+        'Internet Explorer': '-ms',
+    }
 
     if "breadcrumb" in item:
         assert "contents" in item
@@ -216,8 +239,9 @@ def parse_compat_data_item(key, item, parsed_data):
                             'name': browser,
                         }
 
-                    # Add version
-                    for raw_version in versions:
+                    version_note = versions.get('notes', {})
+                    for raw_version, raw_support in versions.items():
+                        # Add version
                         if raw_version in version_ignore:
                             continue
                         version, version_id = convert_version(
@@ -227,6 +251,32 @@ def parse_compat_data_item(key, item, parsed_data):
                                 'version': version,
                             }
 
+                        # Add support
+                        support_id = (version_id, feature_id)
+                        if support_id not in parsed_data['supports']:
+                            notes = []
+
+                            support = support_map[raw_support[0]]
+                            if support == 'prefix':
+                                support = 'yes'
+                                prefix = support_prefix[browser]
+                            else:
+                                prefix = None
+
+                            if len(raw_support) > 1:
+                                notes.append(
+                                    'Original support string is "%s"'
+                                    % raw_support)
+                            for item in version_note.items():
+                                notes.append('%s: %s' % item)
+
+                            data = {'support': support}
+                            if notes:
+                                data['note'] = {'en': '<br>'.join(notes)}
+                            if prefix:
+                                data['prefix'] = prefix
+                                data['prefix_mandatory'] = True
+                            parsed_data['supports'][support_id] = data
     else:
         for subkey, subitem in item.items():
             parse_compat_data_item(subkey, subitem, parsed_data)
@@ -252,7 +302,8 @@ def convert_version(browser_id, raw_version):
 
 
 def upload_compat_data(session, parsed_data):
-    api_ids = dict((n, {}) for n in ['browsers', 'versions', 'features'])
+    api_ids = dict(
+        (n, {}) for n in ['browsers', 'versions', 'features', 'supports'])
     logger.info("Importing browsers...")
     for browser_id in sorted(parsed_data['browsers'].keys()):
         upload_browser(session, browser_id, parsed_data, api_ids)
@@ -271,12 +322,19 @@ def upload_compat_data(session, parsed_data):
         if len(api_ids['features']) % 100 == 0:
             logger.info("Imported %d features..." % len(api_ids['features']))
 
+    logger.info("Importing supports...")
+    for support_id in sorted(parsed_data['supports'].keys()):
+        upload_support(session, support_id, parsed_data, api_ids)
+        if len(api_ids['supports']) % 100 == 0:
+            logger.info("Imported %d supports..." % len(api_ids['supports']))
+
     counts = dict((n, len(api_ids[n])) for n in api_ids)
     return counts
 
 
 def upload_subset_compat_data(session, parsed_data):
-    api_ids = dict((n, {}) for n in ['browsers', 'versions', 'features'])
+    api_ids = dict(
+        (n, {}) for n in ['browsers', 'versions', 'features', 'supports'])
 
     # Load all browsers, versions because no Support instances yet
     logger.info("Importing browsers...")
@@ -300,6 +358,15 @@ def upload_subset_compat_data(session, parsed_data):
             if len(api_ids['features']) % 100 == 0:
                 logger.info(
                     "Imported %d features..." % len(api_ids['features']))
+
+    logger.info("Import related supports...")
+    for support_id in sorted(parsed_data['supports'].keys()):
+        feature_id = support_id[1]
+        if feature_id in api_ids['features']:
+            upload_support(session, support_id, parsed_data, api_ids)
+            if len(api_ids['supports']) % 100 == 0:
+                logger.info(
+                    "Imported %d supports..." % len(api_ids['supports']))
 
     counts = dict((n, len(api_ids[n])) for n in api_ids)
     return counts
@@ -405,6 +472,43 @@ def upload_feature(session, feature_id, parsed_data, api_ids):
         api_id = response.json()['features']['id']
         api_ids['features'][feature_id] = api_id
     return api_ids['features'][feature_id]
+
+
+def upload_support(session, support_id, parsed_data, api_ids):
+    '''Upload a parsed support to the API
+
+    Keyword Arguments:
+    session - authenticated session to use for uploads
+    version_id - ID of the browser in parsed_data['versions']
+    parsed_data - dictionary of all the parsed data
+    api_ids - dictionary of IDs of uploaded instances
+
+    Return is the ID generated by the API
+    '''
+    if support_id not in api_ids['supports']:
+        support = parsed_data['supports'][support_id]
+        version_id, feature_id = support_id
+        version_api_id = upload_version(
+            session, version_id, parsed_data, api_ids)
+        feature_api_id = upload_feature(
+            session, feature_id, parsed_data, api_ids)
+        data = {
+            "support": support['support'],
+            "links": {
+                "version": version_api_id,
+                "feature": feature_api_id,
+            },
+        }
+        support_json = json.dumps({"supports": data})
+        response = session.post(
+            session.base_url + '/api/v1/supports', data=support_json,
+            headers={
+                'content-type': 'application/vnd.api+json',
+                'X-CSRFToken': session.cookies['csrftoken']})
+        assert response.status_code == 201, response.content
+        api_id = response.json()['supports']['id']
+        api_ids['supports'][support_id] = api_id
+    return api_ids['supports'][support_id]
 
 
 if __name__ == '__main__':
