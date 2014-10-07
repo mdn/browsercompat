@@ -150,7 +150,7 @@ class FeatureSerializer(HistoricalModelSerializer):
         fields = (
             'id', 'slug', 'mdn_path', 'experimental', 'standardized',
             'stable', 'obsolete', 'name',
-            'parent', 'children', 'history_current', 'history')
+            'parent', 'children', 'supports', 'history_current', 'history')
 
 
 class SupportSerializer(HistoricalModelSerializer):
@@ -174,8 +174,8 @@ class VersionSerializer(HistoricalModelSerializer):
         model = Version
         fields = (
             'id', 'browser', 'version', 'release_day', 'retirement_day',
-            'status', 'release_notes_uri', 'note', 'order', 'history',
-            'history_current')
+            'status', 'release_notes_uri', 'note', 'order',
+            'supports', 'history', 'history_current')
 
 
 class UserSerializer(ModelSerializer):
@@ -254,7 +254,7 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(FeatureSerializer):
         class Meta(FeatureSerializer.Meta):
-            exclude = ('history_current', 'history', 'children')
+            exclude = ('history_current', 'history', 'supports', 'children')
 
     feature = HistoricalObjectField()
     features = SerializerMethodField('get_archive')
@@ -286,7 +286,7 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(VersionSerializer):
         class Meta(VersionSerializer.Meta):
-            exclude = ('history_current', 'history')
+            exclude = ('supports', 'history_current', 'history')
 
     version = HistoricalObjectField()
     versions = SerializerMethodField('get_archive')

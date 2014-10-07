@@ -32,6 +32,7 @@ class TestFeatureViewSet(APITestCase):
             'name': None,
             'parent': None,
             'children': [],
+            'supports': [],
             'history': [fh_pk],
             'history_current': fh_pk,
         }
@@ -48,6 +49,7 @@ class TestFeatureViewSet(APITestCase):
                 "obsolete": False,
                 "name": None,
                 "links": {
+                    'supports': [],
                     "parent": None,
                     "children": [],
                     "history_current": str(fh_pk),
@@ -55,6 +57,11 @@ class TestFeatureViewSet(APITestCase):
                 },
             },
             "links": {
+                "features.supports": {
+                    "href": (
+                        self.baseUrl + "/api/v1/supports/{features.supports}"),
+                    "type": "supports",
+                },
                 "features.parent": {
                     "href": (
                         self.baseUrl + "/api/v1/features/{features.parent}"),
@@ -103,6 +110,7 @@ class TestFeatureViewSet(APITestCase):
             'stable': False,
             'obsolete': True,
             'name': 'input',
+            'supports': [],
             'parent': parent.id,
             'children': [],
             'history': [fh_pk],
@@ -121,6 +129,7 @@ class TestFeatureViewSet(APITestCase):
                 "obsolete": True,
                 'name': 'input',
                 "links": {
+                    'supports': [],
                     "parent": str(parent.id),
                     "children": [],
                     "history_current": str(fh_pk),
@@ -128,6 +137,11 @@ class TestFeatureViewSet(APITestCase):
                 },
             },
             "links": {
+                "features.supports": {
+                    "href": (
+                        self.baseUrl + "/api/v1/supports/{features.supports}"),
+                    "type": "supports",
+                },
                 "features.parent": {
                     "href": (
                         self.baseUrl + "/api/v1/features/{features.parent}"),
@@ -174,6 +188,7 @@ class TestFeatureViewSet(APITestCase):
             'obsolete': False,
             'name': {'en': 'A Feature'},
             'parent': None,
+            'supports': [],
             'children': [],
             'history': [fhistory_pk],
             'history_current': fhistory_pk,
@@ -199,6 +214,7 @@ class TestFeatureViewSet(APITestCase):
             'stable': True,
             'obsolete': False,
             'name': {'en': 'A Feature'},
+            'supports': [],
             'parent': parent.id,
             'children': [],
             'history': [fhistory_pk],
@@ -226,6 +242,7 @@ class TestFeatureViewSet(APITestCase):
             'stable': True,
             'obsolete': False,
             'name': {'en': 'Parent'},
+            'supports': [],
             'parent': None,
             'children': [feature.id],
             'history': [phistory_pk],
@@ -239,6 +256,7 @@ class TestFeatureViewSet(APITestCase):
             'stable': True,
             'obsolete': False,
             'name': {'en': 'Other'},
+            'supports': [],
             'parent': None,
             'children': [],
             'history': [ohistory_pk],

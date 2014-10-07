@@ -57,6 +57,9 @@ class Cache(BaseCache):
         children_pks = getattr(
             obj, '_children_pks',
             list(obj.children.values_list('pk', flat=True)))
+        support_pks = getattr(
+            obj, '_support_pks',
+            list(obj.supports.values_list('pk', flat=True)))
         return dict((
             ('id', obj.pk),
             ('slug', obj.slug),
@@ -66,6 +69,8 @@ class Cache(BaseCache):
             ('stable', obj.stable),
             ('obsolete', obj.obsolete),
             ('name', obj.name),
+            self.field_to_json(
+                'PKList', 'supports', model=Support, pks=support_pks),
             self.field_to_json(
                 'PK', 'parent', model=Feature, pk=obj.parent_id),
             self.field_to_json(
@@ -87,8 +92,8 @@ class Cache(BaseCache):
         else:
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
-            obj._children_pks = list(
-                obj.children.values_list('pk', flat=True))
+            obj._children_pks = list(obj.children.values_list('pk', flat=True))
+            obj._support_pks = list(obj.supports.values_list('pk', flat=True))
             return obj
 
     def feature_v1_invalidator(self, obj):
@@ -152,6 +157,9 @@ class Cache(BaseCache):
     def version_v1_serializer(self, obj):
         if not obj:
             return None
+        support_pks = getattr(
+            obj, '_support_pks',
+            list(obj.supports.values_list('pk', flat=True)))
         history_pks = getattr(
             obj, '_history_pks',
             list(obj.history.all().values_list('history_id', flat=True)))
@@ -167,6 +175,8 @@ class Cache(BaseCache):
             self.field_to_json(
                 'PK', 'browser', model=Browser, pk=obj.browser_id),
             self.field_to_json(
+                'PKList', 'supports', model=Support, pks=support_pks),
+            self.field_to_json(
                 'PKList', 'history', model=obj.history.model,
                 pks=history_pks),
             self.field_to_json(
@@ -177,10 +187,11 @@ class Cache(BaseCache):
     def version_v1_loader(self, pk):
         queryset = Version.objects
         try:
-            obj = queryset.get(pk=pk)
+            obj = queryset.select_related('supports__pk').get(pk=pk)
         except Version.DoesNotExist:
             return None
         else:
+            obj._support_pks = list(obj.supports.values_list('pk', flat=True))
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
             return obj

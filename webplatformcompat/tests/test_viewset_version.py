@@ -33,6 +33,7 @@ class TestVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': browser.pk,
+            'supports': [],
             'history': [vh_pk],
             'history_current': vh_pk,
         }
@@ -50,6 +51,7 @@ class TestVersionViewSet(APITestCase):
                 "order": 0,
                 "links": {
                     "browser": str(browser.pk),
+                    'supports': [],
                     "history_current": str(vh_pk),
                     "history": [str(vh_pk)],
                 },
@@ -60,6 +62,12 @@ class TestVersionViewSet(APITestCase):
                         "http://testserver/api/v1/browsers/"
                         "{versions.browser}"),
                     "type": "browsers"
+                },
+                "versions.supports": {
+                    "href": (
+                        "http://testserver/api/v1/supports/"
+                        "{versions.supports}"),
+                    "type": "supports"
                 },
                 "versions.history_current": {
                     "href": (
@@ -98,6 +106,7 @@ class TestVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': browser.pk,
+            'supports': [],
             'history': [vhistory_pk],
             'history_current': vhistory_pk,
         }]
@@ -124,6 +133,7 @@ class TestVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': browser.pk,
+            'supports': [],
             'history': [vhistory_pk],
             'history_current': vhistory_pk,
         }]
@@ -149,6 +159,7 @@ class TestVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': browser.pk,
+            'supports': [],
             'history': [vhistory_pk],
             'history_current': vhistory_pk,
         }]
@@ -176,6 +187,7 @@ class TestVersionViewSet(APITestCase):
             'note': None,
             'order': 0,
             'browser': browser.pk,
+            'supports': [],
             'history': [vhistory_pk],
             'history_current': vhistory_pk,
         }]

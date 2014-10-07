@@ -77,7 +77,12 @@ class TestCache(TestCase):
             'standardized': True,
             'stable': True,
             'obsolete': False,
-            'name': {'en': 'A Name'},
+            'name': {"en": "A Name"},
+            'supports:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'support',
+                'pks': [],
+            },
             'parent:PK': {
                 'app': u'webplatformcompat',
                 'model': 'feature',
@@ -214,6 +219,11 @@ class TestCache(TestCase):
                 'app': u'webplatformcompat',
                 'model': 'browser',
                 'pk': browser.id,
+            },
+            'supports:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'support',
+                'pks': [],
             },
             'history:PKList': {
                 'app': u'webplatformcompat',
