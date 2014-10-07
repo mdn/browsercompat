@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Fields for Django REST Framework serializers
+"""
 from __future__ import unicode_literals
 
 import json

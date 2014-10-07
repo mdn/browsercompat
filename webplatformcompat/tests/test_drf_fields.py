@@ -7,7 +7,7 @@ Tests for `web-platform-compat` fields module.
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from webplatformcompat.fields import OptionalCharField, TranslatedTextField
+from webplatformcompat.drf_fields import OptionalCharField, TranslatedTextField
 
 
 class SharedTranslatedTextFieldTests(object):

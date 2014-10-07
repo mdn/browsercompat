@@ -8,7 +8,7 @@ from rest_framework.serializers import (
     DateField, DateTimeField, IntegerField, ModelSerializer,
     PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
 
-from .fields import (
+from .drf_fields import (
     CurrentHistoryField, HistoricalObjectField, HistoryField,
     MPTTRelationField, OptionalCharField, SecureURLField, TranslatedTextField)
 from .models import Browser, Feature, Support, Version
