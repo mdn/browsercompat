@@ -74,7 +74,7 @@ class CachedQueryset(object):
 
     @property
     def pks(self):
-        if not self._primary_keys:
+        if self._primary_keys is None:
             self._primary_keys = list(
                 self.queryset.values_list('pk', flat=True))
         return self._primary_keys
@@ -89,6 +89,9 @@ class CachedQueryset(object):
 
     def all(self):
         return self
+
+    def none(self):
+        return CachedQueryset(self.cache, self.queryset.none(), [])
 
     def filter(self, **kwargs):
         assert not self._primary_keys

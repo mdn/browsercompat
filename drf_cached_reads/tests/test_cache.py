@@ -167,6 +167,11 @@ class TestCachedQueryset(TestCase):
         cq = CachedQueryset(self.cache, User.objects.all())
         self.assertRaises(User.DoesNotExist, cq.get, pk=666)
 
+    def test_none(self):
+        cq = CachedQueryset(self.cache, User.objects.all())
+        cq_none = cq.none()
+        self.assertEqual([], cq_none.pks)
+
 
 class TestFieldConverters(TestCase):
     def setUp(self):
