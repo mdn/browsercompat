@@ -8,6 +8,7 @@ from rest_framework.serializers import (
     DateField, DateTimeField, IntegerField, ModelSerializer,
     PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
 
+from . import fields
 from .drf_fields import (
     CurrentHistoryField, HistoricalObjectField, HistoryField,
     MPTTRelationField, OptionalCharField, SecureURLField, TranslatedTextField)
@@ -46,7 +47,21 @@ class WriteRestrictedMixin(object):
         return fields
 
 
-class HistoricalModelSerializer(WriteRestrictedMixin, ModelSerializer):
+class FieldMapMixin(object):
+    """Automatically handle fields used by this project"""
+    field_mapping = ModelSerializer.field_mapping
+    field_mapping[fields.TranslatedField] = TranslatedTextField
+    field_mapping[fields.SecureURLField] = SecureURLField
+
+    def get_field(self, model_field):
+        field = super(FieldMapMixin, self).get_field(model_field)
+        if isinstance(field, TranslatedTextField):
+            field.allow_canonical = model_field.allow_canonical
+        return field
+
+
+class HistoricalModelSerializer(
+        WriteRestrictedMixin, FieldMapMixin, ModelSerializer):
     """Model serializer with history manager"""
 
     def get_default_fields(self):
@@ -99,10 +114,6 @@ class HistoricalModelSerializer(WriteRestrictedMixin, ModelSerializer):
 class BrowserSerializer(HistoricalModelSerializer):
     """Browser Serializer"""
 
-    icon = SecureURLField(required=False)
-    name = TranslatedTextField()
-    note = TranslatedTextField(required=False)
-
     def save_object(self, obj, **kwargs):
         if 'versions' in getattr(obj, '_related_data', {}):
             versions = obj._related_data.pop('versions')
@@ -131,7 +142,6 @@ class FeatureSerializer(HistoricalModelSerializer):
     """Feature Serializer"""
 
     mdn_path = OptionalCharField()
-    name = TranslatedTextField(allow_canonical=True)
     children = MPTTRelationField(many=True, source='children')
 
     class Meta:
@@ -149,8 +159,6 @@ class SupportSerializer(HistoricalModelSerializer):
     alternate_name = OptionalCharField()
     requires_config = OptionalCharField()
     default_config = OptionalCharField()
-    note = TranslatedTextField(required=False)
-    footnote = TranslatedTextField(required=False)
 
     class Meta:
         model = Support
@@ -164,8 +172,6 @@ class SupportSerializer(HistoricalModelSerializer):
 class VersionSerializer(HistoricalModelSerializer):
     """Browser Version Serializer"""
 
-    release_notes_uri = TranslatedTextField(required=False)
-    note = TranslatedTextField(required=False)
     order = IntegerField(read_only=True, source='_order')
 
     class Meta:
