@@ -14,10 +14,17 @@ class Cache(BaseCache):
     def browser_v1_serializer(self, obj):
         if not obj:
             return None
-        history_pks = getattr(
-            obj, '_history_pks',
-            list(obj.history.all().values_list('history_id', flat=True)))
-        versions_pks = list(obj.versions.values_list('pk', flat=True))
+
+        history_pks = getattr(obj, '_history_pks', None)
+        if history_pks is None:
+            history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
+        versions_pks = getattr(obj, '_version_pks', None)
+        if versions_pks is None:
+            versions_pks = list(
+                obj.versions.values_list('pk', flat=True))
+
         return dict((
             ('id', obj.pk),
             ('slug', obj.slug),
@@ -35,7 +42,7 @@ class Cache(BaseCache):
         ))
 
     def browser_v1_loader(self, pk):
-        queryset = Browser.objects.select_related('versions__pk')
+        queryset = Browser.objects.all()
         try:
             obj = queryset.get(pk=pk)
         except Browser.DoesNotExist:
@@ -43,6 +50,8 @@ class Cache(BaseCache):
         else:
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
+            obj._version_pks = list(
+                obj.versions.values_list('pk', flat=True))
             return obj
 
     def browser_v1_invalidator(self, obj):
@@ -51,15 +60,20 @@ class Cache(BaseCache):
     def feature_v1_serializer(self, obj):
         if not obj:
             return None
-        history_pks = getattr(
-            obj, '_history_pks',
-            list(obj.history.all().values_list('history_id', flat=True)))
-        children_pks = getattr(
-            obj, '_children_pks',
-            list(obj.children.values_list('pk', flat=True)))
-        support_pks = getattr(
-            obj, '_support_pks',
-            list(obj.supports.values_list('pk', flat=True)))
+
+        history_pks = getattr(obj, '_history_pks', None)
+        if history_pks is None:
+            history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
+        children_pks = getattr(obj, '_children_pks', None)
+        if children_pks is None:
+            children_pks = list(obj.children.values_list('pk', flat=True))
+
+        support_pks = getattr(obj, '_support_pks', None)
+        if support_pks is None:
+            support_pks = list(obj.supports.values_list('pk', flat=True))
+
         return dict((
             ('id', obj.pk),
             ('slug', obj.slug),
@@ -111,9 +125,12 @@ class Cache(BaseCache):
     def support_v1_serializer(self, obj):
         if not obj:
             return None
-        history_pks = getattr(
-            obj, '_history_pks',
-            list(obj.history.all().values_list('history_id', flat=True)))
+
+        history_pks = getattr(obj, '_history_pks', None)
+        if history_pks is None:
+            history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
         return dict((
             ('id', obj.pk),
             ('support', obj.support),
@@ -157,12 +174,16 @@ class Cache(BaseCache):
     def version_v1_serializer(self, obj):
         if not obj:
             return None
-        support_pks = getattr(
-            obj, '_support_pks',
-            list(obj.supports.values_list('pk', flat=True)))
-        history_pks = getattr(
-            obj, '_history_pks',
-            list(obj.history.all().values_list('history_id', flat=True)))
+
+        support_pks = getattr(obj, '_support_pks', None)
+        if support_pks is None:
+            support_pks = list(obj.supports.values_list('pk', flat=True))
+
+        history_pks = getattr(obj, '_history_pks', None)
+        if history_pks is None:
+            history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
         return dict((
             ('id', obj.pk),
             ('version', obj.version),

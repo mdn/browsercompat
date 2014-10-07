@@ -50,12 +50,11 @@ class TestCache(TestCase):
 
     def test_browser_v1_loader(self):
         browser = self.create(Browser)
-        self.assertNumQueries(1)
-        obj = self.cache.browser_v1_loader(browser.pk)
-        self.assertNumQueries(3)
-        serialized = self.cache.browser_v1_serializer(obj)
+        with self.assertNumQueries(3):
+            obj = self.cache.browser_v1_loader(browser.pk)
+        with self.assertNumQueries(0):
+            serialized = self.cache.browser_v1_serializer(obj)
         self.assertTrue(serialized)
-        self.assertNumQueries(3)
 
     def test_browser_v1_loader_not_exist(self):
         self.assertFalse(Browser.objects.filter(pk=666).exists())
@@ -111,12 +110,11 @@ class TestCache(TestCase):
 
     def test_feature_v1_loader(self):
         feature = self.create(Feature)
-        self.assertNumQueries(1)
-        obj = self.cache.feature_v1_loader(feature.pk)
-        self.assertNumQueries(3)
-        serialized = self.cache.feature_v1_serializer(obj)
+        with self.assertNumQueries(4):
+            obj = self.cache.feature_v1_loader(feature.pk)
+        with self.assertNumQueries(0):
+            serialized = self.cache.feature_v1_serializer(obj)
         self.assertTrue(serialized)
-        self.assertNumQueries(3)
 
     def test_feature_v1_loader_not_exist(self):
         self.assertFalse(Feature.objects.filter(pk=666).exists())
@@ -180,12 +178,11 @@ class TestCache(TestCase):
         version = self.create(Version, browser=browser, version='1.0')
         feature = self.create(Feature, slug='feature')
         support = self.create(Support, version=version, feature=feature)
-        self.assertNumQueries(1)
-        obj = self.cache.support_v1_loader(support.pk)
-        self.assertNumQueries(3)
-        serialized = self.cache.support_v1_serializer(obj)
+        with self.assertNumQueries(2):
+            obj = self.cache.support_v1_loader(support.pk)
+        with self.assertNumQueries(0):
+            serialized = self.cache.support_v1_serializer(obj)
         self.assertTrue(serialized)
-        self.assertNumQueries(3)
 
     def test_support_v1_loader_not_exist(self):
         self.assertFalse(Support.objects.filter(pk=666).exists())
@@ -244,12 +241,11 @@ class TestCache(TestCase):
     def test_version_v1_loader(self):
         browser = self.create(Browser)
         version = self.create(Version, browser=browser)
-        self.assertNumQueries(1)
-        obj = self.cache.version_v1_loader(version.pk)
-        self.assertNumQueries(3)
-        serialized = self.cache.version_v1_serializer(obj)
+        with self.assertNumQueries(3):
+            obj = self.cache.version_v1_loader(version.pk)
+        with self.assertNumQueries(0):
+            serialized = self.cache.version_v1_serializer(obj)
         self.assertTrue(serialized)
-        self.assertNumQueries(3)
 
     def test_version_v1_loader_not_exist(self):
         self.assertFalse(Version.objects.filter(pk=666).exists())
@@ -298,12 +294,11 @@ class TestCache(TestCase):
     def test_historicalbrowser_v1_loader(self):
         browser = self.create(Browser)
         hbrowser = browser.history.all()[0]
-        self.assertNumQueries(1)
-        obj = self.cache.historicalbrowser_v1_loader(hbrowser.history_id)
-        self.assertNumQueries(3)
-        serialized = self.cache.historicalbrowser_v1_serializer(obj)
+        with self.assertNumQueries(1):
+            obj = self.cache.historicalbrowser_v1_loader(hbrowser.history_id)
+        with self.assertNumQueries(0):
+            serialized = self.cache.historicalbrowser_v1_serializer(obj)
         self.assertTrue(serialized)
-        self.assertNumQueries(3)
 
     def test_historicalbrowser_v1_loader_not_exist(self):
         self.assertFalse(Browser.history.filter(pk=666).exists())
@@ -338,12 +333,11 @@ class TestCache(TestCase):
 
     def test_user_v1_loader(self):
         user = self.create(User)
-        self.assertNumQueries(1)
-        obj = self.cache.user_v1_loader(user.pk)
-        self.assertNumQueries(3)
-        serialized = self.cache.user_v1_serializer(obj)
+        with self.assertNumQueries(1):
+            obj = self.cache.user_v1_loader(user.pk)
+        with self.assertNumQueries(0):
+            serialized = self.cache.user_v1_serializer(obj)
         self.assertTrue(serialized)
-        self.assertNumQueries(3)
 
     def test_user_v1_loader_not_exist(self):
         self.assertFalse(User.objects.filter(pk=666).exists())
