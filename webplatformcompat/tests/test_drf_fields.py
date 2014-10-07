@@ -78,10 +78,7 @@ class TestCanonTranslatedTextField(SharedTranslatedTextFieldTests, TestCase):
         self.assertEqual(expected, self.ttf.from_native(bad_json))
 
 
-class TestOptionalCharField(TestCase):
-    def setUp(self):
-        self.ocf = OptionalCharField()
-
+class SharedOptionalCharFieldTests(object):
     def test_to_native_string(self):
         self.assertEqual('foo', self.ocf.to_native('foo'))
 
@@ -93,3 +90,13 @@ class TestOptionalCharField(TestCase):
 
     def test_from_native_null(self):
         self.assertEqual('', self.ocf.from_native(None))
+
+
+class TestNonOptionalCharField(SharedOptionalCharFieldTests, TestCase):
+    def setUp(self):
+        self.ocf = OptionalCharField(required=True)
+
+
+class TestOptionalCharField(SharedOptionalCharFieldTests, TestCase):
+    def setUp(self):
+        self.ocf = OptionalCharField()

@@ -159,12 +159,6 @@ class MPTTRelationField(PrimaryKeyRelatedField):
 
 class OptionalCharField(CharField):
     """Field is a CharField that serializes as None when omitted"""
-    def __init__(self, *args, **kwargs):
-        required = kwargs.pop('required', False)
-        assert not required, "OptionalCharField must not be required"
-        super(OptionalCharField, self).__init__(
-            required=required, *args, **kwargs)
-
     def to_native(self, value):
         if value:
             return value

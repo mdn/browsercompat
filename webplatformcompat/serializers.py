@@ -3,6 +3,7 @@
 API Serializers
 """
 
+from django.db.models import CharField
 from django.contrib.auth.models import User
 from rest_framework.serializers import (
     DateField, DateTimeField, IntegerField, ModelSerializer,
@@ -52,6 +53,7 @@ class FieldMapMixin(object):
     field_mapping = ModelSerializer.field_mapping
     field_mapping[fields.TranslatedField] = TranslatedTextField
     field_mapping[fields.SecureURLField] = SecureURLField
+    field_mapping[CharField] = OptionalCharField
 
     def get_field(self, model_field):
         field = super(FieldMapMixin, self).get_field(model_field)
@@ -141,7 +143,6 @@ class BrowserSerializer(HistoricalModelSerializer):
 class FeatureSerializer(HistoricalModelSerializer):
     """Feature Serializer"""
 
-    mdn_path = OptionalCharField()
     children = MPTTRelationField(many=True, source='children')
 
     class Meta:
@@ -154,11 +155,6 @@ class FeatureSerializer(HistoricalModelSerializer):
 
 class SupportSerializer(HistoricalModelSerializer):
     """Support Serializer"""
-
-    prefix = OptionalCharField()
-    alternate_name = OptionalCharField()
-    requires_config = OptionalCharField()
-    default_config = OptionalCharField()
 
     class Meta:
         model = Support
