@@ -5,23 +5,12 @@ from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
-from django_extensions.db.fields.json import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 from simple_history import register
 from simple_history.models import HistoricalRecords
 
-from .validators import LanguageDictValidator, SecureURLValidator
-
-
-class TranslatedField(JSONField):
-    '''A JSONField that holds translated strings'''
-
-    def __init__(self, *args, **kwargs):
-        self.allow_canonical = kwargs.pop('allow_canonical', False)
-        validators = kwargs.pop(
-            'validators', [LanguageDictValidator(self.allow_canonical)])
-        super(TranslatedField, self).__init__(
-            validators=validators, *args, **kwargs)
+from .fields import TranslatedField
+from .validators import SecureURLValidator
 
 
 @python_2_unicode_compatible
