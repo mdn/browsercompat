@@ -23,6 +23,10 @@ class TestCachedQueryset(TestCase):
     def setUp(self):
         self.cache = UserCache()
 
+    def create_users(self, number):
+        for x in range(number):
+            User.objects.create(username='user%d' % x)
+
     def test_get_existing_instance(self):
         user = User.objects.create(username='frank')
         cq = CachedQueryset(self.cache, User.objects.all())
@@ -38,3 +42,47 @@ class TestCachedQueryset(TestCase):
         cq = CachedQueryset(self.cache, User.objects.all())
         cq_none = cq.none()
         self.assertEqual([], cq_none.pks)
+
+    def test_pks_by_queryset(self):
+        self.create_users(10)
+        cq = CachedQueryset(self.cache, User.objects.all())
+        with self.assertNumQueries(1):
+            pks = cq.pks
+        self.assertEqual(10, len(pks))
+
+    def test_pks_by_pks(self):
+        self.create_users(10)
+        cq = CachedQueryset(self.cache, User.objects.all(), [1, 2, 3])
+        with self.assertNumQueries(0):
+            pks = cq.pks
+        self.assertEqual(3, len(pks))
+        self.assertEqual([1, 2, 3], pks)
+
+    def test_count_by_queryset(self):
+        self.create_users(10)
+        cq = CachedQueryset(self.cache, User.objects.all())
+        with self.assertNumQueries(1):
+            self.assertEqual(10, cq.count())
+        self.assertIsNone(cq._primary_keys)
+
+    def test_count_by_pks(self):
+        self.create_users(10)
+        cq = CachedQueryset(self.cache, User.objects.all(), range(5))
+        with self.assertNumQueries(0):
+            self.assertEqual(5, cq.count())
+
+    def test_get_slice_by_queryset(self):
+        self.create_users(10)
+        cq = CachedQueryset(self.cache, User.objects.all())
+        with self.assertNumQueries(0):
+            users = cq[0:5]
+        with self.assertNumQueries(1):
+            self.assertEqual(5, users.count())
+
+    def test_get_slice_by_pks(self):
+        self.create_users(10)
+        cq = CachedQueryset(self.cache, User.objects.all(), range(5))
+        with self.assertNumQueries(0):
+            users = cq[0:5]
+        with self.assertNumQueries(0):
+            self.assertEqual(5, users.count())

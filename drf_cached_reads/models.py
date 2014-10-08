@@ -92,6 +92,12 @@ class CachedQueryset(object):
     def none(self):
         return CachedQueryset(self.cache, self.queryset.none(), [])
 
+    def count(self):
+        if self._primary_keys is None:
+            return self.queryset.count()
+        else:
+            return len(self.pks)
+
     def filter(self, **kwargs):
         assert not self._primary_keys
         self.queryset = self.queryset.filter(**kwargs)
@@ -112,3 +118,10 @@ class CachedQueryset(object):
                 (self.model, args, kwargs))
         else:
             return CachedModel(self.model, model_data)
+
+    def __getitem__(self, key):
+        if self._primary_keys is None:
+            pks = self.queryset.values_list('pk', flat=True)[key]
+        else:
+            pks = self.pks[key]
+        return CachedQueryset(self.cache, self.queryset, pks)
