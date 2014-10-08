@@ -14,7 +14,10 @@ Browse.Router.reopen({
 Browse.Router.map(function() {
     this.resource('browsers');
     this.resource('browser', {path: '/browsers/:browser_id'});
+    this.resource('versions');
+    this.resource('version', {path: '/versions/:version_id'});
     this.resource('features');
+    this.resource('feature', {path: '/features/:feature_id'});
 });
 
 /* Serializer - JsonApiSerializer with modifictions */
@@ -71,15 +74,7 @@ DS.JsonApiNamespacedSerializer = DS.JsonApiSerializer.extend({
 Browse.ApplicationAdapter = DS.JsonApiAdapter.extend({
     namespace: 'api/v1',
     defaultSerializer: 'DS/jsonApiNamespaced'
-/*
-    buildURL: function(typeName, id) {
-        var x = this._super(typeName, id);
-        //debugger;
-        return x;
-    }
-*/
 });
-//DS._routes['browserVersion'] = "versions/{browsers.versions}"
 
 
 /* Routes */
@@ -89,9 +84,21 @@ Browse.BrowsersRoute = Ember.Route.extend({
     }
 });
 
+Browse.VersionsRoute = Ember.Route.extend({
+    model: function() {
+        return this.store.find('version');
+    }
+});
+
 Browse.FeaturesRoute = Ember.Route.extend({
     model: function() {
         return this.store.find('feature');
+    }
+});
+
+Browse.SupportsRoute = Ember.Route.extend({
+    model: function() {
+        return this.store.find('support');
     }
 });
 
@@ -116,6 +123,7 @@ Browse.Feature = DS.Model.extend({
     name: attr(),
     parent: DS.belongsTo('feature', {inverse: 'children', async: true}),
     children: DS.hasMany('feature', {inverse: 'parent', async: true}),
+    supports: DS.hasMany('support', {async: true})
 });
 
 Browse.Version = DS.Model.extend({
@@ -126,7 +134,22 @@ Browse.Version = DS.Model.extend({
     status: attr('string'),
     release_notes_uri: attr(),
     note: attr(),
-    order: attr('number')
+    order: attr('number'),
+    supports: DS.hasMany('support', {async: true})
+});
+
+Browse.Support = DS.Model.extend({
+    support: attr('string'),
+    prefix: attr('string'),
+    prefix_mandatory: attr(),
+    alternate_name: attr('string'),
+    alternate_mandatory: attr(),
+    requires_config: attr('string'),
+    default_config: attr('string'),
+    note: attr(),
+    footnote: attr(),
+    version: DS.belongsTo('version', {async: true}),
+    feature: DS.belongsTo('feature', {async: true})
 });
 
 /* Controllers */
@@ -140,4 +163,38 @@ Browse.BrowserController = Ember.ObjectController.extend({
             return 'Versions';
         }
     }.property('model.versions.@each')
+});
+
+Browse.VersionController = Ember.ObjectController.extend({
+    featureInflection: function() {
+        var supports = this.get('model.supports');
+        var count = supports.get('length');
+        if (count === 1) {
+            return 'Feature';
+        } else {
+            return 'Features';
+        }
+    }.property('model.supports.@each'),
+});
+
+Browse.FeatureController = Ember.ObjectController.extend({
+    featureName: function() {
+        var name = this.get('model.name');
+        if (name.en) {
+            return name.en;
+        } else if (name) {
+            return "<code>" + name + "</code>";
+        } else {
+            return "<em>none</em>";
+        }
+    }.property('model.name'),
+    versionInflection: function() {
+        var supports = this.get('model.supports');
+        var count = supports.get('length');
+        if (count === 1) {
+            return 'Version';
+        } else {
+            return 'Versions';
+        }
+    }.property('model.supports.@each')
 });

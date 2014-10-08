@@ -55,7 +55,7 @@
                 <td>{{#if icon}}{{icon}}{{else}}<em>none</em>{{/if}}</td>
                 <td>{{name.en}}</td>
                 <td>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</td>
-                <td><a href='#'>{{#link-to 'browser' id}}{{versions.length}} {{versionInflection}}{{/link-to}}</td>
+                <td>{{#link-to 'browser' id}}{{versions.length}} {{versionInflection}}{{/link-to}}</td>
             </tr>
           {{/each}}
         </tbody>
@@ -93,7 +93,6 @@
                 <th>status</th>
                 <th>release notes URI</th>
                 <th>note</th>
-                <th>order</th>
             </tr>
         </thead>
         <tbody>
@@ -101,13 +100,12 @@
           {{#with v}}
             <tr>
                 <td>{{id}}</td>
-                <td>{{#if version}}{{version}}{{else}}<em>unspecified</em>{{/if}}</td>
+                <td>{{#link-to 'version' id}}{{#if version}}{{version}}{{else}}<em>unspecified</em>{{/if}}{{/link-to}}</td>
                 <td>{{#if releaseDay}}{{releaseDay}}{{else}}<em>none</em>{{/if}}</td>
                 <td>{{#if retirementDay}}{{retirementDay}}{{else}}<em>none</em>{{/if}}</td>
                 <td>{{status}}</td>
                 <td>{{#if releaseNoteUri}}{{releaseNoteUri}}{{else}}<em>none</em>{{/if}}</td>
                 <td>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</td>
-                <td>{{order}}</td>
             </tr>
           {{/with}}
           {{/each}}
@@ -116,6 +114,105 @@
 </div>
 {% endraw %}
 </script>
+
+<script type="text/x-handlebars" data-template-name="versions">
+{% raw %}
+<h2>{{length}} Versions</h2>
+<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>browser</th>
+                <th>version</th>
+                <th>release day</th>
+                <th>retirement day</th>
+                <th>status</th>
+                <th>release notes URI</th>
+                <th>note</th>
+                <th>features with support info</th>
+            </tr>
+        </thead>
+        <tbody>
+          {{#each itemController='version'}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{#link-to 'browser' browser.id}}{{browser.name.en}}{{/link-to}}</td>
+                <td>{{version}}</td>
+                <td>{{#if release_day}}{{release_day}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if retirementDay}}{{retirementDay}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{status}}</td>
+                <td>{{#if releaseNoteUri}}{{releaseNoteUri}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#link-to 'version' id}}{{supports.length}} {{featureInflection}}{{/link-to}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+    </table>
+</div>
+{% endraw %}
+</script>
+
+<script type="text/x-handlebars" data-template-name="version">
+{% raw %}
+<h2>{{browser.name.en}} {{#if version}}{{version}}{{else}}(unspecified version){{/if}}</h2>
+<p><em>{{#link-to 'versions'}}back to Versions{{/link-to}}</em></p>
+<dl>
+  <dt>Id</dt>
+  <dd>{{id}}</dd>
+  <dt>Browser</dt>
+  <dd>{{#link-to 'browser' browser.id}}{{browser.name.en}}{{/link-to}}</td>
+  <dt>Version</dt>
+  <dd>{{#if version}}{{version}}{{else}}<em>unspecified</em>{{/if}}</dd>
+  <dt>Release Day</dt>
+  <dd>{{#if releaseDay}}{{releaseDay}}{{else}}<em>none</em>{{/if}}</dd>
+  <dt>Retirement Day</dt>
+  <dd>{{#if retirementDay}}{{retirementDay}}{{else}}<em>none</em>{{/if}}</dd>
+  <dt>Status</dt>
+  <dd>{{status}}</dd>
+  <dt>Release Note URI</dt>
+  <dd>{{#if releaseNoteUri}}{{releaseNoteUri}}{{else}}<em>none</em>{{/if}}</dd>
+  <dt>Note</dt>
+  <dd>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</dd>
+</dl>
+
+<h3>{{supports.length}} {{featureInflection}}</h3>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>feature</th>
+                <th>supported</th>
+                <th>prefix</th>
+                <th>alternate name</th>
+                <th>requires config</th>
+                <th>note</th>
+                <th>footnote</th>
+            </tr>
+        </thead>
+        <tbody>
+          {{#each s in supports}}
+          {{#with s}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{#link-to 'feature' feature.id}}{{feature.slug}}{{/link-to}}</td>
+                <td>{{support}}</td>
+                <td>{{#if prefix}}<code>{{prefix}}</code>{{#unless prefix_mandatory}} <em>optional</em>{{/unless}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if alternate_name}}<code>{{prefix}}</code>{{#unless alternate_mandatory}} <em>optional</em>{{/unless}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if requires_config}}<code>{{requires_config}}</code> (default {{default_config}}){{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if note}}{{note.en}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if footnote}}{{footnote.en}}{{else}}<em>none</em>{{/if}}</td>
+            </tr>
+          {{/with}}
+          {{/each}}
+        </tbody>
+    </table>
+</div>
+{% endraw %}
+</script>
+
 
 <script type="text/x-handlebars" data-template-name="features">
 {% raw %}
@@ -130,10 +227,11 @@
                 <th>flags</th>
                 <th>name</th>
                 <th>on MDN</th>
+                <th>versions with support info</th>
             </tr>
         </thead>
         <tbody>
-          {{#each}}
+          {{#each itemController='feature'}}
             <tr>
                 <td>{{id}}</td>
                 <td><code>{{slug}}</code></td>
@@ -143,8 +241,10 @@
                     {{#unless stable}}<b>not stable</b>{{/unless}}
                     {{#if obsolete}}<b>obsolete</b>{{/if}}
                 </td>
-                <td>{{#if name.en}}{{name.en}}{{else}}{{#if name}}<code>{{name}}</code>{{else}}<em>none</em>{{/if}}{{/if}}</td>
+                <td>{{featureName}}</td>
+                <!--<td>{{#if name.en}}{{name.en}}{{else}}{{#if name}}<code>{{name}}</code>{{else}}<em>none</em>{{/if}}{{/if}}</td>-->
                 <td>{{#if mdn_path}}<a href="https://developer.mozilla.org/{{unbound mdn_path}}#Browser_compatibility">{{mdn_path}}</a>{{/if}}</td>
+                <td>{{#link-to 'feature' id}}{{supports.length}} {{versionInflection}}{{/link-to}}</td>
             </tr>
           {{/each}}
         </tbody>
@@ -152,6 +252,66 @@
 </div>
 {% endraw %}
 </script>
+
+<script type="text/x-handlebars" data-template-name="feature">
+{% raw %}
+<h2>Feature {{featureName}}</h2>
+<p><em>{{#link-to 'features'}}back to Features{{/link-to}}</em></p>
+<dl>
+  <dt>Id</dt>
+  <dd>{{id}}</dd>
+  <dt>Slug</dt>
+  <dd><code>{{slug}}</code></dd>
+  <dt>Experimental</dt>
+  <dd>{{experimental}}</dd>
+  <dt>Standardized</dt>
+  <dd>{{standardized}}</dd>
+  <dt>Stable</dt>
+  <dd>{{stable}}</dd>
+  <dt>Obsolete</dt>
+  <dd>{{obsolete}}</dd>
+  <dt>Name</dt>
+  <dd>{{featureName}}</dd>
+  <dt>MDN path</dt>
+  <dd>{{#if mdn_path}}<a href="https://developer.mozilla.org/{{unbound mdn_path}}#Browser_compatibility">{{mdn_path}}</a>{{/if}}</dd>
+</dl>
+
+<h3>{{supports.length}} {{versionInflection}} with Support Info</h3>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>version</th>
+                <th>supported</th>
+                <th>prefix</th>
+                <th>alternate name</th>
+                <th>requires config</th>
+                <th>note</th>
+                <th>footnote</th>
+            </tr>
+        </thead>
+        <tbody>
+          {{#each s in supports}}
+          {{#with s}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{#link-to 'version' version.id}}{{version.browser.name.en}} {{version.version}}{{/link-to}}</td>
+                <td>{{support}}</td>
+                <td>{{#if prefix}}<code>{{prefix}}</code>{{#unless prefix_mandatory}} <em>optional</em>{{/unless}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if alternate_name}}<code>{{prefix}}</code>{{#unless alternate_mandatory}} <em>optional</em>{{/unless}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if requires_config}}<code>{{requires_config}}</code> (default {{default_config}}){{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if note}}{{note.en}}{{else}}<em>none</em>{{/if}}</td>
+                <td>{{#if footnote}}{{footnote.en}}{{else}}<em>none</em>{{/if}}</td>
+            </tr>
+          {{/with}}
+          {{/each}}
+        </tbody>
+    </table>
+</div>
+{% endraw %}
+</script>
+
 {%- endblock body_container %}
 
 {% block body_js_extra %}
