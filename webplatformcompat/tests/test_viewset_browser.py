@@ -151,7 +151,16 @@ class TestBrowserViewset(APITestCase):
                         '{browsers.versions}'),
                     'type': 'versions',
                 },
-            }
+            },
+            'meta': {
+                'pagination': {
+                    'browsers': {
+                        'count': 2,
+                        'previous': None,
+                        'next': None
+                    },
+                },
+            },
         }
         actual_content = loads(response.content.decode('utf-8'))
         self.assertDataEqual(expected_content, actual_content)
@@ -165,16 +174,20 @@ class TestBrowserViewset(APITestCase):
         url = reverse('browser-list')
         response = self.client.get(url, {'slug': 'firefox'})
         history_pk = browser.history.get().pk
-        expected_data = [{
-            'id': browser.pk,
-            'slug': 'firefox',
-            'icon': None,
-            'name': {"en": "Firefox"},
-            'note': None,
-            'history': [history_pk],
-            'history_current': history_pk,
-            'versions': [],
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': browser.pk,
+                'slug': 'firefox',
+                'icon': None,
+                'name': {"en": "Firefox"},
+                'note': None,
+                'history': [history_pk],
+                'history_current': history_pk,
+                'versions': [],
+            }]}
         self.assertDataEqual(response.data, expected_data)
 
     def test_get_browsable_api(self):
@@ -182,16 +195,20 @@ class TestBrowserViewset(APITestCase):
         url = self.reverse('browser-list')
         response = self.client.get(url, HTTP_ACCEPT="text/html")
         history_pk = browser.history.get().pk
-        expected_data = [{
-            'id': browser.pk,
-            'slug': '',
-            'icon': None,
-            'name': None,
-            'note': None,
-            'history': [history_pk],
-            'history_current': history_pk,
-            'versions': [],
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': browser.pk,
+                'slug': '',
+                'icon': None,
+                'name': None,
+                'note': None,
+                'history': [history_pk],
+                'history_current': history_pk,
+                'versions': [],
+            }]}
         self.assertDataEqual(response.data, expected_data)
         self.assertTrue(response['content-type'].startswith('text/html'))
 

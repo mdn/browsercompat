@@ -178,21 +178,25 @@ class TestFeatureViewSet(APITestCase):
         response = self.client.get(
             reverse('feature-list'), {'slug': 'feature'})
         self.assertEqual(200, response.status_code, response.data)
-        expected_data = [{
-            'id': feature.id,
-            'slug': 'feature',
-            'mdn_path': None,
-            'experimental': False,
-            'standardized': True,
-            'stable': True,
-            'obsolete': False,
-            'name': {'en': 'A Feature'},
-            'parent': None,
-            'supports': [],
-            'children': [],
-            'history': [fhistory_pk],
-            'history_current': fhistory_pk,
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': feature.id,
+                'slug': 'feature',
+                'mdn_path': None,
+                'experimental': False,
+                'standardized': True,
+                'stable': True,
+                'obsolete': False,
+                'name': {'en': 'A Feature'},
+                'parent': None,
+                'supports': [],
+                'children': [],
+                'history': [fhistory_pk],
+                'history_current': fhistory_pk,
+            }]}
         self.assertDataEqual(response.data, expected_data)
 
     def test_filter_by_parent(self):
@@ -205,21 +209,25 @@ class TestFeatureViewSet(APITestCase):
         response = self.client.get(
             reverse('feature-list'), {'parent': str(parent.id)})
         self.assertEqual(200, response.status_code, response.data)
-        expected_data = [{
-            'id': feature.id,
-            'slug': 'feature',
-            'mdn_path': None,
-            'experimental': False,
-            'standardized': True,
-            'stable': True,
-            'obsolete': False,
-            'name': {'en': 'A Feature'},
-            'supports': [],
-            'parent': parent.id,
-            'children': [],
-            'history': [fhistory_pk],
-            'history_current': fhistory_pk,
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': feature.id,
+                'slug': 'feature',
+                'mdn_path': None,
+                'experimental': False,
+                'standardized': True,
+                'stable': True,
+                'obsolete': False,
+                'name': {'en': 'A Feature'},
+                'supports': [],
+                'parent': parent.id,
+                'children': [],
+                'history': [fhistory_pk],
+                'history_current': fhistory_pk,
+            }]}
         self.assertDataEqual(response.data, expected_data)
 
     def test_filter_by_no_parent(self):
@@ -233,35 +241,39 @@ class TestFeatureViewSet(APITestCase):
         response = self.client.get(
             reverse('feature-list'), {'parent': ''})
         self.assertEqual(200, response.status_code, response.data)
-        expected_data = [{
-            'id': parent.id,
-            'slug': 'parent',
-            'mdn_path': None,
-            'experimental': False,
-            'standardized': True,
-            'stable': True,
-            'obsolete': False,
-            'name': {'en': 'Parent'},
-            'supports': [],
-            'parent': None,
-            'children': [feature.id],
-            'history': [phistory_pk],
-            'history_current': phistory_pk,
-        }, {
-            'id': other.id,
-            'slug': 'other',
-            'mdn_path': None,
-            'experimental': False,
-            'standardized': True,
-            'stable': True,
-            'obsolete': False,
-            'name': {'en': 'Other'},
-            'supports': [],
-            'parent': None,
-            'children': [],
-            'history': [ohistory_pk],
-            'history_current': ohistory_pk,
-        }]
+        expected_data = {
+            'count': 2,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': parent.id,
+                'slug': 'parent',
+                'mdn_path': None,
+                'experimental': False,
+                'standardized': True,
+                'stable': True,
+                'obsolete': False,
+                'name': {'en': 'Parent'},
+                'supports': [],
+                'parent': None,
+                'children': [feature.id],
+                'history': [phistory_pk],
+                'history_current': phistory_pk,
+            }, {
+                'id': other.id,
+                'slug': 'other',
+                'mdn_path': None,
+                'experimental': False,
+                'standardized': True,
+                'stable': True,
+                'obsolete': False,
+                'name': {'en': 'Other'},
+                'supports': [],
+                'parent': None,
+                'children': [],
+                'history': [ohistory_pk],
+                'history_current': ohistory_pk,
+            }]}
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_empty(self):

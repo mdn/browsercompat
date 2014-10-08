@@ -180,22 +180,26 @@ class TestSupportViewSet(APITestCase):
         response = self.client.get(
             reverse('support-list'), {'version': str(version.id)})
         self.assertEqual(200, response.status_code, response.data)
-        expected_data = [{
-            'id': support.id,
-            'support': 'yes',
-            'prefix': None,
-            'prefix_mandatory': False,
-            'alternate_name': None,
-            'alternate_mandatory': False,
-            'requires_config': None,
-            'default_config': None,
-            'note': None,
-            'footnote': None,
-            'version': version.id,
-            'feature': feature.id,
-            'history': [history_pk],
-            'history_current': history_pk,
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': support.id,
+                'support': 'yes',
+                'prefix': None,
+                'prefix_mandatory': False,
+                'alternate_name': None,
+                'alternate_mandatory': False,
+                'requires_config': None,
+                'default_config': None,
+                'note': None,
+                'footnote': None,
+                'version': version.id,
+                'feature': feature.id,
+                'history': [history_pk],
+                'history_current': history_pk,
+            }]}
         self.assertDataEqual(response.data, expected_data)
 
     def test_filter_by_features(self):
@@ -210,22 +214,26 @@ class TestSupportViewSet(APITestCase):
         response = self.client.get(
             reverse('support-list'), {'feature': str(feature.id)})
         self.assertEqual(200, response.status_code, response.data)
-        expected_data = [{
-            'id': support.id,
-            'support': 'yes',
-            'prefix': None,
-            'prefix_mandatory': False,
-            'alternate_name': None,
-            'alternate_mandatory': False,
-            'requires_config': None,
-            'default_config': None,
-            'note': None,
-            'footnote': None,
-            'version': version.id,
-            'feature': feature.id,
-            'history': [history_pk],
-            'history_current': history_pk,
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': support.id,
+                'support': 'yes',
+                'prefix': None,
+                'prefix_mandatory': False,
+                'alternate_name': None,
+                'alternate_mandatory': False,
+                'requires_config': None,
+                'default_config': None,
+                'note': None,
+                'footnote': None,
+                'version': version.id,
+                'feature': feature.id,
+                'history': [history_pk],
+                'history_current': history_pk,
+            }]}
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_empty(self):

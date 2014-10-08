@@ -102,25 +102,29 @@ class TestHistoricalFeatureViewset(APITestCase):
         history = feature.history.all()[0]
         url = reverse('historicalfeature-list')
         response = self.client.get(url, {'id': feature.id})
-        expected_data = [{
-            'id': history.history_id,
-            'date': feature._history_date,
-            'event': 'created',
-            'user': user.pk,
-            'feature': feature.pk,
-            'features': {
-                'id': str(feature.pk),
-                'slug': 'a-feature',
-                'mdn_path': None,
-                'experimental': False,
-                'standardized': True,
-                'stable': True,
-                'obsolete': False,
-                'name': None,
-                'links': {
-                    'parent': str(parent.id),
-                    'history_current': str(history.id),
-                }
-            },
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': history.history_id,
+                'date': feature._history_date,
+                'event': 'created',
+                'user': user.pk,
+                'feature': feature.pk,
+                'features': {
+                    'id': str(feature.pk),
+                    'slug': 'a-feature',
+                    'mdn_path': None,
+                    'experimental': False,
+                    'standardized': True,
+                    'stable': True,
+                    'obsolete': False,
+                    'name': None,
+                    'links': {
+                        'parent': str(parent.id),
+                        'history_current': str(history.id),
+                    }
+                },
+            }]}
         self.assertDataEqual(expected_data, response.data)

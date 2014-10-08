@@ -113,28 +113,32 @@ class TestHistoricalSupportViewset(APITestCase):
         history = support.history.all()[0]
         url = reverse('historicalsupport-list')
         response = self.client.get(url, {'id': support.id})
-        expected_data = [{
-            'id': history.history_id,
-            'date': support._history_date,
-            'event': 'created',
-            'user': user.pk,
-            'support': support.pk,
-            'supports': {
-                'id': str(support.pk),
-                'support': 'yes',
-                'prefix': None,
-                'prefix_mandatory': False,
-                'alternate_name': None,
-                'alternate_mandatory': False,
-                'requires_config': None,
-                'default_config': None,
-                'note': None,
-                'footnote': None,
-                'links': {
-                    'feature': str(feature.id),
-                    'version': str(version.id),
-                    'history_current': str(history.id),
-                }
-            },
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': history.history_id,
+                'date': support._history_date,
+                'event': 'created',
+                'user': user.pk,
+                'support': support.pk,
+                'supports': {
+                    'id': str(support.pk),
+                    'support': 'yes',
+                    'prefix': None,
+                    'prefix_mandatory': False,
+                    'alternate_name': None,
+                    'alternate_mandatory': False,
+                    'requires_config': None,
+                    'default_config': None,
+                    'note': None,
+                    'footnote': None,
+                    'links': {
+                        'feature': str(feature.id),
+                        'version': str(version.id),
+                        'history_current': str(history.id),
+                    }
+                },
+            }]}
         self.assertDataEqual(expected_data, response.data)
