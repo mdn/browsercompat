@@ -1,3 +1,9 @@
+try:
+    from collections import OrderedDict
+except ImportError:  # pragma: no cover
+    # py26 doesn't get ordered dicts
+    OrderedDict = dict
+
 from django.utils import encoding
 
 from rest_framework.utils.encoders import JSONEncoder
@@ -10,6 +16,7 @@ from rest_framework_json_api.utils import snakecase
 class JsonApiRenderer(BaseJsonApiRender):
     encoder_class = JSONEncoder
     wrappers = ['wrap_jsonapi_aware'] + BaseJsonApiRender.wrappers
+    dict_class = OrderedDict
 
     def wrap_jsonapi_aware(self, data, renderer_context):
         jsonapi = renderer_context.get('jsonapi', {})
