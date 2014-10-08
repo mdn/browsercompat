@@ -14,43 +14,10 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from pytz import UTC
 
-from drf_cached_reads.cache import (
-    BaseCache, CachedModel, CachedQueryset, PkOnlyModel, PkOnlyValuesList)
+from drf_cached_reads.cache import BaseCache
+from drf_cached_reads.models import PkOnlyModel, PkOnlyValuesList
 
-
-class UserCache(BaseCache):
-    '''Test cache that cached User instances'''
-
-    def user_default_serializer(self, obj):
-        if not obj:
-            return None
-        return dict((
-            ('id', obj.id),
-            ('username', obj.username),
-            self.field_to_json('DateTime', 'date_joined', obj.date_joined),
-        ))
-
-    def user_default_loader(self, pk):
-        try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            return None
-
-    def user_default_invalidator(self, obj):
-        return ['drfc_user_count']
-
-    group_default_serializer = None
-
-    def group_default_loader(self, pk):
-        return Group.objects.get(pk=pk)
-
-    def group_default_invalidator(self, obj):
-        user_pks = User.objects.values_list('pk', flat=True)
-        return [('User', pk, False) for pk in user_pks]
-
-    bar_default_serializer = None
-    bar_default_loader = None
-    bar_default_invalidator = None
+from .cache import UserCache
 
 
 class SharedCacheTests(object):
@@ -140,37 +107,6 @@ class TestCache(SharedCacheTests, TestCase):
 class TestCacheDisabled(SharedCacheTests, TestCase):
     def setUp(self):
         self.cache = UserCache()
-
-
-class TestCachedModel(TestCase):
-    def test_has_data(self):
-        cm = CachedModel(User, {'username': 'frank'})
-        self.assertEqual('frank', cm.username)
-
-    def test_does_not_have_data(self):
-        cm = CachedModel(User, {'username': 'frank'})
-        self.assertRaises(AttributeError, getattr, cm, 'email')
-
-
-class TestCachedQueryset(TestCase):
-    def setUp(self):
-        self.cache = UserCache()
-
-    def test_get_existing_instance(self):
-        user = User.objects.create(username='frank')
-        cq = CachedQueryset(self.cache, User.objects.all())
-        cached_user = cq.get(pk=user.pk)
-        self.assertEqual('frank', cached_user.username)
-
-    def test_get_nonexisting_instance(self):
-        self.assertFalse(User.objects.filter(pk=666).exists())
-        cq = CachedQueryset(self.cache, User.objects.all())
-        self.assertRaises(User.DoesNotExist, cq.get, pk=666)
-
-    def test_none(self):
-        cq = CachedQueryset(self.cache, User.objects.all())
-        cq_none = cq.none()
-        self.assertEqual([], cq_none.pks)
 
 
 class TestFieldConverters(TestCase):
