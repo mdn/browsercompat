@@ -151,6 +151,7 @@ class FeatureSerializer(HistoricalModelSerializer):
             'id', 'slug', 'mdn_path', 'experimental', 'standardized',
             'stable', 'obsolete', 'name',
             'parent', 'children', 'supports', 'history_current', 'history')
+        read_only_fields = ('supports',)
 
 
 class SupportSerializer(HistoricalModelSerializer):
@@ -176,6 +177,7 @@ class VersionSerializer(HistoricalModelSerializer):
             'id', 'browser', 'version', 'release_day', 'retirement_day',
             'status', 'release_notes_uri', 'note', 'order',
             'supports', 'history', 'history_current')
+        read_only_fields = ('supports',)
 
 
 class UserSerializer(ModelSerializer):

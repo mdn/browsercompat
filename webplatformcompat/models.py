@@ -15,10 +15,17 @@ from .fields import TranslatedField, SecureURLField
 @python_2_unicode_compatible
 class Browser(models.Model):
     '''A browser or other web client'''
-    slug = models.SlugField(unique=True)
-    icon = SecureURLField(blank=True)
-    name = TranslatedField()
-    note = TranslatedField(blank=True, null=True)
+    slug = models.SlugField(
+        help_text="Unique, human-friendly slug.",
+        unique=True)
+    icon = SecureURLField(
+        help_text="Representative image for browser.",
+        blank=True)
+    name = TranslatedField(
+        help_text="Branding name of browser, client, or platform.")
+    note = TranslatedField(
+        help_text="Extended information about browser, client, or platform.",
+        blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -38,13 +45,23 @@ class Version(models.Model):
     )]
 
     browser = models.ForeignKey(Browser, related_name='versions')
-    version = models.CharField(blank=True, max_length=20)
-    release_day = models.DateField(blank=True, null=True)
-    retirement_day = models.DateField(blank=True, null=True)
+    version = models.CharField(
+        help_text="Version string.",
+        blank=True, max_length=20)
+    release_day = models.DateField(
+        help_text="Day of release to public, ISO 8601 format.",
+        blank=True, null=True)
+    retirement_day = models.DateField(
+        help_text="Day this version stopped being supported, ISO 8601 format.",
+        blank=True, null=True)
     status = models.CharField(
         max_length=15, choices=STATUS_CHOICES, default='unknown')
-    release_notes_uri = TranslatedField(blank=True, null=True)
-    note = TranslatedField(blank=True, null=True)
+    release_notes_uri = TranslatedField(
+        help_text="URI of release notes.",
+        blank=True, null=True)
+    note = TranslatedField(
+        help_text="Notes about this version.",
+        blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
