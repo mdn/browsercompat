@@ -1,3 +1,5 @@
+"use strict";
+/*global Browse: false, DS: false, Ember: false, window: false */
 window.Browse = Ember.Application.create({
     LOG_TRANSITIONS: true,
     LOG_TRANSITIONS_INTERNAL: false,
@@ -11,7 +13,7 @@ Browse.Router.reopen({
     location: 'history'
 });
 
-Browse.Router.map(function() {
+Browse.Router.map(function () {
     this.resource('browsers');
     this.resource('browser', {path: '/browsers/:browser_id'});
     this.resource('versions');
@@ -23,52 +25,56 @@ Browse.Router.map(function() {
 /* Serializer - JsonApiSerializer with modifictions */
 DS.JsonApiNamespacedSerializer = DS.JsonApiSerializer.extend({
     namespace: 'api/v1',
-    extractLinks: function(links) {
+    extractLinks: function (links) {
         // Modifications:
         // Strip the namespace from links as well
         // Camelize linkKeys
-        var link, key, value, route;
-        var extracted = [], linkEntry, linkKey;
+        var link, key, value, route, extracted = [], linkEntry, linkKey;
 
         for (link in links) {
-            key = link.split('.').pop();
-            value = links[link];
-            if (typeof value === 'string') {
-                route = value;
-            } else {
-                key = value.type || key;
-                route = value.href;
-            }
+            if (links.hasOwnProperty(link)) {
+                key = link.split('.').pop();
+                value = links[link];
+                if (typeof value === 'string') {
+                    route = value;
+                } else {
+                    key = value.type || key;
+                    route = value.href;
+                }
 
-            // strip base url
-            if (route.substr(0, 4).toLowerCase() === 'http') {
-                route = route.split('//').pop().split('/').slice(1).join('/');
-            }
+                // strip base url
+                if (route.substr(0, 4).toLowerCase() === 'http') {
+                    route = route.split('//').pop().split('/').slice(1).join('/');
+                }
 
-            // strip prefix slash
-            if (route.charAt(0) === '/') {
-                route = route.substr(1);
-            }
-
-            // strip namespace
-            if (route.indexOf(this.namespace) == 0) {
-                route = route.substr(this.namespace.length);
+                // strip prefix slash
                 if (route.charAt(0) === '/') {
                     route = route.substr(1);
                 }
-            }
 
-            linkEntry = { };
-            linkKey = Ember.String.singularize(key);
-            linkKey = Ember.String.camelize(linkKey);
-            linkEntry[linkKey] = route;
-            extracted.push(linkEntry);
-            DS._routes[linkKey] = route;
+                // strip namespace
+                if (route.indexOf(this.namespace) === 0) {
+                    route = route.substr(this.namespace.length);
+                    if (route.charAt(0) === '/') {
+                        route = route.substr(1);
+                    }
+                }
+
+                linkEntry = { };
+                linkKey = Ember.String.singularize(key);
+                linkKey = Ember.String.camelize(linkKey);
+                linkEntry[linkKey] = route;
+                extracted.push(linkEntry);
+                /*jslint nomen: true */
+                /* DS._routes is convention of DS.JsonApiSerializer */
+                DS._routes[linkKey] = route;
+                /*jslint nomen: false */
+            }
         }
 
         return extracted;
     }
-})
+});
 
 /* Adapter - JsonApiAdapter with modifictions */
 Browse.ApplicationAdapter = DS.JsonApiAdapter.extend({
@@ -79,25 +85,25 @@ Browse.ApplicationAdapter = DS.JsonApiAdapter.extend({
 
 /* Routes */
 Browse.BrowsersRoute = Ember.Route.extend({
-    model: function() {
+    model: function () {
         return this.store.find('browser');
     }
 });
 
 Browse.VersionsRoute = Ember.Route.extend({
-    model: function() {
+    model: function () {
         return this.store.find('version');
     }
 });
 
 Browse.FeaturesRoute = Ember.Route.extend({
-    model: function() {
+    model: function () {
         return this.store.find('feature');
     }
 });
 
 Browse.SupportsRoute = Ember.Route.extend({
-    model: function() {
+    model: function () {
         return this.store.find('support');
     }
 });
@@ -154,47 +160,34 @@ Browse.Support = DS.Model.extend({
 
 /* Controllers */
 Browse.BrowserController = Ember.ObjectController.extend({
-    versionInflection: function() {
-        var versions = this.get('model.versions');
-        var count = versions.get('length');
-        if (count === 1) {
-            return 'Version';
-        } else {
-            return 'Versions';
-        }
-    }.property('model.versions.@each')
+    versionInflection: Ember.computed('model.versions.@each', function () {
+        var versions = this.get('model.versions'),
+            count = versions.get('length');
+        if (count === 1) { return 'Version'; }
+        return 'Versions';
+    })
 });
 
 Browse.VersionController = Ember.ObjectController.extend({
-    featureInflection: function() {
-        var supports = this.get('model.supports');
-        var count = supports.get('length');
-        if (count === 1) {
-            return 'Feature';
-        } else {
-            return 'Features';
-        }
-    }.property('model.supports.@each'),
+    featureInflection: Ember.computed('model.supports.@each', function () {
+        var supports = this.get('model.supports'),
+            count = supports.get('length');
+        if (count === 1) { return 'Feature'; }
+        return 'Features';
+    }),
 });
 
 Browse.FeatureController = Ember.ObjectController.extend({
-    featureName: function() {
+    featureName: Ember.computed('model.name', function () {
         var name = this.get('model.name');
-        if (name.en) {
-            return name.en;
-        } else if (name) {
-            return "<code>" + name + "</code>";
-        } else {
-            return "<em>none</em>";
-        }
-    }.property('model.name'),
-    versionInflection: function() {
-        var supports = this.get('model.supports');
-        var count = supports.get('length');
-        if (count === 1) {
-            return 'Version';
-        } else {
-            return 'Versions';
-        }
-    }.property('model.supports.@each')
+        if (name.en) { return name.en; }
+        if (name) { return "<code>" + name + "</code>"; }
+        return "<em>none</em>";
+    }),
+    versionInflection: Ember.computed('model.supports.@each', function () {
+        var supports = this.get('model.supports'),
+            count = supports.get('length');
+        if (count === 1) { return 'Version'; }
+        return 'Versions';
+    }),
 });
