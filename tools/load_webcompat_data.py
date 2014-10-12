@@ -75,7 +75,18 @@ def verify_empty_api(session):
     response = session.get(
         session.base_url + '/api/v1/browsers',
         headers={'content-type': 'application/vnd.api+json'})
-    expected = {'browsers': []}
+    expected = {
+        'browsers': [],
+        'meta': {
+            'pagination': {
+                'browsers': {
+                    'count': 0,
+                    'next': None,
+                    'previous': None
+                }
+            }
+        }
+    }
     actual = response.json()
     if response.json() != expected:
         raise Exception('API already has browser data', actual)
