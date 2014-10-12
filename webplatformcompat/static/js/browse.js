@@ -1,6 +1,7 @@
 "use strict";
 /*global Browse: false, DS: false, Ember: false, window: false */
 window.Browse = Ember.Application.create({
+    // Debugging flags
     LOG_TRANSITIONS: true,
     LOG_TRANSITIONS_INTERNAL: false,
     LOG_ACTIVE_GENERATION: false,
@@ -73,7 +74,13 @@ DS.JsonApiNamespacedSerializer = DS.JsonApiSerializer.extend({
         }
 
         return extracted;
-    }
+    },
+    extractMeta: function(store, type, payload) {
+        if (payload && payload.meta) {
+            store.metaForType(type, payload.meta);
+            delete payload.meta;
+        }
+    },
 });
 
 /* Adapter - JsonApiAdapter with modifictions */
@@ -84,25 +91,35 @@ Browse.ApplicationAdapter = DS.JsonApiAdapter.extend({
 
 
 /* Routes */
-Browse.BrowsersRoute = Ember.Route.extend({
+Browse.PaginatedRouteMixin = Ember.Mixin.create({
+    queryParams: {
+        page: {refreshModel: true},
+    },
+    setupController: function(controller, model) {
+        controller.set('model', model);
+        controller.updatePagination();
+    },
+});
+
+Browse.BrowsersRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
     model: function () {
         return this.store.find('browser');
     }
 });
 
-Browse.VersionsRoute = Ember.Route.extend({
+Browse.VersionsRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
     model: function () {
         return this.store.find('version');
     }
 });
 
-Browse.FeaturesRoute = Ember.Route.extend({
+Browse.FeaturesRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
     model: function () {
         return this.store.find('feature');
     }
 });
 
-Browse.SupportsRoute = Ember.Route.extend({
+Browse.SupportsRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
     model: function () {
         return this.store.find('support');
     }
@@ -159,7 +176,50 @@ Browse.Support = DS.Model.extend({
 });
 
 /* Controllers */
-Browse.BrowserController = Ember.ObjectController.extend({
+
+/* LoadMoreMixin based on https://github.com/pangratz/dashboard/commit/68d1728 */
+Browse.LoadMoreMixin = Ember.Mixin.create(Ember.Evented, {
+    loadingMore: false,
+    currentPage: 1,
+    resetLoadMore: function () {
+        this.set('currentPage', 1);
+    },
+    pagination: null,
+    canLoadMore: Ember.computed('pagination', 'model.length', function() {
+        var pagination = this.get('pagination');
+        return (pagination && pagination.next && pagination.count > this.get("model.length"));
+    }),
+    updatePagination: function() {
+        var store = this.get('store'),
+            modelType = this.get('model.type'),
+            modelSingular = modelType.typeKey,
+            modelPlural = Ember.String.pluralize(modelSingular),
+            metadata = store.typeMapFor(modelType).metadata,
+            pagination = metadata && metadata.pagination && metadata.pagination[modelPlural];
+        this.set("pagination", pagination);
+        this.set("loadingMore", false);
+    },
+    loadMore: function() {
+        if (this.get('canLoadMore')) {
+            var page = this.incrementProperty('currentPage'),
+                self = this,
+                modelSingular = this.get('model.type.typeKey'),
+                results = this.get('store').findQuery(modelSingular, {page: page});
+            this.set("loadingMore", true);
+            results.then(function (newRecords) {
+                self.updatePagination(newRecords);
+            });
+            return results;
+        }
+    },
+    actions: {
+        loadMore: function() { this.loadMore(); }
+    }
+});
+
+Browse.BrowsersController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+
+Browse.BrowserController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     versionInflection: Ember.computed('model.versions.@each', function () {
         var versions = this.get('model.versions'),
             count = versions.get('length');
@@ -168,7 +228,9 @@ Browse.BrowserController = Ember.ObjectController.extend({
     })
 });
 
-Browse.VersionController = Ember.ObjectController.extend({
+Browse.VersionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+
+Browse.VersionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     featureInflection: Ember.computed('model.supports.@each', function () {
         var supports = this.get('model.supports'),
             count = supports.get('length');
@@ -177,7 +239,9 @@ Browse.VersionController = Ember.ObjectController.extend({
     }),
 });
 
-Browse.FeatureController = Ember.ObjectController.extend({
+Browse.FeaturesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+
+Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     featureName: Ember.computed('model.name', function () {
         var name = this.get('model.name');
         if (name.en) { return name.en; }

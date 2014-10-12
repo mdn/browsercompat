@@ -33,7 +33,7 @@
 
 <script type="text/x-handlebars" data-template-name="browsers">
 {% raw %}
-<h2>{{length}} Browsers</h2>
+<h2>{{pagination.count}} Browsers</h2>
 <p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
 <div class="table-responsive">
     <table class="table">
@@ -61,6 +61,13 @@
         </tbody>
     </table>
 </div>
+{{#if canLoadMore }}
+<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more browsers...</button>
+{{else}}{{#if loading}}
+<button type="button" class="btn btn-default" disabled="disabled">Loading more browsers...</button>
+{{else}}
+<button type="button" class="btn btn-default" disabled="disabled">All Browsers Loaded.</button>
+{{/if}}{{/if}}
 {% endraw %}
 </script>
 
@@ -117,7 +124,7 @@
 
 <script type="text/x-handlebars" data-template-name="versions">
 {% raw %}
-<h2>{{length}} Versions</h2>
+<h2>{{pagination.count}} Versions</h2>
 <p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
 <div class="table-responsive">
     <table class="table">
@@ -151,6 +158,13 @@
         </tbody>
     </table>
 </div>
+{{#if canLoadMore }}
+<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more versions...</button>
+{{else}}{{#if loading}}
+<button type="button" class="btn btn-default" disabled="disabled">Loading more versions...</button>
+{{else}}
+<button type="button" class="btn btn-default" disabled="disabled">All Versions Loaded.</button>
+{{/if}}{{/if}}
 {% endraw %}
 </script>
 
@@ -216,7 +230,7 @@
 
 <script type="text/x-handlebars" data-template-name="features">
 {% raw %}
-<h2>{{length}} Features</h2>
+<h2>{{pagination.count}} Features</h2>
 <p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
 <div class="table-responsive">
     <table class="table">
@@ -250,6 +264,13 @@
         </tbody>
     </table>
 </div>
+{{#if canLoadMore }}
+<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more features...</button>
+{{else}}{{#if loading}}
+<button type="button" class="btn btn-default" disabled="disabled">Loading more features...</button>
+{{else}}
+<button type="button" class="btn btn-default" disabled="disabled">All Features Loaded.</button>
+{{/if}}{{/if}}
 {% endraw %}
 </script>
 

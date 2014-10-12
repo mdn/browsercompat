@@ -81,7 +81,7 @@ class GroupedRouter(DefaultRouter):
             if u.name.endswith('-list'):
                 pattern = u.regex.pattern.replace('$', '/$')
                 view = RedirectView.as_view(
-                    pattern_name=u.name, permanent=False)
+                    pattern_name=u.name, permanent=False, query_string=True)
                 redirect_urls.append(url(pattern, view))
         return urls + redirect_urls
 
