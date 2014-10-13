@@ -10,6 +10,7 @@ In-progess versions are periodically deployed to Heroku at
 http://doesitwork-dev.allizom.org.  Here are some of the development
 deployments:
 
+* 0.2.0  - 2014-10-13 - Add features, supports, pagination
 * 0.1.0d - 2014-09-29 - Add resource-level caching
 * 0.1.0c - 2014-09-16 - Add sample feature view, simplify draft API
 * 0.1.0b - 2014-09-05 - Add filtering, more JSON API tuning.
