@@ -75,7 +75,7 @@ DS.JsonApiNamespacedSerializer = DS.JsonApiSerializer.extend({
 
         return extracted;
     },
-    extractMeta: function(store, type, payload) {
+    extractMeta: function (store, type, payload) {
         if (payload && payload.meta) {
             store.metaForType(type, payload.meta);
             delete payload.meta;
@@ -95,7 +95,7 @@ Browse.PaginatedRouteMixin = Ember.Mixin.create({
     queryParams: {
         page: {refreshModel: true},
     },
-    setupController: function(controller, model) {
+    setupController: function (controller, model) {
         controller.set('model', model);
         controller.updatePagination();
     },
@@ -185,11 +185,11 @@ Browse.LoadMoreMixin = Ember.Mixin.create(Ember.Evented, {
         this.set('currentPage', 1);
     },
     pagination: null,
-    canLoadMore: Ember.computed('pagination', 'model.length', function() {
+    canLoadMore: Ember.computed('pagination', 'model.length', function () {
         var pagination = this.get('pagination');
         return (pagination && pagination.next && pagination.count > this.get("model.length"));
     }),
-    updatePagination: function() {
+    updatePagination: function () {
         var store = this.get('store'),
             modelType = this.get('model.type'),
             modelSingular = modelType.typeKey,
@@ -199,7 +199,7 @@ Browse.LoadMoreMixin = Ember.Mixin.create(Ember.Evented, {
         this.set("pagination", pagination);
         this.set("loadingMore", false);
     },
-    loadMore: function() {
+    loadMore: function () {
         if (this.get('canLoadMore')) {
             var page = this.incrementProperty('currentPage'),
                 self = this,
@@ -213,45 +213,61 @@ Browse.LoadMoreMixin = Ember.Mixin.create(Ember.Evented, {
         }
     },
     actions: {
-        loadMore: function() { this.loadMore(); }
+        loadMore: function () { this.loadMore(); }
     }
 });
+
+Browse.Properties = {
+    IdCounter: function (relation) {
+        /* This property uses the private "data" method to count the number of
+         * IDs.  The alternative, "models.<relation>.length", will load each
+         * related instance from the API before returning a count.  This can
+         * make list views slow and makes unneccessary API calls.  The caveat
+         * is we're using a private method that may go away in the future.
+         * However, Ember devs are opposed to a performant count for this use
+         * case: https://github.com/emberjs/data/issues/586
+        */
+        return Ember.computed('model.data', function () {
+            return this.get('model.data.' + relation + '.length');
+        });
+    },
+};
 
 Browse.BrowsersController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 
 Browse.BrowserController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
-    versionInflection: Ember.computed('model.versions.@each', function () {
-        var versions = this.get('model.versions'),
-            count = versions.get('length');
-        if (count === 1) { return 'Version'; }
-        return 'Versions';
+    versionCount: Browse.Properties.IdCounter('versions'),
+    versionCountText: Ember.computed('versionCount', function () {
+        var count = this.get('versionCount');
+        if (count === 1) { return '1 Version'; }
+        return count + ' Versions';
     })
 });
 
 Browse.VersionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 
 Browse.VersionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
-    featureInflection: Ember.computed('model.supports.@each', function () {
-        var supports = this.get('model.supports'),
-            count = supports.get('length');
-        if (count === 1) { return 'Feature'; }
-        return 'Features';
+    featureCount: Browse.Properties.IdCounter('supports'),
+    featureCountText: Ember.computed('featureCount', function () {
+        var count = this.get('featureCount');
+        if (count === 1) { return '1 Feature'; }
+        return count + ' Features';
     }),
 });
 
 Browse.FeaturesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 
 Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
-    featureName: Ember.computed('model.name', function () {
+    featureNameHTML: Ember.computed('model.name', function () {
         var name = this.get('model.name');
         if (name.en) { return name.en; }
         if (name) { return "<code>" + name + "</code>"; }
         return "<em>none</em>";
     }),
-    versionInflection: Ember.computed('model.supports.@each', function () {
-        var supports = this.get('model.supports'),
-            count = supports.get('length');
-        if (count === 1) { return 'Version'; }
-        return 'Versions';
+    versionCount: Browse.Properties.IdCounter('supports'),
+    versionCountText: Ember.computed('versionCount', function () {
+        var count = this.get('versionCount');
+        if (count === 1) { return '1 Version'; }
+        return count + ' Versions';
     }),
 });

@@ -55,7 +55,7 @@
                 <td>{{#if icon}}{{icon}}{{else}}<em>none</em>{{/if}}</td>
                 <td>{{name.en}}</td>
                 <td>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</td>
-                <td>{{#link-to 'browser' id}}{{versions.length}} {{versionInflection}}{{/link-to}}</td>
+                <td>{{#link-to 'browser' id}}{{versionCountText}}{{/link-to}}</td>
             </tr>
           {{/each}}
         </tbody>
@@ -88,7 +88,7 @@
   <dd>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</dd>
 </dl>
 
-<h3>{{versions.length}} {{versionInflection}}</h3>
+<h3>{{versionCountText}}</h3>
 <div class="table-responsive">
     <table class="table">
         <thead>
@@ -152,7 +152,7 @@
                 <td>{{status}}</td>
                 <td>{{#if releaseNoteUri}}{{releaseNoteUri}}{{else}}<em>none</em>{{/if}}</td>
                 <td>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</td>
-                <td>{{#link-to 'version' id}}{{supports.length}} {{featureInflection}}{{/link-to}}</td>
+                <td>{{#link-to 'version' id}}{{featureCountText}}{{/link-to}}</td>
             </tr>
           {{/each}}
         </tbody>
@@ -191,7 +191,7 @@
   <dd>{{#if note}}{{note}}{{else}}<em>none</em>{{/if}}</dd>
 </dl>
 
-<h3>{{supports.length}} {{featureInflection}}</h3>
+<h3>{{featureCountText}}</h3>
 <div class="table-responsive">
     <table class="table">
         <thead>
@@ -255,10 +255,10 @@
                     {{#unless stable}}<b>not stable</b>{{/unless}}
                     {{#if obsolete}}<b>obsolete</b>{{/if}}
                 </td>
-                <td>{{featureName}}</td>
+                <td>{{featureNameHTML}}</td>
                 <!--<td>{{#if name.en}}{{name.en}}{{else}}{{#if name}}<code>{{name}}</code>{{else}}<em>none</em>{{/if}}{{/if}}</td>-->
                 <td>{{#if mdn_path}}<a href="https://developer.mozilla.org/{{unbound mdn_path}}#Browser_compatibility">{{mdn_path}}</a>{{/if}}</td>
-                <td>{{#link-to 'feature' id}}{{supports.length}} {{versionInflection}}{{/link-to}}</td>
+                <td>{{#link-to 'feature' id}}{{versionCountText}}{{/link-to}}</td>
             </tr>
           {{/each}}
         </tbody>
@@ -297,7 +297,7 @@
   <dd>{{#if mdn_path}}<a href="https://developer.mozilla.org/{{unbound mdn_path}}#Browser_compatibility">{{mdn_path}}</a>{{/if}}</dd>
 </dl>
 
-<h3>{{supports.length}} {{versionInflection}} with Support Info</h3>
+<h3>{{versionCountText}} with Support Info</h3>
 <div class="table-responsive">
     <table class="table">
         <thead>
