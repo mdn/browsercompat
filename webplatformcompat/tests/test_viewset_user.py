@@ -44,9 +44,13 @@ class TestUserViewset(APITestCase):
         User.objects.create(username='other')
 
         response = self.client.get(reverse('user-list'), {'username': 'user'})
-        expected_data = [{
-            'id': user.pk,
-            'username': 'user',
-            'created': date_joined,
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': user.pk,
+                'username': 'user',
+                'created': date_joined,
+            }]}
         self.assertDataEqual(response.data, expected_data)

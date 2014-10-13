@@ -30,6 +30,7 @@ EXTRA_INSTALLED_APPS - comma-separated list of apps to add to INSTALLED_APPS
 MEMCACHE_SERVERS - semicolon-separated list of memcache servers
 MEMCACHE_USERNAME - username for memcache servers
 MEMCACHE_PASSWORD - password for memcache servers
+USE_INSTANCE_CACHE - 1 to enable, 0 to disable, default enabled
 SECRET_KEY - Overrides SECRET_KEY
 SECURE_PROXY_SSL_HEADER - "HTTP_X_FORWARDED_PROTOCOL,https" to enable
 STATIC_ROOT - Overrides STATIC_ROOT
@@ -37,6 +38,7 @@ STATIC_ROOT - Overrides STATIC_ROOT
 
 # Build paths inside the project like this: rel_path('folder', 'file')
 from os import environ, path
+import sys
 import dj_database_url
 
 BASE_DIR = path.dirname(path.dirname(__file__))
@@ -44,6 +46,10 @@ BASE_DIR = path.dirname(path.dirname(__file__))
 
 def rel_path(*subpaths):
     return path.join(BASE_DIR, *subpaths)
+
+
+# Detect that we're running tests
+TESTING = sys.argv[1:2] == ['test']
 
 
 # Quick-start development settings - unsuitable for production
@@ -74,6 +80,7 @@ INSTALLED_APPS = [
 
     'django_extensions',
     'django_nose',
+    'mptt',
     'simple_history',
     'rest_framework',
 
@@ -147,7 +154,7 @@ if environ.get('MEMCACHIER_USERNAME'):
 if environ.get('MEMCACHIER_PASSWORD'):
     environ['MEMCACHE_PASSWORD'] = environ.get('MEMCACHIER_PASSWORD', '')
 
-if environ.get('MEMCACHE_SERVERS'):
+if environ.get('MEMCACHE_SERVERS') and not TESTING:
     # Use memcache
     CACHES = {
         'default': {
@@ -172,6 +179,7 @@ else:
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         },
     }
+USE_INSTANCE_CACHE = environ.get('USE_INSTANCE_CACHE', '1') not in (0, '0')
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 
@@ -198,6 +206,9 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'webplatformcompat.filters.UnorderedDjangoFilterBackend',
     ],
+    'PAGINATE_BY': 10,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'MAX_PAGINATE_BY': 100,
 }
 
 # Django nose

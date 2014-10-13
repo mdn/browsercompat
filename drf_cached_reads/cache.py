@@ -5,102 +5,10 @@ from datetime import date, datetime
 from pytz import utc
 import json
 
+from django.conf import settings
 from django.db.models.loading import get_model
 
-
-class PkOnlyModel(object):
-    '''Pretend to be a Django model with only the pk set'''
-
-    def __init__(self, cache, model, pk):
-        self.cache = cache
-        self.model = model
-        self.pk = pk
-
-
-class PkOnlyValuesList(object):
-    '''Pretend to be a Django queryset / values list'''
-
-    def __init__(self, cache, model, pks):
-        self.cache = cache
-        self.model = model
-        self.pks = pks
-
-    def __iter__(self):
-        for pk in self.pks:
-            yield PkOnlyModel(self.cache, self.model, pk)
-
-    def __getitem__(self, index):
-        return self.pks[index]
-
-    def all(self):
-        return self
-
-    def values_list(self, *args, **kwargs):
-        '''Only valid call is values_list('pk', flat=True)'''
-        flat = kwargs.pop('flat', False)
-        assert flat is True
-        assert len(args) == 1
-        assert args[0] == self.model._meta.pk.name
-        return self
-
-
-class CachedModel(object):
-    def __init__(self, model, data):
-        self._model = model
-        self._data = data
-
-    def __getattr__(self, name):
-        if name in self._data:
-            return self._data[name]
-        else:
-            return super(CachedModel, self).__getattr__(name)
-
-
-class CachedQueryset(object):
-    '''Pretend to be a Django queryset
-
-    Used like a queryset until loaded from cache
-    '''
-    def __init__(self, cache, queryset, primary_keys=None):
-        self.cache = cache
-        assert queryset is not None
-        self.queryset = queryset
-        self.model = queryset.model
-        self.filter_kwargs = {}
-        self._primary_keys = primary_keys
-
-    @property
-    def pks(self):
-        if not self._primary_keys:
-            self._primary_keys = list(
-                self.queryset.values_list('pk', flat=True))
-        return self._primary_keys
-
-    def __iter__(self):
-        model_name = self.model.__name__
-        object_specs = [(model_name, pk, None) for pk in self.pks]
-        instances = self.cache.get_instances(object_specs)
-        for pk in self.pks:
-            model_data = instances.get((model_name, pk), {})[0]
-            yield CachedModel(self.model, model_data)
-
-    def all(self):
-        return self
-
-    def filter(self, **kwargs):
-        assert not self._primary_keys
-        self.queryset = self.queryset.filter(**kwargs)
-        return self
-
-    def get(self, *args, **kwargs):
-        assert not args
-        assert list(kwargs.keys()) == ['pk']
-        pk = kwargs['pk']
-        model_name = self.model.__name__
-        object_spec = (model_name, pk, None)
-        instances = self.cache.get_instances((object_spec,))
-        model_data = instances.get((model_name, pk), {})[0]
-        return CachedModel(self.model, model_data)
+from .models import PkOnlyModel, PkOnlyValuesList
 
 
 class BaseCache(object):
@@ -120,7 +28,7 @@ class BaseCache(object):
 
     @property
     def cache(self):
-        if not self._cache:
+        if not self._cache and settings.USE_INSTANCE_CACHE:
             # Delay import of cache so that Django Debug Toolbar sees requests
             from django.core.cache import cache
             self._cache = cache
@@ -188,7 +96,7 @@ class BaseCache(object):
             cache_keys.append(obj_key)
 
         # Fetch the cache keys
-        if cache_keys:
+        if cache_keys and self.cache:
             cache_vals = self.cache.get_many(cache_keys)
         else:
             cache_vals = {}
@@ -224,7 +132,7 @@ class BaseCache(object):
                 ret[(model_name, obj_pk)] = (obj_native, obj_key, obj)
 
         # Save any new cached representations
-        if cache_to_set:
+        if cache_to_set and self.cache:
             self.cache.set_many(cache_to_set)
 
         return ret
@@ -238,7 +146,7 @@ class BaseCache(object):
         instance - The Django model instance, or None to load it
         versions - Version to update, or None for all
 
-        Return is a list of tuples (model name, pk, version) that also needs
+        Return is a list of tuples (model name, pk, immediate) that also needs
         to be updated.
         '''
         versions = [version] if version else self.versions
@@ -249,6 +157,9 @@ class BaseCache(object):
             invalidator = self.model_function(
                 model_name, version, 'invalidator')
             if serializer is None and loader is None and invalidator is None:
+                continue
+
+            if self.cache is None:
                 continue
 
             # Try to load the instance

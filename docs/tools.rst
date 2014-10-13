@@ -16,6 +16,13 @@ Initialize with compatability data from the webcompat project. Usage::
 * ``-v`` `(optional)`: Increase verbosity.  Can be added multiple times.  At least one is
   recommended.
 
+This script requires a fresh database (no compatability data) and a user with
+write access.  The bulk import will result in cascading cache invalidations,
+which can be avoided by running the server without cached instances during the
+import::
+
+    $ USE_INSTANCE_CACHE=0 ./manage.py runserver
+
 
 sample_mdn.py
 -------------

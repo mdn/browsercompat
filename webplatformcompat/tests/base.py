@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import encoding, six
@@ -10,6 +11,9 @@ class TestMixin(object):
     '''Useful methods for testing'''
     maxDiff = None
     baseUrl = 'http://testserver'
+
+    def tearDown(self):
+        cache.clear()
 
     def reverse(self, viewname, **kwargs):
         '''Create a full URL for a view'''

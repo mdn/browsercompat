@@ -46,6 +46,7 @@ class TestHistoricalVersionViewset(APITestCase):
                 'note': None,
                 'order': 0,
                 'links': {
+                    'browser': str(browser.id),
                     'history_current': str(vh.id),
                 }
             },
@@ -66,6 +67,7 @@ class TestHistoricalVersionViewset(APITestCase):
                     'note': None,
                     'order': 0,
                     'links': {
+                        'browser': str(browser.id),
                         'history_current': str(vh.id),
                     },
                 },
@@ -104,24 +106,29 @@ class TestHistoricalVersionViewset(APITestCase):
         vh = version.history.all()[0]
         url = reverse('historicalversion-list')
         response = self.client.get(url, {'id': version.id})
-        expected_data = [{
-            'id': vh.history_id,
-            'date': version._history_date,
-            'event': 'created',
-            'user': user.pk,
-            'version': version.pk,
-            'versions': {
-                'id': str(version.pk),
-                'version': '2.0',
-                'release_day': None,
-                'retirement_day': None,
-                'status': 'unknown',
-                'release_notes_uri': None,
-                'note': None,
-                'order': 1,
-                'links': {
-                    'history_current': str(vh.id),
-                }
-            },
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': vh.history_id,
+                'date': version._history_date,
+                'event': 'created',
+                'user': user.pk,
+                'version': version.pk,
+                'versions': {
+                    'id': str(version.pk),
+                    'version': '2.0',
+                    'release_day': None,
+                    'retirement_day': None,
+                    'status': 'unknown',
+                    'release_notes_uri': None,
+                    'note': None,
+                    'order': 1,
+                    'links': {
+                        'browser': str(browser.id),
+                        'history_current': str(vh.id),
+                    }
+                },
+            }]}
         self.assertDataEqual(expected_data, response.data)

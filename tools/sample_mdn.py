@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import re
 import os.path
 import random
@@ -9,12 +10,12 @@ import webbrowser
 re_url = re.compile(r'\s*"url":\s"([^"]*)"')
 count = 0
 
-print "Go through data-human.json, and open each in the browser"
+print("Go through data-human.json, and open each in the browser")
 
 # Fetch the file from github
 filename = "data-human.json"
 if not os.path.exists(filename):
-    print "Downloading data-human.json"
+    print("Downloading data-human.json")
     url = (
         "https://raw.githubusercontent.com/webplatform/compatibility-data"
         "/master/data-human.json")
@@ -33,12 +34,17 @@ with open(filename, 'r') as f:
 # Open them
 count = 0
 while True:
-    print "%d: %s" % (count, url)
+    print("%d: %s" % (count, url))
     count += 1
     url = random.choice(urls)
     webbrowser.open(url + '#Specifications')
-    x = raw_input("Enter to continue, or q+Enter to quit: ")
+    try:
+        input = raw_input  # Py2?
+    except NameError:
+        pass  # Nope Py3
+    x = input("Enter to continue, or q+Enter to quit: ")
+
     if x == 'q':
         break
 
-print "%d URLs visited" % count
+print("%d URLs visited" % count)
