@@ -893,17 +893,9 @@ The **features** representation includes:
       changes are ignored.
     - **parent** *(one or null)* - The feature one level up, or null
       if top-level.  Can be changed by user.
-    - **ancestors** *(many)* - The features that form the path to the top of
-      the tree, including this one, in bread-crumb order (top to self).  Can
-      not be changed by user - set the **parent** instead.
-    - **siblings** *(many)* - The features with the same parent, including
-      including this one, in display order.  Can be re-ordered by the user.
     - **children** *(many)* - The features that have this feature as parent, in
       display order.  Can be an empty list, for "leaf" features.  Can be
       re-ordered by the user.
-    - **descendants** *(many)* - The features in the local tree for this
-      feature. including this one, in tree order.  Can not be changed by the
-      user - set the **parent** on the child feature instead.
     - **history_current** *(one)* - Current historical_features_.  User can
       set to a valid **history** to revert to that version.
     - **history** *(many)* - Associated historical_features_, in time order
@@ -941,10 +933,7 @@ A sample response is:
                 "sections": ["485"],
                 "supports": ["1125", "1212", "1536"],
                 "parent": "173",
-                "ancestors": ["2", "12", "173", "276"],
-                "siblings": ["275", "276", "277"],
                 "children": [],
-                "descendants": ["276"],
                 "history_current": "456",
                 "history": ["456"]
             }
@@ -958,20 +947,8 @@ A sample response is:
                 "href": "https://browsersupports.org/api/v1/features/{feature.parent}",
                 "type": "features"
             },
-            "features.ancestors": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.ancestors}",
-                "type": "features"
-            },
-            "features.siblings": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.siblings}",
-                "type": "features"
-            },
             "features.children": {
                 "href": "https://browsersupports.org/api/v1/features/{feature.children}",
-                "type": "features"
-            },
-            "features.descendants": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.descendants}",
                 "type": "features"
             },
             "features.history_current": {
@@ -1019,10 +996,7 @@ A sample response is:
                 "sections": [],
                 "supports": [],
                 "parent": ["12"],
-                "ancestors": ["2", "12", "173"]
-                "siblings": ["167", "168", "169", "170", "171", "172", "173", "174", "175"],
                 "children": ["275", "276", "277"],
-                "descendants": ["173", "275", "276", "277"],
                 "history_current": "395",
                 "history": ["395"]
             }
@@ -1036,20 +1010,8 @@ A sample response is:
                 "href": "https://browsersupports.org/api/v1/features/{feature.parent}",
                 "type": "features"
             },
-            "features.ancestors": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.ancestors}",
-                "type": "features"
-            },
-            "features.siblings": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.siblings}",
-                "type": "features"
-            },
             "features.children": {
                 "href": "https://browsersupports.org/api/v1/features/{feature.children}",
-                "type": "features"
-            },
-            "features.descendants": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.descendants}",
                 "type": "features"
             },
             "features.history_current": {

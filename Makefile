@@ -13,7 +13,7 @@ help:
 
 clean: clean-build clean-pyc
 
-qa: lint coverage
+qa: lint coverage jslint
 
 qa-all: qa docs sdist test-all
 
@@ -32,6 +32,9 @@ lint:
 
 test:
 	./manage.py test
+
+jslint:
+	if type jslint >/dev/null 2>&1 ; then jslint webplatformcompat/static/js/*; else echo "jslint not installed"; fi
 
 test-all:
 	tox

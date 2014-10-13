@@ -1,6 +1,6 @@
 from rest_framework.generics import get_object_or_404 as _get_object_or_404
 
-from .cache import CachedQueryset
+from .models import CachedQueryset
 
 
 def get_object_or_404(queryset, *filter_args, **filter_kwargs):

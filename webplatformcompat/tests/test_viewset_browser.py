@@ -151,7 +151,16 @@ class TestBrowserViewset(APITestCase):
                         '{browsers.versions}'),
                     'type': 'versions',
                 },
-            }
+            },
+            'meta': {
+                'pagination': {
+                    'browsers': {
+                        'count': 2,
+                        'previous': None,
+                        'next': None
+                    },
+                },
+            },
         }
         actual_content = loads(response.content.decode('utf-8'))
         self.assertDataEqual(expected_content, actual_content)
@@ -165,16 +174,20 @@ class TestBrowserViewset(APITestCase):
         url = reverse('browser-list')
         response = self.client.get(url, {'slug': 'firefox'})
         history_pk = browser.history.get().pk
-        expected_data = [{
-            'id': browser.pk,
-            'slug': 'firefox',
-            'icon': None,
-            'name': {"en": "Firefox"},
-            'note': None,
-            'history': [history_pk],
-            'history_current': history_pk,
-            'versions': [],
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': browser.pk,
+                'slug': 'firefox',
+                'icon': None,
+                'name': {"en": "Firefox"},
+                'note': None,
+                'history': [history_pk],
+                'history_current': history_pk,
+                'versions': [],
+            }]}
         self.assertDataEqual(response.data, expected_data)
 
     def test_get_browsable_api(self):
@@ -182,16 +195,20 @@ class TestBrowserViewset(APITestCase):
         url = self.reverse('browser-list')
         response = self.client.get(url, HTTP_ACCEPT="text/html")
         history_pk = browser.history.get().pk
-        expected_data = [{
-            'id': browser.pk,
-            'slug': '',
-            'icon': None,
-            'name': None,
-            'note': None,
-            'history': [history_pk],
-            'history_current': history_pk,
-            'versions': [],
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': browser.pk,
+                'slug': '',
+                'icon': None,
+                'name': None,
+                'note': None,
+                'history': [history_pk],
+                'history_current': history_pk,
+                'versions': [],
+            }]}
         self.assertDataEqual(response.data, expected_data)
         self.assertTrue(response['content-type'].startswith('text/html'))
 
@@ -229,6 +246,28 @@ class TestBrowserViewset(APITestCase):
             'history': [history_pk],
             'history_current': history_pk,
             'versions': [],
+        }
+        self.assertDataEqual(response.data, expected_data)
+
+    def test_post_empty_slug_not_allowed(self):
+        self.login_superuser()
+        data = {'slug': '', 'name': '{"en": "Firefox"}'}
+        response = self.client.post(reverse('browser-list'), data)
+        self.assertEqual(400, response.status_code, response.data)
+        expected_data = {
+            "slug": ["This field is required."],
+        }
+        self.assertDataEqual(response.data, expected_data)
+
+    def test_post_whitespace_slug_not_allowed(self):
+        self.login_superuser()
+        data = {'slug': ' ', 'name': '{"en": "Firefox"}'}
+        response = self.client.post(reverse('browser-list'), data)
+        self.assertEqual(400, response.status_code, response.data)
+        expected_data = {
+            "slug": [
+                "Enter a valid 'slug' consisting of letters, numbers,"
+                " underscores or hyphens."],
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -343,11 +382,18 @@ class TestBrowserViewset(APITestCase):
             Browser, slug='browser', name={'en': 'Old Name'})
         data = {'name': '{"en": "New Name"}'}
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
-        response = self.client.put(
-            url, data=data)
-        self.assertEqual(400, response.status_code, response.data)
+        response = self.client.put(url, data=data)
+        self.assertEqual(200, response.status_code, response.data)
+        histories = browser.history.all()
         expected_data = {
-            "slug": ["This field is required."],
+            "id": browser.pk,
+            "slug": "browser",
+            "icon": None,
+            "name": {"en": "New Name"},
+            "note": None,
+            "history": [h.pk for h in histories],
+            "history_current": histories[0].pk,
+            "versions": [],
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -513,6 +559,31 @@ class TestBrowserViewset(APITestCase):
             "history": [h.pk for h in history],
             "history_current": history[0].pk,
             "versions": [v.pk for v in (v2, v1)],
+        }
+        self.assertDataEqual(response.data, expected_data)
+
+    def test_slug_is_write_only(self):
+        browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        data = dumps({
+            'browsers': {
+                'slug': 'new-slug'
+            }
+        })
+        response = self.client.put(
+            url, data=data, content_type='application/vnd.api+json',
+            HTTP_ACCEPT='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.data)
+        history = browser.history.all()
+        expected_data = {
+            "id": browser.pk,
+            "slug": 'browser',
+            "icon": None,
+            "name": {"en": "Browser"},
+            "note": None,
+            "history": [h.pk for h in history],
+            "history_current": history[0].pk,
+            "versions": [],
         }
         self.assertDataEqual(response.data, expected_data)
 

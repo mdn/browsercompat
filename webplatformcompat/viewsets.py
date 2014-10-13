@@ -21,12 +21,13 @@ from drf_cached_reads.mixins import CachedViewMixin as BaseCacheViewMixin
 
 from .cache import Cache
 from .mixins import PartialPutMixin
-from .models import Browser, Version
+from .models import Browser, Feature, Support, Version
 from .parsers import JsonApiParser
 from .renderers import JsonApiRenderer
 from .serializers import (
-    BrowserSerializer, VersionSerializer,
-    HistoricalBrowserSerializer, HistoricalVersionSerializer,
+    BrowserSerializer, FeatureSerializer, SupportSerializer, VersionSerializer,
+    HistoricalBrowserSerializer, HistoricalFeatureSerializer,
+    HistoricalSupportSerializer, HistoricalVersionSerializer,
     UserSerializer)
 
 
@@ -58,6 +59,26 @@ class BrowserViewSet(ModelViewSet):
     filter_fields = ('slug',)
 
 
+class FeatureViewSet(ModelViewSet):
+    model = Feature
+    serializer_class = FeatureSerializer
+    filter_fields = ('slug', 'parent')
+
+    def filter_queryset(self, queryset):
+        qs = super(FeatureViewSet, self).filter_queryset(queryset)
+        if 'parent' in self.request.QUERY_PARAMS:
+            filter_value = self.request.QUERY_PARAMS['parent']
+            if not filter_value:
+                qs = qs.filter(parent=None)
+        return qs
+
+
+class SupportViewSet(ModelViewSet):
+    model = Support
+    serializer_class = SupportSerializer
+    filter_fields = ('version', 'feature')
+
+
 class VersionViewSet(ModelViewSet):
     model = Version
     serializer_class = VersionSerializer
@@ -78,6 +99,18 @@ class HistoricalBrowserViewSet(ReadOnlyModelViewSet):
     model = Browser.history.model
     serializer_class = HistoricalBrowserSerializer
     filter_fields = ('id', 'slug')
+
+
+class HistoricalFeatureViewSet(ReadOnlyModelViewSet):
+    model = Feature.history.model
+    serializer_class = HistoricalFeatureSerializer
+    filter_fields = ('id', 'slug')
+
+
+class HistoricalSupportViewSet(ReadOnlyModelViewSet):
+    model = Support.history.model
+    serializer_class = HistoricalSupportSerializer
+    filter_fields = ('id',)
 
 
 class HistoricalVersionViewSet(ReadOnlyModelViewSet):
@@ -130,10 +163,7 @@ class ViewFeaturesViewSet(ViewSet):
                     ("sections", ["746", "421", "70"]),
                     ("supports", []),
                     ("parent", "800"),
-                    ("ancestors", ["800", "816"]),
-                    ("siblings", ["814", "815", "816", "817", "818"]),
                     ("children", ["191"]),
-                    ("descendants", ["816", "191"]),
                     ("history_current", "216"),
                     ("history", ["216"])))),
             ))),
@@ -153,10 +183,7 @@ class ViewFeaturesViewSet(ViewSet):
                                 "358", "359", "360", "361", "362", "363",
                                 "364", "365", "366", "367", "368"]),
                             ("parent", "816"),
-                            ("ancestors", ["800", "816", "191"]),
-                            ("siblings", ["191"]),
                             ("children", []),
-                            ("descendants", ["191"]),
                             ("history_current", "395"),
                             ("history", ["395"]),
                         ))),
@@ -856,20 +883,8 @@ class ViewFeaturesViewSet(ViewSet):
                     ("href", a + "/features/{features.parent}"),
                     ("type", "features"),
                 ))),
-                ("features.ancestors", OrderedDict((
-                    ("href", a + "/features/{features.ancestors}"),
-                    ("type", "features"),
-                ))),
-                ("features.siblings", OrderedDict((
-                    ("href", a + "/features/{features.siblings}"),
-                    ("type", "features"),
-                ))),
                 ("features.children", OrderedDict((
                     ("href", a + "/features/{features.children}"),
-                    ("type", "features"),
-                ))),
-                ("features.descendants", OrderedDict((
-                    ("href", a + "/features/{features.descendants}"),
                     ("type", "features"),
                 ))),
                 ("features.history_current", OrderedDict((
