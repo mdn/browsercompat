@@ -3,43 +3,67 @@
 API Serializers
 """
 
+from django.db.models import CharField
 from django.contrib.auth.models import User
 from rest_framework.serializers import (
     DateField, DateTimeField, IntegerField, ModelSerializer,
     PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
 
-from .fields import (
-    CurrentHistoryField, HistoricalObjectField,  HistoryField, SecureURLField,
-    TranslatedTextField)
-from .models import Browser, Version
+from . import fields
+from .drf_fields import (
+    CurrentHistoryField, HistoricalObjectField, HistoryField,
+    MPTTRelationField, OptionalCharField, SecureURLField, TranslatedTextField)
+from .models import Browser, Feature, Support, Version
 
 
 #
 # "Regular" Serializers
 #
 
-class UpdateOnlySerializerOptions(ModelSerializer._options_class):
+class WriteRestrictedOptions(ModelSerializer._options_class):
     def __init__(self, meta):
-        super(UpdateOnlySerializerOptions, self).__init__(meta)
+        super(WriteRestrictedOptions, self).__init__(meta)
         self.update_only_fields = getattr(meta, 'update_only_fields', ())
+        self.write_once_fields = getattr(meta, 'write_once_fields', ())
 
 
-class UpdateOnlyMixin(object):
-    _options_class = UpdateOnlySerializerOptions
+class WriteRestrictedMixin(object):
+    _options_class = WriteRestrictedOptions
 
     def get_fields(self):
-        fields = super(UpdateOnlyMixin, self).get_fields()
-
+        '''Add read_only flag for write-restricted fields'''
+        fields = super(WriteRestrictedMixin, self).get_fields()
         view = self.context.get('view', None)
+
         if view and view.action in ('list', 'create'):
             update_only_fields = getattr(self.opts, 'update_only_fields', [])
             for field_name in update_only_fields:
                 fields[field_name].read_only = True
 
+        if view and view.action in ('update', 'partial_update'):
+            write_once_fields = getattr(self.opts, 'write_once_fields', [])
+            for field_name in write_once_fields:
+                fields[field_name].read_only = True
+
         return fields
 
 
-class HistoricalModelSerializer(UpdateOnlyMixin, ModelSerializer):
+class FieldMapMixin(object):
+    """Automatically handle fields used by this project"""
+    field_mapping = ModelSerializer.field_mapping
+    field_mapping[fields.TranslatedField] = TranslatedTextField
+    field_mapping[fields.SecureURLField] = SecureURLField
+    field_mapping[CharField] = OptionalCharField
+
+    def get_field(self, model_field):
+        field = super(FieldMapMixin, self).get_field(model_field)
+        if isinstance(field, TranslatedTextField):
+            field.allow_canonical = model_field.allow_canonical
+        return field
+
+
+class HistoricalModelSerializer(
+        WriteRestrictedMixin, FieldMapMixin, ModelSerializer):
     """Model serializer with history manager"""
 
     def get_default_fields(self):
@@ -92,10 +116,6 @@ class HistoricalModelSerializer(UpdateOnlyMixin, ModelSerializer):
 class BrowserSerializer(HistoricalModelSerializer):
     """Browser Serializer"""
 
-    icon = SecureURLField(required=False)
-    name = TranslatedTextField()
-    note = TranslatedTextField(required=False)
-
     def save_object(self, obj, **kwargs):
         if 'versions' in getattr(obj, '_related_data', {}):
             versions = obj._related_data.pop('versions')
@@ -117,21 +137,47 @@ class BrowserSerializer(HistoricalModelSerializer):
             'history_current', 'versions')
         update_only_fields = (
             'history', 'history_current', 'versions')
+        write_once_fields = ('slug',)
+
+
+class FeatureSerializer(HistoricalModelSerializer):
+    """Feature Serializer"""
+
+    children = MPTTRelationField(many=True, source='children')
+
+    class Meta:
+        model = Feature
+        fields = (
+            'id', 'slug', 'mdn_path', 'experimental', 'standardized',
+            'stable', 'obsolete', 'name',
+            'parent', 'children', 'supports', 'history_current', 'history')
+        read_only_fields = ('supports',)
+
+
+class SupportSerializer(HistoricalModelSerializer):
+    """Support Serializer"""
+
+    class Meta:
+        model = Support
+        fields = (
+            'id', 'version', 'feature', 'support', 'prefix',
+            'prefix_mandatory', 'alternate_name', 'alternate_mandatory',
+            'requires_config', 'default_config', 'note', 'footnote',
+            'history_current', 'history')
 
 
 class VersionSerializer(HistoricalModelSerializer):
     """Browser Version Serializer"""
 
-    release_notes_uri = TranslatedTextField(required=False)
-    note = TranslatedTextField(required=False)
     order = IntegerField(read_only=True, source='_order')
 
     class Meta:
         model = Version
         fields = (
             'id', 'browser', 'version', 'release_day', 'retirement_day',
-            'status', 'release_notes_uri', 'note', 'order', 'history',
-            'history_current')
+            'status', 'release_notes_uri', 'note', 'order',
+            'supports', 'history', 'history_current')
+        read_only_fields = ('supports',)
 
 
 class UserSerializer(ModelSerializer):
@@ -147,8 +193,16 @@ class UserSerializer(ModelSerializer):
 #
 # Historical object serializers
 #
+class HistoricalOptions(ModelSerializer._options_class):
+    def __init__(self, meta):
+        super(HistoricalOptions, self).__init__(meta)
+        self.archive_link_fields = getattr(meta, 'archive_link_fields', [])
+
+
 class HistoricalObjectSerializer(ModelSerializer):
     '''Common serializer attributes for Historical models'''
+    _options_class = HistoricalOptions
+
     id = IntegerField(source="history_id")
     date = DateTimeField(source="history_date")
     event = SerializerMethodField('get_event')
@@ -167,7 +221,16 @@ class HistoricalObjectSerializer(ModelSerializer):
         serializer = self.ArchivedObject(obj)
         data = serializer.data
         data['id'] = str(data['id'])
-        data['links'] = {'history_current': str(obj.history_id)}
+
+        data['links'] = type(data)()  # Use dict-like type of serializer.data
+        for field in self.opts.archive_link_fields:
+            del data[field]
+            value = getattr(obj, field + '_id')
+            if value is not None:
+                value = str(value)
+            data['links'][field] = value
+        data['links']['history_current'] = str(obj.history_id)
+
         return data
 
     class Meta:
@@ -189,11 +252,43 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
             'browser', 'browsers')
 
 
+class HistoricalFeatureSerializer(HistoricalObjectSerializer):
+
+    class ArchivedObject(FeatureSerializer):
+        class Meta(FeatureSerializer.Meta):
+            exclude = ('history_current', 'history', 'supports', 'children')
+
+    feature = HistoricalObjectField()
+    features = SerializerMethodField('get_archive')
+
+    class Meta(HistoricalObjectSerializer.Meta):
+        model = Feature.history.model
+        fields = HistoricalObjectSerializer.Meta.fields + (
+            'feature', 'features')
+        archive_link_fields = ('parent',)
+
+
+class HistoricalSupportSerializer(HistoricalObjectSerializer):
+
+    class ArchivedObject(SupportSerializer):
+        class Meta(SupportSerializer.Meta):
+            exclude = ('history_current', 'history')
+
+    support = HistoricalObjectField()
+    supports = SerializerMethodField('get_archive')
+
+    class Meta(HistoricalObjectSerializer.Meta):
+        model = Support.history.model
+        fields = HistoricalObjectSerializer.Meta.fields + (
+            'support', 'supports')
+        archive_link_fields = ('version', 'feature')
+
+
 class HistoricalVersionSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(VersionSerializer):
         class Meta(VersionSerializer.Meta):
-            exclude = ('history_current', 'history', 'browser')
+            exclude = ('supports', 'history_current', 'history')
 
     version = HistoricalObjectField()
     versions = SerializerMethodField('get_archive')
@@ -202,3 +297,4 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
         model = Version.history.model
         fields = HistoricalObjectSerializer.Meta.fields + (
             'version', 'versions')
+        archive_link_fields = ('browser',)

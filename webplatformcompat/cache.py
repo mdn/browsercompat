@@ -3,7 +3,7 @@
 from django.contrib.auth.models import User
 
 from drf_cached_reads.cache import BaseCache
-from .models import Browser, Version
+from .models import Browser, Feature, Support, Version
 
 
 class Cache(BaseCache):
@@ -14,10 +14,17 @@ class Cache(BaseCache):
     def browser_v1_serializer(self, obj):
         if not obj:
             return None
-        history_pks = getattr(
-            obj, '_history_pks',
-            list(obj.history.all().values_list('history_id', flat=True)))
-        versions_pks = list(obj.versions.values_list('pk', flat=True))
+
+        history_pks = getattr(obj, '_history_pks', None)
+        if history_pks is None:
+            history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
+        versions_pks = getattr(obj, '_version_pks', None)
+        if versions_pks is None:
+            versions_pks = list(
+                obj.versions.values_list('pk', flat=True))
+
         return dict((
             ('id', obj.pk),
             ('slug', obj.slug),
@@ -35,7 +42,7 @@ class Cache(BaseCache):
         ))
 
     def browser_v1_loader(self, pk):
-        queryset = Browser.objects.select_related('versions__pk')
+        queryset = Browser.objects.all()
         try:
             obj = queryset.get(pk=pk)
         except Browser.DoesNotExist:
@@ -43,17 +50,140 @@ class Cache(BaseCache):
         else:
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
+            obj._version_pks = list(
+                obj.versions.values_list('pk', flat=True))
             return obj
 
     def browser_v1_invalidator(self, obj):
         return []
 
+    def feature_v1_serializer(self, obj):
+        if not obj:
+            return None
+
+        history_pks = getattr(obj, '_history_pks', None)
+        if history_pks is None:
+            history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
+        children_pks = getattr(obj, '_children_pks', None)
+        if children_pks is None:
+            children_pks = list(obj.children.values_list('pk', flat=True))
+
+        support_pks = getattr(obj, '_support_pks', None)
+        if support_pks is None:
+            support_pks = list(obj.supports.values_list('pk', flat=True))
+
+        return dict((
+            ('id', obj.pk),
+            ('slug', obj.slug),
+            ('mdn_path', obj.mdn_path),
+            ('experimental', obj.experimental),
+            ('standardized', obj.standardized),
+            ('stable', obj.stable),
+            ('obsolete', obj.obsolete),
+            ('name', obj.name),
+            self.field_to_json(
+                'PKList', 'supports', model=Support, pks=support_pks),
+            self.field_to_json(
+                'PK', 'parent', model=Feature, pk=obj.parent_id),
+            self.field_to_json(
+                'PKList', 'children', model=Feature, pks=children_pks),
+            self.field_to_json(
+                'PKList', 'history', model=obj.history.model,
+                pks=history_pks),
+            self.field_to_json(
+                'PK', 'history_current', model=obj.history.model,
+                pk=history_pks[0]),
+        ))
+
+    def feature_v1_loader(self, pk):
+        queryset = Feature.objects
+        try:
+            obj = queryset.get(pk=pk)
+        except Feature.DoesNotExist:
+            return None
+        else:
+            obj._history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+            obj._children_pks = list(obj.children.values_list('pk', flat=True))
+            obj._support_pks = list(obj.supports.values_list('pk', flat=True))
+            return obj
+
+    def feature_v1_invalidator(self, obj):
+        pks = []
+        if obj.parent_id:
+            pks.append(obj.parent_id)
+        else:
+            pks += list(obj.get_siblings().values_list('pk', flat=True))
+        children_pks = getattr(
+            obj, '_children_pks',
+            list(obj.children.values_list('pk', flat=True)))
+        pks += children_pks
+        return [('Feature', pk, False) for pk in pks]
+
+    def support_v1_serializer(self, obj):
+        if not obj:
+            return None
+
+        history_pks = getattr(obj, '_history_pks', None)
+        if history_pks is None:
+            history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
+        return dict((
+            ('id', obj.pk),
+            ('support', obj.support),
+            ('prefix', obj.prefix),
+            ('prefix_mandatory', obj.prefix_mandatory),
+            ('alternate_name', obj.alternate_name),
+            ('alternate_mandatory', obj.alternate_mandatory),
+            ('requires_config', obj.requires_config),
+            ('default_config', obj.default_config),
+            ('note', obj.note),
+            ('footnote', obj.footnote),
+            self.field_to_json(
+                'PK', 'version', model=Version, pk=obj.version_id),
+            self.field_to_json(
+                'PK', 'feature', model=Feature, pk=obj.feature_id),
+            self.field_to_json(
+                'PKList', 'history', model=obj.history.model,
+                pks=history_pks),
+            self.field_to_json(
+                'PK', 'history_current', model=obj.history.model,
+                pk=history_pks[0]),
+        ))
+
+    def support_v1_loader(self, pk):
+        queryset = Support.objects
+        try:
+            obj = queryset.get(pk=pk)
+        except Support.DoesNotExist:
+            return None
+        else:
+            obj._history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+            return obj
+
+    def support_v1_invalidator(self, obj):
+        return [
+            ("Version", obj.version_id, True),
+            ("Feature", obj.feature_id, True),
+        ]
+
     def version_v1_serializer(self, obj):
         if not obj:
             return None
-        history_pks = getattr(
-            obj, '_history_pks',
-            list(obj.history.all().values_list('history_id', flat=True)))
+
+        support_pks = getattr(obj, '_support_pks', None)
+        if support_pks is None:
+            support_pks = list(obj.supports.values_list('pk', flat=True))
+
+        history_pks = getattr(obj, '_history_pks', None)
+        if history_pks is None:
+            history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
         return dict((
             ('id', obj.pk),
             ('version', obj.version),
@@ -66,6 +196,8 @@ class Cache(BaseCache):
             self.field_to_json(
                 'PK', 'browser', model=Browser, pk=obj.browser_id),
             self.field_to_json(
+                'PKList', 'supports', model=Support, pks=support_pks),
+            self.field_to_json(
                 'PKList', 'history', model=obj.history.model,
                 pks=history_pks),
             self.field_to_json(
@@ -76,10 +208,11 @@ class Cache(BaseCache):
     def version_v1_loader(self, pk):
         queryset = Version.objects
         try:
-            obj = queryset.get(pk=pk)
+            obj = queryset.select_related('supports__pk').get(pk=pk)
         except Version.DoesNotExist:
             return None
         else:
+            obj._support_pks = list(obj.supports.values_list('pk', flat=True))
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
             return obj

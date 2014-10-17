@@ -96,21 +96,25 @@ class TestHistoricalBrowserViewset(APITestCase):
         bh = browser.history.all()[0]
         url = reverse('historicalbrowser-list')
         response = self.client.get(url, {'id': browser.id})
-        expected_data = [{
-            'id': bh.history_id,
-            'date': browser._history_date,
-            'event': 'created',
-            'user': user.pk,
-            'browser': browser.pk,
-            'browsers': {
-                'id': str(browser.pk),
-                'slug': 'browser',
-                'icon': None,
-                'name': {'en': 'A Browser'},
-                'note': None,
-                'links': {'history_current': str(bh.pk)}
-            },
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': bh.history_id,
+                'date': browser._history_date,
+                'event': 'created',
+                'user': user.pk,
+                'browser': browser.pk,
+                'browsers': {
+                    'id': str(browser.pk),
+                    'slug': 'browser',
+                    'icon': None,
+                    'name': {'en': 'A Browser'},
+                    'note': None,
+                    'links': {'history_current': str(bh.pk)}
+                },
+            }]}
         self.assertDataEqual(expected_data, response.data)
 
     def test_filter_by_slug(self):
@@ -124,19 +128,23 @@ class TestHistoricalBrowserViewset(APITestCase):
         bh = browser.history.all()[0]
         url = reverse('historicalbrowser-list')
         response = self.client.get(url, {'slug': 'browser'})
-        expected_data = [{
-            'id': bh.history_id,
-            'date': browser._history_date,
-            'event': 'created',
-            'user': user.pk,
-            'browser': browser.pk,
-            'browsers': {
-                'id': str(browser.pk),
-                'slug': 'browser',
-                'icon': None,
-                'name': {'en': 'A Browser'},
-                'note': None,
-                'links': {'history_current': str(bh.pk)}
-            },
-        }]
+        expected_data = {
+            'count': 1,
+            'previous': None,
+            'next': None,
+            'results': [{
+                'id': bh.history_id,
+                'date': browser._history_date,
+                'event': 'created',
+                'user': user.pk,
+                'browser': browser.pk,
+                'browsers': {
+                    'id': str(browser.pk),
+                    'slug': 'browser',
+                    'icon': None,
+                    'name': {'en': 'A Browser'},
+                    'note': None,
+                    'links': {'history_current': str(bh.pk)}
+                },
+            }]}
         self.assertDataEqual(expected_data, response.data)

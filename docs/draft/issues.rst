@@ -51,7 +51,7 @@ These changes are:
     - **name** - converted to localized text, or a string if the name is
       canonical
     - **sections** - replaces spec link
-    - **ancestors**, **siblings**, **children**, **descendants** - tree relations
+    - **parent**, **children** - tree relations for this feature
 * supports_
     - Was `browser-version-features`, but multi-word resources are problematic.
     - **support** - Added a value "never", for cases where developers have
