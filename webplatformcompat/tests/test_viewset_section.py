@@ -33,6 +33,7 @@ class TestSectionViewSet(APITestCase):
             'subpath': {'en': '#display'},
             'note': None,
             'specification': spec.pk,
+            'features': [],
             'history': [history_pk],
             'history_current': history_pk,
         }
@@ -46,6 +47,7 @@ class TestSectionViewSet(APITestCase):
                 'note': None,
                 "links": {
                     "specification": str(spec.pk),
+                    "features": [],
                     "history_current": str(history_pk),
                     "history": [str(history_pk)],
                 },
@@ -56,6 +58,12 @@ class TestSectionViewSet(APITestCase):
                         "http://testserver/api/v1/specifications/"
                         "{sections.specification}"),
                     "type": "specifications"
+                },
+                "sections.features": {
+                    "href": (
+                        "http://testserver/api/v1/features/"
+                        "{sections.features}"),
+                    "type": "features",
                 },
                 "sections.history_current": {
                     "href": (
@@ -100,6 +108,7 @@ class TestSectionViewSet(APITestCase):
                 'subpath': {'en': '#animation'},
                 'note': None,
                 'specification': spec.pk,
+                'features': [],
                 'history': [history_pk],
                 'history_current': history_pk,
             }]}
@@ -113,6 +122,7 @@ class TestSectionViewSet(APITestCase):
                 "note": None,
                 "links": {
                     "specification": str(spec.pk),
+                    "features": [],
                     "history_current": str(history_pk),
                     "history": [str(history_pk)],
                 },
@@ -123,6 +133,12 @@ class TestSectionViewSet(APITestCase):
                         "http://testserver/api/v1/specifications/"
                         "{sections.specification}"),
                     "type": "specifications"
+                },
+                "sections.features": {
+                    "href": (
+                        "http://testserver/api/v1/features/"
+                        "{sections.features}"),
+                    "type": "features",
                 },
                 "sections.history_current": {
                     "href": (

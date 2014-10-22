@@ -168,7 +168,7 @@ class SectionSerializer(HistoricalModelSerializer):
     class Meta:
         model = Section
         fields = (
-            'id', 'name', 'subpath', 'note', 'specification',
+            'id', 'name', 'subpath', 'note', 'specification', 'features',
             'history_current', 'history')
 
 
@@ -328,7 +328,7 @@ class HistoricalSectionSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(SectionSerializer):
         class Meta(SectionSerializer.Meta):
-            exclude = ('history_current', 'history')
+            exclude = ('features', 'history_current', 'history')
 
     section = HistoricalObjectField()
     sections = SerializerMethodField('get_archive')

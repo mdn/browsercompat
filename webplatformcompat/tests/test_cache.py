@@ -195,6 +195,11 @@ class TestCache(TestCase):
                 'model': 'specification',
                 'pk': spec.pk,
             },
+            'features:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [],
+            },
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalsection',
@@ -223,7 +228,7 @@ class TestCache(TestCase):
         section = self.create(
             Section, specification=spec,
             name={'en': ''}, note={'en': 'Non standard'})
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(3):
             obj = self.cache.section_v1_loader(section.pk)
         with self.assertNumQueries(0):
             serialized = self.cache.section_v1_serializer(obj)
