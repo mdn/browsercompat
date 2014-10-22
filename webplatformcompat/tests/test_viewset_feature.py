@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 """Tests for `web-platform-compat.viewsets.FeatureViewSet` class."""
 from __future__ import unicode_literals
-from json import loads
+from json import dumps, loads
 
 from django.core.urlresolvers import reverse
 
-from webplatformcompat.models import Feature
+from webplatformcompat.models import Feature, Maturity, Section, Specification
 
 from .base import APITestCase
 
@@ -31,6 +31,7 @@ class TestFeatureViewSet(APITestCase):
             'parent': None,
             'children': [],
             'supports': [],
+            'sections': [],
             'history': [fh_pk],
             'history_current': fh_pk,
         }
@@ -48,6 +49,7 @@ class TestFeatureViewSet(APITestCase):
                 "name": None,
                 "links": {
                     'supports': [],
+                    'sections': [],
                     "parent": None,
                     "children": [],
                     "history_current": str(fh_pk),
@@ -59,6 +61,11 @@ class TestFeatureViewSet(APITestCase):
                     "href": (
                         self.baseUrl + "/api/v1/supports/{features.supports}"),
                     "type": "supports",
+                },
+                "features.sections": {
+                    "href": (
+                        self.baseUrl + "/api/v1/sections/{features.sections}"),
+                    "type": "sections",
                 },
                 "features.parent": {
                     "href": (
@@ -109,6 +116,7 @@ class TestFeatureViewSet(APITestCase):
             'obsolete': True,
             'name': 'input',
             'supports': [],
+            'sections': [],
             'parent': parent.id,
             'children': [],
             'history': [fh_pk],
@@ -128,6 +136,7 @@ class TestFeatureViewSet(APITestCase):
                 'name': 'input',
                 "links": {
                     'supports': [],
+                    'sections': [],
                     "parent": str(parent.id),
                     "children": [],
                     "history_current": str(fh_pk),
@@ -139,6 +148,11 @@ class TestFeatureViewSet(APITestCase):
                     "href": (
                         self.baseUrl + "/api/v1/supports/{features.supports}"),
                     "type": "supports",
+                },
+                "features.sections": {
+                    "href": (
+                        self.baseUrl + "/api/v1/sections/{features.sections}"),
+                    "type": "sections",
                 },
                 "features.parent": {
                     "href": (
@@ -191,6 +205,7 @@ class TestFeatureViewSet(APITestCase):
                 'name': {'en': 'A Feature'},
                 'parent': None,
                 'supports': [],
+                'sections': [],
                 'children': [],
                 'history': [fhistory_pk],
                 'history_current': fhistory_pk,
@@ -221,6 +236,7 @@ class TestFeatureViewSet(APITestCase):
                 'obsolete': False,
                 'name': {'en': 'A Feature'},
                 'supports': [],
+                'sections': [],
                 'parent': parent.id,
                 'children': [],
                 'history': [fhistory_pk],
@@ -253,6 +269,7 @@ class TestFeatureViewSet(APITestCase):
                 'obsolete': False,
                 'name': {'en': 'Parent'},
                 'supports': [],
+                'sections': [],
                 'parent': None,
                 'children': [feature.id],
                 'history': [phistory_pk],
@@ -267,6 +284,7 @@ class TestFeatureViewSet(APITestCase):
                 'obsolete': False,
                 'name': {'en': 'Other'},
                 'supports': [],
+                'sections': [],
                 'parent': None,
                 'children': [],
                 'history': [ohistory_pk],
@@ -283,3 +301,68 @@ class TestFeatureViewSet(APITestCase):
             "name": ["This field is required."],
         }
         self.assertDataEqual(response.data, expected_data)
+
+    def test_add_sections(self):
+        feature = self.create(
+            Feature, slug='feature', name={'en': 'The Feature'})
+        url = reverse('feature-detail', kwargs={'pk': feature.pk})
+        response = self.client.get(url)
+        self.assertEqual([], response.data['sections'])
+        self.assertEqual([], feature.history.all()[0].sections)
+
+        maturity = self.create(Maturity)
+        spec1 = self.create(Specification, key='Web Stuff', maturity=maturity)
+        section1 = self.create(
+            Section, specification=spec1, name={'en': 'Section 1'})
+        data = {
+            'features': {
+                'links': {
+                    'sections': [section1.pk]
+                }
+            }
+        }
+        response = self.client.put(
+            url, dumps(data), content_type='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual([section1.pk], response.data['sections'])
+        feature = Feature.objects.get(pk=feature.pk)
+        self.assertEqual(
+            [section1.pk], list(feature.sections.values_list('pk', flat=True)))
+        self.assertEqual([section1.pk], feature.history.all()[0].sections)
+
+        spec2 = self.create(Specification, key='Other Spec', maturity=maturity)
+        section2 = self.create(
+            Section, specification=spec2, name={'en': 'Section 2'})
+        data = {
+            'features': {
+                'links': {
+                    'sections': [section2.pk, section1.pk]
+                }
+            }
+        }
+        response = self.client.put(
+            url, dumps(data), content_type='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual([spec2.pk, spec1.pk], response.data['sections'])
+        feature = Feature.objects.get(pk=feature.pk)
+        expected = [section2.pk, section1.pk]
+        self.assertEqual(
+            expected, list(feature.sections.values_list('pk', flat=True)))
+        self.assertEqual(expected, feature.history.all()[0].sections)
+
+        data = {
+            'features': {
+                'links': {
+                    'sections': [section1.pk, section2.pk]
+                }
+            }
+        }
+        response = self.client.put(
+            url, dumps(data), content_type='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual([spec1.pk, spec2.pk], response.data['sections'])
+        feature = Feature.objects.get(pk=feature.pk)
+        expected = [section1.pk, section2.pk]
+        self.assertEqual(
+            expected, list(feature.sections.values_list('pk', flat=True)))
+        self.assertEqual(expected, feature.history.all()[0].sections)
