@@ -42,6 +42,7 @@ class TestHistoricalSectionViewset(APITestCase):
             'section': section.pk,
             'sections': {
                 'id': str(section.id),
+                'number': None,
                 'name': {'en': 'The Section'},
                 'subpath': None,
                 'note': None,
@@ -59,6 +60,7 @@ class TestHistoricalSectionViewset(APITestCase):
                 'event': 'created',
                 'sections': {
                     'id': str(spec.id),
+                    'number': None,
                     'name': {'en': 'The Section'},
                     'subpath': None,
                     'note': None,
@@ -121,6 +123,7 @@ class TestHistoricalSectionViewset(APITestCase):
                 'section': section.pk,
                 'sections': {
                     'id': str(section.pk),
+                    'number': None,
                     'name': {'en': 'A Section'},
                     'subpath': None,
                     'note': None,

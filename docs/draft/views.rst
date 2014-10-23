@@ -79,6 +79,9 @@ A sample response is:
             "sections": [
                 {
                     "id": "746",
+                    "number": {
+                        "en": "4.3.10",
+                    },
                     "name": {
                         "en": "The address element"
                     },
@@ -92,6 +95,9 @@ A sample response is:
                     }
                 },{
                     "id": "421",
+                    "number": {
+                        "en": "4.3.9",
+                    },
                     "name": {
                         "en": "The address element"
                     },
@@ -105,6 +111,9 @@ A sample response is:
                     }
                 },{
                     "id": "70",
+                    "number": {
+                        "7.5.6",
+                    },
                     "name": {
                         "en": "The ADDRESS element"
                     },
