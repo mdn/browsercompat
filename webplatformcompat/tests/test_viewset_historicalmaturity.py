@@ -18,7 +18,7 @@ class TestHistoricalMaturityViewset(APITestCase):
     def test_get(self):
         user = self.login_superuser()
         maturity = self.create(
-            Maturity, key="CR", name={"en": "Candidate Recommendation"},
+            Maturity, slug="CR", name={"en": "Candidate Recommendation"},
             _history_user=user,
             _history_date=datetime(2014, 10, 19, 10, 20, 45, 609995, UTC))
         history = maturity.history.all()[0]
@@ -34,7 +34,7 @@ class TestHistoricalMaturityViewset(APITestCase):
             'maturity': maturity.pk,
             'maturities': {
                 'id': str(maturity.id),
-                'key': 'CR',
+                'slug': 'CR',
                 'name': {'en': 'Candidate Recommendation'},
                 'links': {
                     'history_current': str(history.id),
@@ -49,7 +49,7 @@ class TestHistoricalMaturityViewset(APITestCase):
                 'event': 'created',
                 'maturities': {
                     'id': str(maturity.id),
-                    'key': 'CR',
+                    'slug': 'CR',
                     'name': {'en': 'Candidate Recommendation'},
                     'links': {
                         'history_current': str(history.id),
@@ -81,7 +81,7 @@ class TestHistoricalMaturityViewset(APITestCase):
     def test_filter_by_id(self):
         user = self.login_superuser()
         maturity = self.create(
-            Maturity, key="PR", name={'en-US': 'Proposed Recommendation'},
+            Maturity, slug="PR", name={'en-US': 'Proposed Recommendation'},
             _history_user=user,
             _history_date=datetime(2014, 10, 19, 10, 23, 38, 279164, UTC))
         history = maturity.history.all()[0]
@@ -99,7 +99,7 @@ class TestHistoricalMaturityViewset(APITestCase):
                 'maturity': maturity.pk,
                 'maturities': {
                     'id': str(maturity.pk),
-                    'key': 'PR',
+                    'slug': 'PR',
                     'name': {'en-US': 'Proposed Recommendation'},
                     'links': {
                         'history_current': str(history.id),

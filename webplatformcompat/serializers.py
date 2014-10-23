@@ -159,7 +159,7 @@ class MaturitySerializer(HistoricalModelSerializer):
     class Meta:
         model = Maturity
         fields = (
-            'id', 'key', 'name', 'specifications',
+            'id', 'slug', 'name', 'specifications',
             'history_current', 'history')
 
 

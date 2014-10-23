@@ -19,7 +19,7 @@ class TestMaturityViewSet(APITestCase):
             'de': 'Entwurf',
             'ru': u'\u0427\u0435\u0440\u043d\u043e\u0432\u0438\u043a',
         }
-        maturity = self.create(Maturity, key='Draft', name=name)
+        maturity = self.create(Maturity, slug='Draft', name=name)
         url = reverse('maturity-detail', kwargs={'pk': maturity.pk})
         fh_pk = maturity.history.all()[0].pk
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
@@ -27,7 +27,7 @@ class TestMaturityViewSet(APITestCase):
 
         expected_data = {
             'id': maturity.id,
-            'key': 'Draft',
+            'slug': 'Draft',
             'name': {
                 'en-US': 'Draft',
                 'ja': u'\u30c9\u30e9\u30d5\u30c8',
@@ -43,7 +43,7 @@ class TestMaturityViewSet(APITestCase):
         expected_json = {
             "maturities": {
                 "id": str(maturity.id),
-                "key": "Draft",
+                "slug": "Draft",
                 'name': {
                     'en-US': 'Draft',
                     'ja': u'\u30c9\u30e9\u30d5\u30c8',
@@ -87,7 +87,7 @@ class TestMaturityViewSet(APITestCase):
             'de': 'Entwurf',
             'ru': u'\u0427\u0435\u0440\u043d\u043e\u0432\u0438\u043a',
         }
-        maturity = self.create(Maturity, key='Draft', name=name)
+        maturity = self.create(Maturity, slug='Draft', name=name)
         spec = self.create(Specification, slug='foo', maturity=maturity)
         url = reverse('maturity-detail', kwargs={'pk': maturity.pk})
         fh_pk = maturity.history.all()[0].pk
@@ -96,7 +96,7 @@ class TestMaturityViewSet(APITestCase):
 
         expected_data = {
             'id': maturity.id,
-            'key': 'Draft',
+            'slug': 'Draft',
             'name': {
                 'en-US': 'Draft',
                 'ja': u'\u30c9\u30e9\u30d5\u30c8',
@@ -112,7 +112,7 @@ class TestMaturityViewSet(APITestCase):
         expected_json = {
             "maturities": {
                 "id": str(maturity.id),
-                "key": "Draft",
+                "slug": "Draft",
                 'name': {
                     'en-US': 'Draft',
                     'ja': u'\u30c9\u30e9\u30d5\u30c8',
@@ -151,11 +151,11 @@ class TestMaturityViewSet(APITestCase):
 
     def test_filter_by_key(self):
         maturity = self.create(
-            Maturity, key='WD', name={'en': 'Working Draft'})
-        self.create(Maturity, key="ED", name={'en': "Editor's Draft"})
+            Maturity, slug='WD', name={'en': 'Working Draft'})
+        self.create(Maturity, slug="ED", name={'en': "Editor's Draft"})
         history_pk = maturity.history.all()[0].pk
 
-        response = self.client.get(reverse('maturity-list'), {'key': 'WD'})
+        response = self.client.get(reverse('maturity-list'), {'slug': 'WD'})
         self.assertEqual(200, response.status_code, response.data)
         expected_data = {
             'count': 1,
@@ -163,7 +163,7 @@ class TestMaturityViewSet(APITestCase):
             'next': None,
             'results': [{
                 'id': maturity.id,
-                'key': 'WD',
+                'slug': 'WD',
                 'name': {'en': 'Working Draft'},
                 'specifications': [],
                 'history': [history_pk],
@@ -176,7 +176,7 @@ class TestMaturityViewSet(APITestCase):
         response = self.client.post(reverse('maturity-list'), {})
         self.assertEqual(400, response.status_code)
         expected_data = {
-            "key": ["This field is required."],
+            "slug": ["This field is required."],
             "name": ["This field is required."],
         }
         self.assertDataEqual(response.data, expected_data)
