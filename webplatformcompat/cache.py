@@ -371,36 +371,6 @@ class Cache(BaseCache):
         return [
             ("Browser", obj.browser_id, True)]
 
-    def historicalbrowser_v1_serializer(self, obj):
-        if not obj:
-            return None
-        return dict((
-            ('id', obj.history_id),
-            self.field_to_json('DateTime', 'date', obj.history_date),
-            ('event', obj.get_history_type_display().lower()),
-            self.field_to_json(
-                'PK', 'user', model=User, pk=obj.history_user_id),
-            self.field_to_json(
-                'PK', 'browser', model=Browser, pk=obj.id),
-            ('browsers', {
-                'id': obj.id,
-                'slug': obj.slug,
-                'name': obj.name,
-                'note': obj.note,
-                'history_current': obj.history_id
-            }),
-        ))
-
-    def historicalbrowser_v1_loader(self, pk):
-        queryset = Browser.history
-        try:
-            return queryset.get(history_id=pk)
-        except Browser.history.model.DoesNotExist:
-            return None
-
-    def historicalbrowser_v1_invalidator(self, obj):
-        return []
-
     def user_v1_serializer(self, obj):
         if not obj or not obj.is_active:
             return None

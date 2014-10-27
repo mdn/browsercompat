@@ -460,58 +460,6 @@ class TestCache(TestCase):
         expected = [('Browser', 1, True)]
         self.assertEqual(expected, self.cache.version_v1_invalidator(version))
 
-    def test_historicalbrowser_v1_serializer(self):
-        history_date = datetime(2014, 9, 22, 7, 49, 48, 2384, UTC)
-        browser = self.create(Browser, _history_date=history_date)
-        hbrowser = browser.history.all()[0]
-        out = self.cache.historicalbrowser_v1_serializer(hbrowser)
-        expected = {
-            'id': 1,
-            'date:DateTime': '1411372188.002384',
-            'event': u'created',
-            'user:PK': {
-                'app': u'auth',
-                'model': 'user',
-                'pk': 1
-            },
-            'browser:PK': {
-                'app': u'webplatformcompat',
-                'model': 'browser',
-                'pk': 1,
-            },
-            'browsers': {
-                'history_current': 1,
-                'id': 1,
-                'name': {},
-                'note': {},
-                'slug': u''
-            },
-        }
-        self.assertEqual(out, expected)
-
-    def test_historicalbrowser_v1_serializer_empty(self):
-        self.assertEqual(
-            None, self.cache.historicalbrowser_v1_serializer(None))
-
-    def test_historicalbrowser_v1_loader(self):
-        browser = self.create(Browser)
-        hbrowser = browser.history.all()[0]
-        with self.assertNumQueries(1):
-            obj = self.cache.historicalbrowser_v1_loader(hbrowser.history_id)
-        with self.assertNumQueries(0):
-            serialized = self.cache.historicalbrowser_v1_serializer(obj)
-        self.assertTrue(serialized)
-
-    def test_historicalbrowser_v1_loader_not_exist(self):
-        self.assertFalse(Browser.history.filter(pk=666).exists())
-        self.assertIsNone(self.cache.historicalbrowser_v1_loader(666))
-
-    def test_historicalbrowser_v1_invalidator(self):
-        browser = self.create(Browser)
-        hbrowser = browser.history.all()[0]
-        self.assertEqual(
-            [], self.cache.historicalbrowser_v1_invalidator(hbrowser))
-
     def test_user_v1_serializer(self):
         user = self.create(
             User, date_joined=datetime(2014, 9, 22, 8, 14, 34, 7, UTC))
