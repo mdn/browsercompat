@@ -150,10 +150,10 @@ class HistoricalVersionViewSet(ReadOnlyModelViewSet):
 #
 
 class ViewFeaturesViewSet(ViewSet):
-    '''Return a view for FeatureSets
+    """Return a view for FeatureSets
 
     TODO: Return real data
-    '''
+    """
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
     permission_classes = (AllowAny,)
 

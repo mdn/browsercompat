@@ -4,7 +4,7 @@ from django.utils.six import string_types
 
 
 class LanguageDictValidator(object):
-    '''Check for valid language dictionary'''
+    """Check for valid language dictionary"""
 
     def __init__(self, allow_canonical=False):
         self.allow_canonical = allow_canonical

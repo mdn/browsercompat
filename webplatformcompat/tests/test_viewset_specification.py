@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for `web-platform-compat.viewsets.SpecificationViewSet` class.
-"""
+"""Tests for `web-platform-compat.viewsets.SpecificationViewSet` class."""
 from __future__ import unicode_literals
 from json import loads
 

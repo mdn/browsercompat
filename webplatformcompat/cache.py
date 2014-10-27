@@ -1,4 +1,4 @@
-'''Cache functions'''
+"""Cache functions"""
 
 from django.contrib.auth.models import User
 
@@ -7,7 +7,7 @@ from .models import Browser, Feature, Maturity, Specification, Support, Version
 
 
 class Cache(BaseCache):
-    '''Instance Cache for webplatformcompat'''
+    """Instance Cache for webplatformcompat"""
     versions = ('v1',)
     default_version = 'v1'
 

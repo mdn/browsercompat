@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-API Serializers
-"""
+"""API Serializers"""
 
 from django.db.models import CharField
 from django.contrib.auth.models import User
@@ -31,7 +29,7 @@ class WriteRestrictedMixin(object):
     _options_class = WriteRestrictedOptions
 
     def get_fields(self):
-        '''Add read_only flag for write-restricted fields'''
+        """Add read_only flag for write-restricted fields"""
         fields = super(WriteRestrictedMixin, self).get_fields()
         view = self.context.get('view', None)
 
@@ -218,7 +216,7 @@ class HistoricalOptions(ModelSerializer._options_class):
 
 
 class HistoricalObjectSerializer(ModelSerializer):
-    '''Common serializer attributes for Historical models'''
+    """Common serializer attributes for Historical models"""
     _options_class = HistoricalOptions
 
     id = IntegerField(source="history_id")

@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-"""
-test_web-platform-compat
-------------
-
-Tests for `web-platform-compat` models module.
-"""
+"""Tests for `web-platform-compat` models module."""
 import mock
 import unittest
 

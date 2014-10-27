@@ -1,4 +1,4 @@
-'''Cache classes'''
+"""Cache classes"""
 
 from calendar import timegm
 from datetime import date, datetime
@@ -12,12 +12,12 @@ from .models import PkOnlyModel, PkOnlyValuesList
 
 
 class BaseCache(object):
-    '''Base instance cache
+    """Base instance cache
 
     To make the cache useful, create a derived class with methods for
     your Django models.  See drf_cached_reads/tests/test_user_example.py for an
     example.
-    '''
+    """
 
     default_version = 'default'
     versions = ['default']
@@ -35,17 +35,17 @@ class BaseCache(object):
         return self._cache
 
     def key_for(self, version, model_name, obj_pk):
-        '''Get the cache key for the cached representation'''
+        """Get the cache key for the cached representation"""
         return 'drfc_{0}_{1}_{2}'.format(version, model_name, obj_pk)
 
     def model_function(self, model_name, version, func_name):
-        '''Return the model function'''
+        """Return the model function"""
         assert func_name in ('serializer', 'loader', 'invalidator')
         name = "%s_%s_%s" % (model_name.lower(), version, func_name)
         return getattr(self, name)
 
     def field_function(self, type_code, func_name):
-        '''Return the field function'''
+        """Return the field function"""
         assert func_name in ('to_json', 'from_json')
         name = "field_%s_%s" % (type_code.lower(), func_name)
         return getattr(self, name)
@@ -65,7 +65,7 @@ class BaseCache(object):
         return key, value
 
     def get_instances(self, object_specs, version=None):
-        '''Get the cached native representation for one or more objects
+        """Get the cached native representation for one or more objects
 
         Keyword arguments:
         object_specs - A sequence of triples (model name, pk, obj):
@@ -79,7 +79,7 @@ class BaseCache(object):
         Return is a dictionary:
         key - (model name, pk)
         value - (native representation, pk, object or None)
-        '''
+        """
         ret = dict()
         spec_keys = set()
         cache_keys = []
@@ -138,7 +138,7 @@ class BaseCache(object):
         return ret
 
     def update_instance(self, model_name, pk, instance=None, version=None):
-        '''Create or update a cached instance
+        """Create or update a cached instance
 
         Keyword arguments are:
         model_name - The name of the model
@@ -148,7 +148,7 @@ class BaseCache(object):
 
         Return is a list of tuples (model name, pk, immediate) that also needs
         to be updated.
-        '''
+        """
         versions = [version] if version else self.versions
         invalid = []
         for version in versions:
@@ -204,22 +204,22 @@ class BaseCache(object):
     #
 
     def field_date_from_json(self, date_triple):
-        '''Convert a date triple to the date'''
+        """Convert a date triple to the date"""
         return date(*date_triple) if date_triple else None
 
     def field_date_to_json(self, day):
-        '''Convert a date to a date triple'''
+        """Convert a date to a date triple"""
         return [day.year, day.month, day.day] if day else None
 
     def field_datetime_from_json(self, json_val):
-        '''Convert a UTC timestamp to a UTC datetime'''
+        """Convert a UTC timestamp to a UTC datetime"""
         return datetime.fromtimestamp(float(json_val), utc)
 
     def field_datetime_to_json(self, dt):
-        '''Convert a datetime to a UTC timestamp w/ microsecond resolution
+        """Convert a datetime to a UTC timestamp w/ microsecond resolution
 
         datetimes w/o timezone will be assumed to be in UTC
-        '''
+        """
         ts = timegm(dt.utctimetuple())
         if dt.microsecond:
             return "{0:03f}".format(ts + dt.microsecond / 1000000.0)
@@ -227,18 +227,18 @@ class BaseCache(object):
             return ts
 
     def field_pklist_from_json(self, data):
-        '''Load a PkOnlyValuesList from a JSON dict
+        """Load a PkOnlyValuesList from a JSON dict
 
         This uses the same format as cached_queryset_from_json
-        '''
+        """
         model = get_model(data['app'], data['model'])
         return PkOnlyValuesList(self, model, data['pks'])
 
     def field_pklist_to_json(self, model, pks):
-        '''Convert a list of primary keys to a JSON dict
+        """Convert a list of primary keys to a JSON dict
 
         This uses the same format as cached_queryset_to_json
-        '''
+        """
         app_label = model._meta.app_label
         model_name = model._meta.model_name
         return {
@@ -248,12 +248,12 @@ class BaseCache(object):
         }
 
     def field_pk_from_json(self, data):
-        '''Load a PkOnlyModel from a JSON dict'''
+        """Load a PkOnlyModel from a JSON dict"""
         model = get_model(data['app'], data['model'])
         return PkOnlyModel(self, model, data['pk'])
 
     def field_pk_to_json(self, model, pk):
-        '''Convert a primary key to a JSON dict'''
+        """Convert a primary key to a JSON dict"""
         app_label = model._meta.app_label
         model_name = model._meta.model_name
         return {

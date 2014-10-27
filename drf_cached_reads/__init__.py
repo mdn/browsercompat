@@ -1,4 +1,4 @@
-'''
+"""
 Store instances in cache for fast Django REST Framework reads
 
 There are two read operations when using viewsets in Django REST Framework
@@ -45,4 +45,4 @@ There are some additional requirements:
   compatible, but instead to implement the interface needed by Django REST
   Framework.  If you try to use un-emulated functionality, they will fail.
   Hopefully quickly.
-'''
+"""

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Fields for Django REST Framework serializers
-"""
+"""Fields for Django REST Framework serializers."""
 from __future__ import unicode_literals
 
 import json
@@ -192,7 +190,7 @@ class TranslatedTextField(CharField):
             widget=widget, validators=validators, *args, **kwargs)
 
     def to_native(self, value):
-        '''Convert from model Python to serializable data'''
+        """Convert from model Python to serializable data"""
         if value:
             if list(value.keys()) == ['zxx']:
                 if self.allow_canonical:
@@ -205,7 +203,7 @@ class TranslatedTextField(CharField):
             return None
 
     def from_native(self, value):
-        '''Convert from serializable data to model'''
+        """Convert from serializable data to model"""
         if isinstance(value, dict):
             return value
         value = value.strip()

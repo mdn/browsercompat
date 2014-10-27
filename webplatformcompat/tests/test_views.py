@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for `web-platform-compat` views module.
-"""
+"""Tests for `web-platform-compat` views module."""
 from json import loads
 
 from django.core.urlresolvers import reverse

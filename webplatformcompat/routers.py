@@ -21,7 +21,7 @@ from .viewsets import (
 
 
 class GroupedRouter(DefaultRouter):
-    '''Router with grouped API root and slash redirects'''
+    """Router with grouped API root and slash redirects"""
 
     view_groups = {}
     allowed_ext = ['api', 'json']
@@ -36,9 +36,7 @@ class GroupedRouter(DefaultRouter):
         super(GroupedRouter, self).register(prefix, viewset, base_name)
 
     def get_api_root_view(self):
-        """
-        Return a view to use as the API root.
-        """
+        """Return a view to use as the API root."""
         api_root_dict = RouterDict()
         list_name = self.routes[0].name
         for prefix, viewset, basename in self.registry:
@@ -62,8 +60,10 @@ class GroupedRouter(DefaultRouter):
 
     def get_urls(self):
         """
-        Generate the list of URL patterns, including a default root view
-        for the API, and appending `.json` style format suffixes.
+        Return the URL patterns handled by this router.
+
+        Include a default root view for the API, and appending `.json` style
+        format suffixes.
         """
         urls = []
         assert self.include_root_view

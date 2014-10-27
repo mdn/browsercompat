@@ -10,11 +10,13 @@ py==1.4.22
 virtualenv==1.11.6
 tox==1.7.2
 
-# PEP8 and static analysis
+# PEP8, PEP257 and static analysis
 mccabe==0.2.1
 pep8==1.5.7
 pyflakes==0.8.1
 flake8==2.2.2
+pep257==0.3.2
+flake8-docstrings==0.2.1
 
 # MANIFEST.in checker
 check-manifest==0.21

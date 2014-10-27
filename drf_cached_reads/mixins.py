@@ -4,7 +4,8 @@ from .models import CachedQueryset
 
 
 def get_object_or_404(queryset, *filter_args, **filter_kwargs):
-    """
+    """Return an object or raise a 404.
+
     Same as Django's standard shortcut, but make sure to raise 404
     if the filter_kwargs don't match the required types.
     """
@@ -18,11 +19,11 @@ class CachedViewMixin(object):
     cache_version = 'default'
 
     def get_queryset(self):
-        '''Get the queryset for the action
+        """Get the queryset for the action
 
         If action is read action, return a CachedQueryset
         Otherwise, return a Django queryset
-        '''
+        """
         queryset = super(CachedViewMixin, self).get_queryset()
         if self.action in ('list', 'retrieve'):
             return CachedQueryset(self.get_queryset_cache(), queryset=queryset)
@@ -30,16 +31,16 @@ class CachedViewMixin(object):
             return queryset
 
     def get_queryset_cache(self):
-        '''Get the cache to use for querysets
+        """Get the cache to use for querysets
 
         Users should subclass cache.Cache and override this function to return
         an instance of the class.
-        '''
+        """
         return self.cache_class()
 
     def get_object(self, queryset=None):
         """
-        Returns the object the view is displaying.
+        Return the object the view is displaying.
 
         Same as rest_framework.generics.GenericAPIView, but:
         - Failed assertions instead of deprecations

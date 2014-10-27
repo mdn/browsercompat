@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for `web-platform-compat.viewsets.BrowserViewSet` class.
-"""
+"""Tests for `web-platform-compat.viewsets.BrowserViewSet` class."""
 from __future__ import unicode_literals
 from json import dumps, loads
 
@@ -14,7 +12,7 @@ from .base import APITestCase
 
 
 class TestBrowserViewset(APITestCase):
-    '''Test browsers list and detail, as well as common functionality'''
+    """Test browsers list and detail, as well as common functionality"""
 
     def test_get_empty(self):
         browser = self.create(Browser)
@@ -325,7 +323,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_put_as_json_api(self):
-        '''If content is application/vnd.api+json, put is partial'''
+        """If content is application/vnd.api+json, put is partial"""
         browser = self.create(
             Browser, slug='browser', name={'en': 'Old Name'})
         data = dumps({
@@ -352,7 +350,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_put_as_json(self):
-        '''If content is application/json, put is full put'''
+        """If content is application/json, put is full put"""
         browser = self.create(
             Browser, slug='browser', name={'en': 'Old Name'})
         data = {'name': '{"en": "New Name"}'}

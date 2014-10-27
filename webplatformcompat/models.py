@@ -14,7 +14,7 @@ from .fields import TranslatedField
 
 @python_2_unicode_compatible
 class Browser(models.Model):
-    '''A browser or other web client'''
+    """A browser or other web client"""
     slug = models.SlugField(
         help_text="Unique, human-friendly slug.",
         unique=True)
@@ -31,7 +31,7 @@ class Browser(models.Model):
 
 @python_2_unicode_compatible
 class Version(models.Model):
-    '''A version of a browser'''
+    """A version of a browser"""
     STATUS_CHOICES = [(k, k) for k in (
         'unknown',
         'current',
@@ -70,7 +70,7 @@ class Version(models.Model):
 
 @python_2_unicode_compatible
 class Feature(MPTTModel):
-    '''A web technology'''
+    """A web technology"""
 
     slug = models.SlugField(
         help_text="Unique, human-friendly slug.",
@@ -117,7 +117,7 @@ register(Feature)
 
 @python_2_unicode_compatible
 class Support(models.Model):
-    '''Does a browser version support a feature?'''
+    """Does a browser version support a feature?"""
 
     SUPPORT_CHOICES = [(k, k) for k in (
         'yes',
@@ -182,7 +182,7 @@ class HistoricalMaturityRecords(HistoricalRecords):
 
 @python_2_unicode_compatible
 class Maturity(models.Model):
-    '''Maturity of a specification document'''
+    """Maturity of a specification document"""
     key = models.SlugField(
         help_text=(
             "Unique, human-friendly key, sourced when possible from the"
@@ -201,7 +201,7 @@ class Maturity(models.Model):
 
 @python_2_unicode_compatible
 class Specification(models.Model):
-    '''A Specification document'''
+    """A Specification document"""
     maturity = models.ForeignKey('Maturity', related_name='specifications')
     key = models.SlugField(
         help_text=(

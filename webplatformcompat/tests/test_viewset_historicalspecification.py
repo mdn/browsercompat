@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for `web-platform-compat.viewsets.HistoricalSpecificationViewSet` class.
-"""
+"""Tests for HistoricalSpecificationViewSet class."""
 from __future__ import unicode_literals
 from datetime import datetime
 from json import loads

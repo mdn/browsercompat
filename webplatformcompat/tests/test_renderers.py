@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for `web-platform-compat` renderers module.
-"""
+"""Tests for `web-platform-compat` renderers module."""
 
 from django.test import TestCase
 
