@@ -35,7 +35,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             'id': history.pk,
             'date': spec._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'specification': spec.pk,
             'specifications': {
                 'id': str(spec.id),
@@ -68,7 +68,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
                 },
                 'links': {
                     'specification': str(spec.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -78,11 +78,11 @@ class TestHistoricalSpecificationViewset(APITestCase):
                         '{historical_specifications.specification}'),
                     'type': 'specifications'
                 },
-                'historical_specifications.user': {
+                'historical_specifications.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_specifications.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_specifications.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -113,7 +113,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
                 'id': history.pk,
                 'date': spec._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'specification': spec.pk,
                 'specifications': {
                     'id': str(spec.pk),
@@ -153,7 +153,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
                 'id': history.pk,
                 'date': spec._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'specification': spec.pk,
                 'specifications': {
                     'id': str(spec.pk),
@@ -193,7 +193,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
                 'id': history.pk,
                 'date': spec._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'specification': spec.pk,
                 'specifications': {
                     'id': str(spec.pk),

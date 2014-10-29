@@ -3,6 +3,7 @@
 from django.contrib.auth.models import User
 
 from drf_cached_reads.cache import BaseCache
+from .history import Changeset
 from .models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 
@@ -55,6 +56,107 @@ class Cache(BaseCache):
             return obj
 
     def browser_v1_invalidator(self, obj):
+        return []
+
+    def changeset_v1_serializer(self, obj):
+        if not obj:
+            return None
+
+        hbrowser_pks = getattr(obj, '_historical_browsers_pks', None)
+        if hbrowser_pks is None:
+            hbrowser_pks = list(obj.historical_browsers.values_list(
+                'history_id', flat=True))
+
+        hversion_pks = getattr(obj, '_historical_versions_pks', None)
+        if hversion_pks is None:
+            hversion_pks = list(obj.historical_versions.values_list(
+                'history_id', flat=True))
+
+        hfeature_pks = getattr(obj, '_historical_features_pks', None)
+        if hfeature_pks is None:
+            hfeature_pks = list(obj.historical_features.values_list(
+                'history_id', flat=True))
+
+        hspecification_pks = getattr(
+            obj, '_historical_specifications_pks', None)
+        if hspecification_pks is None:
+            hspecification_pks = list(
+                obj.historical_specifications.values_list(
+                    'history_id', flat=True))
+
+        hsupport_pks = getattr(obj, '_historical_supports_pks', None)
+        if hsupport_pks is None:
+            hsupport_pks = list(obj.historical_supports.values_list(
+                'history_id', flat=True))
+
+        hmaturity_pks = getattr(obj, '_historical_maturities_pks', None)
+        if hmaturity_pks is None:
+            hmaturity_pks = list(obj.historical_maturities.values_list(
+                'history_id', flat=True))
+
+        hsection_pks = getattr(obj, '_historical_sections_pks', None)
+        if hsection_pks is None:
+            hsection_pks = list(
+                obj.historical_sections.values_list('history_id', flat=True))
+
+        return dict((
+            ('id', obj.id),
+            self.field_to_json('DateTime', 'created', obj.created),
+            self.field_to_json('DateTime', 'modified', obj.modified),
+            ('closed', obj.closed),
+            ('target_resource_type', obj.target_resource_type),
+            ('target_resource_id', obj.target_resource_id),
+            self.field_to_json('PK', 'user', model=User, pk=obj.user_id),
+            self.field_to_json(
+                'PKList', 'historical_browsers', model=Browser.history.model,
+                pks=hbrowser_pks),
+            self.field_to_json(
+                'PKList', 'historical_features', model=Feature.history.model,
+                pks=hfeature_pks),
+            self.field_to_json(
+                'PKList', 'historical_maturities',
+                model=Maturity.history.model, pks=hmaturity_pks),
+            self.field_to_json(
+                'PKList', 'historical_sections', model=Section.history.model,
+                pks=hsection_pks),
+            self.field_to_json(
+                'PKList', 'historical_specifications',
+                model=Specification.history.model,
+                pks=hspecification_pks),
+            self.field_to_json(
+                'PKList', 'historical_supports', model=Support.history.model,
+                pks=hsupport_pks),
+            self.field_to_json(
+                'PKList', 'historical_versions', model=Version.history.model,
+                pks=hversion_pks),
+        ))
+
+    def changeset_v1_loader(self, pk):
+        queryset = Changeset.objects
+        try:
+            obj = queryset.get(pk=pk)
+        except Changeset.DoesNotExist:
+            return None
+        else:
+            obj._historical_browsers_pks = list(
+                obj.historical_browsers.values_list('history_id', flat=True))
+            obj._historical_versions_pks = list(
+                obj.historical_versions.values_list('history_id', flat=True))
+            obj._historical_features_pks = list(
+                obj.historical_features.values_list('history_id', flat=True))
+            obj._historical_specifications_pks = list(
+                obj.historical_specifications.values_list(
+                    'history_id', flat=True))
+            obj._historical_supports_pks = list(
+                obj.historical_supports.values_list('history_id', flat=True))
+            obj._historical_maturities_pks = list(
+                obj.historical_maturities.values_list(
+                    'history_id', flat=True))
+            obj._historical_sections_pks = list(
+                obj.historical_sections.values_list('history_id', flat=True))
+            return obj
+
+    def changeset_v1_invalidator(self, obj):
         return []
 
     def feature_v1_serializer(self, obj):

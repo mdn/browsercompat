@@ -31,7 +31,7 @@ class TestHistoricalBrowserViewset(APITestCase):
             'id': history.pk,
             'date': browser._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'browser': browser.pk,
             'browsers': {
                 'id': '1',
@@ -60,7 +60,7 @@ class TestHistoricalBrowserViewset(APITestCase):
                 },
                 'links': {
                     'browser': str(browser.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 }
             },
             'links': {
@@ -70,11 +70,11 @@ class TestHistoricalBrowserViewset(APITestCase):
                         '{historical_browsers.browser}'),
                     'type': 'browsers'
                 },
-                'historical_browsers.user': {
+                'historical_browsers.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_browsers.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_browsers.changeset}'),
+                    'type': 'changesets'
                 }
             }
         }
@@ -100,7 +100,7 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'id': history.pk,
                 'date': browser._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'browser': browser.pk,
                 'browsers': {
                     'id': str(browser.pk),
@@ -131,7 +131,7 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'id': history.pk,
                 'date': browser._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'browser': browser.pk,
                 'browsers': {
                     'id': str(browser.pk),

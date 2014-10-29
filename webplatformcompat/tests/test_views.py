@@ -25,7 +25,8 @@ class TestViews(TestCase):
                 'supports': self.reverse('support-list'),
                 'versions': self.reverse('version-list'),
             },
-            'change-control': {
+            'change_control': {
+                'changesets': self.reverse('changeset-list'),
                 'users': self.reverse('user-list'),
             },
             'history': {

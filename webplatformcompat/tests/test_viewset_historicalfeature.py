@@ -30,7 +30,7 @@ class TestHistoricalFeatureViewset(APITestCase):
             'id': history.pk,
             'date': feature._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'feature': feature.pk,
             'features': {
                 'id': str(feature.id),
@@ -71,7 +71,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                 },
                 'links': {
                     'feature': str(feature.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -81,11 +81,11 @@ class TestHistoricalFeatureViewset(APITestCase):
                         '{historical_features.feature}'),
                     'type': 'features'
                 },
-                'historical_features.user': {
+                'historical_features.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_features.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_features.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -113,7 +113,7 @@ class TestHistoricalFeatureViewset(APITestCase):
             'id': history.pk,
             'date': feature._history_date,
             'event': 'changed',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'feature': feature.pk,
             'features': {
                 'id': str(feature.id),
@@ -151,7 +151,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                 'id': history.pk,
                 'date': feature._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'feature': feature.pk,
                 'features': {
                     'id': str(feature.pk),

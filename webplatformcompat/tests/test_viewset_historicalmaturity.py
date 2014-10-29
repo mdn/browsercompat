@@ -30,7 +30,7 @@ class TestHistoricalMaturityViewset(APITestCase):
             'id': history.pk,
             'date': maturity._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'maturity': maturity.pk,
             'maturities': {
                 'id': str(maturity.id),
@@ -57,7 +57,7 @@ class TestHistoricalMaturityViewset(APITestCase):
                 },
                 'links': {
                     'maturity': str(maturity.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -67,11 +67,11 @@ class TestHistoricalMaturityViewset(APITestCase):
                         '{historical_maturities.maturity}'),
                     'type': 'maturities'
                 },
-                'historical_maturities.user': {
+                'historical_maturities.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_maturities.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_maturities.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -95,7 +95,7 @@ class TestHistoricalMaturityViewset(APITestCase):
                 'id': history.pk,
                 'date': maturity._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'maturity': maturity.pk,
                 'maturities': {
                     'id': str(maturity.pk),

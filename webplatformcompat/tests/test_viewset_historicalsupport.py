@@ -33,7 +33,7 @@ class TestHistoricalSupportViewset(APITestCase):
             'id': history.pk,
             'date': support._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'support': support.pk,
             'supports': {
                 'id': str(support.id),
@@ -80,7 +80,7 @@ class TestHistoricalSupportViewset(APITestCase):
                 },
                 'links': {
                     'support': str(support.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -90,11 +90,11 @@ class TestHistoricalSupportViewset(APITestCase):
                         '{historical_supports.support}'),
                     'type': 'supports'
                 },
-                'historical_supports.user': {
+                'historical_supports.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_supports.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_supports.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -121,7 +121,7 @@ class TestHistoricalSupportViewset(APITestCase):
                 'id': history.pk,
                 'date': support._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'support': support.pk,
                 'supports': {
                     'id': str(support.pk),

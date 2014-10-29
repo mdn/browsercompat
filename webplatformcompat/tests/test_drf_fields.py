@@ -5,7 +5,8 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from webplatformcompat.drf_fields import OptionalCharField, TranslatedTextField
+from webplatformcompat.drf_fields import (
+    OptionalCharField, OptionalIntegerField, TranslatedTextField)
 
 
 class SharedTranslatedTextFieldTests(object):
@@ -98,3 +99,30 @@ class TestNonOptionalCharField(SharedOptionalCharFieldTests, TestCase):
 class TestOptionalCharField(SharedOptionalCharFieldTests, TestCase):
     def setUp(self):
         self.ocf = OptionalCharField()
+
+
+class SharedOptionalIntegerFieldTests(object):
+    def test_to_native_integer(self):
+        self.assertEqual(123, self.oif.to_native(123))
+
+    def test_to_native_zero(self):
+        self.assertEqual(None, self.oif.to_native(0))
+
+    def test_from_native_string(self):
+        self.assertEqual(456, self.oif.from_native('456'))
+
+    def test_from_native_integer(self):
+        self.assertEqual(789, self.oif.from_native(789))
+
+    def test_from_native_null(self):
+        self.assertEqual(0, self.oif.from_native(None))
+
+
+class TestNonOptionalIntegerField(SharedOptionalIntegerFieldTests, TestCase):
+    def setUp(self):
+        self.oif = OptionalIntegerField(required=True)
+
+
+class TestOptionalIntegerField(SharedOptionalIntegerFieldTests, TestCase):
+    def setUp(self):
+        self.oif = OptionalIntegerField()

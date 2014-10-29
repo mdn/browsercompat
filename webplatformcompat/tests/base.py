@@ -6,6 +6,8 @@ from django.utils import encoding, six
 
 from rest_framework.test import APITestCase as BaseAPITestCase
 
+from webplatformcompat.history import Changeset
+
 
 class TestMixin(object):
     """Useful methods for testing"""
@@ -35,6 +37,13 @@ class TestMixin(object):
         obj._history_user = (
             _history_user or getattr(self, 'user', None) or
             self.login_superuser())
+
+        hc_kwargs = {'user': obj._history_user}
+        if _history_date is not None:
+            hc_kwargs['created'] = _history_date
+            hc_kwargs['modified'] = _history_date
+        obj._history_changeset = Changeset(**hc_kwargs)
+
         if _history_date:
             obj._history_date = _history_date
         obj.save()

@@ -38,7 +38,7 @@ class TestHistoricalSectionViewset(APITestCase):
             'id': history.pk,
             'date': section._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'section': section.pk,
             'sections': {
                 'id': str(section.id),
@@ -71,7 +71,7 @@ class TestHistoricalSectionViewset(APITestCase):
                 },
                 'links': {
                     'section': str(spec.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -81,11 +81,11 @@ class TestHistoricalSectionViewset(APITestCase):
                         '{historical_sections.section}'),
                     'type': 'sections'
                 },
-                'historical_sections.user': {
+                'historical_sections.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_sections.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_sections.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -119,7 +119,7 @@ class TestHistoricalSectionViewset(APITestCase):
                 'id': history.pk,
                 'date': section._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'section': section.pk,
                 'sections': {
                     'id': str(section.pk),

@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
-"""Extentions for simplehistory"""
+"""Extensions of simplehistory for webplatformcompat"""
 
 from __future__ import unicode_literals
 
+from django.conf import settings
+from django.db import models
 from django.utils.timezone import now
+from django_extensions.db.fields import (
+    CreationDateTimeField, ModificationDateTimeField)
 
+from simple_history.middleware import (
+    HistoryRequestMiddleware as BaseHistoryRequestMiddleware)
 from simple_history.models import HistoricalRecords as BaseHistoricalRecords
+
+user_model = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
 def register(
@@ -29,10 +37,32 @@ def register(
         pass  # pragma: nocover
 
 
+class Changeset(models.Model):
+    """Changeset combining historical records"""
+
+    TARGET_RESOURCES = [
+        'browsers', 'features', 'maturities', 'sections', 'specifications',
+        'supports', 'versions',
+    ]
+
+    created = CreationDateTimeField()
+    modified = ModificationDateTimeField()
+    user = models.ForeignKey(user_model)
+    closed = models.BooleanField(
+        help_text="Is the changeset closed to new changes?",
+        default=False)
+    target_resource_type = models.CharField(
+        help_text="Type of target resource",
+        max_length=12, blank=True, choices=[(r, r) for r in TARGET_RESOURCES])
+    target_resource_id = models.PositiveIntegerField(
+        default=0, help_text="ID of target resource")
+
+
 class HistoricalRecords(BaseHistoricalRecords):
     """simplehistory.HistoricalRecords with modifications
 
     Can easily add additional fields
+    References a history_changeset instead of a history_user
     """
     additional_fields = {}
 
@@ -45,10 +75,37 @@ class HistoricalRecords(BaseHistoricalRecords):
             fields[name] = field
         return fields
 
-    def create_historical_record(self, instance, type):
-        """Add extra data when creating the historic record"""
+    def get_extra_fields(self, model, fields):
+        """Remove fields moved to changeset"""
+        extra_fields = super(HistoricalRecords, self).get_extra_fields(
+            model, fields)
+        related_name = 'historical_' + model._meta.verbose_name_plural.lower()
+        extra_fields['history_changeset'] = models.ForeignKey(
+            'Changeset', related_name=related_name)
+        return extra_fields
+
+    def get_history_changeset(self, instance):
+        """Get the changeset from the instance or middleware"""
+        try:
+            changeset = instance._history_changeset
+        except AttributeError:
+            changeset = self.thread.request.changeset
+        user = self.get_history_user(instance)
+        assert user, 'History User is required'
+        if not changeset.user_id:
+            changeset.user = user
+        else:
+            assert user == changeset.user, 'User must match changeset user'
+        return changeset
+
+    def create_historical_record(self, instance, history_type):
+        """Embrace and extend create_historical_record
+
+        Add data from additional_fields
+        Change history_user to history_changeset
+        """
         history_date = getattr(instance, '_history_date', now())
-        history_user = self.get_history_user(instance)
+        history_changeset = self.get_history_changeset(instance)
         manager = getattr(instance, self.manager_name)
         attrs = {}
         for field in instance._meta.fields:
@@ -60,5 +117,16 @@ class HistoricalRecords(BaseHistoricalRecords):
             value = loader(instance, type)
             attrs[field_name] = value
 
-        manager.create(history_date=history_date, history_type=type,
-                       history_user=history_user, **attrs)
+        if not history_changeset.id:
+            history_changeset.closed = True
+            history_changeset.save()
+        manager.create(
+            history_date=history_date, history_type=history_type,
+            history_changeset=history_changeset, **attrs)
+
+
+class HistoryChangesetRequestMiddleware(BaseHistoryRequestMiddleware):
+    """Add a changeset to the HistoricalRecords request"""
+    def process_request(self, request):
+        super(HistoryChangesetRequestMiddleware, self).process_request(request)
+        HistoricalRecords.thread.request.changeset = Changeset()

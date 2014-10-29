@@ -32,7 +32,7 @@ class TestHistoricalVersionViewset(APITestCase):
             'id': history.pk,
             'date': version._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'version': version.pk,
             'versions': {
                 'id': str(version.id),
@@ -71,7 +71,7 @@ class TestHistoricalVersionViewset(APITestCase):
                 },
                 'links': {
                     'version': str(version.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -81,11 +81,11 @@ class TestHistoricalVersionViewset(APITestCase):
                         '{historical_versions.version}'),
                     'type': 'versions'
                 },
-                'historical_versions.user': {
+                'historical_versions.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_versions.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_versions.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -112,7 +112,7 @@ class TestHistoricalVersionViewset(APITestCase):
                 'id': history.pk,
                 'date': version._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'version': version.pk,
                 'versions': {
                     'id': str(version.pk),
