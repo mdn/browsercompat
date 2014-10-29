@@ -1,10 +1,10 @@
-'''
+"""
 Tests for drf_cached_reads/cache.py
 
 These tests are not complete, and will have to be expanded if drf_cached_reads
 is split from the webplatformcompat project.  However, this will require a set
 of test views and models, so it is being deferred until then.
-'''
+"""
 
 from datetime import datetime, date
 import mock

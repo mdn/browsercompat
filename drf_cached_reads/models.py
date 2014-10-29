@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-'''Cache model-like classes
+"""Cache model-like classes
 
 These classes are look-alike replacements for django.db.model.Model and
 Queryset.  The full interface is not implemented, only enough to use then
 in common Django REST Framework use cases.
-'''
+"""
 
 
 class PkOnlyModel(object):
-    '''Pretend to be a Django model with only the pk set'''
+    """Pretend to be a Django model with only the pk set"""
 
     def __init__(self, cache, model, pk):
         self.cache = cache
@@ -17,7 +17,7 @@ class PkOnlyModel(object):
 
 
 class PkOnlyValuesList(object):
-    '''Pretend to be a Django queryset / values list'''
+    """Pretend to be a Django queryset / values list"""
 
     def __init__(self, cache, model, pks):
         self.cache = cache
@@ -35,7 +35,10 @@ class PkOnlyValuesList(object):
         return self
 
     def values_list(self, *args, **kwargs):
-        '''Only valid call is values_list('pk', flat=True)'''
+        """Return a list of values.
+
+        The only valid call is values_list('pk', flat=True)
+        """
         flat = kwargs.pop('flat', False)
         assert flat is True
         assert len(args) == 1
@@ -44,7 +47,7 @@ class PkOnlyValuesList(object):
 
 
 class CachedModel(object):
-    '''Pretend to be a Django model, backed by the cached data'''
+    """Pretend to be a Django model, backed by the cached data"""
     def __init__(self, model, data):
         self._model = model
         self._data = data
@@ -59,10 +62,10 @@ class CachedModel(object):
 
 
 class CachedQueryset(object):
-    '''Pretend to be a Django queryset
+    """Pretend to be a Django queryset
 
     Used like a queryset until loaded from cache
-    '''
+    """
     def __init__(self, cache, queryset, primary_keys=None):
         self.cache = cache
         assert queryset is not None

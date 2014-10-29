@@ -1,6 +1,4 @@
-'''
-Tests for drf_cached_reads/models.py
-'''
+"""Tests for drf_cached_reads/models.py. """
 from django.contrib.auth.models import User
 from django.test import TestCase
 

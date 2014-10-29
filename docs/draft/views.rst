@@ -79,6 +79,9 @@ A sample response is:
             "sections": [
                 {
                     "id": "746",
+                    "number": {
+                        "en": "4.3.10",
+                    },
                     "name": {
                         "en": "The address element"
                     },
@@ -92,6 +95,9 @@ A sample response is:
                     }
                 },{
                     "id": "421",
+                    "number": {
+                        "en": "4.3.9",
+                    },
                     "name": {
                         "en": "The address element"
                     },
@@ -105,6 +111,9 @@ A sample response is:
                     }
                 },{
                     "id": "70",
+                    "number": {
+                        "7.5.6",
+                    },
                     "name": {
                         "en": "The ADDRESS element"
                     },
@@ -121,6 +130,7 @@ A sample response is:
             "specifications": [
                 {
                     "id": "62",
+                    "slug": "html_whatwg",
                     "mdn_key": "HTML WHATWG",
                     "name": {
                         "en": "WHATWG HTML Living Standard",
@@ -134,6 +144,7 @@ A sample response is:
                     }
                 },{
                     "id": "114",
+                    "slug": "html5_w3c",
                     "mdn_key": "HTML5 W3C",
                     "name": {
                         "en": "HTML5",
@@ -147,6 +158,7 @@ A sample response is:
                     }
                 },{
                     "id": "576",
+                    "slug": "html4_01",
                     "mdn_key": "HTML4.01",
                     "name": {
                         "en": "HTML 4.01 Specification",
@@ -163,7 +175,7 @@ A sample response is:
             "maturities": [
                 {
                     "id": "23",
-                    "mdn_key": "Living",
+                    "slug": "Living",
                     "name": {
                         "en": "Living Standard",
                     },
@@ -172,7 +184,7 @@ A sample response is:
                     }
                 }, {
                     "id": "49",
-                    "mdn_key": "REC",
+                    "slug": "REC",
                     "name": {
                         "en": "Recommendation",
                         "jp": "勧告"
@@ -182,7 +194,7 @@ A sample response is:
                     }
                 }, {
                     "id": "52",
-                    "mdn_key": "CR",
+                    "slug": "CR",
                     "name": {
                         "en": "Candidate Recommendation",
                         "ja": "勧告候補",
@@ -202,6 +214,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -219,6 +232,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -236,6 +250,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -253,6 +268,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -270,6 +286,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -287,6 +304,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -304,6 +322,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -321,6 +340,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -338,6 +358,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -355,6 +376,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -372,6 +394,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -389,6 +412,7 @@ A sample response is:
                     "alternate_name_mandatory": false,
                     "requires_config": null,
                     "default_config": null,
+                    "protected": false,
                     "note": null,
                     "footnote": null,
                     "links": {
@@ -560,7 +584,6 @@ A sample response is:
                 {
                     "id": "1",
                     "slug": "chrome",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/chrome.png",
                     "name": {
                         "en": "Chrome"
                     },
@@ -573,7 +596,6 @@ A sample response is:
                 },{
                     "id": "2",
                     "slug": "firefox",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/firefox.png",
                     "name": {
                         "en": "Firefox"
                     },
@@ -588,7 +610,6 @@ A sample response is:
                 },{
                     "id": "3",
                     "slug": "ie",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/ie.png",
                     "name": {
                         "en": "Internet Explorer"
                     },
@@ -601,7 +622,6 @@ A sample response is:
                 },{
                     "id": "4",
                     "slug": "opera",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/opera.png",
                     "name": {
                         "en": "Opera"
                     },
@@ -614,7 +634,6 @@ A sample response is:
                 },{
                     "id": "5",
                     "slug": "safari",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/safari.png",
                     "name": {
                         "en": "Safari"
                     },
@@ -629,7 +648,6 @@ A sample response is:
                 },{
                     "id": "6",
                     "slug": "android",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/android.png",
                     "name": {
                         "en": "Android"
                     },
@@ -642,7 +660,6 @@ A sample response is:
                 },{
                     "id": "7",
                     "slug": "firefox-mobile",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/firefox-mobile.png",
                     "name": {
                         "en": "Firefox Mobile"
                     },
@@ -657,7 +674,6 @@ A sample response is:
                 },{
                     "id": "8",
                     "slug": "ie-phone",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/ie-phone.png",
                     "name": {
                         "en": "IE Phone"
                     },
@@ -670,7 +686,6 @@ A sample response is:
                 },{
                     "id": "9",
                     "slug": "opera-mobile",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/opera-mobile.png",
                     "name": {
                         "en": "Opera Mobile"
                     },
@@ -683,7 +698,6 @@ A sample response is:
                 },{
                     "id": "10",
                     "slug": "safari-mobile",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/safari-mobile.png",
                     "name": {
                         "en": "Safari Mobile"
                     },
@@ -696,7 +710,6 @@ A sample response is:
                 },{
                     "id": "11",
                     "slug": "opera-mini",
-                    "icon": "https://cdn.browsersupports.org/media/img/browsers/opera-mini.png",
                     "name": {
                         "en": "Opera Mini"
                     },
@@ -843,7 +856,7 @@ The process for using this representation is:
           specifications.name.(lang or en), with title based on
           sections.name.(lang or en) or feature.name.(lang or en).
         * Add the second column: A span with class
-          "spec-" + maturities.mdn_key, and the text
+          "spec-" + maturities.slug, and the text
           maturities.name.(lang or en).
         * Add the third column:
           maturities.notes.(lang or en), or empty string
@@ -1066,6 +1079,7 @@ A sample response is:
             "alternate_name_mandatory": false,
             "requires_config": null,
             "default_config": null,
+            "protected": false,
             "note": null,
             "footnote": null,
             "links": {

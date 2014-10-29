@@ -1,7 +1,7 @@
-'''Cache implementation for tests
+"""Cache implementation for tests
 
 This assumes that the user isn't replacing the user model.
-'''
+"""
 
 from django.contrib.auth.models import User, Group
 
@@ -9,7 +9,7 @@ from drf_cached_reads.cache import BaseCache
 
 
 class UserCache(BaseCache):
-    '''Test cache that cached User instances'''
+    """Test cache that cached User instances"""
 
     def user_default_serializer(self, obj):
         if not obj:

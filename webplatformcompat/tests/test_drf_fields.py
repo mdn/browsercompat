@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for `web-platform-compat` fields module.
-"""
+"""Tests for `web-platform-compat` fields module."""
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase

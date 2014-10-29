@@ -18,7 +18,7 @@ class JsonApiRenderer(BaseJsonApiRender):
     wrappers = ([
         'wrap_jsonapi_aware',
         'wrap_paginated',
-        ] + BaseJsonApiRender.wrappers)
+    ] + BaseJsonApiRender.wrappers)
     dict_class = OrderedDict
 
     def wrap_jsonapi_aware(self, data, renderer_context):
@@ -52,6 +52,16 @@ class JsonApiRenderer(BaseJsonApiRender):
             resource_type, self.dict_class()).update(pagination)
         return wrapper
 
+    def wrap_error(
+            self, data, renderer_context, keys_are_fields, issue_is_title):
+        # Fix bug about wrong name for non_field_error
+        wrapper = super(JsonApiRenderer, self).wrap_error(
+            data, renderer_context, keys_are_fields, issue_is_title)
+        for error in wrapper['errors']:
+            if error.get("path") == '/__all__':
+                error["path"] = '/-'
+        return wrapper
+
     def model_to_resource_type(self, model):
         if model:
             return snakecase(model._meta.verbose_name_plural)
@@ -59,12 +69,12 @@ class JsonApiRenderer(BaseJsonApiRender):
             return 'data'
 
     def handle_related_field(self, resource, field, field_name, request):
-        '''Handle PrimaryKeyRelatedField
+        """Handle PrimaryKeyRelatedField
 
         Same as base handle_related_field, but:
         - adds href to links, using DRF default name
         - doesn't handle data not in fields
-        '''
+        """
         links = self.dict_class()
         linked_ids = self.dict_class()
 

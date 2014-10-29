@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for `web-platform-compat.viewsets.HistoricalFeatureViewSet` class.
-"""
+"""Tests for `web-platform-compat.viewsets.HistoricalFeatureViewSet` class."""
 from __future__ import unicode_literals
 from datetime import datetime
 from json import loads
@@ -46,6 +44,7 @@ class TestHistoricalSupportViewset(APITestCase):
                 'alternate_mandatory': False,
                 'requires_config': None,
                 'default_config': None,
+                'protected': False,
                 'note': None,
                 'footnote': None,
                 'links': {
@@ -70,6 +69,7 @@ class TestHistoricalSupportViewset(APITestCase):
                     'alternate_mandatory': False,
                     'requires_config': None,
                     'default_config': None,
+                    'protected': False,
                     'note': None,
                     'footnote': None,
                     'links': {
@@ -132,6 +132,7 @@ class TestHistoricalSupportViewset(APITestCase):
                     'alternate_mandatory': False,
                     'requires_config': None,
                     'default_config': None,
+                    'protected': False,
                     'note': None,
                     'footnote': None,
                     'links': {

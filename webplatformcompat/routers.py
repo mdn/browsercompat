@@ -12,14 +12,17 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.views import APIView
 
 from .viewsets import (
-    BrowserViewSet, FeatureViewSet, SupportViewSet, VersionViewSet,
+    BrowserViewSet, FeatureViewSet, MaturityViewSet, SectionViewSet,
+    SpecificationViewSet, SupportViewSet, VersionViewSet,
     HistoricalBrowserViewSet, HistoricalFeatureViewSet,
-    HistoricalSupportViewSet, HistoricalVersionViewSet,
+    HistoricalMaturityViewSet, HistoricalSectionViewSet,
+    HistoricalSpecificationViewSet, HistoricalSupportViewSet,
+    HistoricalVersionViewSet,
     UserViewSet, ViewFeaturesViewSet)
 
 
 class GroupedRouter(DefaultRouter):
-    '''Router with grouped API root and slash redirects'''
+    """Router with grouped API root and slash redirects"""
 
     view_groups = {}
     allowed_ext = ['api', 'json']
@@ -34,9 +37,7 @@ class GroupedRouter(DefaultRouter):
         super(GroupedRouter, self).register(prefix, viewset, base_name)
 
     def get_api_root_view(self):
-        """
-        Return a view to use as the API root.
-        """
+        """Return a view to use as the API root."""
         api_root_dict = RouterDict()
         list_name = self.routes[0].name
         for prefix, viewset, basename in self.registry:
@@ -60,8 +61,10 @@ class GroupedRouter(DefaultRouter):
 
     def get_urls(self):
         """
-        Generate the list of URL patterns, including a default root view
-        for the API, and appending `.json` style format suffixes.
+        Return the URL patterns handled by this router.
+
+        Include a default root view for the API, and appending `.json` style
+        format suffixes.
         """
         urls = []
         assert self.include_root_view
@@ -91,7 +94,11 @@ router.register(r'browsers', BrowserViewSet, group='resources')
 router.register(r'versions', VersionViewSet, group='resources')
 router.register(r'features', FeatureViewSet, group='resources')
 router.register(r'supports', SupportViewSet, group='resources')
+router.register(r'specifications', SpecificationViewSet, group='resources')
+router.register(r'maturities', MaturityViewSet, group='resources')
+router.register(r'sections', SectionViewSet, group='resources')
 router.register(r'users', UserViewSet, group='change-control')
+
 router.register(
     r'historical_browsers', HistoricalBrowserViewSet, group='history')
 router.register(
@@ -99,7 +106,15 @@ router.register(
 router.register(
     r'historical_features', HistoricalFeatureViewSet, group='history')
 router.register(
+    r'historical_specifications', HistoricalSpecificationViewSet,
+    group='history')
+router.register(
     r'historical_supports', HistoricalSupportViewSet, group='history')
+router.register(
+    r'historical_maturities', HistoricalMaturityViewSet, group='history')
+router.register(
+    r'historical_sections', HistoricalSectionViewSet, group='history')
+
 router.register(
     r'view_features', ViewFeaturesViewSet, base_name='viewfeatures',
     group='views')

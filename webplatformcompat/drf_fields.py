@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Fields for Django REST Framework serializers
-"""
+"""Fields for Django REST Framework serializers."""
 from __future__ import unicode_literals
 
 import json
@@ -9,10 +7,9 @@ import json
 from django.core.exceptions import ValidationError
 from django.forms import Textarea
 from django.utils import six
-from rest_framework.serializers import (
-    CharField, PrimaryKeyRelatedField, URLField)
+from rest_framework.serializers import CharField, PrimaryKeyRelatedField
 
-from .validators import LanguageDictValidator, SecureURLValidator
+from .validators import LanguageDictValidator
 
 
 class CurrentHistoryField(PrimaryKeyRelatedField):
@@ -172,17 +169,6 @@ class OptionalCharField(CharField):
             return ''
 
 
-class SecureURLField(URLField):
-    """Field is a URL using secure HTTP (https) protocol"""
-    def __init__(self, *args, **kwargs):
-        validators = kwargs.pop('validators', [SecureURLValidator()])
-        super(SecureURLField, self).__init__(
-            validators=validators, *args, **kwargs)
-
-    def to_native(self, value):
-        return super(SecureURLField, self).to_native(value) or None
-
-
 class TranslatedTextField(CharField):
     """Field is a dictionary of language codes to text
 
@@ -204,7 +190,7 @@ class TranslatedTextField(CharField):
             widget=widget, validators=validators, *args, **kwargs)
 
     def to_native(self, value):
-        '''Convert from model Python to serializable data'''
+        """Convert from model Python to serializable data"""
         if value:
             if list(value.keys()) == ['zxx']:
                 if self.allow_canonical:
@@ -217,7 +203,7 @@ class TranslatedTextField(CharField):
             return None
 
     def from_native(self, value):
-        '''Convert from serializable data to model'''
+        """Convert from serializable data to model"""
         if isinstance(value, dict):
             return value
         value = value.strip()

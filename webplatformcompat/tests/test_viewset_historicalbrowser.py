@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for `web-platform-compat.viewsets.HistoricalBrowserViewSet` class.
-"""
+"""Tests for `web-platform-compat.viewsets.HistoricalBrowserViewSet` class."""
 from __future__ import unicode_literals
 from datetime import datetime
 from json import loads
@@ -38,7 +36,6 @@ class TestHistoricalBrowserViewset(APITestCase):
             'browsers': {
                 'id': '1',
                 'slug': 'browser',
-                'icon': None,
                 'name': {'en': 'A Browser'},
                 'note': None,
                 'links': {'history_current': '1'}
@@ -53,7 +50,6 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'browsers': {
                     'id': '1',
                     'slug': 'browser',
-                    'icon': None,
                     'name': {
                         'en': 'A Browser'
                     },
@@ -109,7 +105,6 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'browsers': {
                     'id': str(browser.pk),
                     'slug': 'browser',
-                    'icon': None,
                     'name': {'en': 'A Browser'},
                     'note': None,
                     'links': {'history_current': str(bh.pk)}
@@ -141,7 +136,6 @@ class TestHistoricalBrowserViewset(APITestCase):
                 'browsers': {
                     'id': str(browser.pk),
                     'slug': 'browser',
-                    'icon': None,
                     'name': {'en': 'A Browser'},
                     'note': None,
                     'links': {'history_current': str(bh.pk)}
