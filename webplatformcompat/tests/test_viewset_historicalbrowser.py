@@ -21,14 +21,14 @@ class TestHistoricalBrowserViewset(APITestCase):
             Browser, slug='browser', name={'en': 'A Browser'},
             _history_user=user,
             _history_date=datetime(2014, 8, 25, 20, 50, 38, 868903, UTC))
-        bh = browser.history.all()[0]
-        url = reverse('historicalbrowser-detail', kwargs={'pk': bh.pk})
+        history = browser.history.all()[0]
+        url = reverse('historicalbrowser-detail', kwargs={'pk': history.pk})
         response = self.client.get(
             url, HTTP_ACCEPT="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': bh.history_id,
+            'id': history.pk,
             'date': browser._history_date,
             'event': 'created',
             'user': user.pk,
@@ -89,7 +89,7 @@ class TestHistoricalBrowserViewset(APITestCase):
             Browser, slug='browser', name={'en': 'A Browser'},
             _history_user=user,
             _history_date=datetime(2014, 9, 4, 17, 58, 26, 915222, UTC))
-        bh = browser.history.all()[0]
+        history = browser.history.all()[0]
         url = reverse('historicalbrowser-list')
         response = self.client.get(url, {'id': browser.id})
         expected_data = {
@@ -97,7 +97,7 @@ class TestHistoricalBrowserViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': bh.history_id,
+                'id': history.pk,
                 'date': browser._history_date,
                 'event': 'created',
                 'user': user.pk,
@@ -107,7 +107,7 @@ class TestHistoricalBrowserViewset(APITestCase):
                     'slug': 'browser',
                     'name': {'en': 'A Browser'},
                     'note': None,
-                    'links': {'history_current': str(bh.pk)}
+                    'links': {'history_current': str(history.pk)}
                 },
             }]}
         self.assertDataEqual(expected_data, response.data)
@@ -120,7 +120,7 @@ class TestHistoricalBrowserViewset(APITestCase):
             Browser, slug='browser', name={'en': 'A Browser'},
             _history_user=user,
             _history_date=datetime(2014, 9, 4, 17, 58, 26, 915222, UTC))
-        bh = browser.history.all()[0]
+        history = browser.history.all()[0]
         url = reverse('historicalbrowser-list')
         response = self.client.get(url, {'slug': 'browser'})
         expected_data = {
@@ -128,7 +128,7 @@ class TestHistoricalBrowserViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': bh.history_id,
+                'id': history.pk,
                 'date': browser._history_date,
                 'event': 'created',
                 'user': user.pk,
@@ -138,7 +138,7 @@ class TestHistoricalBrowserViewset(APITestCase):
                     'slug': 'browser',
                     'name': {'en': 'A Browser'},
                     'note': None,
-                    'links': {'history_current': str(bh.pk)}
+                    'links': {'history_current': str(history.pk)}
                 },
             }]}
         self.assertDataEqual(expected_data, response.data)

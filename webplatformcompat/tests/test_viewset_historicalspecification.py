@@ -25,14 +25,14 @@ class TestHistoricalSpecificationViewset(APITestCase):
             uri={'en': 'http://example.com/spec.html'},
             _history_user=user,
             _history_date=datetime(2014, 10, 19, 11, 46, 10, 834522, UTC))
-        history_pk = spec.history.all()[0].pk
+        history = spec.history.all()[0]
         url = reverse(
-            'historicalspecification-detail', kwargs={'pk': history_pk})
+            'historicalspecification-detail', kwargs={'pk': history.pk})
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': history_pk,
+            'id': history.pk,
             'date': spec._history_date,
             'event': 'created',
             'user': user.pk,
@@ -45,14 +45,14 @@ class TestHistoricalSpecificationViewset(APITestCase):
                 'uri': {'en': 'http://example.com/spec.html'},
                 'links': {
                     'maturity': str(maturity.id),
-                    'history_current': str(history_pk),
+                    'history_current': str(history.pk),
                 }
             },
         }
         self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_specifications': {
-                'id': str(history_pk),
+                'id': str(history.pk),
                 'date': '2014-10-19T11:46:10.834Z',
                 'event': 'created',
                 'specifications': {
@@ -63,7 +63,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
                     'uri': {'en': 'http://example.com/spec.html'},
                     'links': {
                         'maturity': str(maturity.id),
-                        'history_current': str(history_pk),
+                        'history_current': str(history.pk),
                     },
                 },
                 'links': {
@@ -102,7 +102,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             uri={'en': 'http://example.com/spec.html'},
             _history_user=user,
             _history_date=datetime(2014, 10, 19, 11, 47, 22, 595634, UTC))
-        history_pk = spec.history.all()[0].pk
+        history = spec.history.all()[0]
         url = reverse('historicalspecification-list')
         response = self.client.get(url, {'id': spec.id})
         expected_data = {
@@ -110,7 +110,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': history_pk,
+                'id': history.pk,
                 'date': spec._history_date,
                 'event': 'created',
                 'user': user.pk,
@@ -123,7 +123,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
                     'uri': {'en': 'http://example.com/spec.html'},
                     'links': {
                         'maturity': str(maturity.id),
-                        'history_current': str(history_pk),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}
@@ -142,7 +142,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             uri={'en': 'http://example.com/spec.html'},
             _history_user=user,
             _history_date=datetime(2014, 10, 19, 11, 47, 22, 595634, UTC))
-        history_pk = spec.history.all()[0].pk
+        history = spec.history.all()[0]
         url = reverse('historicalspecification-list')
         response = self.client.get(url, {'slug': 'spec'})
         expected_data = {
@@ -150,7 +150,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': history_pk,
+                'id': history.pk,
                 'date': spec._history_date,
                 'event': 'created',
                 'user': user.pk,
@@ -163,7 +163,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
                     'uri': {'en': 'http://example.com/spec.html'},
                     'links': {
                         'maturity': str(maturity.id),
-                        'history_current': str(history_pk),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}
@@ -182,7 +182,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             uri={'en': 'http://example.com/spec.html'},
             _history_user=user,
             _history_date=datetime(2014, 10, 19, 11, 47, 22, 595634, UTC))
-        history_pk = spec.history.all()[0].pk
+        history = spec.history.all()[0]
         url = reverse('historicalspecification-list')
         response = self.client.get(url, {'mdn_key': 'Spec'})
         expected_data = {
@@ -190,7 +190,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': history_pk,
+                'id': history.pk,
                 'date': spec._history_date,
                 'event': 'created',
                 'user': user.pk,
@@ -203,7 +203,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
                     'uri': {'en': 'http://example.com/spec.html'},
                     'links': {
                         'maturity': str(maturity.id),
-                        'history_current': str(history_pk),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}

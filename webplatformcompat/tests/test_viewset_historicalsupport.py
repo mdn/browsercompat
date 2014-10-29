@@ -30,7 +30,7 @@ class TestHistoricalSupportViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': history.history_id,
+            'id': history.pk,
             'date': support._history_date,
             'event': 'created',
             'user': user.pk,
@@ -50,14 +50,14 @@ class TestHistoricalSupportViewset(APITestCase):
                 'links': {
                     'feature': str(feature.id),
                     'version': str(version.id),
-                    'history_current': str(history.id),
+                    'history_current': str(history.pk),
                 }
             },
         }
         self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_supports': {
-                'id': str(history.history_id),
+                'id': str(history.pk),
                 'date': '2014-10-07T13:59:46.086Z',
                 'event': 'created',
                 'supports': {
@@ -75,7 +75,7 @@ class TestHistoricalSupportViewset(APITestCase):
                     'links': {
                         'feature': str(feature.id),
                         'version': str(version.id),
-                        'history_current': str(history.id),
+                        'history_current': str(history.pk),
                     }
                 },
                 'links': {
@@ -118,7 +118,7 @@ class TestHistoricalSupportViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': history.history_id,
+                'id': history.pk,
                 'date': support._history_date,
                 'event': 'created',
                 'user': user.pk,
@@ -138,7 +138,7 @@ class TestHistoricalSupportViewset(APITestCase):
                     'links': {
                         'feature': str(feature.id),
                         'version': str(version.id),
-                        'history_current': str(history.id),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}

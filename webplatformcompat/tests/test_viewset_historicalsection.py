@@ -28,14 +28,14 @@ class TestHistoricalSectionViewset(APITestCase):
             name={'en': 'The Section'},
             _history_user=user,
             _history_date=datetime(2014, 10, 19, 13, 6, 22, 602237, UTC))
-        history_pk = section.history.all()[0].pk
+        history = section.history.all()[0]
         url = reverse(
-            'historicalsection-detail', kwargs={'pk': history_pk})
+            'historicalsection-detail', kwargs={'pk': history.pk})
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': history_pk,
+            'id': history.pk,
             'date': section._history_date,
             'event': 'created',
             'user': user.pk,
@@ -48,14 +48,14 @@ class TestHistoricalSectionViewset(APITestCase):
                 'note': None,
                 'links': {
                     'specification': str(spec.id),
-                    'history_current': str(history_pk),
+                    'history_current': str(history.pk),
                 }
             },
         }
         self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_sections': {
-                'id': str(history_pk),
+                'id': str(history.pk),
                 'date': '2014-10-19T13:06:22.602Z',
                 'event': 'created',
                 'sections': {
@@ -66,7 +66,7 @@ class TestHistoricalSectionViewset(APITestCase):
                     'note': None,
                     'links': {
                         'specification': str(spec.id),
-                        'history_current': str(history_pk),
+                        'history_current': str(history.pk),
                     },
                 },
                 'links': {
@@ -108,7 +108,7 @@ class TestHistoricalSectionViewset(APITestCase):
             _history_user=user,
             _history_date=datetime(2014, 10, 19, 13, 3, 39, 223434, UTC))
 
-        history_pk = section.history.all()[0].pk
+        history = section.history.all()[0]
         url = reverse('historicalsection-list')
         response = self.client.get(url, {'id': section.id})
         expected_data = {
@@ -116,7 +116,7 @@ class TestHistoricalSectionViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': history_pk,
+                'id': history.pk,
                 'date': section._history_date,
                 'event': 'created',
                 'user': user.pk,
@@ -129,7 +129,7 @@ class TestHistoricalSectionViewset(APITestCase):
                     'note': None,
                     'links': {
                         'specification': str(spec.id),
-                        'history_current': str(history_pk),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}

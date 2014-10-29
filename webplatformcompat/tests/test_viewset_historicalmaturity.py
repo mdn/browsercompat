@@ -27,7 +27,7 @@ class TestHistoricalMaturityViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': history.history_id,
+            'id': history.pk,
             'date': maturity._history_date,
             'event': 'created',
             'user': user.pk,
@@ -37,14 +37,14 @@ class TestHistoricalMaturityViewset(APITestCase):
                 'slug': 'CR',
                 'name': {'en': 'Candidate Recommendation'},
                 'links': {
-                    'history_current': str(history.id),
+                    'history_current': str(history.pk),
                 }
             },
         }
         self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_maturities': {
-                'id': str(history.history_id),
+                'id': str(history.pk),
                 'date': '2014-10-19T10:20:45.609Z',
                 'event': 'created',
                 'maturities': {
@@ -52,7 +52,7 @@ class TestHistoricalMaturityViewset(APITestCase):
                     'slug': 'CR',
                     'name': {'en': 'Candidate Recommendation'},
                     'links': {
-                        'history_current': str(history.id),
+                        'history_current': str(history.pk),
                     }
                 },
                 'links': {
@@ -92,7 +92,7 @@ class TestHistoricalMaturityViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': history.history_id,
+                'id': history.pk,
                 'date': maturity._history_date,
                 'event': 'created',
                 'user': user.pk,
@@ -102,7 +102,7 @@ class TestHistoricalMaturityViewset(APITestCase):
                     'slug': 'PR',
                     'name': {'en-US': 'Proposed Recommendation'},
                     'links': {
-                        'history_current': str(history.id),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}
