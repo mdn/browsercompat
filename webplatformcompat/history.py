@@ -15,6 +15,7 @@ from simple_history.middleware import (
     HistoryRequestMiddleware as BaseHistoryRequestMiddleware)
 from simple_history.models import HistoricalRecords as BaseHistoricalRecords
 
+
 user_model = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
@@ -58,6 +59,18 @@ class Changeset(models.Model):
         max_length=12, blank=True, choices=[(r, r) for r in TARGET_RESOURCES])
     target_resource_id = models.PositiveIntegerField(
         default=0, help_text="ID of target resource")
+
+    def save(self, update_cache=True, *args, **kwargs):
+        """Refresh cache of the items updated in changeset"""
+        super(Changeset, self).save(*args, **kwargs)
+        if self.closed and update_cache:
+            from .tasks import update_cache_for_instance
+            for relation in self._meta.get_all_related_objects():
+                related = getattr(self, relation.get_accessor_name())
+                type_name = related.model.instance_type.__name__
+                ids = related.values_list('id', flat=True)
+                for i in ids:
+                    update_cache_for_instance.delay(type_name, i)
 
 
 class HistoricalRecords(BaseHistoricalRecords):
@@ -104,7 +117,7 @@ class HistoricalRecords(BaseHistoricalRecords):
         return changeset
 
     def create_historical_record(self, instance, history_type):
-        """Embrace and extend create_historical_record
+        """Create the historical record and associated objects
 
         Add data from additional_fields
         Change history_user to history_changeset
@@ -116,7 +129,6 @@ class HistoricalRecords(BaseHistoricalRecords):
         for field in instance._meta.fields:
             attrs[field.attname] = getattr(instance, field.attname)
 
-        # New code - add additional data
         for field_name in self.additional_fields:
             loader = getattr(self, 'get_%s_value' % field_name)
             value = loader(instance, type)
@@ -124,11 +136,13 @@ class HistoricalRecords(BaseHistoricalRecords):
 
         if not history_changeset.id:
             history_changeset.closed = True
-            history_changeset.save()  # Get a database ID
+            update_cache = self.thread.request.delay_cache
+            history_changeset.save(update_cache=update_cache)
+        else:
+            update_cache = False
         manager.create(
             history_date=history_date, history_type=history_type,
             history_changeset=history_changeset, **attrs)
-        history_changeset.save()  # Set modification and refresh cache
 
 
 class HistoryChangesetRequestMiddleware(BaseHistoryRequestMiddleware):
@@ -148,8 +162,10 @@ class HistoryChangesetRequestMiddleware(BaseHistoryRequestMiddleware):
                 message = 'Changeset %s is closed.' % changeset_id
                 return self.bad_request(request, message)
             request.changeset = changeset
+            request.delay_cache = True
         else:
             request.changeset = Changeset()
+            request.delay_cache = False
 
     def bad_request(self, request, message):
         if request.META.get('CONTENT_TYPE') == 'application/vnd.api+json':

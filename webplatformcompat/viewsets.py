@@ -49,6 +49,11 @@ class ModelViewSet(PartialPutMixin, CachedViewMixin, BaseModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
 
+    def pre_save(self, obj):
+        """Delay cache refresh if requested by changeset middleware"""
+        if getattr(self.request, 'delay_cache', False):
+            obj._delay_cache = True
+
 
 class ReadOnlyModelViewSet(BaseROModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)

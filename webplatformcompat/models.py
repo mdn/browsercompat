@@ -282,7 +282,7 @@ register(Maturity, records_class=HistoricalMaturityRecords)
 #
 
 cached_model_names = (
-    'Browser', 'Changeset', 'Feature', 'Maturity', 'Section', 'Specification',
+    'Browser', 'Feature', 'Maturity', 'Section', 'Specification',
     'Support', 'Version', 'User')
 
 
@@ -296,6 +296,8 @@ def feature_sections_changed_update_order(
         # post_clear is not handled, because clear is called in
         # django.db.models.fields.related.ReverseManyRelatedObjects.__set__
         # before setting the new order
+        return
+    if getattr(instance, '_delay_cache', False):
         return
 
     if model == Section:
@@ -333,5 +335,7 @@ def post_save_update_cache(sender, instance, created, raw, **kwargs):
         return
     name = sender.__name__
     if name in cached_model_names:
-        from .tasks import update_cache_for_instance
-        update_cache_for_instance(name, instance.pk, instance)
+        delay_cache = getattr(instance, '_delay_cache', False)
+        if not delay_cache:
+            from .tasks import update_cache_for_instance
+            update_cache_for_instance(name, instance.pk, instance)

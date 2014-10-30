@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from json import dumps, loads
 from pytz import UTC
+import mock
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -118,8 +119,9 @@ class TestChangesetViewSet(APITestCase):
         actual_json = loads(response.content.decode('utf-8'))
         self.assertDataEqual(expected_json, actual_json)
 
-    def test_simple_changeset(self):
-        # A simple changeset is auto-created, auto-closed
+    @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
+    def test_simple_changeset(self, mock_task):
+        # A simple changeset is auto-created, auto-closed, cache refreshed
         self.login_superuser()
         data = {
             'features': {
@@ -134,12 +136,19 @@ class TestChangesetViewSet(APITestCase):
         feature = Feature.objects.get()
         changeset = feature.history.all()[0].history_changeset
         self.assertTrue(changeset.closed)
+        mock_task.assertCalledOnce('Feature', feature.id)
 
-    def test_multiple_changeset(self):
+    @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
+    def test_multiple_changeset(self, mock_task):
         # A multiple changeset is manually created, and must be marked complete
+        # Cache updated are delayed until end
+
+        self.login_superuser()
+        mock_task.reset_mock()
+        mock_task.side_effect = Exception('Not called')
+        mock_task.delay.side_effect = Exception('Not called')
 
         # Open a changeset
-        self.login_superuser()
         japi = 'application/vnd.api+json'
         response = self.client.post(
             reverse('changeset-list'), dumps({}), content_type=japi)
@@ -213,6 +222,7 @@ class TestChangesetViewSet(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
         # Close the changeset
+        mock_task.delay.side_effect = None
         data = {
             'changesets': {
                 'closed': True
@@ -223,6 +233,14 @@ class TestChangesetViewSet(APITestCase):
         expected_data['modified'] = changeset.modified
         expected_data['closed'] = True
         self.assertDataEqual(response.data, expected_data)
+        expected_calls = [
+            mock.call('Browser', browser.pk),
+            mock.call('Feature', feature.pk),
+            mock.call('Version', version.pk),
+            mock.call('Support', support.pk),
+        ]
+        self.assertEqual(4, mock_task.delay.call_count)
+        mock_task.delay.assert_has_calls(expected_calls, any_order=True)
 
     def test_cannot_use_closed_changeset_json_api(self):
         user = self.login_superuser()
