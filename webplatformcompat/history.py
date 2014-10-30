@@ -2,9 +2,11 @@
 """Extensions of simplehistory for webplatformcompat"""
 
 from __future__ import unicode_literals
+from json import dumps
 
 from django.conf import settings
 from django.db import models
+from django.http import HttpResponseBadRequest
 from django.utils.timezone import now
 from django_extensions.db.fields import (
     CreationDateTimeField, ModificationDateTimeField)
@@ -95,7 +97,10 @@ class HistoricalRecords(BaseHistoricalRecords):
         if not changeset.user_id:
             changeset.user = user
         else:
+            # These should be verified in the middleware before the instance
+            # is saved, but let's be sure
             assert user == changeset.user, 'User must match changeset user'
+            assert not changeset.closed, 'Changeset is closed'
         return changeset
 
     def create_historical_record(self, instance, history_type):
@@ -119,14 +124,37 @@ class HistoricalRecords(BaseHistoricalRecords):
 
         if not history_changeset.id:
             history_changeset.closed = True
-            history_changeset.save()
+            history_changeset.save()  # Get a database ID
         manager.create(
             history_date=history_date, history_type=history_type,
             history_changeset=history_changeset, **attrs)
+        history_changeset.save()  # Set modification and refresh cache
 
 
 class HistoryChangesetRequestMiddleware(BaseHistoryRequestMiddleware):
     """Add a changeset to the HistoricalRecords request"""
     def process_request(self, request):
         super(HistoryChangesetRequestMiddleware, self).process_request(request)
-        HistoricalRecords.thread.request.changeset = Changeset()
+        if request.META.get('REQUEST_METHOD') in ('GET', 'HEAD'):
+            return
+        changeset_id = request.GET.get('changeset')
+        if changeset_id:
+            changeset = Changeset.objects.get(id=changeset_id)
+            if changeset.user != request.user:
+                message = (
+                    'Changeset %s has a different user.' % changeset_id)
+                return self.bad_request(request, message)
+            if changeset.closed:
+                message = 'Changeset %s is closed.' % changeset_id
+                return self.bad_request(request, message)
+            request.changeset = changeset
+        else:
+            request.changeset = Changeset()
+
+    def bad_request(self, request, message):
+        if request.META.get('CONTENT_TYPE') == 'application/vnd.api+json':
+            content = {'errors': {'changeset': message}}
+            return HttpResponseBadRequest(
+                dumps(content), content_type='application/vnd.api+json')
+        else:
+            return HttpResponseBadRequest(message)

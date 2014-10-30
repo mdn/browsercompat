@@ -1,7 +1,7 @@
 """Cache classes"""
 
 from calendar import timegm
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pytz import utc
 import json
 
@@ -213,7 +213,14 @@ class BaseCache(object):
 
     def field_datetime_from_json(self, json_val):
         """Convert a UTC timestamp to a UTC datetime"""
-        return datetime.fromtimestamp(float(json_val), utc)
+        if type(json_val) == int:
+            seconds = int(json_val)
+            dt = datetime.fromtimestamp(seconds, utc)
+        else:
+            seconds, microseconds = [int(x) for x in json_val.split('.')]
+            dt = datetime.fromtimestamp(seconds, utc)
+            dt += timedelta(microseconds=microseconds)
+        return dt
 
     def field_datetime_to_json(self, dt):
         """Convert a datetime to a UTC timestamp w/ microsecond resolution
@@ -222,7 +229,7 @@ class BaseCache(object):
         """
         ts = timegm(dt.utctimetuple())
         if dt.microsecond:
-            return "{0:03f}".format(ts + dt.microsecond / 1000000.0)
+            return "{0}.{1:0>6d}".format(ts, dt.microsecond)
         else:
             return ts
 

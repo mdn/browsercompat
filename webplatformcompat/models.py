@@ -282,8 +282,8 @@ register(Maturity, records_class=HistoricalMaturityRecords)
 #
 
 cached_model_names = (
-    'Browser', 'Feature', 'Maturity', 'Section', 'Specification', 'Support',
-    'Version', 'User')
+    'Browser', 'Changeset', 'Feature', 'Maturity', 'Section', 'Specification',
+    'Support', 'Version', 'User')
 
 
 @receiver(
