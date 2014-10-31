@@ -3,7 +3,6 @@
 from __future__ import print_function
 
 import getpass
-import json
 import logging
 import os.path
 import re
@@ -11,6 +10,8 @@ import string
 import sys
 
 import requests
+
+from client import Client
 
 try:
     input = raw_input  # Get the Py2 raw_input
@@ -25,52 +26,11 @@ SPECNAME_FILENAME = 'SpecName.txt'
 SPECNAME_URL = 'https://developer.mozilla.org/en-US/docs/Template:SpecName?raw'
 
 
-def get_session(base_url, user, password):
-    """Create an authenticated connection to the API"""
-    session = requests.Session()
-    next_path = '/api/v1/browsers'
-    params = {'next': next_path}
-    response = session.get(base_url + '/api-auth/login/', params=params)
-    try:
-        csrf = response.cookies['csrftoken']
-    except KeyError:
-        raise Exception("No CSRF in response", response)
-    data = {
-        'username': user,
-        'password': password,
-        'csrfmiddlewaretoken': csrf,
-        'next': next_path
-    }
-    response = session.post(
-        base_url + '/api-auth/login/', params=params, data=data)
-    if response.url == base_url + next_path:
-        logger.info("Logged into " + base_url)
-        session.base_url = base_url
-        return session
-    else:
-        raise Exception('Problem logging in.', response)
-
-
-def verify_empty_api(session):
+def verify_empty_api(client):
     """Verify that no data is loaded into this API"""
-    response = session.get(
-        session.base_url + '/api/v1/specifications',
-        headers={'content-type': 'application/vnd.api+json'})
-    expected = {
-        'specifications': [],
-        'meta': {
-            'pagination': {
-                'specifications': {
-                    'count': 0,
-                    'next': None,
-                    'previous': None
-                }
-            }
-        }
-    }
-    actual = response.json()
-    if response.json() != expected:
-        raise Exception('API already has browser data', actual)
+    for resource in ('specifications', 'sections', 'maturities'):
+        if client.count(resource) != 0:
+            raise Exception('API already has %s data' % resource)
 
 
 def get_template(filename, url):
@@ -87,11 +47,19 @@ def get_template(filename, url):
     return template
 
 
-def load_spec_data(session, specname, spec2):
+def load_spec_data(client, specname, spec2):
     """Load a dictionary of specification data into the API"""
-    verify_empty_api(session)
+    verify_empty_api(client)
     parsed_data = parse_spec_data(specname, spec2)
-    return upload_spec_data(session, parsed_data)
+    logger.info('Opening changeset...')
+    client.open_changeset()
+    counts = {}
+    try:
+        counts = upload_spec_data(client, parsed_data)
+    finally:
+        logger.info('Closing changeset...')
+        client.close_changeset()
+    return counts
 
 
 def parse_spec_data(specname, spec2):
@@ -251,13 +219,13 @@ def unique_slugify(word, existing):
     return slug
 
 
-def upload_spec_data(session, parsed_data):
+def upload_spec_data(client, parsed_data):
     api_ids = dict(
         (n, {}) for n in ['maturities', 'specifications'])
 
     logger.info("Importing specifications...")
     for specification_id in sorted(parsed_data['specifications'].keys()):
-        upload_specification(session, specification_id, parsed_data, api_ids)
+        upload_specification(client, specification_id, parsed_data, api_ids)
         if len(api_ids['specifications']) % 100 == 0:
             logger.info(
                 "Imported %d specifications..." %
@@ -267,11 +235,11 @@ def upload_spec_data(session, parsed_data):
     return counts
 
 
-def upload_maturity(session, maturity_id, parsed_data, api_ids):
+def upload_maturity(client, maturity_id, parsed_data, api_ids):
     """Upload a parsed maturity to the API
 
     Keyword Arguments:
-    session - authenticated session to use for uploads
+    client - authenticated client to use for uploads
     maturity_id - ID of the maturity in parsed_data['maturities']
     parsed_data - dictionary of all the parsed data
     api_ids - dictionary of IDs of uploaded instances
@@ -284,23 +252,17 @@ def upload_maturity(session, maturity_id, parsed_data, api_ids):
             "slug": maturity['slug'],
             "name": maturity['name']
         }
-        maturity_json = json.dumps({"maturities": data})
-        response = session.post(
-            session.base_url + '/api/v1/maturities', data=maturity_json,
-            headers={
-                'content-type': 'application/vnd.api+json',
-                'X-CSRFToken': session.cookies['csrftoken']})
-        assert response.status_code == 201, response.content
-        api_id = response.json()['maturities']['id']
+        response = client.create('maturities', data)
+        api_id = response['id']
         api_ids['maturities'][maturity_id] = api_id
     return api_ids['maturities'][maturity_id]
 
 
-def upload_specification(session, specification_id, parsed_data, api_ids):
+def upload_specification(client, specification_id, parsed_data, api_ids):
     """Upload a parsed specification to the API
 
     Keyword Arguments:
-    session - authenticated session to use for uploads
+    client - authenticated client to use for uploads
     specification_id - ID of the specification in parsed_data['specifications']
     parsed_data - dictionary of all the parsed data
     api_ids - dictionary of IDs of uploaded instances
@@ -316,7 +278,7 @@ def upload_specification(session, specification_id, parsed_data, api_ids):
             return None
         maturity_id = specification['maturity_id']
         maturity_api_id = upload_maturity(
-            session, maturity_id, parsed_data, api_ids)
+            client, maturity_id, parsed_data, api_ids)
         data = {
             "slug": specification['slug'],
             "mdn_key": specification['mdn_key'],
@@ -326,15 +288,8 @@ def upload_specification(session, specification_id, parsed_data, api_ids):
                 "maturity": maturity_api_id
             }
         }
-        specification_json = json.dumps({"specifications": data})
-        response = session.post(
-            session.base_url + '/api/v1/specifications',
-            data=specification_json,
-            headers={
-                'content-type': 'application/vnd.api+json',
-                'X-CSRFToken': session.cookies['csrftoken']})
-        assert response.status_code == 201, response.content
-        api_id = response.json()['specifications']['id']
+        response = client.create('specifications', data)
+        api_id = response['id']
         api_ids['specifications'][specification_id] = api_id
     return api_ids['specifications'][specification_id]
 
@@ -389,12 +344,15 @@ if __name__ == '__main__':
     # Get credentials
     user = args.user or input("API username: ")
     password = getpass.getpass("API password: ")
-    session = get_session(api, user, password)
+
+    # Initialize client
+    client = Client(api)
+    client.login(user, password)
 
     # Load data
     specname = get_template(SPECNAME_FILENAME, SPECNAME_URL)
     spec2 = get_template(SPEC2_FILENAME, SPEC2_URL)
-    counts = load_spec_data(session, specname, spec2)
+    counts = load_spec_data(client, specname, spec2)
 
     logger.info("Upload complete. Counts:")
     for name, count in counts.items():

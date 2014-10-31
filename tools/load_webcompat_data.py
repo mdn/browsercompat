@@ -9,9 +9,10 @@ import os.path
 import re
 import string
 import sys
-import urllib
 
 import requests
+
+from client import Client
 
 try:
     input = raw_input  # Get the Py2 raw_input
@@ -44,58 +45,19 @@ known_browsers = [
 version_re = re.compile("^[.\d]+$")
 
 
-def get_session(base_url, user, password):
-    """Create an authenticated connection to the API"""
-    session = requests.Session()
-    next_path = '/api/v1/browsers'
-    params = {'next': next_path}
-    response = session.get(base_url + '/api-auth/login/', params=params)
-    try:
-        csrf = response.cookies['csrftoken']
-    except KeyError:
-        raise Exception("No CSRF in response", response)
-    data = {
-        'username': user,
-        'password': password,
-        'csrfmiddlewaretoken': csrf,
-        'next': next_path
-    }
-    response = session.post(
-        base_url + '/api-auth/login/', params=params, data=data)
-    if response.url == base_url + next_path:
-        logger.info("Logged into " + base_url)
-        session.base_url = base_url
-        return session
-    else:
-        raise Exception('Problem logging in.', response)
-
-
-def verify_empty_api(session):
+def verify_empty_api(client):
     """Verify that no data is loaded into this API"""
-    response = session.get(
-        session.base_url + '/api/v1/browsers',
-        headers={'content-type': 'application/vnd.api+json'})
-    expected = {
-        'browsers': [],
-        'meta': {
-            'pagination': {
-                'browsers': {
-                    'count': 0,
-                    'next': None,
-                    'previous': None
-                }
-            }
-        }
-    }
-    actual = response.json()
-    if response.json() != expected:
-        raise Exception('API already has browser data', actual)
+    for resource in ('browsers', 'versions', 'features', 'supports'):
+        if client.count(resource) != 0:
+            raise Exception('API already has %s data' % resource)
 
 
 def get_compat_data(filename, url):
     if not os.path.exists(filename):
         logger.info("Downloading " + filename)
-        urllib.urlretrieve(url, filename)
+        r = requests.get(url)
+        with open(filename, 'wb') as f:
+            f.write(r.content)
     else:
         logger.info("Using existing " + filename)
 
@@ -104,14 +66,22 @@ def get_compat_data(filename, url):
     return compat_data
 
 
-def load_compat_data(session, compat_data, all_data=False):
+def load_compat_data(client, compat_data, all_data=False):
     """Load a dictionary of compatiblity data into the API"""
-    verify_empty_api(session)
+    verify_empty_api(client)
     parsed_data = parse_compat_data(compat_data)
-    if all_data:
-        return upload_compat_data(session, parsed_data)
-    else:
-        return upload_subset_compat_data(session, parsed_data)
+    logger.info('Opening changeset...')
+    client.open_changeset()
+    counts = {}
+    try:
+        if all_data:
+            counts = upload_compat_data(client, parsed_data)
+        else:
+            counts = upload_subset_compat_data(client, parsed_data)
+    finally:
+        logger.info('Closing changeset...')
+        client.close_changeset()
+    return counts
 
 
 def parse_compat_data(compat_data):
@@ -312,30 +282,30 @@ def convert_version(browser_id, raw_version):
     return version, version_id
 
 
-def upload_compat_data(session, parsed_data):
+def upload_compat_data(client, parsed_data):
     api_ids = dict(
         (n, {}) for n in ['browsers', 'versions', 'features', 'supports'])
     logger.info("Importing browsers...")
     for browser_id in sorted(parsed_data['browsers'].keys()):
-        upload_browser(session, browser_id, parsed_data, api_ids)
+        upload_browser(client, browser_id, parsed_data, api_ids)
         if len(api_ids['browsers']) % 100 == 0:
             logger.info("Imported %d browsers..." % len(api_ids['browsers']))
 
     logger.info("Importing versions...")
     for version_id in sorted(parsed_data['versions'].keys()):
-        upload_version(session, version_id, parsed_data, api_ids)
+        upload_version(client, version_id, parsed_data, api_ids)
         if len(api_ids['versions']) % 100 == 0:
             logger.info("Imported %d versions..." % len(api_ids['versions']))
 
     logger.info("Importing features...")
     for feature_id in sorted(parsed_data['features'].keys()):
-        upload_feature(session, feature_id, parsed_data, api_ids)
+        upload_feature(client, feature_id, parsed_data, api_ids)
         if len(api_ids['features']) % 100 == 0:
             logger.info("Imported %d features..." % len(api_ids['features']))
 
     logger.info("Importing supports...")
     for support_id in sorted(parsed_data['supports'].keys()):
-        upload_support(session, support_id, parsed_data, api_ids)
+        upload_support(client, support_id, parsed_data, api_ids)
         if len(api_ids['supports']) % 100 == 0:
             logger.info("Imported %d supports..." % len(api_ids['supports']))
 
@@ -343,20 +313,20 @@ def upload_compat_data(session, parsed_data):
     return counts
 
 
-def upload_subset_compat_data(session, parsed_data):
+def upload_subset_compat_data(client, parsed_data):
     api_ids = dict(
         (n, {}) for n in ['browsers', 'versions', 'features', 'supports'])
 
     # Load all browsers, versions because no Support instances yet
     logger.info("Importing browsers...")
     for browser_id in sorted(parsed_data['browsers'].keys()):
-        upload_browser(session, browser_id, parsed_data, api_ids)
+        upload_browser(client, browser_id, parsed_data, api_ids)
         if len(api_ids['browsers']) % 100 == 0:
             logger.info("Imported %d browsers..." % len(api_ids['browsers']))
 
     logger.info("Importing versions...")
     for version_id in sorted(parsed_data['versions'].keys()):
-        upload_version(session, version_id, parsed_data, api_ids)
+        upload_version(client, version_id, parsed_data, api_ids)
         if len(api_ids['versions']) % 100 == 0:
             logger.info("Imported %d versions..." % len(api_ids['versions']))
 
@@ -365,7 +335,7 @@ def upload_subset_compat_data(session, parsed_data):
         feature = parsed_data['features'][feature_id]
         mdn_path = feature['mdn_path']
         if mdn_path and 'Web/CSS/c' in mdn_path:
-            upload_feature(session, feature_id, parsed_data, api_ids)
+            upload_feature(client, feature_id, parsed_data, api_ids)
             if len(api_ids['features']) % 100 == 0:
                 logger.info(
                     "Imported %d features..." % len(api_ids['features']))
@@ -374,7 +344,7 @@ def upload_subset_compat_data(session, parsed_data):
     for support_id in sorted(parsed_data['supports'].keys()):
         feature_id = support_id[1]
         if feature_id in api_ids['features']:
-            upload_support(session, support_id, parsed_data, api_ids)
+            upload_support(client, support_id, parsed_data, api_ids)
             if len(api_ids['supports']) % 100 == 0:
                 logger.info(
                     "Imported %d supports..." % len(api_ids['supports']))
@@ -383,11 +353,11 @@ def upload_subset_compat_data(session, parsed_data):
     return counts
 
 
-def upload_browser(session, browser_id, parsed_data, api_ids):
+def upload_browser(client, browser_id, parsed_data, api_ids):
     """Upload a parsed browser to the API
 
     Keyword Arguments:
-    session - authenticated session to use for uploads
+    client - authenticated client to use for uploads
     browser_id - ID of the browser in parsed_data['browsers']
     parsed_data - dictionary of all the parsed data
     api_ids - dictionary of IDs of uploaded instances
@@ -400,23 +370,17 @@ def upload_browser(session, browser_id, parsed_data, api_ids):
             "slug": browser['slug'],
             "name": {'en': browser['name']}
         }
-        browser_json = json.dumps({"browsers": data})
-        response = session.post(
-            session.base_url + '/api/v1/browsers', data=browser_json,
-            headers={
-                'content-type': 'application/vnd.api+json',
-                'X-CSRFToken': session.cookies['csrftoken']})
-        assert response.status_code == 201, response.content
-        api_id = response.json()['browsers']['id']
+        response = client.create('browsers', data)
+        api_id = response['id']
         api_ids['browsers'][browser_id] = api_id
     return api_ids['browsers'][browser_id]
 
 
-def upload_version(session, version_id, parsed_data, api_ids):
+def upload_version(client, version_id, parsed_data, api_ids):
     """Upload a parsed version to the API
 
     Keyword Arguments:
-    session - authenticated session to use for uploads
+    client - authenticated client to use for uploads
     version_id - ID of the version in parsed_data['versions']
     parsed_data - dictionary of all the parsed data
     api_ids - dictionary of IDs of uploaded instances
@@ -427,7 +391,7 @@ def upload_version(session, version_id, parsed_data, api_ids):
         version = parsed_data['versions'][version_id]
         browser_id = version_id[0]
         browser_api_id = upload_browser(
-            session, browser_id, parsed_data, api_ids)
+            client, browser_id, parsed_data, api_ids)
         data = {
             "version": version['version'],
             "status": version.get('status', 'unknown'),
@@ -435,23 +399,17 @@ def upload_version(session, version_id, parsed_data, api_ids):
                 "browser": browser_api_id
             }
         }
-        version_json = json.dumps({"versions": data})
-        response = session.post(
-            session.base_url + '/api/v1/versions', data=version_json,
-            headers={
-                'content-type': 'application/vnd.api+json',
-                'X-CSRFToken': session.cookies['csrftoken']})
-        assert response.status_code == 201, response.content
-        api_id = response.json()['versions']['id']
+        response = client.create('versions', data)
+        api_id = response['id']
         api_ids['versions'][version_id] = api_id
     return api_ids['versions'][version_id]
 
 
-def upload_feature(session, feature_id, parsed_data, api_ids):
+def upload_feature(client, feature_id, parsed_data, api_ids):
     """Upload a parsed feature to the API
 
     Keyword Arguments:
-    session - authenticated session to use for uploads
+    client - authenticated client to use for uploads
     feature_id - ID of the feature in parsed_data['features']
     parsed_data - dictionary of all the parsed data
     api_ids - dictionary of IDs of uploaded instances
@@ -464,7 +422,7 @@ def upload_feature(session, feature_id, parsed_data, api_ids):
         feature = parsed_data['features'][feature_id]
         parent_id = feature["parent_id"]
         parent_api_id = upload_feature(
-            session, parent_id, parsed_data, api_ids)
+            client, parent_id, parsed_data, api_ids)
         data = {
             "slug": feature["slug"],
             "mdn_path": feature["mdn_path"],
@@ -473,23 +431,17 @@ def upload_feature(session, feature_id, parsed_data, api_ids):
                 "parent": parent_api_id,
             }
         }
-        feature_json = json.dumps({"features": data})
-        response = session.post(
-            session.base_url + '/api/v1/features', data=feature_json,
-            headers={
-                'content-type': 'application/vnd.api+json',
-                'X-CSRFToken': session.cookies['csrftoken']})
-        assert response.status_code == 201, response.content
-        api_id = response.json()['features']['id']
+        response = client.create('features', data)
+        api_id = response['id']
         api_ids['features'][feature_id] = api_id
     return api_ids['features'][feature_id]
 
 
-def upload_support(session, support_id, parsed_data, api_ids):
+def upload_support(client, support_id, parsed_data, api_ids):
     """Upload a parsed support to the API
 
     Keyword Arguments:
-    session - authenticated session to use for uploads
+    client - authenticated client to use for uploads
     support_id - ID of the support in parsed_data['supports']
     parsed_data - dictionary of all the parsed data
     api_ids - dictionary of IDs of uploaded instances
@@ -500,9 +452,9 @@ def upload_support(session, support_id, parsed_data, api_ids):
         support = parsed_data['supports'][support_id]
         version_id, feature_id = support_id
         version_api_id = upload_version(
-            session, version_id, parsed_data, api_ids)
+            client, version_id, parsed_data, api_ids)
         feature_api_id = upload_feature(
-            session, feature_id, parsed_data, api_ids)
+            client, feature_id, parsed_data, api_ids)
         data = {
             "support": support['support'],
             "links": {
@@ -510,14 +462,8 @@ def upload_support(session, support_id, parsed_data, api_ids):
                 "feature": feature_api_id,
             },
         }
-        support_json = json.dumps({"supports": data})
-        response = session.post(
-            session.base_url + '/api/v1/supports', data=support_json,
-            headers={
-                'content-type': 'application/vnd.api+json',
-                'X-CSRFToken': session.cookies['csrftoken']})
-        assert response.status_code == 201, response.content
-        api_id = response.json()['supports']['id']
+        response = client.create('supports', data)
+        api_id = response['id']
         api_ids['supports'][support_id] = api_id
     return api_ids['supports'][support_id]
 
@@ -576,11 +522,14 @@ if __name__ == '__main__':
     # Get credentials
     user = args.user or input("API username: ")
     password = getpass.getpass("API password: ")
-    session = get_session(api, user, password)
+
+    # Initialize client
+    client = Client(api)
+    client.login(user, password)
 
     # Load data
     compat_data = get_compat_data(COMPAT_DATA_FILENAME, COMPAT_DATA_URL)
-    counts = load_compat_data(session, compat_data, all_data=all_data)
+    counts = load_compat_data(client, compat_data, all_data=all_data)
 
     logger.info("Upload complete. Counts:")
     for name, count in counts.items():
