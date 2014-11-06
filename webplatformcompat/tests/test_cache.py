@@ -6,9 +6,10 @@ from pytz import UTC
 
 from django.contrib.auth.models import User
 
+from webplatformcompat.cache import Cache
+from webplatformcompat.history import Changeset
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
-from webplatformcompat.cache import Cache
 
 from .base import TestCase
 
@@ -61,6 +62,84 @@ class TestCache(TestCase):
     def test_browser_v1_invalidator(self):
         browser = self.create(Browser)
         self.assertEqual([], self.cache.browser_v1_invalidator(browser))
+
+    def test_changeset_v1_serializer(self):
+        user = self.login_superuser()
+        created = datetime(2014, 10, 29, 8, 57, 21, 806744, UTC)
+        changeset = self.create(Changeset, user=user, created=created)
+        Changeset.objects.filter(pk=changeset.pk).update(modified=created)
+        changeset = Changeset.objects.get(pk=changeset.pk)
+        out = self.cache.changeset_v1_serializer(changeset)
+        expected = {
+            'id': changeset.id,
+            'created:DateTime': '1414573041.806744',
+            'modified:DateTime': '1414573041.806744',
+            'target_resource_type': '',
+            'target_resource_id': 0,
+            'closed': False,
+            'user:PK': {
+                'app': u'auth',
+                'model': 'user',
+                'pk': user.pk,
+            },
+            'historical_browsers:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalbrowser',
+                'pks': []
+            },
+            'historical_features:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalfeature',
+                'pks': []
+            },
+            'historical_maturities:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalmaturity',
+                'pks': []
+            },
+            'historical_sections:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalsection',
+                'pks': []
+            },
+            'historical_specifications:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalspecification',
+                'pks': []
+            },
+            'historical_supports:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalsupport',
+                'pks': []
+            },
+            'historical_versions:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalversion',
+                'pks': []
+            },
+        }
+        self.assertEqual(out, expected)
+
+    def test_changeset_v1_serializer_empty(self):
+        self.assertEqual(None, self.cache.changeset_v1_serializer(None))
+
+    def test_changeset_v1_loader(self):
+        user = self.login_superuser()
+        changeset = self.create(Changeset, user=user)
+        with self.assertNumQueries(8):
+            obj = self.cache.changeset_v1_loader(changeset.pk)
+        with self.assertNumQueries(0):
+            serialized = self.cache.changeset_v1_serializer(obj)
+        self.assertTrue(serialized)
+
+    def test_changeset_v1_loader_not_exist(self):
+        self.assertFalse(Changeset.objects.filter(pk=666).exists())
+        self.assertIsNone(self.cache.changeset_v1_loader(666))
+
+    def test_changeset_v1_invalidator(self):
+        user = self.login_superuser()
+        changeset = self.create(Changeset, user=user)
+        self.assertEqual([], self.cache.changeset_v1_invalidator(changeset))
 
     def test_feature_v1_serializer(self):
         feature = self.create(
@@ -459,58 +538,6 @@ class TestCache(TestCase):
         version = self.create(Version, browser=browser)
         expected = [('Browser', 1, True)]
         self.assertEqual(expected, self.cache.version_v1_invalidator(version))
-
-    def test_historicalbrowser_v1_serializer(self):
-        history_date = datetime(2014, 9, 22, 7, 49, 48, 2384, UTC)
-        browser = self.create(Browser, _history_date=history_date)
-        hbrowser = browser.history.all()[0]
-        out = self.cache.historicalbrowser_v1_serializer(hbrowser)
-        expected = {
-            'id': 1,
-            'date:DateTime': '1411372188.002384',
-            'event': u'created',
-            'user:PK': {
-                'app': u'auth',
-                'model': 'user',
-                'pk': 1
-            },
-            'browser:PK': {
-                'app': u'webplatformcompat',
-                'model': 'browser',
-                'pk': 1,
-            },
-            'browsers': {
-                'history_current': 1,
-                'id': 1,
-                'name': {},
-                'note': {},
-                'slug': u''
-            },
-        }
-        self.assertEqual(out, expected)
-
-    def test_historicalbrowser_v1_serializer_empty(self):
-        self.assertEqual(
-            None, self.cache.historicalbrowser_v1_serializer(None))
-
-    def test_historicalbrowser_v1_loader(self):
-        browser = self.create(Browser)
-        hbrowser = browser.history.all()[0]
-        with self.assertNumQueries(1):
-            obj = self.cache.historicalbrowser_v1_loader(hbrowser.history_id)
-        with self.assertNumQueries(0):
-            serialized = self.cache.historicalbrowser_v1_serializer(obj)
-        self.assertTrue(serialized)
-
-    def test_historicalbrowser_v1_loader_not_exist(self):
-        self.assertFalse(Browser.history.filter(pk=666).exists())
-        self.assertIsNone(self.cache.historicalbrowser_v1_loader(666))
-
-    def test_historicalbrowser_v1_invalidator(self):
-        browser = self.create(Browser)
-        hbrowser = browser.history.all()[0]
-        self.assertEqual(
-            [], self.cache.historicalbrowser_v1_invalidator(hbrowser))
 
     def test_user_v1_serializer(self):
         user = self.create(

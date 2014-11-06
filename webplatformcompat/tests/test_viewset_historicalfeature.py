@@ -27,10 +27,10 @@ class TestHistoricalFeatureViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': history.history_id,
+            'id': history.pk,
             'date': feature._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'feature': feature.pk,
             'features': {
                 'id': str(feature.id),
@@ -44,14 +44,14 @@ class TestHistoricalFeatureViewset(APITestCase):
                 'links': {
                     'parent': None,
                     'sections': [],
-                    'history_current': str(history.id),
+                    'history_current': str(history.pk),
                 }
             },
         }
         self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_features': {
-                'id': str(history.history_id),
+                'id': str(history.pk),
                 'date': '2014-10-01T14:25:14.955Z',
                 'event': 'created',
                 'features': {
@@ -66,12 +66,12 @@ class TestHistoricalFeatureViewset(APITestCase):
                     'links': {
                         'parent': None,
                         'sections': [],
-                        'history_current': str(history.id),
+                        'history_current': str(history.pk),
                     }
                 },
                 'links': {
                     'feature': str(feature.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -81,11 +81,11 @@ class TestHistoricalFeatureViewset(APITestCase):
                         '{historical_features.feature}'),
                     'type': 'features'
                 },
-                'historical_features.user': {
+                'historical_features.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_features.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_features.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -110,10 +110,10 @@ class TestHistoricalFeatureViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': history.history_id,
+            'id': history.pk,
             'date': feature._history_date,
             'event': 'changed',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'feature': feature.pk,
             'features': {
                 'id': str(feature.id),
@@ -127,7 +127,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                 'links': {
                     'parent': None,
                     'sections': [str(section.pk)],
-                    'history_current': str(history.history_id),
+                    'history_current': str(history.pk),
                 }
             },
         }
@@ -148,10 +148,10 @@ class TestHistoricalFeatureViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': history.history_id,
+                'id': history.pk,
                 'date': feature._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'feature': feature.pk,
                 'features': {
                     'id': str(feature.pk),
@@ -165,7 +165,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                     'links': {
                         'parent': str(parent.id),
                         'sections': [],
-                        'history_current': str(history.id),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}

@@ -27,24 +27,24 @@ class TestHistoricalMaturityViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': history.history_id,
+            'id': history.pk,
             'date': maturity._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'maturity': maturity.pk,
             'maturities': {
                 'id': str(maturity.id),
                 'slug': 'CR',
                 'name': {'en': 'Candidate Recommendation'},
                 'links': {
-                    'history_current': str(history.id),
+                    'history_current': str(history.pk),
                 }
             },
         }
         self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_maturities': {
-                'id': str(history.history_id),
+                'id': str(history.pk),
                 'date': '2014-10-19T10:20:45.609Z',
                 'event': 'created',
                 'maturities': {
@@ -52,12 +52,12 @@ class TestHistoricalMaturityViewset(APITestCase):
                     'slug': 'CR',
                     'name': {'en': 'Candidate Recommendation'},
                     'links': {
-                        'history_current': str(history.id),
+                        'history_current': str(history.pk),
                     }
                 },
                 'links': {
                     'maturity': str(maturity.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -67,11 +67,11 @@ class TestHistoricalMaturityViewset(APITestCase):
                         '{historical_maturities.maturity}'),
                     'type': 'maturities'
                 },
-                'historical_maturities.user': {
+                'historical_maturities.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_maturities.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_maturities.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -92,17 +92,17 @@ class TestHistoricalMaturityViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': history.history_id,
+                'id': history.pk,
                 'date': maturity._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'maturity': maturity.pk,
                 'maturities': {
                     'id': str(maturity.pk),
                     'slug': 'PR',
                     'name': {'en-US': 'Proposed Recommendation'},
                     'links': {
-                        'history_current': str(history.id),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}

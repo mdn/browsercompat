@@ -23,16 +23,16 @@ class TestHistoricalVersionViewset(APITestCase):
             Version, browser=browser, version="1.0",
             _history_user=user,
             _history_date=datetime(2014, 9, 4, 19, 13, 25, 857510, UTC))
-        vh = version.history.all()[0]
-        url = reverse('historicalversion-detail', kwargs={'pk': vh.pk})
+        history = version.history.all()[0]
+        url = reverse('historicalversion-detail', kwargs={'pk': history.pk})
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
 
         expected_data = {
-            'id': vh.history_id,
+            'id': history.pk,
             'date': version._history_date,
             'event': 'created',
-            'user': user.pk,
+            'changeset': history.history_changeset_id,
             'version': version.pk,
             'versions': {
                 'id': str(version.id),
@@ -45,14 +45,14 @@ class TestHistoricalVersionViewset(APITestCase):
                 'order': 0,
                 'links': {
                     'browser': str(browser.id),
-                    'history_current': str(vh.id),
+                    'history_current': str(history.pk),
                 }
             },
         }
         self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_versions': {
-                'id': str(vh.history_id),
+                'id': str(history.pk),
                 'date': '2014-09-04T19:13:25.857Z',
                 'event': 'created',
                 'versions': {
@@ -66,12 +66,12 @@ class TestHistoricalVersionViewset(APITestCase):
                     'order': 0,
                     'links': {
                         'browser': str(browser.id),
-                        'history_current': str(vh.id),
+                        'history_current': str(history.pk),
                     },
                 },
                 'links': {
                     'version': str(version.pk),
-                    'user': str(user.pk),
+                    'changeset': str(history.history_changeset_id),
                 },
             },
             'links': {
@@ -81,11 +81,11 @@ class TestHistoricalVersionViewset(APITestCase):
                         '{historical_versions.version}'),
                     'type': 'versions'
                 },
-                'historical_versions.user': {
+                'historical_versions.changeset': {
                     'href': (
-                        'http://testserver/api/v1/users/'
-                        '{historical_versions.user}'),
-                    'type': 'users'
+                        'http://testserver/api/v1/changesets/'
+                        '{historical_versions.changeset}'),
+                    'type': 'changesets'
                 },
             }
         }
@@ -101,7 +101,7 @@ class TestHistoricalVersionViewset(APITestCase):
             Version, browser=browser, version="2.0",
             _history_user=user,
             _history_date=datetime(2014, 9, 4, 20, 46, 28, 479175, UTC))
-        vh = version.history.all()[0]
+        history = version.history.all()[0]
         url = reverse('historicalversion-list')
         response = self.client.get(url, {'id': version.id})
         expected_data = {
@@ -109,10 +109,10 @@ class TestHistoricalVersionViewset(APITestCase):
             'previous': None,
             'next': None,
             'results': [{
-                'id': vh.history_id,
+                'id': history.pk,
                 'date': version._history_date,
                 'event': 'created',
-                'user': user.pk,
+                'changeset': history.history_changeset_id,
                 'version': version.pk,
                 'versions': {
                     'id': str(version.pk),
@@ -125,7 +125,7 @@ class TestHistoricalVersionViewset(APITestCase):
                     'order': 1,
                     'links': {
                         'browser': str(browser.id),
-                        'history_current': str(vh.id),
+                        'history_current': str(history.pk),
                     }
                 },
             }]}

@@ -20,6 +20,7 @@ from rest_framework.viewsets import ViewSet
 from drf_cached_reads.mixins import CachedViewMixin as BaseCacheViewMixin
 
 from .cache import Cache
+from .history import Changeset
 from .mixins import PartialPutMixin
 from .models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
@@ -29,11 +30,11 @@ from .serializers import (
     BrowserSerializer, FeatureSerializer, MaturitySerializer,
     SectionSerializer, SpecificationSerializer, SupportSerializer,
     VersionSerializer,
+    ChangesetSerializer, UserSerializer,
     HistoricalBrowserSerializer, HistoricalFeatureSerializer,
     HistoricalMaturitySerializer, HistoricalSectionSerializer,
     HistoricalSpecificationSerializer, HistoricalSupportSerializer,
-    HistoricalVersionSerializer,
-    UserSerializer)
+    HistoricalVersionSerializer)
 
 
 #
@@ -47,6 +48,11 @@ class CachedViewMixin(BaseCacheViewMixin):
 class ModelViewSet(PartialPutMixin, CachedViewMixin, BaseModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
+
+    def pre_save(self, obj):
+        """Delay cache refresh if requested by changeset middleware"""
+        if getattr(self.request, 'delay_cache', False):
+            obj._delay_cache = True
 
 
 class ReadOnlyModelViewSet(BaseROModelViewSet):
@@ -107,6 +113,15 @@ class VersionViewSet(ModelViewSet):
     model = Version
     serializer_class = VersionSerializer
     filter_fields = ('browser', 'browser__slug', 'version', 'status')
+
+
+#
+# Change control viewsets
+#
+
+class ChangesetViewSet(ModelViewSet):
+    model = Changeset
+    serializer_class = ChangesetSerializer
 
 
 class UserViewSet(ModelViewSet):

@@ -940,9 +940,12 @@ A sample response is:
             "links": {
                 "user": "42",
                 "historical_browsers": [],
-                "historical_versions": [],
                 "historical_features": [],
-                "historical_supports": []
+                "historical_maturities": [],
+                "historical_sections": [],
+                "historical_specifications": [],
+                "historical_supports": [],
+                "historical_versions": []
             }
         },
         "links": {
@@ -954,18 +957,31 @@ A sample response is:
                 "href": "https://browsersupports.org/api/v1/historical_browsers/{changesets.historical_browsers}",
                 "type": "historical_browsers"
             },
-            "changesets.historical_versions": {
-                "href": "https://browsersupports.org/api/v1/historical_versions/{changesets.historical_versions}",
-                "type": "historical_versions"
-            },
             "changesets.historical_features": {
                 "href": "https://browsersupports.org/api/v1/historical_features/{changesets.historical_features}",
                 "type": "historical_features"
             },
+            "changesets.historical_maturities": {
+                "href": "https://browsersupports.org/api/v1/historical_maturities/{changesets.historical_maturities}",
+                "type": "historical_maturities"
+            },
+            "changesets.historical_sections": {
+                "href": "https://browsersections.org/api/v1/historical_sections/{changesets.historical_sections}",
+                "type": "historical_sections"
+            },
+            "changesets.historical_specifications": {
+                "href": "https://browserspecifications.org/api/v1/historical_specifications/{changesets.historical_specifications}",
+                "type": "historical_specifications"
+            },
             "changesets.historical_supports": {
                 "href": "https://browsersupports.org/api/v1/historical_supports/{changesets.historical_supports}",
                 "type": "historical_supports"
+            },
+            "changesets.historical_versions": {
+                "href": "https://browsersupports.org/api/v1/historical_versions/{changesets.historical_versions}",
+                "type": "historical_versions"
             }
+
         }
     }
 

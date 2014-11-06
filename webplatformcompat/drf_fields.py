@@ -7,9 +7,19 @@ import json
 from django.core.exceptions import ValidationError
 from django.forms import Textarea
 from django.utils import six
-from rest_framework.serializers import CharField, PrimaryKeyRelatedField
+from rest_framework.serializers import (
+    CharField, IntegerField, PrimaryKeyRelatedField)
 
 from .validators import LanguageDictValidator
+
+
+class AutoUserField(PrimaryKeyRelatedField):
+    """Field defaults to the logged-in user"""
+
+    def get_default_value(self):
+        request = self.context.get('request')
+        user = getattr(request, 'user')
+        return user and user.id
 
 
 class CurrentHistoryField(PrimaryKeyRelatedField):
@@ -167,6 +177,22 @@ class OptionalCharField(CharField):
             return value
         else:
             return ''
+
+
+class OptionalIntegerField(IntegerField):
+    """Field is a IntegerField that serialized as None when 0"""
+
+    def to_native(self, value):
+        if value:
+            return value
+        else:
+            return None
+
+    def from_native(self, value):
+        if value:
+            return int(value)
+        else:
+            return 0
 
 
 class TranslatedTextField(CharField):

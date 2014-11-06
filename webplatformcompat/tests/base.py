@@ -5,6 +5,9 @@ from django.test import TestCase
 from django.utils import encoding, six
 
 from rest_framework.test import APITestCase as BaseAPITestCase
+from rest_framework.utils.encoders import JSONEncoder
+
+from webplatformcompat.history import Changeset
 
 
 class TestMixin(object):
@@ -35,6 +38,15 @@ class TestMixin(object):
         obj._history_user = (
             _history_user or getattr(self, 'user', None) or
             self.login_superuser())
+
+        if not hasattr(self, 'changeset'):
+            hc_kwargs = {'user': obj._history_user}
+            if _history_date is not None:
+                hc_kwargs['created'] = _history_date
+                hc_kwargs['modified'] = _history_date
+            self.changeset = Changeset.objects.create(**hc_kwargs)
+        obj._history_changeset = self.changeset
+
         if _history_date:
             obj._history_date = _history_date
         obj.save()
@@ -58,6 +70,10 @@ class TestMixin(object):
         n_first = self.normalizeData(first)
         n_second = self.normalizeData(second)
         self.assertEqual(n_first, n_second)
+
+    def dt_json(self, dt):
+        """Convert a datetime to DRF encoded JSON"""
+        return JSONEncoder().default(dt)
 
 
 class TestCase(TestMixin, TestCase):

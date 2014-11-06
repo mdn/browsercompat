@@ -36,9 +36,6 @@ ipdb==0.8
 sqlparse==0.1.11
 django-debug-toolbar==1.2.1
 
-# Backport of Python 3 mock
-mock==1.0.1
-
 # Test coverage
 coverage==3.7.1
 docopt==0.6.2

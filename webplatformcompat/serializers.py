@@ -9,8 +9,10 @@ from rest_framework.serializers import (
 
 from . import fields
 from .drf_fields import (
-    CurrentHistoryField, HistoricalObjectField, HistoryField,
-    MPTTRelationField, OptionalCharField, TranslatedTextField)
+    AutoUserField, CurrentHistoryField, HistoricalObjectField, HistoryField,
+    MPTTRelationField, OptionalCharField, OptionalIntegerField,
+    TranslatedTextField)
+from .history import Changeset
 from .models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 
@@ -223,6 +225,36 @@ class VersionSerializer(HistoricalModelSerializer):
         read_only_fields = ('supports',)
 
 
+#
+# Change control object serializers
+#
+
+class ChangesetSerializer(ModelSerializer):
+    """Changeset Serializer"""
+
+    user = AutoUserField()
+    target_resource_type = OptionalCharField(required=False)
+    target_resource_id = OptionalIntegerField(required=False)
+
+    class Meta:
+        model = Changeset
+        fields = (
+            'id', 'created', 'modified', 'closed', 'target_resource_type',
+            'target_resource_id', 'user',
+            'historical_browsers', 'historical_features',
+            'historical_maturities', 'historical_sections',
+            'historical_specifications', 'historical_supports',
+            'historical_versions')
+        update_only_fields = (
+            'user', 'target_resource_type', 'target_resource_id')
+        read_only_fields = (
+            'id', 'created', 'modified',
+            'historical_browsers', 'historical_features',
+            'historical_maturities', 'historical_sections',
+            'historical_specifications', 'historical_supports',
+            'historical_versions')
+
+
 class UserSerializer(ModelSerializer):
     """User Serializer"""
 
@@ -251,7 +283,7 @@ class HistoricalObjectSerializer(ModelSerializer):
     id = IntegerField(source="history_id")
     date = DateTimeField(source="history_date")
     event = SerializerMethodField('get_event')
-    user = PrimaryKeyRelatedField(source="history_user")
+    changeset = PrimaryKeyRelatedField(source="history_changeset")
 
     EVENT_CHOICES = {
         '+': 'created',
@@ -287,7 +319,7 @@ class HistoricalObjectSerializer(ModelSerializer):
         return data
 
     class Meta:
-        fields = ('id', 'date', 'event', 'user')
+        fields = ('id', 'date', 'event', 'changeset')
 
 
 class HistoricalBrowserSerializer(HistoricalObjectSerializer):
