@@ -2,7 +2,7 @@
 
 from django.contrib.auth.models import User
 
-from drf_cached_reads.cache import BaseCache
+from drf_cached_instances.cache import BaseCache
 from .history import Changeset
 from .models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)

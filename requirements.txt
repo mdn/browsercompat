@@ -63,3 +63,6 @@ django-mptt==0.6.1
 
 # Sorted ManyToManyField
 django-sortedm2m==0.8.1
+
+# Cached instances for Django REST Framework
+drf-cached-instances==0.1.0

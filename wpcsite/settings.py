@@ -85,7 +85,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'sortedm2m',
 
-    'drf_cached_reads',
     'webplatformcompat',
 ]
 if environ.get('EXTRA_INSTALLED_APPS'):
