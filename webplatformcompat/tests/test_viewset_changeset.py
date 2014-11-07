@@ -22,6 +22,7 @@ class TestChangesetViewSet(APITestCase):
         test_date = datetime(2014, 10, 27, 14, 3, 31, 530945, UTC)
         feature = self.create(
             Feature, _history_user=user, _history_date=test_date)
+        feature_history = feature.history.all()[0]
         changeset = Changeset.objects.get()
         url = reverse('changeset-detail', kwargs={'pk': changeset.pk})
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
@@ -37,7 +38,7 @@ class TestChangesetViewSet(APITestCase):
             'user': user.pk,
             'historical_browsers': [],
             'historical_versions': [],
-            "historical_features": [feature.pk],
+            "historical_features": [feature_history.pk],
             'historical_specifications': [],
             'historical_supports': [],
             'historical_maturities': [],
@@ -58,7 +59,7 @@ class TestChangesetViewSet(APITestCase):
                     'user': str(user.pk),
                     'historical_browsers': [],
                     'historical_versions': [],
-                    "historical_features": [str(feature.pk)],
+                    "historical_features": [str(feature_history.pk)],
                     'historical_specifications': [],
                     'historical_supports': [],
                     'historical_maturities': [],
@@ -143,7 +144,7 @@ class TestChangesetViewSet(APITestCase):
         # A multiple changeset is manually created, and must be marked complete
         # Cache updated are delayed until end
 
-        self.login_superuser()
+        user = self.login_superuser()
         mock_task.reset_mock()
         mock_task.side_effect = Exception('Not called')
         mock_task.delay.side_effect = Exception('Not called')
@@ -210,14 +211,14 @@ class TestChangesetViewSet(APITestCase):
             u'closed': False,
             u'target_resource_type': None,
             u'target_resource_id': None,
-            u'user': 1,
-            u'historical_browsers': [browser.history.all()[0].id],
-            u'historical_features': [feature.history.all()[0].id],
+            u'user': user.id,
+            u'historical_browsers': [browser.history.all()[0].pk],
+            u'historical_features': [feature.history.all()[0].pk],
             u'historical_maturities': [],
             u'historical_sections': [],
             u'historical_specifications': [],
-            u'historical_supports': [support.history.all()[0].id],
-            u'historical_versions': [version.history.all()[0].id],
+            u'historical_supports': [support.history.all()[0].pk],
+            u'historical_versions': [version.history.all()[0].pk],
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -293,18 +294,18 @@ class TestChangesetViewSet(APITestCase):
         self.assertEqual(response.content.decode('utf-8'), message)
 
     def test_post_empty(self):
-        self.login_superuser()
+        user = self.login_superuser()
         response = self.client.post(reverse('changeset-list'), {})
         self.assertEqual(201, response.status_code, response.content)
         changeset = Changeset.objects.get()
         expected_data = {
-            u'id': 1,
+            u'id': changeset.id,
             u'created': changeset.created,
             u'modified': changeset.modified,
             u'closed': False,
             u'target_resource_type': None,
             u'target_resource_id': None,
-            u'user': 1,
+            u'user': user.id,
             u'historical_browsers': [],
             u'historical_features': [],
             u'historical_maturities': [],

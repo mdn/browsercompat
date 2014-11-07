@@ -23,8 +23,8 @@ class TestSectionViewSet(APITestCase):
             Section, specification=spec,
             number={'en': '5.6.1'}, name={'en': "display"},
             subpath={'en': '#display'})
-        url = reverse('section-detail', kwargs={'pk': spec.pk})
-        history_pk = spec.history.all()[0].pk
+        url = reverse('section-detail', kwargs={'pk': section.pk})
+        history_pk = section.history.all()[0].pk
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
 

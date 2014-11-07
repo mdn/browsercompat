@@ -34,28 +34,28 @@ class TestHistoricalBrowserViewset(APITestCase):
             'changeset': history.history_changeset_id,
             'browser': browser.pk,
             'browsers': {
-                'id': '1',
+                'id': str(browser.pk),
                 'slug': 'browser',
                 'name': {'en': 'A Browser'},
                 'note': None,
-                'links': {'history_current': '1'}
+                'links': {'history_current': str(history.pk)}
             },
         }
         self.assertDataEqual(expected_data, response.data)
         expected_json = {
             'historical_browsers': {
-                'id': '1',
+                'id': str(history.pk),
                 'date': '2014-08-25T20:50:38.868Z',
                 'event': 'created',
                 'browsers': {
-                    'id': '1',
+                    'id': str(browser.pk),
                     'slug': 'browser',
                     'name': {
                         'en': 'A Browser'
                     },
                     'note': None,
                     'links': {
-                        'history_current': '1'
+                        'history_current': str(history.pk),
                     },
                 },
                 'links': {

@@ -8,5 +8,6 @@ python:
   - "2.6"
 
 install: pip install -r requirements.txt coveralls
-script: python manage.py test --with-coverage --cover-package=webplatformcompat
+before_script: psql -c 'create database travis_ci_test;' -U postgres
+script: DATABASE_URL="postgres://postgres@localhost:5432/travis_ci_test" python manage.py test --with-coverage --cover-package=webplatformcompat
 after_success: coveralls
