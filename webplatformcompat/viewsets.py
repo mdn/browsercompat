@@ -17,7 +17,7 @@ from rest_framework.viewsets import ModelViewSet as BaseModelViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet as BaseROModelViewSet
 from rest_framework.viewsets import ViewSet
 
-from drf_cached_reads.mixins import CachedViewMixin as BaseCacheViewMixin
+from drf_cached_instances.mixins import CachedViewMixin as BaseCacheViewMixin
 
 from .cache import Cache
 from .history import Changeset
