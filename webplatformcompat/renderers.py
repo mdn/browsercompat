@@ -14,18 +14,37 @@ from rest_framework_json_api.utils import snakecase
 
 
 class JsonApiRenderer(BaseJsonApiRender):
+    convert_by_name = BaseJsonApiRender.convert_by_name
+    convert_by_name.update({
+        'meta': 'add_meta',
+    })
+    dict_class = OrderedDict
     encoder_class = JSONEncoder
     wrappers = ([
-        'wrap_jsonapi_aware',
+        'wrap_view_extra',
     ] + BaseJsonApiRender.wrappers)
-    dict_class = OrderedDict
 
-    def wrap_jsonapi_aware(self, data, renderer_context):
-        jsonapi = renderer_context.get('jsonapi', {})
-        direct = jsonapi.get('direct')
-        if not jsonapi or not direct:
-            raise WrapperNotApplicable('No jsonapi in context')
-        return data
+    def add_meta(self, resource, field, field_name, request):
+        """Add metadata."""
+        data = resource[field_name]
+        return {'meta': data}
+
+    def wrap_view_extra(self, data, renderer_context):
+        """Add nested data w/o adding links to main resource."""
+        if not (data and '_view_extra' in data):
+            raise WrapperNotApplicable('Not linked results')
+
+        linked = data.pop('_view_extra')
+        data.fields.pop('_view_extra')
+        wrapper = self.wrap_default(data, renderer_context)
+        assert 'linked' not in wrapper
+
+        wrapper_linked = self.wrap_default(
+            linked, renderer_context)
+        wrapper.setdefault('links', {}).update(wrapper_linked['links'])
+        wrapper.setdefault('linked', {}).update(wrapper_linked['linked'])
+        wrapper.setdefault('meta', {}).update(wrapper_linked['meta'])
+        return wrapper
 
     def model_to_resource_type(self, model):
         if model:

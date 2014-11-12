@@ -177,7 +177,8 @@ class Cache(BaseCache):
         if not hasattr(obj, '_children_pks'):
             obj._children_pks = list(obj.children.values_list('pk', flat=True))
         if not hasattr(obj, '_support_pks'):
-            obj._support_pks = list(obj.supports.values_list('pk', flat=True))
+            obj._support_pks = sorted(
+                obj.supports.values_list('pk', flat=True))
         if not hasattr(obj, '_section_pks'):
             obj._section_pks = list(obj.sections.values_list('pk', flat=True))
 

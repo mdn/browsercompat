@@ -75,6 +75,22 @@ class TestMixin(object):
         """Convert a datetime to DRF encoded JSON"""
         return JSONEncoder().default(dt)
 
+    def history_pk(self, obj):
+        """Get the primary key of the current history instance."""
+        return obj.history.all()[0].pk
+
+    def history_pk_str(self, obj):
+        """Get the primary key of the current history as a string."""
+        return str(self.history_pk(obj))
+
+    def history_pks(self, obj):
+        """Get the primary keys of all the history instances."""
+        return obj.history.all().values_list('pk', flat=True)
+
+    def history_pks_str(self, obj):
+        """Get the primary keys of all the history instances as strings."""
+        return [str(pk) for pk in self.history_pks(obj)]
+
 
 class TestCase(TestMixin, TestCase):
     """TestCase with useful methods"""

@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
 """API Serializers"""
 
+try:
+    from collections import OrderedDict
+except ImportError:  # pragma: no cover
+    # py26 doesn't get ordered dicts
+    OrderedDict = dict
+
 from django.db.models import CharField
 from django.contrib.auth.models import User
+from drf_cached_instances.models import CachedQueryset
 from rest_framework.serializers import (
     DateField, DateTimeField, IntegerField, ModelSerializer,
     PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
 
 from . import fields
+from .cache import Cache
 from .drf_fields import (
     AutoUserField, CurrentHistoryField, HistoricalObjectField, HistoryField,
     MPTTRelationField, OptionalCharField, OptionalIntegerField,
@@ -433,3 +441,186 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
         fields = HistoricalObjectSerializer.Meta.fields + (
             'version', 'versions')
         archive_link_fields = ('browser',)
+
+
+#
+# View serializers
+#
+
+class ViewFeatureExtraSerializer(ModelSerializer):
+
+    """Linked resources and metadata for ViewFeatureSerializer."""
+
+    browsers = BrowserSerializer(source='all_browsers', many=True)
+    features = FeatureSerializer(source='child_features', many=True)
+    maturities = MaturitySerializer(source='all_maturities', many=True)
+    sections = SectionSerializer(source='all_sections', many=True)
+    specifications = SpecificationSerializer(source='all_specs', many=True)
+    supports = SupportSerializer(source='all_supports', many=True)
+    versions = VersionSerializer(source='all_versions', many=True)
+    meta = SerializerMethodField('get_meta')
+
+    def to_native(self, obj):
+        """Add addditonal data for the ViewFeatureSerializer."""
+        feature_pks = obj.get_descendants().values_list('pk', flat=True)
+        obj.child_features = list(CachedQueryset(
+            Cache(), Feature.objects.all(), feature_pks))
+
+        section_pks = set(obj.sections.values_list('pk', flat=True))
+        support_pks = set(obj.supports.values_list('pk', flat=True))
+        for feature in obj.child_features:
+            section_pks.update(feature.sections.values_list('id', flat=True))
+            support_pks.update(feature.supports.values_list('id', flat=True))
+
+        obj.all_sections = list(CachedQueryset(
+            Cache(), Section.objects.all(), sorted(section_pks)))
+        obj.all_supports = list(CachedQueryset(
+            Cache(), Support.objects.all(), sorted(support_pks)))
+
+        specification_pks = set()
+        for section in obj.all_sections:
+            specification_pks.add(section.specification.pk)
+        obj.all_specs = list(CachedQueryset(
+            Cache(), Specification.objects.all(), sorted(specification_pks)))
+
+        maturity_pks = set()
+        for specification in obj.all_specs:
+            maturity_pks.add(specification.maturity.pk)
+        obj.all_maturities = list(CachedQueryset(
+            Cache(), Maturity.objects.all(), sorted(maturity_pks)))
+
+        version_pks = set()
+        for support in obj.all_supports:
+            version_pks.add(support.version.pk)
+        obj.all_versions = list(CachedQueryset(
+            Cache(), Version.objects.all(), sorted(version_pks)))
+
+        browser_pks = set()
+        for version in obj.all_versions:
+            browser_pks.add(version.browser.pk)
+        obj.all_browsers = list(CachedQueryset(
+            Cache(), Browser.objects.all(), sorted(browser_pks)))
+
+        ret = super(ViewFeatureExtraSerializer, self).to_native(obj)
+        return ret
+
+    def significant_changes(self, obj):
+        """Determine what versions are important for support changes.
+
+        A version is important if it is the first version with support
+        information, or it changes support from the previous version.
+        """
+        # Create lookup of ID/PK -> instances
+        browsers = {}
+        for browser in obj.all_browsers:
+            # Cache version order
+            browser.version_ids = browser.versions.values_list('id', flat=True)
+            browsers[browser.id] = browser
+        versions = dict(
+            [(version.id, version) for version in obj.all_versions])
+        features = dict(
+            [(feature.id, feature) for feature in obj.child_features])
+        features[obj.id] = obj
+
+        # Create index of supported browser / version / features
+        supported = []
+        for support in obj.all_supports:
+            version = versions[support.version.pk]
+            browser = browsers[version.browser.pk]
+            version_order = browser.version_ids.index(version.id)
+            feature = features[support.feature.pk]
+            supported.append((
+                feature.id, browser.id, version_order, version.id,
+                support.id, support.support))
+        supported.sort()
+
+        # Identify significant browser / version / supports by feature
+        significant_changes = {}
+        last_f_id = None
+        last_b_id = None
+        last_support = None
+        for f_id, b_id, _, v_id, s_id, support in supported:
+            if last_f_id != f_id:
+                last_support = None
+                last_f_id = f_id
+            if last_b_id != b_id:
+                last_support = None
+                last_b_id = b_id
+
+            if last_support != support:
+                sig_feature = significant_changes.setdefault(str(f_id), {})
+                sig_browser = sig_feature.setdefault(str(b_id), [])
+                sig_browser.append(str(s_id))
+                last_support = support
+        return significant_changes
+
+    def browser_tabs(self, obj):
+        """Section and order the browser tabs.
+
+        TODO: Move this logic into the database, API
+        """
+        known_browsers = dict((
+            ('chrome', ('Desktop', 1)),
+            ('firefox', ('Desktop', 2)),
+            ('internet_explorer', ('Desktop', 3)),
+            ('opera', ('Desktop', 4)),
+            ('safari', ('Desktop', 5)),
+            ('android', ('Mobile', 6)),
+            ('chrome_for_android', ('Mobile', 7)),
+            ('chrome_mobile', ('Mobile', 8)),
+            ('firefox_mobile', ('Mobile', 9)),
+            ('ie_mobile', ('Mobile', 10)),
+            ('opera_mini', ('Mobile', 11)),
+            ('opera_mobile', ('Mobile', 12)),
+            ('safari_mobile', ('Mobile', 13)),
+            ('blackberry', ('Mobile', 14)),
+            ('firefox_os', ('Other', 15)),
+        ))
+        next_other = 16
+        sections = ['Desktop', 'Mobile', 'Other']
+        raw_tabs = dict((section, []) for section in sections)
+
+        for browser in obj.all_browsers:
+            try:
+                section, order = known_browsers[browser.slug]
+            except KeyError:
+                section, order = ('Other', next_other)
+                next_other += 1
+            raw_tabs[section].append((order, browser.id))
+
+        tabs = []
+        for section in sections:
+            browsers = raw_tabs[section]
+            if browsers:
+                browsers.sort()
+                tabs.append(OrderedDict((
+                    ('name', {'en': section}),
+                    ('browsers', [str(pk) for _, pk in browsers]),
+                )))
+        return tabs
+
+    def get_meta(self, obj):
+        """Assemble the metadata for the feature view."""
+        significant_changes = self.significant_changes(obj)
+        browser_tabs = self.browser_tabs(obj)
+        meta = OrderedDict((
+            ('compat_table', OrderedDict((
+                ('supports', significant_changes),
+                ('tabs', browser_tabs),
+            ))),))
+        return meta
+
+    class Meta:
+        model = Feature
+        fields = (
+            'browsers', 'versions', 'supports', 'maturities',
+            'specifications', 'sections', 'features', 'meta')
+
+
+class ViewFeatureSerializer(FeatureSerializer):
+    """Feature Serializer, plus related data and MDN browser compat logic"""
+
+    _view_extra = ViewFeatureExtraSerializer(source='*')
+
+    class Meta(FeatureSerializer.Meta):
+        fields = FeatureSerializer.Meta.fields + ('_view_extra',)
