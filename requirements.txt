@@ -18,7 +18,7 @@ six==1.7.3
 django-extensions==1.3.8
 
 # JSON API interfaces for Django REST Framework
-https://github.com/jwhitlock/drf-json-api/archive/v0.1c.zip
+https://github.com/jwhitlock/drf-json-api/archive/v0.1d.zip
 
 # History of changes to models
 django-simple-history==1.5.0
