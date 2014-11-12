@@ -35,6 +35,8 @@ class TestViewFeatureViewSet(APITestCase):
             name={'en': 'Specification'})
         section = self.create(Section, specification=specification)
         feature.sections = [section]
+        self.changeset.closed = True
+        self.changeset.save()
 
         url = reverse('viewfeatures-detail', kwargs={'pk': feature.pk})
         response = self.client.get(url)
@@ -349,6 +351,8 @@ class TestViewFeatureViewSet(APITestCase):
             Support, version=version2, feature=feature, support="no")
         support3 = self.create(
             Support, version=version3, feature=feature, support="yes")
+        self.changeset.closed = True
+        self.changeset.save()
 
         url = reverse('viewfeatures-detail', kwargs={'pk': feature.pk})
         response = self.client.get(url)
@@ -505,6 +509,8 @@ class TestViewFeatureViewSet(APITestCase):
             name={'en': 'The address element'},
             subpath={'en': 'sections.html#the-address-element'})
         feature_816.sections = (section_746, section_421, section_70)
+        self.changeset.closed = True
+        self.changeset.save()
 
         url = reverse('viewfeatures-detail', kwargs={'pk': feature_816.pk})
         response = self.client.get(url)

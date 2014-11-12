@@ -177,7 +177,7 @@ class HistoricalVersionViewSet(ReadOnlyModelViewSet):
 # Views
 #
 
-class ViewFeaturesViewSet(ReadOnlyModelViewSet):
+class ViewFeaturesViewSet(CachedViewMixin, ReadOnlyModelViewSet):
     model = Feature
     serializer_class = ViewFeatureSerializer
     filter_fields = ('slug',)

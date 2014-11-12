@@ -39,11 +39,11 @@ class JsonApiRenderer(BaseJsonApiRender):
         wrapper = self.wrap_default(data, renderer_context)
         assert 'linked' not in wrapper
 
-        wrapper_linked = self.wrap_default(
-            linked, renderer_context)
-        wrapper.setdefault('links', {}).update(wrapper_linked['links'])
-        wrapper.setdefault('linked', {}).update(wrapper_linked['linked'])
-        wrapper.setdefault('meta', {}).update(wrapper_linked['meta'])
+        wrapper_linked = self.wrap_default(linked, renderer_context)
+        to_transfer = ('links', 'linked', 'meta')
+        for key, value in wrapper_linked.items():
+            if key in to_transfer:
+                wrapper.setdefault(key, self.dict_class()).update(value)
         return wrapper
 
     def model_to_resource_type(self, model):

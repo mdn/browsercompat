@@ -462,12 +462,10 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
     def to_native(self, obj):
         """Add addditonal data for the ViewFeatureSerializer."""
-        feature_pks = obj.get_descendants().values_list('pk', flat=True)
-        obj.child_features = list(CachedQueryset(
-            Cache(), Feature.objects.all(), feature_pks))
+        obj.child_features = self.get_descendants(obj)
 
-        section_pks = set(obj.sections.values_list('pk', flat=True))
-        support_pks = set(obj.supports.values_list('pk', flat=True))
+        section_pks = set(obj.sections.values_list('id', flat=True))
+        support_pks = set(obj.supports.values_list('id', flat=True))
         for feature in obj.child_features:
             section_pks.update(feature.sections.values_list('id', flat=True))
             support_pks.update(feature.supports.values_list('id', flat=True))
@@ -503,6 +501,17 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
         ret = super(ViewFeatureExtraSerializer, self).to_native(obj)
         return ret
+
+    def get_descendants(self, obj):
+        """Recursively retrieve descendants."""
+        descendants = []
+        child_ids = obj.children.values_list('id', flat=True)
+        children = list(
+            CachedQueryset(Cache(), Feature.objects.all(), child_ids))
+        for child in children:
+            descendants.append(child)
+            descendants.extend(self.get_descendants(child))
+        return descendants
 
     def significant_changes(self, obj):
         """Determine what versions are important for support changes.
