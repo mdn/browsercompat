@@ -67,7 +67,6 @@ class TestViewFeatureViewSet(APITestCase):
                     "name": {"en": "Browser"},
                     "note": None,
                     "links": {
-                        "versions": [str(version.id)],
                         "history_current": self.history_pk_str(browser),
                         "history": self.history_pks_str(browser),
                     }
@@ -78,7 +77,6 @@ class TestViewFeatureViewSet(APITestCase):
                     "slug": "maturity",
                     "name": {"en": "Maturity"},
                     "links": {
-                        "specifications": [str(specification.id)],
                         "history_current": self.history_pk_str(maturity),
                         "history": self.history_pks_str(maturity),
                     }
@@ -91,7 +89,6 @@ class TestViewFeatureViewSet(APITestCase):
                     "note": None,
                     "links": {
                         "specification": str(specification.id),
-                        "features": [str(feature.id)],
                         "history_current": self.history_pk_str(section),
                         "history": self.history_pks_str(section),
                     }
@@ -103,7 +100,6 @@ class TestViewFeatureViewSet(APITestCase):
                     "name": {"en": "Specification"},
                     "uri": None,
                     "links": {
-                        "sections": [str(section.id)],
                         "maturity": str(maturity.id),
                         "history_current": self.history_pk_str(specification),
                         "history": self.history_pks_str(specification),
@@ -139,7 +135,6 @@ class TestViewFeatureViewSet(APITestCase):
                     "order": 0,
                     "links": {
                         "browser": str(browser.id),
-                        "supports": [str(support.id)],
                         "history_current": self.history_pk_str(version),
                         "history": self.history_pks_str(version),
                     }
@@ -157,12 +152,6 @@ class TestViewFeatureViewSet(APITestCase):
                         self.baseUrl + "/api/v1/historical_browsers/"
                         "{browsers.history_current}"),
                     "type": "historical_browsers"
-                },
-                "browsers.versions": {
-                    "href": (
-                        self.baseUrl + "/api/v1/versions/"
-                        "{browsers.versions}"),
-                    "type": "versions"
                 },
                 "features.children": {
                     "href": (
@@ -212,18 +201,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "{maturities.history_current}"),
                     "type": "historical_maturities"
                 },
-                "maturities.specifications": {
-                    "href": (
-                        self.baseUrl + "/api/v1/specifications/"
-                        "{maturities.specifications}"),
-                    "type": "specifications"
-                },
-                "sections.features": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{sections.features}"),
-                    "type": "features"
-                },
                 "sections.history": {
                     "href": (
                         self.baseUrl + "/api/v1/historical_sections/"
@@ -259,12 +236,6 @@ class TestViewFeatureViewSet(APITestCase):
                         self.baseUrl + "/api/v1/maturities/"
                         "{specifications.maturity}"),
                     "type": "maturities"
-                },
-                "specifications.sections": {
-                    "href": (
-                        self.baseUrl + "/api/v1/sections/"
-                        "{specifications.sections}"),
-                    "type": "sections"
                 },
                 "supports.feature": {
                     "href": (
@@ -307,12 +278,6 @@ class TestViewFeatureViewSet(APITestCase):
                         self.baseUrl + "/api/v1/historical_versions/"
                         "{versions.history_current}"),
                     "type": "historical_versions"
-                },
-                "versions.supports": {
-                    "href": (
-                        self.baseUrl + "/api/v1/supports/"
-                        "{versions.supports}"),
-                    "type": "supports"
                 },
             },
             "meta": {
@@ -548,7 +513,6 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         "note": None,
                         "links": {
-                            "versions": [str(version_chrome_758.id)],
                             "history_current": self.history_pk_str(
                                 browser_chrome_1),
                             "history": self.history_pks_str(browser_chrome_1),
@@ -564,7 +528,6 @@ class TestViewFeatureViewSet(APITestCase):
                             "en": "Uses Gecko for its web browser engine."
                         },
                         "links": {
-                            "versions": [str(version_firefox_759.id)],
                             "history_current": self.history_pk_str(
                                 browser_firefox_2),
                             "history": self.history_pks_str(browser_firefox_2),
@@ -578,7 +541,6 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         "note": None,
                         "links": {
-                            "versions": [str(version_ie_760.id)],
                             "history_current": self.history_pk_str(
                                 browser_ie_3),
                             "history": self.history_pks_str(browser_ie_3),
@@ -592,7 +554,6 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         "note": None,
                         "links": {
-                            "versions": [str(version_opera_761.id)],
                             "history_current": self.history_pk_str(
                                 browser_opera_4),
                             "history": self.history_pks_str(browser_opera_4),
@@ -608,7 +569,6 @@ class TestViewFeatureViewSet(APITestCase):
                             "en": "Uses Webkit for its web browser engine."
                         },
                         "links": {
-                            "versions": [str(version_safari_762.id)],
                             "history_current": self.history_pk_str(
                                 browser_safari_5),
                             "history": self.history_pks_str(browser_safari_5),
@@ -622,7 +582,6 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         "note": None,
                         "links": {
-                            "versions": [str(version_android_763.id)],
                             "history_current": self.history_pk_str(
                                 browser_android_6),
                             "history": self.history_pks_str(browser_android_6),
@@ -638,7 +597,6 @@ class TestViewFeatureViewSet(APITestCase):
                             "en": "Uses Gecko for its web browser engine."
                         },
                         "links": {
-                            "versions": [str(version_ffmobile_764.id)],
                             "history_current": self.history_pk_str(
                                 browser_ffmobile_7),
                             "history": self.history_pks_str(
@@ -653,7 +611,6 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         "note": None,
                         "links": {
-                            "versions": [str(version_iephone_765.id)],
                             "history_current": self.history_pk_str(
                                 browser_iephone_8),
                             "history": self.history_pks_str(browser_iephone_8),
@@ -667,7 +624,6 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         "note": None,
                         "links": {
-                            "versions": [str(version_operamobile_766.id)],
                             "history_current": self.history_pk_str(
                                 browser_operamobile_9),
                             "history": self.history_pks_str(
@@ -682,7 +638,6 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         "note": None,
                         "links": {
-                            "versions": [str(version_safarimobile_767.id)],
                             "history_current": self.history_pk_str(
                                 browser_safarimobile_10),
                             "history": self.history_pks_str(
@@ -697,7 +652,6 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         "note": None,
                         "links": {
-                            "versions": [str(version_operamini_768.id)],
                             "history_current": self.history_pk_str(
                                 browser_operamini_11),
                             "history": self.history_pks_str(
@@ -746,7 +700,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "slug": "Living",
                         "name": {"en": "Living Standard"},
                         "links": {
-                            "specifications": [str(spec_273.id)],
                             "history_current": self.history_pk_str(mat_23),
                             "history": self.history_pks_str(mat_23),
                         }
@@ -759,7 +712,6 @@ class TestViewFeatureViewSet(APITestCase):
                             "ja": "\u52e7\u544a\u6848"
                         },
                         "links": {
-                            "specifications": [str(spec_114.id)],
                             "history_current": self.history_pk_str(mat_49),
                             "history": self.history_pks_str(mat_49),
                         }
@@ -772,7 +724,6 @@ class TestViewFeatureViewSet(APITestCase):
                             "jp": "\u52e7\u544a"
                         },
                         "links": {
-                            "specifications": [str(spec_576.id)],
                             "history_current": self.history_pk_str(mat_52),
                             "history": self.history_pks_str(mat_52),
                         }
@@ -787,7 +738,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "specification": str(spec_576.id),
-                            "features": [str(feature_816.id)],
                             "history_current": self.history_pk_str(section_70),
                             "history": self.history_pks_str(section_70),
                         }
@@ -800,7 +750,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "specification": str(spec_114.id),
-                            "features": [str(feature_816.id)],
                             "history_current": self.history_pk_str(
                                 section_421),
                             "history": self.history_pks_str(section_421),
@@ -814,7 +763,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "specification": str(spec_273.id),
-                            "features": [str(feature_816.pk)],
                             "history_current": self.history_pk_str(
                                 section_746),
                             "history": self.history_pks_str(section_746),
@@ -833,7 +781,6 @@ class TestViewFeatureViewSet(APITestCase):
                             "en": "http://www.w3.org/TR/html5/"
                         },
                         "links": {
-                            "sections": [str(section_421.id)],
                             "maturity": str(mat_49.id),
                             "history_current": self.history_pk_str(spec_114),
                             "history": self.history_pks_str(spec_114),
@@ -852,7 +799,6 @@ class TestViewFeatureViewSet(APITestCase):
                                 "current-work/multipage/"),
                         },
                         "links": {
-                            "sections": [str(section_746.id)],
                             "maturity": str(mat_23.id),
                             "history_current": self.history_pk_str(spec_273),
                             "history": self.history_pks_str(spec_273),
@@ -869,7 +815,6 @@ class TestViewFeatureViewSet(APITestCase):
                             "en": "http://www.w3.org/TR/html401/"
                         },
                         "links": {
-                            "sections": [str(section_70.id)],
                             "maturity": str(mat_52.id),
                             "history_current": self.history_pk_str(spec_576),
                             "history": self.history_pks_str(spec_576),
@@ -1121,7 +1066,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_chrome_1.id),
-                            "supports": [str(support_chrome_358.id)],
                             "history_current": self.history_pk_str(
                                 version_chrome_758),
                             "history": self.history_pks_str(
@@ -1139,7 +1083,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_firefox_2.id),
-                            "supports": [str(support_firefox_359.id)],
                             "history_current": self.history_pk_str(
                                 version_firefox_759),
                             "history": self.history_pks_str(
@@ -1157,7 +1100,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_ie_3.id),
-                            "supports": [str(support_ie_360.id)],
                             "history_current": self.history_pk_str(
                                 version_ie_760),
                             "history": self.history_pks_str(
@@ -1175,7 +1117,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_opera_4.id),
-                            "supports": [str(support_opera_361.id)],
                             "history_current": self.history_pk_str(
                                 version_opera_761),
                             "history": self.history_pks_str(
@@ -1193,7 +1134,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_safari_5.id),
-                            "supports": [str(support_safari_362.id)],
                             "history_current": self.history_pk_str(
                                 version_safari_762),
                             "history": self.history_pks_str(
@@ -1211,7 +1151,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_android_6.id),
-                            "supports": [str(support_android_363.id)],
                             "history_current": self.history_pk_str(
                                 version_android_763),
                             "history": self.history_pks_str(
@@ -1229,7 +1168,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_ffmobile_7.id),
-                            "supports": [str(support_ffmobile_364.id)],
                             "history_current": self.history_pk_str(
                                 version_ffmobile_764),
                             "history": self.history_pks_str(
@@ -1247,7 +1185,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_iephone_8.id),
-                            "supports": [str(support_iephone_365.id)],
                             "history_current": self.history_pk_str(
                                 version_iephone_765),
                             "history": self.history_pks_str(
@@ -1265,7 +1202,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_operamobile_9.id),
-                            "supports": [str(support_operamobile_366.id)],
                             "history_current": self.history_pk_str(
                                 version_operamobile_766),
                             "history": self.history_pks_str(
@@ -1283,7 +1219,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_safarimobile_10.id),
-                            "supports": [str(support_safarimobile_367.id)],
                             "history_current": self.history_pk_str(
                                 version_safarimobile_767),
                             "history": self.history_pks_str(
@@ -1301,7 +1236,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "order": 0,
                         "links": {
                             "browser": str(browser_operamini_11.id),
-                            "supports": [str(support_operamini_368.id)],
                             "history_current": self.history_pk_str(
                                 version_operamini_768),
                             "history": self.history_pks_str(
@@ -1322,12 +1256,6 @@ class TestViewFeatureViewSet(APITestCase):
                         self.baseUrl + "/api/v1/historical_browsers/"
                         "{browsers.history_current}"),
                     "type": "historical_browsers"
-                },
-                "browsers.versions": {
-                    "href": (
-                        self.baseUrl + "/api/v1/versions/"
-                        "{browsers.versions}"),
-                    "type": "versions"
                 },
                 "features.children": {
                     "href": (
@@ -1377,18 +1305,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "{maturities.history_current}"),
                     "type": "historical_maturities"
                 },
-                "maturities.specifications": {
-                    "href": (
-                        self.baseUrl + "/api/v1/specifications/"
-                        "{maturities.specifications}"),
-                    "type": "specifications"
-                },
-                "sections.features": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{sections.features}"),
-                    "type": "features"
-                },
                 "sections.history": {
                     "href": (
                         self.baseUrl + "/api/v1/historical_sections/"
@@ -1424,12 +1340,6 @@ class TestViewFeatureViewSet(APITestCase):
                         self.baseUrl + "/api/v1/maturities/"
                         "{specifications.maturity}"),
                     "type": "maturities"
-                },
-                "specifications.sections": {
-                    "href": (
-                        self.baseUrl + "/api/v1/sections/"
-                        "{specifications.sections}"),
-                    "type": "sections"
                 },
                 "supports.feature": {
                     "href": (
@@ -1472,12 +1382,6 @@ class TestViewFeatureViewSet(APITestCase):
                         self.baseUrl + "/api/v1/historical_versions/"
                         "{versions.history_current}"),
                     "type": "historical_versions"
-                },
-                "versions.supports": {
-                    "href": (
-                        self.baseUrl + "/api/v1/supports/"
-                        "{versions.supports}"),
-                    "type": "supports"
                 },
             },
             "meta": {

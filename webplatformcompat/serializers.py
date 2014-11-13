@@ -451,13 +451,43 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
     """Linked resources and metadata for ViewFeatureSerializer."""
 
-    browsers = BrowserSerializer(source='all_browsers', many=True)
+    class ViewBrowserSerializer(BrowserSerializer):
+        class Meta(BrowserSerializer.Meta):
+            fields = [
+                x for x in BrowserSerializer.Meta.fields if x != 'versions']
+
+    class ViewMaturitySerializer(MaturitySerializer):
+        class Meta(MaturitySerializer.Meta):
+            fields = [
+                x for x in MaturitySerializer.Meta.fields
+                if x != 'specifications']
+
+    class ViewSectionSerializer(SectionSerializer):
+        class Meta(SectionSerializer.Meta):
+            fields = [
+                x for x in SectionSerializer.Meta.fields if x != 'features']
+
+    class ViewSpecificationSerializer(SpecificationSerializer):
+        class Meta(SpecificationSerializer.Meta):
+            fields = [
+                x for x in SpecificationSerializer.Meta.fields
+                if x != 'sections']
+
+    class ViewVersionSerializer(VersionSerializer):
+        class Meta(VersionSerializer.Meta):
+            fields = [
+                x for x in VersionSerializer.Meta.fields if x != 'supports']
+            read_only_fields = [
+                x for x in VersionSerializer.Meta.read_only_fields
+                if x != 'supports']
+
+    browsers = ViewBrowserSerializer(source='all_browsers', many=True)
     features = FeatureSerializer(source='child_features', many=True)
-    maturities = MaturitySerializer(source='all_maturities', many=True)
-    sections = SectionSerializer(source='all_sections', many=True)
-    specifications = SpecificationSerializer(source='all_specs', many=True)
+    maturities = ViewMaturitySerializer(source='all_maturities', many=True)
+    sections = ViewSectionSerializer(source='all_sections', many=True)
+    specifications = ViewSpecificationSerializer(source='all_specs', many=True)
     supports = SupportSerializer(source='all_supports', many=True)
-    versions = VersionSerializer(source='all_versions', many=True)
+    versions = ViewVersionSerializer(source='all_versions', many=True)
     meta = SerializerMethodField('get_meta')
 
     def to_native(self, obj):
