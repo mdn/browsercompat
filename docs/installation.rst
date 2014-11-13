@@ -27,7 +27,7 @@ Load Data
 ---------
 To load sample data:
 
-1. Run w/ instance cache (``USE_INSTANCE_CACHE=0 ./manage.py runserver``)
+1. Run without instance cache (``USE_DRF_INSTANCE_CACHE=0 ./manage.py runserver``)
 2. Load subset of webplatform_ data (``tools/load_webcompat_data.py``) or full
    set of data (``tools/load_webcompat.py --all-data``)
 3. Load specification data (``tools/load_spec_data.py``)
