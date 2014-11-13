@@ -31,7 +31,7 @@ from .serializers import (
     HistoricalMaturitySerializer, HistoricalSectionSerializer,
     HistoricalSpecificationSerializer, HistoricalSupportSerializer,
     HistoricalVersionSerializer,
-    ViewFeatureSerializer)
+    ViewFeatureListSerializer, ViewFeatureSerializer)
 
 
 #
@@ -181,3 +181,10 @@ class ViewFeaturesViewSet(CachedViewMixin, ReadOnlyModelViewSet):
     model = Feature
     serializer_class = ViewFeatureSerializer
     filter_fields = ('slug',)
+
+    def get_serializer_class(self):
+        """Return the list serializer when needed."""
+        if self.action == 'list':
+            return ViewFeatureListSerializer
+        else:
+            return super(ViewFeaturesViewSet, self).get_serializer_class()

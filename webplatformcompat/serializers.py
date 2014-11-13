@@ -10,6 +10,7 @@ except ImportError:  # pragma: no cover
 from django.db.models import CharField
 from django.contrib.auth.models import User
 from drf_cached_instances.models import CachedQueryset
+from rest_framework.reverse import reverse
 from rest_framework.serializers import (
     DateField, DateTimeField, IntegerField, ModelSerializer,
     PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
@@ -446,6 +447,22 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
 #
 # View serializers
 #
+
+class ViewFeatureListSerializer(ModelSerializer):
+
+    url = SerializerMethodField('get_url')
+
+    def get_url(self, obj):
+        return reverse(
+            'viewfeatures-detail', kwargs={'pk': obj.id},
+            request=self.context['request'])
+
+    class Meta:
+        model = Feature
+        fields = (
+            'url', 'id', 'slug', 'mdn_path', 'experimental', 'standardized',
+            'stable', 'obsolete', 'name')
+
 
 class ViewFeatureExtraSerializer(ModelSerializer):
 

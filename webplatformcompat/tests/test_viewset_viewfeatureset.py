@@ -18,9 +18,12 @@ class TestViewFeatureViewSet(APITestCase):
     """Test /view_features/<feature_id>."""
 
     def test_get_list(self):
+        feature = self.create(Feature, slug='feature')
         url = reverse('viewfeatures-list')
         response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
+        detail_url = self.reverse('viewfeatures-detail', pk=feature.pk)
+        self.assertContains(response, detail_url)
 
     def test_minimal(self):
         """Get a minimal but complete viewfeature."""
