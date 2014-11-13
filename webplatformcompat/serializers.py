@@ -8,7 +8,9 @@ except ImportError:  # pragma: no cover
     OrderedDict = dict
 
 from django.db.models import CharField
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from drf_cached_instances.models import CachedQueryset
 from rest_framework.reverse import reverse
 from rest_framework.serializers import (
@@ -508,9 +510,34 @@ class ViewFeatureExtraSerializer(ModelSerializer):
     meta = SerializerMethodField('get_meta')
 
     def to_native(self, obj):
-        """Add addditonal data for the ViewFeatureSerializer."""
-        obj.child_features = self.get_descendants(obj)
+        """Add addditonal data for the ViewFeatureSerializer.
 
+        For most features, all the related data is cachable, and no database
+        reads are required with a warm cache.
+
+        For some features, such as the root node for CSS, the subtree is huge,
+        and the descendant feature PKs won't fit in the cache.  In these
+        cases, a couple of database reads are required to get the
+        descendant feature PKs, which are then paginated to reduce the huge
+        amount of related data.
+        """
+        # Load the paginated descendant features
+        page = self.context['request'].GET.get('page', 1)
+        per_page = settings.PAGINATE_VIEW_FEATURE
+        if obj.descendant_count <= per_page:
+            descendant_pks = obj.descendants.values_list('id', flat=True)
+        else:
+            # Load the real object to get the full list of descendants
+            real_obj = Feature.objects.get(id=obj.id)
+            descendant_pks = real_obj.get_descendants().values_list(
+                'pk', flat=True)
+        descendants = CachedQueryset(
+            Cache(), Feature.objects.all(), descendant_pks)
+        obj.paginated_child_features = Paginator(descendants, per_page)
+        obj.page_child_features = obj.paginated_child_features.page(page)
+        obj.child_features = obj.page_child_features.object_list
+
+        # Load the remaining related instances
         section_pks = set(obj.sections.values_list('id', flat=True))
         support_pks = set(obj.supports.values_list('id', flat=True))
         for feature in obj.child_features:
@@ -548,17 +575,6 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
         ret = super(ViewFeatureExtraSerializer, self).to_native(obj)
         return ret
-
-    def get_descendants(self, obj):
-        """Recursively retrieve descendants."""
-        descendants = []
-        child_ids = obj.children.values_list('id', flat=True)
-        children = list(
-            CachedQueryset(Cache(), Feature.objects.all(), child_ids))
-        for child in children:
-            descendants.append(child)
-            descendants.extend(self.get_descendants(child))
-        return descendants
 
     def significant_changes(self, obj):
         """Determine what versions are important for support changes.
@@ -655,14 +671,36 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 )))
         return tabs
 
+    def pagination(self, obj):
+        """Determine pagination for large feature trees."""
+        pagination = {
+            'previous': None,
+            'next': None,
+            'count': obj.descendant_count
+        }
+        url = reverse(
+            'viewfeatures-detail', kwargs={'pk': obj.id},
+            request=self.context['request'])
+        if obj.page_child_features.has_previous():
+            pagination['previous'] = (
+                url + '?page=' +
+                str(obj.page_child_features.previous_page_number()))
+        if obj.page_child_features.has_next():
+            pagination['next'] = (
+                url + '?page=' +
+                str(obj.page_child_features.next_page_number()))
+        return {'linked.features': pagination}
+
     def get_meta(self, obj):
         """Assemble the metadata for the feature view."""
         significant_changes = self.significant_changes(obj)
         browser_tabs = self.browser_tabs(obj)
+        pagination = self.pagination(obj)
         meta = OrderedDict((
             ('compat_table', OrderedDict((
                 ('supports', significant_changes),
                 ('tabs', browser_tabs),
+                ('pagination', pagination),
             ))),))
         return meta
 

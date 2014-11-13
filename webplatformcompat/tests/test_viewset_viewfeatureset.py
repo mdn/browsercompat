@@ -6,6 +6,7 @@ from datetime import date
 from json import loads
 
 from django.core.urlresolvers import reverse
+from django.test.utils import override_settings
 
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
@@ -295,7 +296,14 @@ class TestViewFeatureViewSet(APITestCase):
                         str(feature.pk): {
                             str(browser.pk): [str(support.pk)],
                         }
-                    }
+                    },
+                    "pagination": {
+                        "linked.features": {
+                            "previous": None,
+                            "next": None,
+                            "count": 0,
+                        },
+                    },
                 }
             }
         }
@@ -332,6 +340,40 @@ class TestViewFeatureViewSet(APITestCase):
         }
         actual_supports = actual_json['meta']['compat_table']['supports']
         self.assertDataEqual(expected_supports, actual_supports)
+
+    @override_settings(PAGINATE_VIEW_FEATURE=2)
+    def test_large_feature_tree(self):
+        feature = self.create(Feature, slug='feature')
+        self.create(Feature, slug='child1', parent=feature)
+        self.create(Feature, slug='child2', parent=feature)
+        self.create(Feature, slug='child3', parent=feature)
+        self.changeset.closed = True
+        self.changeset.save()
+
+        url = reverse('viewfeatures-detail', kwargs={'pk': feature.pk})
+        response = self.client.get(url)
+        actual_json = loads(response.content.decode('utf-8'))
+        expected_pagination = {
+            'linked.features': {
+                'previous': None,
+                'next': self.baseUrl + url + '?page=2',
+                'count': 3,
+            }
+        }
+        actual_pagination = actual_json['meta']['compat_table']['pagination']
+        self.assertDataEqual(expected_pagination, actual_pagination)
+
+        response = self.client.get(url + '?page=2')
+        actual_json = loads(response.content.decode('utf-8'))
+        expected_pagination = {
+            'linked.features': {
+                'previous': self.baseUrl + url + '?page=1',
+                'next': None,
+                'count': 3,
+            }
+        }
+        actual_pagination = actual_json['meta']['compat_table']['pagination']
+        self.assertDataEqual(expected_pagination, actual_pagination)
 
     def test_get_documented(self):
         """Get the viewfeature with the hand-coded values for docs.
@@ -1441,7 +1483,14 @@ class TestViewFeatureViewSet(APITestCase):
                             str(browser_safarimobile_10.pk): [
                                 str(support_safarimobile_367.pk)],
                         }
-                    }
+                    },
+                    "pagination": {
+                        "linked.features": {
+                            "previous": None,
+                            "next": None,
+                            "count": 1,
+                        },
+                    },
                 }
             }
         }

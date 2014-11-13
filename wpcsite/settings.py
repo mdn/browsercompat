@@ -181,6 +181,8 @@ else:
     }
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
+# When the number of descendants means to paginate a view_feature
+PAGINATE_VIEW_FEATURE = 50
 
 #
 # 3rd Party Libraries
