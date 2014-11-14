@@ -441,6 +441,8 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
     versionCount: Browse.Properties.IdCounter('supports'),
     versionCountText: Browse.Properties.IdCounterText('versionCount', 'Version'),
+    childCount: Browse.Properties.IdCounter('children'),
+    childCountText: Browse.Properties.IdCounterText('childCount', 'Child', 'Children'),
 });
 
 Browse.SupportController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
