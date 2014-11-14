@@ -274,7 +274,7 @@
 
 <script type="text/x-handlebars" data-template-name="feature">
 {% raw %}
-<h2>Feature {{nameDefaultHTML}}</h2>
+<h2>Feature {{{nameDefaultHTML}}}</h2>
 <p><em>back to {{#link-to 'features'}}Features{{/link-to}}, {{#link-to 'index'}}Index{{/link-to}}</em></p>
 <dl>
   <dt>Id</dt>
@@ -294,13 +294,13 @@
   <dt>MDN path</dt>
   <dd>{{{mdnFullLinkHTML}}}</dd>
   <dt>Parent Feature</dt>
-  <dd>{{#if parent}}{{#with parent controller='feature'}}{{#link-to 'feature' id}}{{nameDefaultHTML}}{{/link-to}}{{/with}}{{else}}<em>No Parent</em>{{/if}}</dd>
+  <dd>{{#if parent}}{{#with parent controller='feature'}}{{#link-to 'feature' id}}{{{nameDefaultHTML}}}{{/link-to}}{{/with}}{{else}}<em>No Parent</em>{{/if}}</dd>
   <dt>Child Features</dt>
   <dd>
     {{#if childCount}}
       {{#if children}}
       <ul>
-        {{#each children itemController='feature'}}<li>{{#link-to 'feature' id}}{{nameDefaultHTML}}{{/link-to}}</li>{{/each}}
+        {{#each children itemController='feature'}}<li>{{#link-to 'feature' id}}{{{nameDefaultHTML}}}{{/link-to}}</li>{{/each}}
       </ul>
       {{else}}
       <em>Loading {{childCountText}}...</em>

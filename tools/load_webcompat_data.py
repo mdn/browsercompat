@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+from cgi import escape
 import getpass
 import json
 import logging
@@ -205,7 +206,7 @@ def parse_compat_data_item(key, item, parsed_data):
                             '-'.join(feature_id),
                             parsed_data['feature_slugs']),
                         'mdn_path': mdn_path,
-                        'name': {'en': feature},
+                        'name': {'en': escape(feature)},
                         'parent_id': parent_feature_id,
                     }
 
@@ -247,13 +248,14 @@ def parse_compat_data_item(key, item, parsed_data):
                             if len(raw_support) > 1:
                                 notes.append(
                                     'Original support string is "%s"'
-                                    % raw_support)
+                                    % escape(raw_support))
                             for item in version_note.items():
                                 notes.append('%s: %s' % item)
 
                             data = {'support': support}
                             if notes:
-                                data['note'] = {'en': '<br>'.join(notes)}
+                                joined = '<br>'.join(escape(n) for n in notes)
+                                data['note'] = {'en': joined}
                             if prefix:
                                 data['prefix'] = prefix
                                 data['prefix_mandatory'] = True
