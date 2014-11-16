@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 """API Serializers"""
 
-try:
-    from collections import OrderedDict
-except ImportError:  # pragma: no cover
-    # py26 doesn't get ordered dicts
-    OrderedDict = dict
+from collections import OrderedDict
 
 from django.db.models import CharField
 from django.conf import settings

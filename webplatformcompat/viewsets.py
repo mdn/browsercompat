@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 
-try:  # pragma: no cover
-    from collections import OrderedDict
-except ImportError:  # pragma: no cover
-    # py26 doesn't have OrderedDict
-    OrderedDict = dict
-assert OrderedDict
-
 from django.contrib.auth.models import User
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.parsers import FormParser, MultiPartParser
