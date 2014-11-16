@@ -22,7 +22,7 @@ flake8-docstrings==0.2.1
 check-manifest==0.21
 
 # Package QA
-pyroma==1.6
+pyroma==1.7
 
 # For ./manage.py runserver_plus
 Werkzeug==0.9.6
