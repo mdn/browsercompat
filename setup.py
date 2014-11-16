@@ -38,7 +38,7 @@ setup(
     install_requires=[
     ],
     test_suite='wpcsite.runtests.runtests',
-    license="BSD",
+    license="MPL 2.0",
     zip_safe=False,
     keywords='web-platform-compat',
     classifiers=[
