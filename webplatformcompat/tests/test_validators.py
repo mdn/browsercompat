@@ -8,6 +8,9 @@ from webplatformcompat.validators import LanguageDictValidator
 
 
 class SharedLanguageDictValidatorTests(object):
+    def setUp(self):
+        self.validator = LanguageDictValidator(
+            allow_canonical=self.allow_canonical)
 
     def test_success(self):
         self.validator({'en': 'English'})
@@ -30,11 +33,21 @@ class SharedLanguageDictValidatorTests(object):
         val = {'en': 'English', 'zxx': 'canonical'}
         self.assertRaises(ValidationError, self.validator, val)
 
+    def test_eq(self):
+        same = LanguageDictValidator(allow_canonical=self.allow_canonical)
+        self.assertTrue(same == self.validator)
+        self.assertFalse(same != self.validator)
+
+        diff = LanguageDictValidator(allow_canonical=not self.allow_canonical)
+        self.assertFalse(diff == self.validator)
+        self.assertTrue(diff != self.validator)
+
+        self.assertFalse(1 == self.validator)
+        self.assertTrue(1 != self.validator)
+
 
 class TestLanguageDictValidator(SharedLanguageDictValidatorTests, TestCase):
-
-    def setUp(self):
-        self.validator = LanguageDictValidator()
+    allow_canonical = False
 
     def test_zxx_fails(self):
         val = {'zxx': 'display'}
@@ -42,9 +55,7 @@ class TestLanguageDictValidator(SharedLanguageDictValidatorTests, TestCase):
 
 
 class TestCanonicalDictValidator(SharedLanguageDictValidatorTests, TestCase):
-
-    def setUp(self):
-        self.validator = LanguageDictValidator(allow_canonical=True)
+    allow_canonical = True
 
     def test_zxx_success(self):
         self.validator({'zxx': 'display'})

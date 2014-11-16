@@ -1,8 +1,10 @@
 from django.core.exceptions import ValidationError
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import string_types
 
 
+@deconstructible
 class LanguageDictValidator(object):
     """Check for valid language dictionary"""
 
@@ -28,3 +30,17 @@ class LanguageDictValidator(object):
                     _('For language "%(lang)s, text "%(text)s" is not a'
                       ' string.'),
                     params={'lang': language_code, 'text': text})
+
+    def __eq__(self, other):
+        """Check equivalency to another LanguageDictValidator.
+
+        Required for migration detection.
+        """
+        if isinstance(other, self.__class__):
+            return self.allow_canonical == other.allow_canonical
+        else:
+            return False
+
+    def __ne__(self, other):
+        """Check non-equivalency to another LanguageDictValidator."""
+        return not self.__eq__(other)
