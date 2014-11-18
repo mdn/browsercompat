@@ -41,12 +41,6 @@ class Feature(MPTTModel):
     slug = models.SlugField(
         help_text="Unique, human-friendly slug.",
         unique=True)
-    mdn_path = models.CharField(
-        help_text=(
-            "The path to the page on MDN that this feature was first"
-            " scraped from.  May be used in UX or for debugging import"
-            " scripts."),
-        blank=True, max_length=255)
     mdn_uri = TranslatedField(
         help_text='The URI of the MDN page that documents this feature.',
         blank=True, null=True)
