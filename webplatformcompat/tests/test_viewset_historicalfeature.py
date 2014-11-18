@@ -35,7 +35,7 @@ class TestHistoricalFeatureViewset(APITestCase):
             'features': {
                 'id': str(feature.id),
                 'slug': 'the_feature',
-                'mdn_path': None,
+                'mdn_uri': None,
                 'experimental': False,
                 'standardized': True,
                 'stable': True,
@@ -57,7 +57,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                 'features': {
                     'id': str(feature.id),
                     'slug': 'the_feature',
-                    'mdn_path': None,
+                    'mdn_uri': None,
                     'experimental': False,
                     'standardized': True,
                     'stable': True,
@@ -118,7 +118,7 @@ class TestHistoricalFeatureViewset(APITestCase):
             'features': {
                 'id': str(feature.id),
                 'slug': 'the_feature',
-                'mdn_path': None,
+                'mdn_uri': None,
                 'experimental': False,
                 'standardized': True,
                 'stable': True,
@@ -156,7 +156,7 @@ class TestHistoricalFeatureViewset(APITestCase):
                 'features': {
                     'id': str(feature.pk),
                     'slug': 'a-feature',
-                    'mdn_path': None,
+                    'mdn_uri': None,
                     'experimental': False,
                     'standardized': True,
                     'stable': True,

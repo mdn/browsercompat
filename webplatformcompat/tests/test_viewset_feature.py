@@ -22,7 +22,7 @@ class TestFeatureViewSet(APITestCase):
         expected_data = {
             'id': feature.id,
             'slug': '',
-            'mdn_path': None,
+            'mdn_uri': None,
             'experimental': False,
             'standardized': True,
             'stable': True,
@@ -41,7 +41,7 @@ class TestFeatureViewSet(APITestCase):
             "features": {
                 "id": str(feature.id),
                 "slug": "",
-                "mdn_path": None,
+                "mdn_uri": None,
                 "experimental": False,
                 "standardized": True,
                 "stable": True,
@@ -98,7 +98,9 @@ class TestFeatureViewSet(APITestCase):
         parent = self.create(Feature, slug='html-element')
         feature = self.create(
             Feature, slug='html-element-input', name={'zxx': 'input'},
-            mdn_path="/en-US/docs/Web/HTML/Element/input",
+            mdn_uri={'en': (
+                "https://developer.mozilla.org/"
+                "en-US/docs/Web/HTML/Element/input")},
             experimental=True, standardized=False, stable=False, obsolete=True,
             parent=parent)
         url = reverse('feature-detail', kwargs={'pk': feature.pk})
@@ -109,7 +111,10 @@ class TestFeatureViewSet(APITestCase):
         expected_data = {
             'id': feature.id,
             'slug': 'html-element-input',
-            'mdn_path': "/en-US/docs/Web/HTML/Element/input",
+            'mdn_uri': {
+                "en": (
+                    "https://developer.mozilla.org/"
+                    "en-US/docs/Web/HTML/Element/input")},
             'experimental': True,
             'standardized': False,
             'stable': False,
@@ -128,7 +133,10 @@ class TestFeatureViewSet(APITestCase):
             "features": {
                 "id": str(feature.id),
                 "slug": "html-element-input",
-                "mdn_path": "/en-US/docs/Web/HTML/Element/input",
+                "mdn_uri": {
+                    "en": (
+                        "https://developer.mozilla.org/"
+                        "en-US/docs/Web/HTML/Element/input")},
                 "experimental": True,
                 "standardized": False,
                 "stable": False,
@@ -197,7 +205,7 @@ class TestFeatureViewSet(APITestCase):
             'results': [{
                 'id': feature.id,
                 'slug': 'feature',
-                'mdn_path': None,
+                'mdn_uri': None,
                 'experimental': False,
                 'standardized': True,
                 'stable': True,
@@ -229,7 +237,7 @@ class TestFeatureViewSet(APITestCase):
             'results': [{
                 'id': feature.id,
                 'slug': 'feature',
-                'mdn_path': None,
+                'mdn_uri': None,
                 'experimental': False,
                 'standardized': True,
                 'stable': True,
@@ -262,7 +270,7 @@ class TestFeatureViewSet(APITestCase):
             'results': [{
                 'id': parent.id,
                 'slug': 'parent',
-                'mdn_path': None,
+                'mdn_uri': None,
                 'experimental': False,
                 'standardized': True,
                 'stable': True,
@@ -277,7 +285,7 @@ class TestFeatureViewSet(APITestCase):
             }, {
                 'id': other.id,
                 'slug': 'other',
-                'mdn_path': None,
+                'mdn_uri': None,
                 'experimental': False,
                 'standardized': True,
                 'stable': True,

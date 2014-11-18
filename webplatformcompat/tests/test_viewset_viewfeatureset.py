@@ -48,7 +48,7 @@ class TestViewFeatureViewSet(APITestCase):
         expected_json = {
             "features": {
                 "id": str(feature.id),
-                "mdn_path": None,
+                "mdn_uri": None,
                 "slug": "feature",
                 "experimental": False,
                 "standardized": True,
@@ -384,7 +384,9 @@ class TestViewFeatureViewSet(APITestCase):
         feature_parent_800 = self.create(Feature, slug='html')
         feature_816 = self.create(
             Feature, parent=feature_parent_800,
-            mdn_path='en-US/docs/Web/HTML/Element/address',
+            mdn_uri={
+                'en': ('https://developer.mozilla.org/'
+                       'en-US/docs/Web/HTML/Element/address')},
             slug='html-element-address', name={'zxx': 'address'})
         feature_row_191 = self.create(
             Feature, parent=feature_816, slug='html-address',
@@ -528,7 +530,10 @@ class TestViewFeatureViewSet(APITestCase):
         expected_json = {
             "features": {
                 "id": str(feature_816.id),
-                "mdn_path": "en-US/docs/Web/HTML/Element/address",
+                "mdn_uri": {
+                    "en": ("https://developer.mozilla.org/"
+                           "en-US/docs/Web/HTML/Element/address")
+                },
                 "slug": "html-element-address",
                 "experimental": False,
                 "standardized": True,
@@ -715,7 +720,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "name": {
                             "en": "Basic support"
                         },
-                        "mdn_path": None,
+                        "mdn_uri": None,
                         "links": {
                             "sections": [],
                             "supports": [
