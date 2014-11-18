@@ -172,7 +172,7 @@ Browse.Browser = DS.Model.extend({
 
 Browse.Feature = DS.Model.extend({
     slug: attr('string'),
-    mdn_path: attr('string'),
+    mdn_uri: attr(),
     experimental: attr(),
     standardized: attr(),
     stable: attr(),
@@ -425,16 +425,34 @@ Browse.VersionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
 
 
 Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
-    mdnFullLinkHTML: Ember.computed('mdn_path', function () {
-        var mdn_path = this.get('mdn_path');
-        if (!mdn_path) { return '<em>no link</em>'; }
+    mdnDefaultHTML: Ember.computed('mdn_uri', function () {
+        var mdn_uri = this.get('mdn_uri'), path;
+        if (!mdn_uri) { return '<em>no link</em>'; }
+        path = mdn_uri.en.replace("https://developer.mozilla.org", "");
         return (
-            '<a href="https://developer.mozilla.org/' +
-            Browse.Utils.htmlEntities(mdn_path) +
-            '#Browser_compatibility">' +
-            Browse.Utils.htmlEntities(mdn_path) +
-            '</a>'
+            '<a href="' +
+            Browse.Utils.htmlEntities(mdn_uri.en) +
+            '#Browser_compatibility">' + path + '</a>'
         );
+    }),
+    mdnArray: Browse.Properties.TranslationArray('mdn_uri'),
+    mdnListHTML: Ember.computed('mdnArray', function () {
+        var mdnArray = this.get('mdnArray'),
+            arrayLen = mdnArray.length,
+            ul = "<ul>",
+            uri,
+            i;
+        for (i = 0; i < arrayLen; i += 1) {
+            uri = mdnArray[i];
+            ul += (
+                '<li>' + uri.lang + ': ' +
+                '<a href="' +  uri.value + '#Browser_compatibility">' +
+                uri.value.replace("https://developer.mozilla.org", "") +
+                '</a></li>'
+            );
+        }
+        ul += '</ul>';
+        return ul;
     }),
     flagsHTML: Ember.computed('experimental', 'standardized', 'stable', 'obsolete', function () {
         var experimental = this.get('experimental'),
