@@ -35,8 +35,10 @@ A sample response is:
     {
         "features": {
             "id": "816",
-            "mdn_path": "en-US/docs/Web/HTML/Element/address",
             "slug": "html-element-address",
+            "mdn_uri": {
+                'en': "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address",
+            },
             "experimental": false,
             "standardized": true,
             "stable": true,
@@ -55,8 +57,8 @@ A sample response is:
             "features": [
                 {
                     "id": "191",
-                    "mdn_path": null,
                     "slug": "html-address",
+                    "mdn_uri": null,
                     "experimental": false,
                     "standardized": true,
                     "stable": true,

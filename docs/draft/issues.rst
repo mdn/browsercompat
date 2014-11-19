@@ -33,7 +33,7 @@ These changes are:
     - **note** - added for engine version, etc.
 * features_
     - **slug** - human-friendly unique identifier
-    - **mdn_path** - MDN path that data was scraped from
+    - **mdn_uri** - MDN page that data was scraped from
     - **experimental** - True if the feature is considered experimental due to
       being part of a unratified spec such as CSS Transitions, ES6, or the DOM
       Living Standard.  For example, see the `run-in` value of

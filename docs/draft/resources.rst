@@ -845,9 +845,9 @@ The **features** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **slug** *(write-once)* - Unique, human-friendly slug
-    - **mdn_path** *(optional)* - The path to the page on MDN that this feature
-      was first scraped from.  May be used in UX or for debugging import
-      scripts.
+    - **mdn_uri** *(optional, localized)* - The URI of the language-specific
+      MDN page that this feature was first scraped from.  May be used in UX or
+      for debugging import scripts.
     - **experimental** - True if a feature is considered experimental, such as
       being non-standard or part of an non-ratified spec.
     - **standardized** - True if a feature is described in a standards-track
@@ -902,13 +902,13 @@ A sample response is:
     {
         "features": {
             "id": "276",
-            "mdn_path": null,
             "slug": "css-property-background-size-value-contain",
+            "mdn_uri": null,
             "experimental": false,
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "name": "background-size: contain"},
+            "name": "background-size: contain",
             "links": {
                 "sections": ["485"],
                 "supports": ["1125", "1212", "1536"],
@@ -963,8 +963,10 @@ A sample response is:
     {
         "features": {
             "id": "173",
-            "mdn_path": "en-US/docs/Web/CSS/background",
             "slug": "css-property-background",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/background"
+            },
             "experimental": false,
             "standardized": true,
             "stable": true,
@@ -1118,10 +1120,15 @@ The **specification** representation includes:
     - **name** *(localized)* - Specification name
     - **uri** *(localized)* - Specification URI, without subpath and anchor
 * **links**
-    - **sections** *(many)* - Associated sections_.  The order can be changed
-      by the user.
     - **maturity** *(one)* - Associated maturity_.
       Can be changed by the user.
+    - **sections** *(many)* - Associated sections_.  The order can be changed
+      by the user.
+    - **history_current** *(one)* - Current
+      historical_specifications_.  Can be changed to a valid
+      **history** to revert to that version.
+    - **history** *(many)* - Associated historical_specifications_
+      in time order (most recent first).  Changes are ignored.
 
 To get a single **specification**:
 
@@ -1154,18 +1161,28 @@ A sample response is:
                 "fr": "http://www.yoyodesign.org/doc/w3c/css1/index.html"
             },
             "links": {
-                "sections": ["792", "793"]
-                "maturity": "23"
+                "maturity": "23",
+                "sections": ["792", "793"],
+                "history_current": "743",
+                "history": ["743"]
             }
         },
         "links": {
+            "specifications.maturity": {
+                "href": "https://browsersupports.org/api/v1/maturities/{specifications.maturity}",
+                "type": "maturities"
+            },
             "specifications.sections": {
                 "href": "https://browsersupports.org/api/v1/sections/{specifications.sections}",
                 "type": "sections"
             },
-            "specifications.maturity": {
-                "href": "https://browsersupports.org/api/v1/maturities/{specifications.maturity}",
-                "type": "maturities"
+            "specifications.history_current": {
+                "href": "https://browsersupports.org/api/v1/historical_specifications/{specifications.history_current}",
+                "type": "historical_specifications"
+            },
+            "specifications.history": {
+                "href": "https://browsersupports.org/api/v1/historical_specifications/{specifications.history}",
+                "type": "historical_specifications"
             }
         }
     }
@@ -1189,6 +1206,11 @@ The **section** representation includes:
       the user.
     - **features** *(many)* - The associated features_.  In ID order,
       changes are ignored.
+    - **history_current** *(one)* - Current
+      historical_sections_.  Can be changed to a valid
+      **history** to revert to that version.
+    - **history** *(many)* - Associated historical_sections_
+      in time order (most recent first).  Changes are ignored.
 
 To get a single **section**:
 
@@ -1225,6 +1247,8 @@ A sample response is:
             "links": {
                 "specification": "273",
                 "features": ["275", "276", "277"],
+                "history_current": "2743",
+                "history": ["2743"]
             }
         },
         "links": {
@@ -1235,6 +1259,14 @@ A sample response is:
             "sections.features": {
                 "href": "https://browsersupports.org/api/v1/sections/{sections.features}",
                 "type": "features"
+            },
+            "sections.history_current": {
+                "href": "https://browsersupports.org/api/v1/historical_sections/{sections.history_current}",
+                "type": "historical_sections"
+            },
+            "sections.history": {
+                "href": "https://browsersupports.org/api/v1/historical_sections/{sections.history}",
+                "type": "historical_sections"
             }
         }
     }
@@ -1254,6 +1286,11 @@ The **maturity** representation includes:
 * **links**
     - **specifications** *(many)* - Associated specifications_.  In ID order,
       changes are ignored.
+    - **history_current** *(one)* - Current
+      historical_maturities_.  Can be changed to a valid
+      **history** to revert to that version.
+    - **history** *(many)* - Associated historical_maturities_
+      in time order (most recent first).  Changes are ignored.
 
 To get a single **maturity**:
 
@@ -1281,13 +1318,23 @@ A sample response is:
                 "jp": "勧告"
             },
             "links": {
-                "specifications": ["84", "85", "272", "273", "274", "576"]
+                "specifications": ["84", "85", "272", "273", "274", "576"],
+                "history_current": "149",
+                "history": ["149"]
             }
         },
         "links": {
             "maturities.specifications": {
                 "href": "https://browsersupports.org/api/v1/specifications/{maturities.specifications}",
                 "type": "specifications"
+            },
+            "maturities.history_current": {
+                "href": "https://browsersupports.org/api/v1/historical_maturities/{maturities.history_current}",
+                "type": "historical_maturities"
+            },
+            "maturities.history": {
+                "href": "https://browsersupports.org/api/v1/historical_maturities/{maturities.history}",
+                "type": "historical_maturities"
             }
         }
     }
@@ -1302,6 +1349,9 @@ A sample response is:
 .. _historical_browsers: history.html#historical-browsers
 .. _historical_features: history.html#historical-features
 .. _historical_supports: history.html#historical-supports
+.. _historical_specifications: history.html#historical-specifications
+.. _historical_sections: history.html#historical-sections
+.. _historical_maturities: history.html#historical-maturities
 
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601
