@@ -5,8 +5,7 @@ This is a baby step toward a generally useful client.  As it matures, it may
 grow features and get moved to its own repo.
 """
 
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 
 from json import dumps
 from time import time
@@ -38,28 +37,35 @@ class Client(object):
             self._session = requests.Session()
         return self._session
 
+    def url(self, resource_type, resource_id=None):
+        """Build the URL for a resource."""
+        url = self.base_url + '/api/v1/' + resource_type
+        if resource_id:
+            url += '/' + resource_id
+        return url
+
     def request(
             self, method, resource_type, resource_id=None, params=None,
             data=None):
         """Request data from the API"""
         start = time()
-
-        url = self.base_url + '/api/v1/' + resource_type
-        if resource_id:
-            url += '/' + resource_id
+        url = self.url(resource_type, resource_id)
 
         # Setup parameters
         params = params or {}
         headers = {'content-type': 'application/vnd.api+json'}
-        modify_methods = ('PUT', 'DELETE', 'PATCH')
+        modify_methods = ('PUT', 'PATCH')
+        delete_methods = ('DELETE',)
         create_methods = ('POST',)
-        change_methods = modify_methods + create_methods
+        change_methods = modify_methods + delete_methods + create_methods
         if method in change_methods and self.csrftoken:
             headers['X-CSRFToken'] = self.csrftoken
         if method in change_methods and self.changeset:
             params['changeset'] = self.changeset
         if method in create_methods:
             expected_statuses = [201]
+        elif method in delete_methods:
+            expected_statuses = [204]
         else:
             expected_statuses = [200]
         if data:
@@ -77,7 +83,10 @@ class Client(object):
 
         end = time()
         logger.debug('%s %s completed in %0.1fs', method, url, end - start)
-        return response.json()
+        try:
+            return response.json()
+        except:
+            return response.content
 
     def login(self, user, password, next_path='/api/v1/browsers'):
         """Log into the API."""
@@ -126,7 +135,7 @@ class Client(object):
 
         Keyword arguments:
         resource_type -- resource name, such as 'browsers'
-        resource -- data as a Python dict, such as: {'slug': 'foo'}
+        resource -- data as a Resource or Python dict, such as: {'slug': 'foo'}
 
         The return is a Python dict, such as: {'id': 1, 'slug': 'foo'}
         On failure, an APIException is raised.
@@ -134,6 +143,35 @@ class Client(object):
         data = {resource_type: resource}
         response = self.request('POST', resource_type, data=data)
         return response[resource_type]
+
+    def update(self, resource_type, resource_id, resource):
+        """Update a resource in the API
+
+        Keyword arguments:
+        resource_type -- resource name, such as 'browsers'
+        resource_id -- resource ID
+        resource -- data as a Resource or Python dict, such as: {'slug': 'foo'}
+
+        The return is a Python dict, such as: {'id': 1, 'slug': 'foo'}
+        On failure, an APIException is raised.
+        """
+        data = {resource_type: resource}
+        response = self.request('PUT', resource_type, resource_id, data=data)
+        return response[resource_type]
+
+    def delete(self, resource_type, resource_id):
+        """Delete a resource in the API
+
+        Keyword arguments:
+        resource_type -- resource name, such as 'browsers'
+        resource_id -- resource ID
+
+        The return is a Python dict, such as: {'id': 1, 'slug': 'foo'}
+        On failure, an APIException is raised.
+        """
+        response = self.request('DELETE', resource_type, resource_id)
+        # Response is empty, but return it.
+        return response
 
 
 if __name__ == "__main__":
