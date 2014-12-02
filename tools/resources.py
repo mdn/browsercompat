@@ -29,12 +29,15 @@ class Link(object):
     @property
     def id(self):
         if self.collection:
-            return self.collection.get_override_id(
+            raw_id = self.collection.get_override_id(
                 self.linked_type, self.linked_id)
-        elif isinstance(self.linked_id, Link.NoId):
+        else:
+            raw_id = self.linked_id
+
+        if isinstance(raw_id, Link.NoId):
             return None
         else:
-            return self.linked_id
+            return raw_id
 
     def set_collection(self, collection):
         assert (not self.collection) or (self.collection == collection)
@@ -201,14 +204,14 @@ class Resource(object):
             if field:
                 field.set_collection(collection)
 
-    def to_json_api(self, with_sorted=False):
+    def to_json_api(self, with_sorted=True):
         """Export to JSON API representation.
 
         Only writable properties and links are included.
 
         Keyword Arguments:
-        with_sorted -- If False (default), then writable links representing a
-        sort order are excluded.
+        with_sorted -- If True (default), then writable links representing a
+        sort order are included.
         """
         assert self._data, "No data to export"
 
@@ -282,7 +285,7 @@ class Support(Resource):
     _resource_type = 'supports'
     _writeable_property_fields = (
         'support', 'prefix', 'prefix_mandatory', 'alternate_name',
-        'alternate_name_mandatory', 'requires_config', 'default_config',
+        'alternate_mandatory', 'requires_config', 'default_config',
         'protected', 'note', 'footnote')
     _writeable_link_fields = {
         'version': ('versions', False),
@@ -464,13 +467,13 @@ class Collection(object):
         for key in match_keys:
             sync_item = sync_index[key]
             sync_id = sync_item.id.linked_id
-            assert sync_id
+            assert sync_id is not None
             self_item = my_index[key]
             if not self_item.id:
                 self_item.id = Link(self, self_item._resource_type, None)
                 self_item.id.linked_id = self_item.id
             self_id = self_item.id.linked_id
-            assert self_id
+            assert self_id is not None
             resource_type = key[0]
             new_ids.setdefault(resource_type, {})[self_id] = sync_id
 
@@ -480,7 +483,7 @@ class Collection(object):
 
             # Update the item ID
             if item.id:
-                assert item.id.linked_id
+                assert item.id.linked_id is not None
                 old_id = item.id.linked_id
                 new_id = new_ids.get(resource_type, {}).get(old_id, old_id)
                 self._override_ids.setdefault(
@@ -543,11 +546,14 @@ class CollectionChangeset(object):
 
         def new_resource_keys_with_dependencies(resource, new_keys):
             """Get dependencies needed to add a resource"""
-            my_key = resource.get_data_id()
-            if my_key not in new_keys:
+            if not resource:
                 return []
             else:
-                new_keys.remove(my_key)
+                my_key = resource.get_data_id()
+                if my_key not in new_keys:
+                    return []
+                else:
+                    new_keys.remove(my_key)
 
             keys = []
             sorted_links = []
@@ -565,8 +571,8 @@ class CollectionChangeset(object):
 
                 for link in links:
                     linked = link.get()
-                    link_keys = (
-                        new_resource_keys_with_dependencies(linked, new_keys))
+                    link_keys = new_resource_keys_with_dependencies(
+                        linked, new_keys)
                     if is_sorted:
                         sorted_links.extend(link_keys)
                     else:
@@ -604,9 +610,9 @@ class CollectionChangeset(object):
         match_keys = orig_keys & my_keys
         for k in sorted(match_keys):
             orig_item = orig_index[k]
-            orig_json = orig_item.to_json_api(with_sorted=True)
+            orig_json = orig_item.to_json_api()
             my_item = my_index[k]
-            my_json = my_item.to_json_api(with_sorted=True)
+            my_json = my_item.to_json_api()
             if orig_json == my_json:
                 self.changes['same'][k] = my_item
             else:
@@ -633,7 +639,7 @@ class CollectionChangeset(object):
         try:
             for item in self.changes['new'].values():
                 resource_type = item._resource_type
-                json_api = item.to_json_api()
+                json_api = item.to_json_api(with_sorted=False)
                 response = client.create(
                     resource_type, json_api[resource_type])
                 if not item.id:
@@ -664,7 +670,7 @@ class CollectionChangeset(object):
                 counts[resource_type]['changed'] += 1
                 count = counts[resource_type]['changed']
                 if (count % checkpoint == 0):  # pragma nocover
-                    logger.info("Imported %d %s" % (count, resource_type))
+                    logger.info("Changed %d %s" % (count, resource_type))
         finally:
             logger.info('Closing changeset...')
             client.close_changeset()
@@ -678,7 +684,7 @@ class CollectionChangeset(object):
         # Summarize new resources
         for item in self.changes['new'].values():
             resource_type = item._resource_type
-            new_json = pformat(item.to_json_api())
+            new_json = pformat(item.to_json_api(with_sorted=False))
             out.append("New %s:\n%s" % (resource_type, new_json))
 
         # Summarize deleted resources

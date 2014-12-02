@@ -25,6 +25,11 @@ class TestLink(TestCase):
         link = Link(None, 'browsers', '1')
         self.assertEqual(link.id, '1')
 
+    def test_null_link(self):
+        link = Link(None, 'browsers')
+        self.assertIsInstance(link.linked_id, Link.NoId)
+        self.assertIsNone(link.id)
+
     def test_link_without_collection_or_id(self):
         link = Link(None, 'browsers')
         self.assertEqual(link.id, None)
@@ -35,6 +40,11 @@ class TestLink(TestCase):
         self.assertEqual(link.id, '1')
         collection._override_ids = {'browsers': {'1': '_browser1'}}
         self.assertEqual(link.id, '_browser1')
+
+    def test_null_link_with_collection(self):
+        collection = Collection()
+        link = Link(collection, 'browsers')
+        self.assertIsNone(link.id)
 
 
 class TestBrowser(TestCase):
@@ -151,7 +161,7 @@ class TestBrowser(TestCase):
                 "name": {"en": "Chrome"},
             }
         }
-        actual = browser.to_json_api()
+        actual = browser.to_json_api(with_sorted=False)
         self.assertEqual(expected, actual)
 
     def test_to_json_api_complex_with_sorted(self):
@@ -165,7 +175,7 @@ class TestBrowser(TestCase):
                 "links": {"versions": ["1"]},
             }
         }
-        actual = browser.to_json_api(True)
+        actual = browser.to_json_api()
         self.assertEqual(expected, actual)
 
 
@@ -268,6 +278,20 @@ class TestFeature(TestCase):
         }
         self.assertEqual(expected, feature.to_json_api())
 
+    def test_to_json_null_parent(self):
+        feature = Feature(
+            id="1", slug="web", name={"en": "Web"}, parent=None)
+        expected = {
+            "features": {
+                "slug": "web",
+                "name": {"en": "Web"},
+                "links": {
+                    "parent": None
+                }
+            }
+        }
+        self.assertEqual(expected, feature.to_json_api())
+
 
 class TestSupport(TestCase):
     def test_to_json(self):
@@ -300,7 +324,7 @@ class TestSpecification(TestCase):
                 },
             },
         }
-        self.assertEqual(expected, spec.to_json_api())
+        self.assertEqual(expected, spec.to_json_api(with_sorted=False))
 
     def test_to_json_with_sorted(self):
         spec = Specification(
@@ -319,7 +343,7 @@ class TestSpecification(TestCase):
                 },
             },
         }
-        self.assertEqual(expected, spec.to_json_api(True))
+        self.assertEqual(expected, spec.to_json_api())
 
 
 class TestSection(TestCase):
@@ -639,6 +663,22 @@ class TestCollection(TestCase):
         self.col.override_ids_to_match(other_col)
         self.assertEqual(firefox, self.col.get('browsers', '1'))
         self.assertIsNone(chrome.id)
+
+    def test_override_ids_resource_with_falsy_id(self):
+        firefox = Browser(id="", slug='firefox')
+        chrome = Browser(id=0, slug='chrome')
+        self.col.add(firefox)
+        self.col.add(chrome)
+        self.assertEqual(None, self.col.get('browsers', '1'))
+
+        other_col = Collection()
+        other_chrome = Browser(id="1", slug="chrome")
+        other_firefox = Browser(id="2", slug="firefox")
+        other_col.add(other_chrome)
+        other_col.add(other_firefox)
+        self.col.override_ids_to_match(other_col)
+        self.assertEqual(chrome, self.col.get('browsers', '1'))
+        self.assertEqual(firefox, self.col.get('browsers', '2'))
 
     def test_remove(self):
         firefox = Browser(id='_firefox', slug='firefox')
@@ -1027,4 +1067,18 @@ Changed: http://example.com/api/v1/versions/1:
             "deleted": OrderedDict(),
         }
         self.assertEqual(expected_order.keys(), cc.changes['new'].keys())
+        self.assertEqual(expected, cc.changes)
+
+    def test_features_root(self):
+        root = Feature(id='root', slug='root', parent=None)
+        self.new_col.add(root)
+        cc = CollectionChangeset(self.orig_col, self.new_col)
+        expected = {
+            "new": OrderedDict([
+                (('features', 'root'), root),
+            ]),
+            "changed": OrderedDict(),
+            "deleted": OrderedDict(),
+            "same": OrderedDict(),
+        }
         self.assertEqual(expected, cc.changes)
