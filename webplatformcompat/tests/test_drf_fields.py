@@ -49,6 +49,9 @@ class TestTranslatedTextField(SharedTranslatedTextFieldTests, TestCase):
         # will raise an error
         self.assertEqual("display", self.ttf.from_native('"display"'))
 
+    def test_from_native_null(self):
+        self.assertEqual(None, self.ttf.from_native(None))
+
     def test_from_native_bad_json(self):
         # Converting from serialized form, bad JSON becomes ValidationError
         bad_json = "{'quotes': 'wrong ones'}"

@@ -232,7 +232,8 @@ class TranslatedTextField(CharField):
         """Convert from serializable data to model"""
         if isinstance(value, dict):
             return value
-        value = value.strip()
+        if value:
+            value = value.strip()
         if value:
             try:
                 native = json.loads(value)
