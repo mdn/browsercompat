@@ -7,6 +7,7 @@ source =
     webplatformcompat
 omit =
     tools/client.py
+    tools/download_data.py
     tools/load_spec_data.py
     tools/load_webcompat_data.py
     tools/sample_mdn.py

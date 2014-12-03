@@ -7,7 +7,8 @@ grow features and get moved to its own repo.
 
 from __future__ import print_function, unicode_literals
 
-from json import dumps
+from collections import OrderedDict
+from json import dumps, loads
 from time import time
 import logging
 
@@ -46,7 +47,7 @@ class Client(object):
 
     def request(
             self, method, resource_type, resource_id=None, params=None,
-            data=None):
+            data=None, as_json=True):
         """Request data from the API"""
         start = time()
         url = self.url(resource_type, resource_id)
@@ -83,10 +84,12 @@ class Client(object):
 
         end = time()
         logger.debug('%s %s completed in %0.1fs', method, url, end - start)
-        try:
-            return response.json()
-        except:
-            return response.content
+        if as_json:
+            try:
+                return response.json()
+            except:
+                pass
+        return response.content
 
     def login(self, user, password, next_path='/api/v1/browsers'):
         """Log into the API."""
@@ -172,6 +175,46 @@ class Client(object):
         response = self.request('DELETE', resource_type, resource_id)
         # Response is empty, but return it.
         return response
+
+    def get_resources(self, resource_type, logger_name=logger.name, log_at=15):
+        """Get all the resources of a type as a single JSON API response.
+
+        Keyword arguments:
+        resource_type -- resource name, such as 'browsers'
+        logger_name -- logger name if non-default logger desired
+        log_at -- Every (log_at) seconds, log download progress
+        """
+        logger = logging.getLogger(logger_name)
+        data = None
+        next_url = True
+        page = 0
+        count = None
+        total = None
+        last_time = time()
+        while next_url:
+            page += 1
+            current_time = time()
+            if data and (current_time - last_time) > log_at:
+                count = float(len(data[resource_type]))
+                percent = int(100 * (count / total))
+                logger.info(
+                    "  Loaded %d of %d %s (%d%%)...",
+                    count, total, resource_type, percent)
+                last_time = current_time
+            params = {'page': page}
+            raw = self.request(
+                'GET', resource_type, params=params, as_json=False)
+            response = loads(raw, object_pairs_hook=OrderedDict)
+            assert resource_type in response
+            if data:
+                data[resource_type].extend(response[resource_type])
+            else:
+                data = response.copy()
+                total = data['meta']['pagination'][resource_type]['count']
+            next_url = response['meta']['pagination'][resource_type]['next']
+        data['meta']['pagination'][resource_type]['previous'] = None
+        data['meta']['pagination'][resource_type]['next'] = None
+        return data
 
 
 if __name__ == "__main__":
