@@ -12,4 +12,5 @@ omit =
     tools/load_webcompat_data.py
     tools/sample_mdn.py
     tools/sync_from_api.py
+    tools/upload_data.py
     webplatformcompat/migrations/*.py
