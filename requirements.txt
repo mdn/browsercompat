@@ -75,3 +75,6 @@ django-sortedm2m==0.8.1
 
 # Cached instances for Django REST Framework
 drf-cached-instances==0.1.0
+
+# Better HTTP Client for tools
+requests==2.4.3

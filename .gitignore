@@ -47,6 +47,7 @@ docs/_build/*
 data-human.json
 Spec2.txt
 SpecName.txt
+data/*.json
 
 # SQLite databases
 *.sqlite3

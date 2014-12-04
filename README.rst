@@ -45,7 +45,9 @@ Development
 -----------
 
 :Code:           https://github.com/jwhitlock/web-platform-compat
-:Dev Server:     http://doesitwork-dev.allizom.org
+:Dev Server:     http://doesitwork-dev.allizom.org (based on `webplatform/compatibility-data`_)
+
+                 https://browsercompat.herokuapp.com (based on `jwhitlock/browsercompat-data`_)
 :Issues:         https://bugzilla.mozilla.org/buglist.cgi?quicksearch=compat-data (tracking bug)
 
                  https://github.com/jwhitlock/web-platform-compat/issues?state=open (documentation issues)
@@ -54,3 +56,6 @@ Development
 :Dev Docs:       https://web-platform-compat.readthedocs.org
 :Mailing list:   https://lists.mozilla.org/listinfo/dev-mdn
 :IRC:            irc://irc.mozilla.org/mdndev
+
+.. _`webplatform/compatibility-data`: https://github.com/webplatform/compatibility-data
+.. _`jwhitlock/browsercompat-data`: https://github.com/jwhitlock/browsercompat-data
