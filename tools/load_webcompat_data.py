@@ -25,7 +25,7 @@ except NameError:
     pass  # We're in Py3
 
 
-logger = logging.getLogger('load_webcompat_data')
+logger = logging.getLogger('tools.load_webcompat_data')
 COMPAT_DATA_FILENAME = "data-human.json"
 COMPAT_DATA_URL = (
     "https://raw.githubusercontent.com/webplatform/compatibility-data"
@@ -97,7 +97,7 @@ def load_compat_data(client, compat_data, all_data=False, confirm=None):
         logger.info('No changes')
         return {}
 
-    counts = changeset.change_original_collection(logger.name)
+    counts = changeset.change_original_collection()
     return counts
 
 
@@ -373,7 +373,7 @@ if __name__ == '__main__':
     quiet = args.quiet
     console = logging.StreamHandler(sys.stderr)
     formatter = logging.Formatter('%(levelname)s - %(message)s')
-    logger_name = 'populate_data'
+    logger_name = 'tools'
     fmat = '%(levelname)s - %(message)s'
     if quiet:
         level = logging.WARNING

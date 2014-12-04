@@ -459,9 +459,9 @@ class TestCollection(TestCase):
         versions = self.col.filter('versions', browser=None)
         self.assertEqual([version2], versions)
 
-    def test_load_all_with_next(self):
-        self.col.client = mock.Mock(spec_set=['request'])
-        self.col.client.request.side_effect = [{
+    def test_load_all(self):
+        self.col.client = mock.Mock(spec_set=['get_resource_collection'])
+        self.col.client.get_resource_collection.return_value = {
             "browsers": [{
                 "id": "1",
                 "slug": "chrome",
@@ -482,38 +482,7 @@ class TestCollection(TestCase):
                     "history_current": "2",
                     "versions": ["40", "41", "42"],
                 }
-            }],
-            "links": {
-                "browsers.history": {
-                    "href": (
-                        "http://example.com/api/v1/historical_browsers/"
-                        "{browsers.history}"),
-                    "type": "historical_browsers"
-                },
-                "browsers.history_current": {
-                    "href": (
-                        "http://example.com/api/v1/historical_browsers/"
-                        "{browsers.history_current}"),
-                    "type": "historical_browsers"
-                },
-                "browsers.versions": {
-                    "href": (
-                        "http://example.com/api/v1/versions/"
-                        "{browsers.versions}"),
-                    "type": "versions"
-                }
-            },
-            "meta": {
-                "pagination": {
-                    "browsers": {
-                        "previous": None,
-                        "next": "http://example.com/api/v1/browsers?page=2",
-                        "count": 3
-                    }
-                }
-            }
-        }, {
-            "browsers": [{
+            }, {
                 "id": "3",
                 "slug": "internet_explorer",
                 "name": {"en": "Internet Explorer"},
@@ -547,15 +516,13 @@ class TestCollection(TestCase):
             "meta": {
                 "pagination": {
                     "browsers": {
-                        "previous": (
-                            "http://example.com/api/v1/browsers?page=1"),
+                        "previous": None,
                         "next": None,
                         "count": 3
                     }
                 }
             }
-
-        }]
+        }
         count = self.col.load_all('browsers')
         self.assertEqual(3, count)
 

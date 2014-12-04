@@ -17,8 +17,7 @@ try:
 except NameError:
     pass  # We're in Py3
 
-logger_name = 'upload_data'
-logger = logging.getLogger(logger_name)
+logger = logging.getLogger('tools.upload_data')
 
 resources = [
     'browsers',
@@ -60,19 +59,14 @@ def upload_data(client, base_dir='', confirm=None):
         logger.info('No changes')
         return {}
 
-    counts = changeset.change_original_collection(logger_name)
+    counts = changeset.change_original_collection()
     return counts
 
 
 def load_api_data(api_collection):
     for resource in resources:
-        data = client.get_resources(resource, 'upload_data')
-        resource_class = api_collection.resource_by_type[resource]
-        for item in data[resource]:
-            obj = resource_class()
-            obj.from_json_api({resource: item})
-            api_collection.add(obj)
-        logger.info("Downloaded %d %s.", len(data[resource]), resource)
+        count = api_collection.load_all(resource)
+        logger.info("Downloaded %d %s.", count, resource)
 
 
 def load_local_data(local_collection, base_dir):
@@ -128,6 +122,7 @@ if __name__ == '__main__':
     console = logging.StreamHandler(sys.stderr)
     formatter = logging.Formatter('%(levelname)s - %(message)s')
     fmat = '%(levelname)s - %(message)s'
+    logger_name = 'tools'
     if quiet:
         level = logging.WARNING
     elif verbose:

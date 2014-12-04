@@ -20,7 +20,7 @@ try:
 except NameError:
     pass  # We're in Py3
 
-logger = logging.getLogger('load_spec_data')
+logger = logging.getLogger('tools.load_spec_data')
 SPEC2_FILENAME = 'Spec2.txt'
 SPEC2_URL = 'https://developer.mozilla.org/en-US/docs/Template:Spec2?raw'
 SPECNAME_FILENAME = 'SpecName.txt'
@@ -68,7 +68,7 @@ def load_spec_data(client, specname, spec2, confirm=None):
         logger.info('No changes')
         return {}
 
-    counts = changeset.change_original_collection(logger.name)
+    counts = changeset.change_original_collection()
     return counts
 
 
@@ -280,7 +280,7 @@ if __name__ == '__main__':
     quiet = args.quiet
     console = logging.StreamHandler(sys.stderr)
     formatter = logging.Formatter('%(levelname)s - %(message)s')
-    logger_name = 'populate_data'
+    logger_name = 'tools'
     fmat = '%(levelname)s - %(message)s'
     if quiet:
         level = logging.WARNING

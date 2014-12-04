@@ -10,8 +10,7 @@ import sys
 
 from client import Client
 
-logger_name = 'download_data'
-logger = logging.getLogger(logger_name)
+logger = logging.getLogger('tools.download_data')
 
 resources = [
     'browsers',
@@ -29,7 +28,7 @@ def download_data(client, base_dir=''):
     counts = {}
     for resource in resources:
         # Get data from API
-        data = client.get_resources(resource, 'download_data')
+        data = client.get_resource_collection(resource)
         logger.info("Downloaded %d %s.", len(data[resource]), resource)
         counts[resource] = len(data[resource])
 
@@ -73,6 +72,7 @@ if __name__ == '__main__':
     console = logging.StreamHandler(sys.stderr)
     formatter = logging.Formatter('%(levelname)s - %(message)s')
     fmat = '%(levelname)s - %(message)s'
+    logger_name = 'tools'
     if quiet:
         level = logging.WARNING
     elif verbose:

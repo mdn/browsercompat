@@ -14,7 +14,7 @@ import logging
 
 import requests
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('tools.client')
 
 
 class APIException(Exception):
@@ -176,15 +176,14 @@ class Client(object):
         # Response is empty, but return it.
         return response
 
-    def get_resources(self, resource_type, logger_name=logger.name, log_at=15):
+    def get_resource_collection(self, resource_type, log_at=15):
         """Get all the resources of a type as a single JSON API response.
 
         Keyword arguments:
         resource_type -- resource name, such as 'browsers'
-        logger_name -- logger name if non-default logger desired
-        log_at -- Every (log_at) seconds, log download progress
+        log_at -- Every (log_at) seconds, log download progress. Set to a
+        negative number to disable.
         """
-        logger = logging.getLogger(logger_name)
         data = None
         next_url = True
         page = 0
@@ -194,7 +193,7 @@ class Client(object):
         while next_url:
             page += 1
             current_time = time()
-            if data and (current_time - last_time) > log_at:
+            if data and log_at >= 0 and (current_time - last_time) > log_at:
                 count = float(len(data[resource_type]))
                 percent = int(100 * (count / total))
                 logger.info(
@@ -244,7 +243,7 @@ if __name__ == "__main__":
     quiet = args.quiet
     console = logging.StreamHandler(sys.stderr)
     formatter = logging.Formatter('%(levelname)s - %(message)s')
-    logger_name = __name__
+    logger_name = 'tools'
     fmat = '%(levelname)s - %(message)s'
     if quiet:
         level = logging.WARNING

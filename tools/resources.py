@@ -6,6 +6,8 @@ from itertools import chain
 from logging import getLogger
 from pprint import pformat
 
+logger = getLogger('tools.resources')
+
 
 class Link(object):
     """Proxy for database IDs in a collection."""
@@ -434,20 +436,13 @@ class Collection(object):
     def load_all(self, resource_type):
         """Read all API data into the collection."""
         assert self.client, 'load_all requires an API Client'
-        resource_class = self.resource_by_type[resource_type]
         original_count = len(self._repository.get(resource_type, []))
-        next_url = True
-        page = 0
-        while next_url:
-            page += 1
-            params = {'page': page}
-            response = self.client.request('GET', resource_type, params=params)
-            assert resource_type in response
-            for item in response[resource_type]:
-                resource = resource_class(collection=self)
-                resource.from_json_api({resource_type: item})
-                self.add(resource)
-            next_url = response['meta']['pagination'][resource_type]['next']
+        response = self.client.get_resource_collection(resource_type)
+        resource_class = self.resource_by_type[resource_type]
+        for item in response[resource_type]:
+            resource = resource_class(collection=self)
+            resource.from_json_api({resource_type: item})
+            self.add(resource)
         done_count = len(self._repository.get(resource_type, []))
         return done_count - original_count
 
@@ -619,7 +614,7 @@ class CollectionChangeset(object):
                 my_item._original = orig_item
                 self.changes['changed'][k] = my_item
 
-    def change_original_collection(self, logger_name=__name__, checkpoint=100):
+    def change_original_collection(self, checkpoint=100):
         """Commit changes to the original Collection
 
         Keyword Arguments:
@@ -629,7 +624,6 @@ class CollectionChangeset(object):
         Return is a dictionary of resource types to a dictionary of actions
         ('new', 'deleted', 'changed') and the counts of those actions.
         """
-        logger = getLogger(logger_name)
         client = self.original_collection.client
 
         logger.info('Opening changeset...')
