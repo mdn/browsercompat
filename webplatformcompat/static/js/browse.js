@@ -309,15 +309,33 @@ Browse.Properties = {
             return property;
         });
     },
+    OptionalDateHTML: function (propertyName) {
+        return Ember.computed(propertyName, function () {
+            var date = this.get(propertyName), year, month, day;
+            if (date) {
+                year = date.getFullYear();
+                month = (date.getMonth() + 1).toString();
+                day = date.getDate().toString();
+                return year + '-' +
+                    (month.length < 2 ? '0' : '') + month + '-' +
+                    (day.length < 2 ? '0' : '') + day;
+            }
+            return '<em>none</em>';
+        });
+    },
     TranslationDefaultHTML: function (propertyName) {
         /* Turn a translation object into default HTML */
         return Ember.computed(propertyName, function () {
-            var property = this.get(propertyName);
+            var property = this.get(propertyName), en;
             if (!property) { return '<em>none</em>'; }
             if (typeof property === 'string') {
                 return '<code>' + property + '</code>';
             }
-            return property.en;
+            en = property.en;
+            if (en.indexOf('https://') === 0 || en.indexOf('http://') === 0) {
+                return '<a href="' + en + '">' + en + '</a>';
+            }
+            return en;
         });
     },
     TranslationArray: function (propertyName) {
@@ -365,11 +383,19 @@ Browse.Properties = {
                 arrayLen = array.length,
                 ul = "<ul>",
                 item,
-                i;
+                i,
+                val;
             if (arrayLen === 0) { return '<em>none</em>'; }
             for (i = 0; i < arrayLen; i += 1) {
                 item = array[i];
-                ul += '<li>' + item.lang + ': ' + item.value + '</li>';
+                val = item.value;
+                ul += '<li>' + item.lang + ': ';
+                if (val.indexOf('https://') === 0 || val.indexOf('http://') === 0) {
+                    ul += '<a href="' + val + '">' + val + '</a>';
+                } else {
+                    ul += val;
+                }
+                ul += '</li>';
             }
             ul += '</ul>';
             return ul;
@@ -411,12 +437,12 @@ Browse.VersionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
         }
         return out;
     }),
-    releaseDayHTML: Browse.Properties.OptionalHTML('release_day'),
-    retirementDayHTML: Browse.Properties.OptionalHTML('retirement_day'),
+    releaseDayHTML: Browse.Properties.OptionalDateHTML('release_day'),
+    retirementDayHTML: Browse.Properties.OptionalDateHTML('retirement_day'),
     featureCount: Browse.Properties.IdCounter('supports'),
     featureCountText: Browse.Properties.IdCounterText('featureCount', 'Feature'),
-    releaseNoteUriArray: Browse.Properties.TranslationArray('releaseNoteUri'),
-    releaseNoteUriDefaultHTML: Browse.Properties.TranslationDefaultHTML('releaseNoteUri'),
+    releaseNoteUriArray: Browse.Properties.TranslationArray('release_notes_uri'),
+    releaseNoteUriDefaultHTML: Browse.Properties.TranslationDefaultHTML('release_notes_uri'),
     releaseNoteUriListHTML: Browse.Properties.TranslationListHTML('releaseNoteUriArray'),
     noteArray: Browse.Properties.TranslationArray('note'),
     noteDefaultHTML: Browse.Properties.TranslationDefaultHTML('note'),
