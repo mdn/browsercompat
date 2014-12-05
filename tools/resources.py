@@ -1,10 +1,11 @@
 """Classes for working with web-platform-compat resources."""
+from __future__ import unicode_literals
 
 from collections import defaultdict, OrderedDict
 from difflib import Differ
 from itertools import chain
+from json import dumps
 from logging import getLogger
-from pprint import pformat
 
 logger = getLogger('tools.resources')
 
@@ -217,7 +218,7 @@ class Resource(object):
         """
         assert self._data, "No data to export"
 
-        data = {}
+        data = OrderedDict()
         for field in self._writeable_property_fields:
             if field in self._data:
                 data[field] = self._data[field]
@@ -678,21 +679,29 @@ class CollectionChangeset(object):
         # Summarize new resources
         for item in self.changes['new'].values():
             resource_type = item._resource_type
-            new_json = pformat(item.to_json_api(with_sorted=False))
+            new_json = dumps(
+                item.to_json_api(with_sorted=False),
+                indent=2, separators=(',', ': '))
             out.append("New %s:\n%s" % (resource_type, new_json))
 
         # Summarize deleted resources
         for item in self.changes['deleted'].values():
             url = client.url(item._resource_type, item.id.id)
-            old_json = pformat(item.to_json_api())
+            old_json = dumps(
+                item.to_json_api(),
+                indent=2, separators=(',', ': '))
             out.append("Deleted %s:\n%s" % (url, old_json))
 
         # Summarize changed resources
         for item in self.changes['changed'].values():
             url = client.url(item._resource_type, item.id.id)
             orig_item = item._original
-            orig_json = pformat(orig_item.to_json_api())
-            new_json = pformat(item.to_json_api())
+            orig_json = dumps(
+                orig_item.to_json_api(),
+                indent=2, separators=(',', ': '))
+            new_json = dumps(
+                item.to_json_api(),
+                indent=2, separators=(',', ': '))
             diff = ''.join(Differ().compare(
                 orig_json.splitlines(1), new_json.splitlines(1)))
             out.append("Changed: %s:\n%s" % (url, diff))

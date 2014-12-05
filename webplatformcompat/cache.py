@@ -237,7 +237,7 @@ class Cache(BaseCache):
     def maturity_v1_add_related_pks(self, obj):
         """Add related primary keys to a Maturity instance."""
         if not hasattr(obj, '_specification_pks'):
-            obj._specification_pks = list(
+            obj._specification_pks = sorted(
                 obj.specifications.values_list('pk', flat=True))
         if not hasattr(obj, '_history_pks'):
             obj._history_pks = list(
@@ -285,7 +285,7 @@ class Cache(BaseCache):
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
         if not hasattr(obj, '_feature_pks'):
-            obj._feature_pks = list(
+            obj._feature_pks = sorted(
                 obj.features.values_list('pk', flat=True))
 
     def section_v1_invalidator(self, obj):
@@ -423,7 +423,8 @@ class Cache(BaseCache):
     def version_v1_add_related_pks(self, obj):
         """Add related primary keys to a Version instance."""
         if not hasattr(obj, '_support_pks'):
-            obj._support_pks = list(obj.supports.values_list('pk', flat=True))
+            obj._support_pks = sorted(
+                obj.supports.values_list('pk', flat=True))
         if not hasattr(obj, '_history_pks'):
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))

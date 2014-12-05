@@ -89,7 +89,7 @@ class Client(object):
                 return response.json()
             except:
                 pass
-        return response.content
+        return response.text
 
     def login(self, user, password, next_path='/api/v1/browsers'):
         """Log into the API."""

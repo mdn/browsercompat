@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Tests for `web-platform-compat` fields module."""
+from __future__ import unicode_literals
 from unittest import TestCase as BaseTestCase
 
 from collections import OrderedDict
 import mock
-import six
 
 from tools.client import Client
 from tools.resources import (
@@ -760,9 +760,20 @@ class TestCollectionChangeset(TestCase):
         _, cc = self.setup_new()
         expected = """\
 New browsers:
-{'browsers': {'slug': 'chrome'}}
+{
+  "browsers": {
+    "slug": "chrome"
+  }
+}
 New versions:
-{'versions': {'links': {'browser': '_chrome'}, 'version': '2.0'}}"""
+{
+  "versions": {
+    "version": "2.0",
+    "links": {
+      "browser": "_chrome"
+    }
+  }
+}"""
         self.assertEqual(expected, cc.summarize())
 
     def setup_new_with_dependencies(self):
@@ -832,15 +843,47 @@ New versions:
         _, cc = self.setup_new_with_dependencies()
         expected = """\
 New features:
-{'features': {'slug': 'parent'}}
+{
+  "features": {
+    "slug": "parent"
+  }
+}
 New features:
-{'features': {'links': {'parent': 'parent'}, 'slug': 'child1'}}
+{
+  "features": {
+    "slug": "child1",
+    "links": {
+      "parent": "parent"
+    }
+  }
+}
 New features:
-{'features': {'links': {'parent': 'parent'}, 'slug': 'child2'}}
+{
+  "features": {
+    "slug": "child2",
+    "links": {
+      "parent": "parent"
+    }
+  }
+}
 New features:
-{'features': {'links': {'parent': 'parent'}, 'slug': 'child3'}}
+{
+  "features": {
+    "slug": "child3",
+    "links": {
+      "parent": "parent"
+    }
+  }
+}
 New features:
-{'features': {'links': {'parent': 'child2'}, 'slug': 'grandchild'}}"""
+{
+  "features": {
+    "slug": "grandchild",
+    "links": {
+      "parent": "child2"
+    }
+  }
+}"""
         self.assertEqual(expected, cc.summarize())
 
     def setup_deleted(self):
@@ -892,9 +935,20 @@ New features:
         _, cc = self.setup_deleted()
         expected = """\
 Deleted http://example.com/api/v1/browsers/_chrome:
-{'browsers': {'slug': 'chrome'}}
+{
+  "browsers": {
+    "slug": "chrome"
+  }
+}
 Deleted http://example.com/api/v1/versions/_chrome_2:
-{'versions': {'links': {'browser': '_chrome'}, 'version': '2.0'}}"""
+{
+  "versions": {
+    "version": "2.0",
+    "links": {
+      "browser": "_chrome"
+    }
+  }
+}"""
         self.assertEqual(expected, cc.summarize())
 
     def setup_matched(self):
@@ -907,7 +961,9 @@ Deleted http://example.com/api/v1/versions/_chrome_2:
         browser_same = Browser(id='_chrome', slug='chrome')
         version_diff = Version(
             id='_version', version='2.0', browser='_chrome',
-            note={'en': 'Second Version', 'es': 'Segunda Versión'})
+            note=OrderedDict((
+                ('en', 'Second Version'),
+                ('es', 'Segunda Versión'))))
         self.new_col.add(version_diff)
         self.new_col.add(browser_same)
         resources = (version, browser_same, version_diff)
@@ -955,23 +1011,22 @@ Deleted http://example.com/api/v1/versions/_chrome_2:
 
     def test_summary_matched_items(self):
         _, cc = self.setup_matched()
-        if six.PY3:  # pragma nocover
-            expected = """\
+        expected = """\
 Changed: http://example.com/api/v1/versions/1:
-  {'versions': {'links': {'browser': '1'},
--               'note': {'en': 'Second Version'},
-+               'note': {'en': 'Second Version', 'es': 'Segunda Versión'},
-?                                              +++++++++++++++++++++++++
-                'version': '2.0'}}"""
-        else:  # pragma nocover
-            expected = """\
-Changed: http://example.com/api/v1/versions/1:
-  {'versions': {'links': {'browser': '1'},
--               'note': {'en': 'Second Version'},
-?                                              -
-+               'note': {'en': 'Second Version',
-+                        'es': 'Segunda Versi\\xc3\\xb3n'},
-                'version': '2.0'}}"""
+  {
+    "versions": {
+      "version": "2.0",
+      "note": {
+-       "en": "Second Version"
++       "en": "Second Version",
+?                             +
++       "es": "Segunda Versi\\u00f3n"
+      },
+      "links": {
+        "browser": "1"
+      }
+    }
+  }"""
         self.assertEqual(expected, cc.summarize())
 
     def test_new_browser_with_ordered_versions(self):
