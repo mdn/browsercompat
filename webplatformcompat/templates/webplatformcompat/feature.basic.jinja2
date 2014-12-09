@@ -1,0 +1,109 @@
+<section class="webplatformcompat-feature" lang="{{lang}}" data-type="{{data['type']}}" data-id="{{data['id']}}">
+<h2>Specifications</h2>
+{% if collection['specifications'] %}
+<table class="specifications-table">
+  <thead>
+    <tr>
+      <th>Specification</th>
+      <th>Status</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+  {%- for section_id in data['links']['sections'] %}
+    {%- set section = collection['sections'][section_id] %}
+    {%- set spec = collection['specifications'][section['links']['specification']] %}
+    {%- set maturity = collection['maturities'][spec['links']['maturity']] %}
+    {%- set mat_class = "maturity-" ~ maturity.slug %}
+
+    <tr>
+      <td>
+        <a href="{{trans_str(spec.uri) ~ trans_str(section.subpath)}}">
+          {{trans_span(spec.name)}}
+          <br>
+          <small>{{trans_span(section.name)}}</small>
+        </a>
+      </td>
+      <td>
+        {{trans_span(maturity.name, class=mat_class)}}
+      </td>
+      <td>
+        {%- if section.note %}
+        {{trans_span(section.note)}}
+        {% endif %}
+
+      </td>
+    </tr>
+  {%- endfor %}
+
+  </tbody>
+</table>
+{% else %}
+<i>No specifications</i>
+{% endif %}
+
+<h2>Browser compatability</h2>
+{%- for tab in meta['compat_table']['tabs'] %}
+
+
+<h3>{{trans_str(tab['name'])}}</h3>
+<table class="compat-table">
+  <tbody>
+    <tr>
+      <th>Feature</th>
+      {%- for browser_id in tab['browsers'] %}
+      {%- set browser = collection['browsers'][browser_id] %}
+
+      <th>{{trans_span(browser.name)}}</th>
+      {%- endfor %}
+
+    </tr>
+    {%- for feature_id, browser_map in meta['compat_table']['supports'].items() %}
+    {%- set feature = collection['features'][feature_id] %}
+
+    <tr>
+      <td>{{trans_span(feature.name)}}</td>
+      {%- for browser_id in tab['browsers'] %}
+        {%- set browser = collection['browsers'][browser_id] %}
+        {%- set supports = browser_map[browser_id] %}
+
+      <td>
+        {%- for support_id in supports %}
+          {%- set support = collection['supports'][support_id] %}
+          {%- set version_id = support['links']['version'] %}
+          {%- set version = collection['versions'][version_id] %}
+          {%- if not loop.first %}<br>{% endif %}
+          {%- if version.version %}
+
+        {{ version.version }}
+          {%- else %}
+
+        {{ support.support }}
+          {%- endif %}
+        {%- endfor %}
+
+      </td>
+      {%- endfor %}
+
+    </tr>
+    {%- endfor %}
+
+  </tbody>
+</table>
+{%- endfor %}
+
+</section>
+<section class="webplatformcompat-feature-meta" lang="{{lang}}">
+<p><em>Showing language "{{lang}}". Other languages:</em></p>
+<ul>
+{% for l in meta['compat_table']['languages'] %}
+  <li><a href="/api/v1/view_features/{{data['id']}}?format=html&lang={{l}}">{{l}}</a></li>
+{% endfor %}
+</ul>
+</section>
+{#
+<pre>meta: {{meta|pprint}}</pre>
+<pre>features: {{features|pprint}}</pre>
+<pre>collection: {{collection|pprint}}</pre>
+<pre>language: {{lang}}</pre>
+#}
