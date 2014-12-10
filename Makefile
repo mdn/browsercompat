@@ -66,4 +66,4 @@ sdist: clean
 	python setup.py sdist
 	ls -l dist
 	check-manifest
-	pyroma dist/`ls -t dist | head -n1`; if [ $$? -ne 1 ]; then exit 1; fi
+	pyroma dist/`ls -t dist | head -n1`
