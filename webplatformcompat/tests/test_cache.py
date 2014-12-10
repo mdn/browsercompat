@@ -5,6 +5,7 @@ from datetime import datetime
 from pytz import UTC
 
 from django.contrib.auth.models import User
+from django.test.utils import override_settings
 
 from webplatformcompat.cache import Cache
 from webplatformcompat.history import Changeset
@@ -154,6 +155,7 @@ class TestCache(TestCase):
             'stable': True,
             'obsolete': False,
             'name': {"en": "A Name"},
+            'descendant_count': 0,
             'supports:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'support',
@@ -174,6 +176,11 @@ class TestCache(TestCase):
                 'model': 'feature',
                 'pks': [],
             },
+            'descendants:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [],
+            },
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalfeature',
@@ -186,6 +193,43 @@ class TestCache(TestCase):
             },
         }
         self.assertEqual(out, expected)
+
+    def test_feature_v1_serializer_some_descendants(self):
+        feature = self.create(
+            Feature, slug='the-slug', name='{"en": "A Name"}')
+        child1 = self.create(Feature, slug='child1', parent=feature)
+        child2 = self.create(Feature, slug='child2', parent=feature)
+        child3 = self.create(Feature, slug='child3', parent=feature)
+        feature = Feature.objects.get(id=feature.id)
+        out = self.cache.feature_v1_serializer(feature)
+        self.assertEqual(out['descendant_count'], 3)
+        self.assertEqual(
+            out['descendants:PKList'],
+            {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [child1.pk, child2.pk, child3.pk]
+            }
+        )
+
+    @override_settings(PAGINATE_VIEW_FEATURE=2)
+    def test_feature_v1_serializer_paginated_descendants(self):
+        feature = self.create(
+            Feature, slug='the-slug', name='{"en": "A Name"}')
+        self.create(Feature, slug='child1', parent=feature)
+        self.create(Feature, slug='child2', parent=feature)
+        self.create(Feature, slug='child3', parent=feature)
+        feature = Feature.objects.get(id=feature.id)
+        out = self.cache.feature_v1_serializer(feature)
+        self.assertEqual(out['descendant_count'], 3)
+        self.assertEqual(
+            out['descendants:PKList'],
+            {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': []
+            }
+        )
 
     def test_feature_v1_serializer_empty(self):
         self.assertEqual(None, self.cache.feature_v1_serializer(None))

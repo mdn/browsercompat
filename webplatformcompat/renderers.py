@@ -14,52 +14,36 @@ from rest_framework_json_api.utils import snakecase
 
 
 class JsonApiRenderer(BaseJsonApiRender):
+    convert_by_name = BaseJsonApiRender.convert_by_name
+    convert_by_name.update({
+        'meta': 'add_meta',
+    })
+    dict_class = OrderedDict
     encoder_class = JSONEncoder
     wrappers = ([
-        'wrap_jsonapi_aware',
-        'wrap_paginated',
+        'wrap_view_extra',
     ] + BaseJsonApiRender.wrappers)
-    dict_class = OrderedDict
 
-    def wrap_jsonapi_aware(self, data, renderer_context):
-        jsonapi = renderer_context.get('jsonapi', {})
-        direct = jsonapi.get('direct')
-        if not jsonapi or not direct:
-            raise WrapperNotApplicable('No jsonapi in context')
-        return data
+    def add_meta(self, resource, field, field_name, request):
+        """Add metadata."""
+        data = resource[field_name]
+        return {'meta': data}
 
-    def wrap_paginated(self, data, renderer_context):
-        pagination_keys = ['count', 'next', 'previous', 'results']
-        for key in pagination_keys:
-            if not (data and key in data):
-                raise WrapperNotApplicable('Not paginated results')
+    def wrap_view_extra(self, data, renderer_context):
+        """Add nested data w/o adding links to main resource."""
+        if not (data and '_view_extra' in data):
+            raise WrapperNotApplicable('Not linked results')
 
-        view = renderer_context.get("view", None)
-        model = self.model_from_obj(view)
-        resource_type = self.model_to_resource_type(model)
+        linked = data.pop('_view_extra')
+        data.fields.pop('_view_extra')
+        wrapper = self.wrap_default(data, renderer_context)
+        assert 'linked' not in wrapper
 
-        # Use default wrapper for results
-        wrapper = self.wrap_default(data['results'], renderer_context)
-
-        # Add pagination metadata
-        pagination = self.dict_class()
-        pagination['previous'] = data['previous']
-        pagination['next'] = data['next']
-        pagination['count'] = data['count']
-        wrapper.setdefault('meta', self.dict_class())
-        wrapper['meta'].setdefault('pagination', self.dict_class())
-        wrapper['meta']['pagination'].setdefault(
-            resource_type, self.dict_class()).update(pagination)
-        return wrapper
-
-    def wrap_error(
-            self, data, renderer_context, keys_are_fields, issue_is_title):
-        # Fix bug about wrong name for non_field_error
-        wrapper = super(JsonApiRenderer, self).wrap_error(
-            data, renderer_context, keys_are_fields, issue_is_title)
-        for error in wrapper['errors']:
-            if error.get("path") == '/__all__':
-                error["path"] = '/-'
+        wrapper_linked = self.wrap_default(linked, renderer_context)
+        to_transfer = ('links', 'linked', 'meta')
+        for key, value in wrapper_linked.items():
+            if key in to_transfer:
+                wrapper.setdefault(key, self.dict_class()).update(value)
         return wrapper
 
     def model_to_resource_type(self, model):

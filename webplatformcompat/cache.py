@@ -1,5 +1,6 @@
 """Cache functions"""
 
+from django.conf import settings
 from django.contrib.auth.models import User
 
 from drf_cached_instances.cache import BaseCache
@@ -143,6 +144,7 @@ class Cache(BaseCache):
             ('stable', obj.stable),
             ('obsolete', obj.obsolete),
             ('name', obj.name),
+            ('descendant_count', obj.get_descendant_count()),
             self.field_to_json(
                 'PKList', 'sections', model=Section, pks=obj._section_pks),
             self.field_to_json(
@@ -151,6 +153,9 @@ class Cache(BaseCache):
                 'PK', 'parent', model=Feature, pk=obj.parent_id),
             self.field_to_json(
                 'PKList', 'children', model=Feature, pks=obj._children_pks),
+            self.field_to_json(
+                'PKList', 'descendants', model=Feature,
+                pks=obj._descendant_pks),
             self.field_to_json(
                 'PKList', 'history', model=obj.history.model,
                 pks=obj._history_pks),
@@ -177,9 +182,16 @@ class Cache(BaseCache):
         if not hasattr(obj, '_children_pks'):
             obj._children_pks = list(obj.children.values_list('pk', flat=True))
         if not hasattr(obj, '_support_pks'):
-            obj._support_pks = list(obj.supports.values_list('pk', flat=True))
+            obj._support_pks = sorted(
+                obj.supports.values_list('pk', flat=True))
         if not hasattr(obj, '_section_pks'):
             obj._section_pks = list(obj.sections.values_list('pk', flat=True))
+        if not hasattr(obj, '_descendant_pks'):
+            if obj.get_descendant_count() <= settings.PAGINATE_VIEW_FEATURE:
+                obj._descendant_pks = list(
+                    obj.get_descendants().values_list('pk', flat=True))
+            else:
+                obj._descendant_pks = []
 
     def feature_v1_invalidator(self, obj):
         pks = []

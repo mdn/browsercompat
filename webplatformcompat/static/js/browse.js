@@ -8,6 +8,16 @@ window.Browse = Ember.Application.create({
     LOG_RESOLVER: false,
 });
 
+Browse.Utils = {
+    htmlEntities: function (str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    },
+};
+
 /* Router */
 Browse.Router.reopen({
     rootURL: '/browse/',
@@ -419,8 +429,11 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
         var mdn_path = this.get('mdn_path');
         if (!mdn_path) { return '<em>no link</em>'; }
         return (
-            '<a href="https://developer.mozilla.org/' + mdn_path +
-            '#Browser_compatibility">' + mdn_path + '</a>'
+            '<a href="https://developer.mozilla.org/' +
+            Browse.Utils.htmlEntities(mdn_path) +
+            '#Browser_compatibility">' +
+            Browse.Utils.htmlEntities(mdn_path) +
+            '</a>'
         );
     }),
     flagsHTML: Ember.computed('experimental', 'standardized', 'stable', 'obsolete', function () {
@@ -441,6 +454,8 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
     versionCount: Browse.Properties.IdCounter('supports'),
     versionCountText: Browse.Properties.IdCounterText('versionCount', 'Version'),
+    childCount: Browse.Properties.IdCounter('children'),
+    childCountText: Browse.Properties.IdCounterText('childCount', 'Child', 'Children'),
 });
 
 Browse.SupportController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {

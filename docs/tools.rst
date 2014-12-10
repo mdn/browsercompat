@@ -21,7 +21,7 @@ write access.  The bulk import will result in cascading cache invalidations,
 which can be avoided by running the server without cached instances during the
 import::
 
-    $ USE_INSTANCE_CACHE=0 ./manage.py runserver
+    $ USE_DRF_INSTANCE_CACHE=0 ./manage.py runserver
 
 
 load_webcompat_data.py
@@ -43,7 +43,7 @@ write access.  The bulk import will result in cascading cache invalidations,
 which can be avoided by running the server without cached instances during the
 import::
 
-    $ USE_INSTANCE_CACHE=0 ./manage.py runserver
+    $ USE_DRF_INSTANCE_CACHE=0 ./manage.py runserver
 
 
 sample_mdn.py
