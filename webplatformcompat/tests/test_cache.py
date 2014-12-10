@@ -29,12 +29,12 @@ class TestCache(TestCase):
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalbrowser',
-                'pks': [1],
+                'pks': [browser.history.all()[0].pk],
             },
             'history_current:PK': {
                 'app': u'webplatformcompat',
                 'model': 'historicalbrowser',
-                'pk': 1,
+                'pk': browser.history.all()[0].pk,
             },
             'versions:PKList': {
                 'app': u'webplatformcompat',
@@ -177,12 +177,12 @@ class TestCache(TestCase):
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalfeature',
-                'pks': [1],
+                'pks': [feature.history.all()[0].pk],
             },
             'history_current:PK': {
                 'app': u'webplatformcompat',
                 'model': 'historicalfeature',
-                'pk': 1,
+                'pk': feature.history.all()[0].pk,
             },
         }
         self.assertEqual(out, expected)
@@ -228,12 +228,12 @@ class TestCache(TestCase):
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalmaturity',
-                'pks': [1],
+                'pks': [maturity.history.all()[0].pk],
             },
             'history_current:PK': {
                 'app': u'webplatformcompat',
                 'model': 'historicalmaturity',
-                'pk': 1,
+                'pk': maturity.history.all()[0].pk,
             },
         }
         self.assertEqual(out, expected)
@@ -290,12 +290,12 @@ class TestCache(TestCase):
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalsection',
-                'pks': [1],
+                'pks': [section.history.all()[0].pk],
             },
             'history_current:PK': {
                 'app': u'webplatformcompat',
                 'model': 'historicalsection',
-                'pk': 1,
+                'pk': section.history.all()[0].pk,
             },
         }
         self.assertEqual(out, expected)
@@ -348,6 +348,7 @@ class TestCache(TestCase):
             maturity=maturity,
             name='{"en": "MathML 2.0"}',
             uri='{"en": "http://www.w3.org/TR/MathML2/"}')
+        history = spec.history.all()[0]
         out = self.cache.specification_v1_serializer(spec)
         expected = {
             'id': spec.id,
@@ -368,12 +369,12 @@ class TestCache(TestCase):
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalspecification',
-                'pks': [1],
+                'pks': [history.pk],
             },
             'history_current:PK': {
                 'app': u'webplatformcompat',
                 'model': 'historicalspecification',
-                'pk': 1,
+                'pk': history.pk,
             },
         }
         self.assertEqual(out, expected)
@@ -408,7 +409,7 @@ class TestCache(TestCase):
             name={'en': 'Spec'},
             uri={'en': 'http://example.com/spec.html'})
         self.assertEqual(
-            [('Maturity', 1, False)],
+            [('Maturity', maturity.pk, False)],
             self.cache.specification_v1_invalidator(spec))
 
     def test_support_v1_serializer(self):
@@ -442,12 +443,12 @@ class TestCache(TestCase):
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalsupport',
-                'pks': [1],
+                'pks': [support.history.all()[0].pk],
             },
             'history_current:PK': {
                 'app': u'webplatformcompat',
                 'model': 'historicalsupport',
-                'pk': 1,
+                'pk': support.history.all()[0].pk,
             },
         }
         self.assertEqual(out, expected)
@@ -507,12 +508,12 @@ class TestCache(TestCase):
             'history:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalversion',
-                'pks': [1],
+                'pks': [version.history.all()[0].pk],
             },
             'history_current:PK': {
                 'app': u'webplatformcompat',
                 'model': 'historicalversion',
-                'pk': 1,
+                'pk': version.history.all()[0].pk,
             },
         }
         self.assertEqual(out, expected)
@@ -536,7 +537,7 @@ class TestCache(TestCase):
     def test_version_v1_invalidator(self):
         browser = self.create(Browser)
         version = self.create(Version, browser=browser)
-        expected = [('Browser', 1, True)]
+        expected = [('Browser', browser.id, True)]
         self.assertEqual(expected, self.cache.version_v1_invalidator(version))
 
     def test_user_v1_serializer(self):

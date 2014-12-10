@@ -102,9 +102,9 @@ class Maturity(models.Model):
 class Section(models.Model):
     """A section of a specification document"""
     specification = models.ForeignKey('Specification', related_name='sections')
-    number = models.CharField(
+    number = TranslatedField(
         help_text="Section number",
-        max_length=10, blank=True)
+        blank=True)
     name = TranslatedField(
         help_text="Name of section, without section number")
     subpath = TranslatedField(

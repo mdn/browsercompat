@@ -59,7 +59,7 @@ class TestHistoricalSectionViewset(APITestCase):
                 'date': '2014-10-19T13:06:22.602Z',
                 'event': 'created',
                 'sections': {
-                    'id': str(spec.id),
+                    'id': str(section.id),
                     'number': None,
                     'name': {'en': 'The Section'},
                     'subpath': None,
@@ -70,7 +70,7 @@ class TestHistoricalSectionViewset(APITestCase):
                     },
                 },
                 'links': {
-                    'section': str(spec.pk),
+                    'section': str(section.pk),
                     'changeset': str(history.history_changeset_id),
                 },
             },

@@ -344,7 +344,7 @@ class TestFeatureViewSet(APITestCase):
         response = self.client.put(
             url, dumps(data), content_type='application/vnd.api+json')
         self.assertEqual(200, response.status_code, response.content)
-        self.assertEqual([spec2.pk, spec1.pk], response.data['sections'])
+        self.assertEqual([section2.pk, section1.pk], response.data['sections'])
         feature = Feature.objects.get(pk=feature.pk)
         expected = [section2.pk, section1.pk]
         self.assertEqual(
@@ -361,7 +361,7 @@ class TestFeatureViewSet(APITestCase):
         response = self.client.put(
             url, dumps(data), content_type='application/vnd.api+json')
         self.assertEqual(200, response.status_code, response.content)
-        self.assertEqual([spec1.pk, spec2.pk], response.data['sections'])
+        self.assertEqual([section1.pk, section2.pk], response.data['sections'])
         feature = Feature.objects.get(pk=feature.pk)
         expected = [section1.pk, section2.pk]
         self.assertEqual(
