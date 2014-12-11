@@ -103,7 +103,8 @@ class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
         json_api_renderer = JsonApiRenderer()
         json_api = json_api_renderer.render(
             data, accepted_media_type, renderer_context)
-        context = loads(json_api.decode('utf-8'))
+        context = loads(
+            json_api.decode('utf-8'), object_pairs_hook=OrderedDict)
 
         # Copy main item to generic 'data' key
         other_keys = ('linked', 'links', 'meta')

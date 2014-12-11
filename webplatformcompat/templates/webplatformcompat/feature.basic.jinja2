@@ -43,6 +43,7 @@
 {% endif %}
 
 <h2>Browser compatability</h2>
+{%- set footnotes = [] %}
 {%- for tab in meta['compat_table']['tabs'] %}
 
 
@@ -75,11 +76,28 @@
           {%- if not loop.first %}<br>{% endif %}
           {%- if version.version %}
 
-        {{ version.version }}
+        {{ version.version }}{% if support.support != 'yes'%} ({{support.support}}){% endif %}
           {%- else %}
 
-        {{ support.support }}
+        ({{ support.support }})
           {%- endif %}
+          {%- if support.prefix and support.prefix_mandatory %}
+
+        <code>{{support.prefix}}</code>
+          {%- endif %}
+          {%- if support.note %}
+
+        <br>({{support.note}})
+          {%- endif %}
+          {%- if support.footnote %}
+            {%- set footnum = meta['compat_table']['footnotes'][support_id] %}
+            [<a
+              id="browsercompat-{{data['id']}}-footnote-{{footnum}}-back"
+              href="#browsercompat-{{data['id']}}-footnote-{{footnum}}">{{footnum}}</a>]
+          {%- endif %}
+        {%- else %}
+
+          ?
         {%- endfor %}
 
       </td>
@@ -91,6 +109,14 @@
   </tbody>
 </table>
 {%- endfor %}
+
+{%- for support_id, footnum in meta['compat_table']['footnotes'] | dictsort(by='value') %}
+{%- set support=collection['supports'][support_id] %}
+<p id="browsercompat-{{data['id']}}-footnote-{{footnum}}">
+  <a href="#browsercompat-{{data['id']}}-footnote-{{footnum}}-back">[{{footnum}}]</a>
+  {{trans_span(support.footnote)}}
+</p>
+{% endfor %}
 
 </section>
 <section class="webplatformcompat-feature-meta" lang="{{lang}}">

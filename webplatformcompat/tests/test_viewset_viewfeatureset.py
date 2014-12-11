@@ -305,6 +305,7 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                     },
                     "languages": ['en'],
+                    "footnotes": {},
                 }
             }
         }
@@ -375,6 +376,73 @@ class TestViewFeatureViewSet(APITestCase):
         }
         actual_pagination = actual_json['meta']['compat_table']['pagination']
         self.assertDataEqual(expected_pagination, actual_pagination)
+
+    def test_important_versions(self):
+        feature = self.create(Feature, slug='feature')
+        browser = self.create(Browser, slug='browser')
+        v1 = self.create(Version, browser=browser, version='1')
+        support = {
+            'support': 'yes',
+            'prefix': '--pre',
+            'prefix_mandatory': True,
+            'alternate_name': 'future',
+            'alternate_mandatory': True,
+            'requires_config': 'feature=Yes',
+            'default_config': 'feature=No',
+            'protected': False,
+            'note': {'en': 'note'},
+            'footnote': {'en': 'footnote'},
+        }
+        s1 = self.create(Support, version=v1, feature=feature, **support)
+
+        v2 = self.create(Version, browser=browser, version='2')
+        support['prefix_mandatory'] = False
+        s2 = self.create(Support, version=v2, feature=feature, **support)
+
+        v3 = self.create(Version, browser=browser, version='3')
+        support['prefix'] = ''
+        s3 = self.create(Support, version=v3, feature=feature, **support)
+
+        v4 = self.create(Version, browser=browser, version='4')
+        support['alternate_mandatory'] = False
+        s4 = self.create(Support, version=v4, feature=feature, **support)
+
+        v5 = self.create(Version, browser=browser, version='5')
+        support['alternate_name'] = ''
+        s5 = self.create(Support, version=v5, feature=feature, **support)
+
+        # BORING VERSION
+        v51 = self.create(Version, browser=browser, version='5.1')
+        self.create(Support, version=v51, feature=feature, **support)
+
+        v6 = self.create(Version, browser=browser, version='6')
+        support['default_config'] = 'feature=Yes'
+        s6 = self.create(Support, version=v6, feature=feature, **support)
+
+        v7 = self.create(Version, browser=browser, version='7')
+        support['protected'] = True
+        s7 = self.create(Support, version=v7, feature=feature, **support)
+
+        v8 = self.create(Version, browser=browser, version='8')
+        support['note']['es'] = 'el note'
+        s8 = self.create(Support, version=v8, feature=feature, **support)
+
+        v9 = self.create(Version, browser=browser, version='9')
+        support['footnote'] = None
+        s9 = self.create(Support, version=v9, feature=feature, **support)
+
+        url = reverse('viewfeatures-detail', kwargs={'pk': feature.pk})
+        response = self.client.get(url)
+        actual_json = loads(response.content.decode('utf-8'))
+        expected_supports = {
+            str(feature.pk): {
+                str(browser.pk): [
+                    str(s1.pk), str(s2.pk), str(s3.pk), str(s4.pk),
+                    str(s5.pk), str(s6.pk), str(s7.pk), str(s8.pk),
+                    str(s9.pk)
+                ]}}
+        actual_supports = actual_json['meta']['compat_table']['supports']
+        self.assertDataEqual(expected_supports, actual_supports)
 
     def test_get_documented(self):
         """Get the viewfeature with the hand-coded values for docs.
@@ -1498,6 +1566,7 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                     },
                     "languages": ['en', 'ja', 'jp'],
+                    "footnotes": {},
                 }
             }
         }
@@ -1580,7 +1649,7 @@ multipage/sections.html#the-address-element">
     <tr>
       <td><span lang="en">Basic support</span></td>
       <td>
-        yes
+        (yes)
       </td>
       <td>
         1.0
@@ -1613,22 +1682,22 @@ multipage/sections.html#the-address-element">
     <tr>
       <td><span lang="en">Basic support</span></td>
       <td>
-        yes
+        (yes)
       </td>
       <td>
         1.0
       </td>
       <td>
-        yes
+        (yes)
       </td>
       <td>
-        yes
+        (yes)
       </td>
       <td>
-        yes
+        (yes)
       </td>
       <td>
-        yes
+        (yes)
       </td>
     </tr>
   </tbody>

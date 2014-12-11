@@ -644,13 +644,25 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             browser = browsers[version.browser.pk]
             version_order = browser.version_ids.index(version.id)
             feature = features[support.feature.pk]
+            support_attrs = (
+                support.support,
+                support.prefix,
+                support.prefix_mandatory,
+                support.alternate_name,
+                support.alternate_mandatory,
+                support.requires_config,
+                support.default_config,
+                support.protected,
+                repr(support.note),
+                repr(support.footnote),
+            )
             supported.append((
                 feature.id, browser.id, version_order, version.id,
-                support.id, support.support))
+                support.id, support_attrs))
         supported.sort()
 
         # Identify significant browser / version / supports by feature
-        significant_changes = {}
+        sig_features = {}
         last_f_id = None
         last_b_id = None
         last_support = None
@@ -663,10 +675,16 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 last_b_id = b_id
 
             if last_support != support:
-                sig_feature = significant_changes.setdefault(str(f_id), {})
+                sig_feature = sig_features.setdefault(f_id, {})
                 sig_browser = sig_feature.setdefault(str(b_id), [])
                 sig_browser.append(str(s_id))
                 last_support = support
+
+        # Order significant features
+        significant_changes = OrderedDict()
+        for f_id in chain([obj.id], [f.id for f in obj.child_features]):
+            if f_id in sig_features:
+                significant_changes[str(f_id)] = sig_features[f_id]
 
         return significant_changes
 
@@ -736,18 +754,36 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 str(obj.page_child_features.next_page_number()))
         return {'linked.features': pagination}
 
+    def ordered_footnotes(self, obj, sig_features, tabs):
+        """Gather footnotes from significant features."""
+        supports = dict(
+            [(str(support.id), support) for support in obj.all_supports])
+        footnotes = []
+        for browsers in sig_features.values():
+            for section in tabs:
+                for browser in section['browsers']:
+                    sig_supports = browsers.get(browser, [])
+                    for sig_support_pk in sig_supports:
+                        support = supports[sig_support_pk]
+                        if support.footnote:
+                            footnotes.append(sig_support_pk)
+        return OrderedDict((note, i) for i, note in enumerate(footnotes, 1))
+
     def get_meta(self, obj):
         """Assemble the metadata for the feature view."""
         significant_changes = self.significant_changes(obj)
         browser_tabs = self.browser_tabs(obj)
         pagination = self.pagination(obj)
         languages = self.find_languages(obj)
+        footnotes = self.ordered_footnotes(
+            obj, significant_changes, browser_tabs)
         meta = OrderedDict((
             ('compat_table', OrderedDict((
                 ('supports', significant_changes),
                 ('tabs', browser_tabs),
                 ('pagination', pagination),
                 ('languages', languages),
+                ('footnotes', footnotes),
             ))),))
         return meta
 
