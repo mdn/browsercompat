@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.db.models.signals import (post_delete, post_save, m2m_changed)
+from django.db.models.signals import post_delete, post_save, m2m_changed
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django_extensions.db.fields.json import JSONField
@@ -313,9 +313,9 @@ def feature_sections_changed_update_order(
 
     from .tasks import update_cache_for_instance
     for feature in features:
-        update_cache_for_instance('Feature', feature.pk, feature)
+        update_cache_for_instance('Feature', feature.pk, feature, False)
     for section in sections:
-        update_cache_for_instance('Section', section.pk, section)
+        update_cache_for_instance('Section', section.pk, section, False)
 
 
 @receiver(post_delete, dispatch_uid='post_delete_update_cache')
@@ -323,7 +323,7 @@ def post_delete_update_cache(sender, instance, **kwargs):
     name = sender.__name__
     if name in cached_model_names:
         from .tasks import update_cache_for_instance
-        update_cache_for_instance(name, instance.pk, instance)
+        update_cache_for_instance(name, instance.pk, instance, False)
 
 
 @receiver(post_save, dispatch_uid='post_save_update_cache')
@@ -335,4 +335,4 @@ def post_save_update_cache(sender, instance, created, raw, **kwargs):
         delay_cache = getattr(instance, '_delay_cache', False)
         if not delay_cache:
             from .tasks import update_cache_for_instance
-            update_cache_for_instance(name, instance.pk, instance)
+            update_cache_for_instance(name, instance.pk, instance, False)
