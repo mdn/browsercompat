@@ -683,8 +683,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         # Order significant features
         significant_changes = OrderedDict()
         for f_id in chain([obj.id], [f.id for f in obj.child_features]):
-            if f_id in sig_features:
-                significant_changes[str(f_id)] = sig_features[f_id]
+            significant_changes[str(f_id)] = sig_features.get(f_id, {})
 
         return significant_changes
 
@@ -741,9 +740,12 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             'next': None,
             'count': obj.descendant_count
         }
+        url_kwargs = {'pk': obj.id}
+        if self.context['format']:
+            url_kwargs['format'] = self.context['format']
+        request = self.context['request']
         url = reverse(
-            'viewfeatures-detail', kwargs={'pk': obj.id},
-            request=self.context['request'])
+            'viewfeatures-detail', kwargs=url_kwargs, request=request)
         if obj.page_child_features.has_previous():
             pagination['previous'] = (
                 url + '?page=' +

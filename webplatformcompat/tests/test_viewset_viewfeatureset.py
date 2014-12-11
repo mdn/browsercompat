@@ -1533,6 +1533,7 @@ class TestViewFeatureViewSet(APITestCase):
                         }
                     ],
                     "supports": {
+                        str(feature_816.pk): {},
                         str(feature_row_191.pk): {
                             str(browser_chrome_1.pk): [
                                 str(support_chrome_358.pk)],

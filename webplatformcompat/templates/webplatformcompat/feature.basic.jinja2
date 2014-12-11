@@ -1,6 +1,6 @@
 <section class="webplatformcompat-feature" lang="{{lang}}" data-type="{{data['type']}}" data-id="{{data['id']}}">
 <h2>Specifications</h2>
-{% if collection['specifications'] %}
+{% if data['links']['sections'] %}
 <table class="specifications-table">
   <thead>
     <tr>
@@ -39,6 +39,7 @@
   </tbody>
 </table>
 {% else %}
+
 <i>No specifications</i>
 {% endif %}
 
@@ -60,6 +61,7 @@
 
     </tr>
     {%- for feature_id, browser_map in meta['compat_table']['supports'].items() %}
+    {%- if feature_id != data['id'] %}
     {%- set feature = collection['features'][feature_id] %}
 
     <tr>
@@ -97,17 +99,21 @@
           {%- endif %}
         {%- else %}
 
-          ?
+        ?
         {%- endfor %}
 
       </td>
       {%- endfor %}
 
     </tr>
+    {%- endif %}
     {%- endfor %}
 
   </tbody>
 </table>
+{%- else %}
+<i>No compatability data</i>
+
 {%- endfor %}
 
 {%- for support_id, footnum in meta['compat_table']['footnotes'] | dictsort(by='value') %}
@@ -126,6 +132,15 @@
   <li><a href="/api/v1/view_features/{{data['id']}}?format=html&lang={{l}}">{{l}}</a></li>
 {% endfor %}
 </ul>
+
+{%- set pagination =  meta['compat_table']['pagination']['linked.features'] %}
+{%- if pagination['next'] or pagination['previous'] %}
+<p>{{pagination['count']}} features total (
+{%- if pagination['previous'] %}<a href="{{pagination['previous']}}">previous page</a>{% endif%}
+{%- if pagination['next'] and pagination['previous'] %}, {% endif %}
+{%- if pagination['next'] %}<a href="{{pagination['next']}}">next page</a>{% endif %}).
+{%- endif %}
+
 </section>
 {#
 <pre>meta: {{meta|pprint}}</pre>
