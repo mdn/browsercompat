@@ -273,10 +273,10 @@ class Feature(Resource):
         'obsolete', 'name')
     _writeable_link_fields = {
         'parent': ('features', False),
+        'sections': ('sections', True),
     }
     _readonly_link_fields = {
         'children': ('features', True),
-        'sections': ('sections', True),
         'supports': ('supports', True),
         'history': ('historical_features', True),
         'history_current': ('historical_features', False),
