@@ -10,3 +10,11 @@ class RequestContextMixin(object):
 
 class RequestView(RequestContextMixin, TemplateView):
     pass
+
+
+class ViewFeature(RequestContextMixin, TemplateView):
+
+    def get_context_data(self, **kwargs):
+        ctx = super(ViewFeature, self).get_context_data(**kwargs)
+        ctx['feature_id'] = self.kwargs['feature_id']
+        return ctx

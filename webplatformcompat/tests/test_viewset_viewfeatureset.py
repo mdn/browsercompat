@@ -1594,7 +1594,8 @@ class TestViewFeatureViewSet(APITestCase):
 multipage/sections.html#the-address-element">
           <span lang="en">WHATWG HTML Living Standard</span>
           <br>
-          <small><span lang="en">The address element</span></small>
+          <small><span lang="en">4.3.10</span> \
+<span lang="en">The address element</span></small>
         </a>
       </td>
       <td>
@@ -1608,7 +1609,8 @@ multipage/sections.html#the-address-element">
         <a href="http://www.w3.org/TR/html5/sections.html#the-address-element">
           <span lang="en">HTML5</span>
           <br>
-          <small><span lang="en">The address element</span></small>
+          <small><span lang="en">4.3.9</span> \
+<span lang="en">The address element</span></small>
         </a>
       </td>
       <td>
@@ -1622,7 +1624,8 @@ multipage/sections.html#the-address-element">
         <a href="http://www.w3.org/TR/html401/struct/global.html#h-7.5.6">
           <span lang="en">HTML 4.01 Specification</span>
           <br>
-          <small><span lang="en">The ADDRESS element</span></small>
+          <small><span lang="en">7.5.6</span> \
+<span lang="en">The ADDRESS element</span></small>
         </a>
       </td>
       <td>
@@ -1638,7 +1641,7 @@ multipage/sections.html#the-address-element">
 
 <h3>Desktop Browsers</h3>
 <table class="compat-table">
-  <tbody>
+  <thead>
     <tr>
       <th>Feature</th>
       <th><span lang="en">Chrome</span></th>
@@ -1647,6 +1650,8 @@ multipage/sections.html#the-address-element">
       <th><span lang="en">Opera</span></th>
       <th><span lang="en">Safari</span></th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><span lang="en">Basic support</span></td>
       <td>
@@ -1670,7 +1675,7 @@ multipage/sections.html#the-address-element">
 
 <h3>Mobile Browsers</h3>
 <table class="compat-table">
-  <tbody>
+  <thead>
     <tr>
       <th>Feature</th>
       <th><span lang="en">Android</span></th>
@@ -1680,6 +1685,8 @@ multipage/sections.html#the-address-element">
       <th><span lang="en">Opera Mobile</span></th>
       <th><span lang="en">Safari Mobile</span></th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><span lang="en">Basic support</span></td>
       <td>
@@ -1703,6 +1710,7 @@ multipage/sections.html#the-address-element">
     </tr>
   </tbody>
 </table>
+
 </section>
 <section class="webplatformcompat-feature-meta" lang="en-us">
 <p><em>Showing language "en-us". Other languages:</em></p>
@@ -1714,3 +1722,4 @@ multipage/sections.html#the-address-element">
 </section>
 """ % {'f_id': feature_816.id}
         self.assertDataEqual(expected, response.content.decode('utf-8'))
+        self.assertContains(response, expected, html=True)

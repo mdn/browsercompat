@@ -21,7 +21,7 @@
         <a href="{{trans_str(spec.uri) ~ trans_str(section.subpath)}}">
           {{trans_span(spec.name)}}
           <br>
-          <small>{{trans_span(section.name)}}</small>
+          <small>{{trans_span(section.number)}} {{trans_span(section.name)}}</small>
         </a>
       </td>
       <td>
@@ -44,13 +44,12 @@
 {% endif %}
 
 <h2>Browser compatability</h2>
-{%- set footnotes = [] %}
 {%- for tab in meta['compat_table']['tabs'] %}
 
 
 <h3>{{trans_str(tab['name'])}}</h3>
 <table class="compat-table">
-  <tbody>
+  <thead>
     <tr>
       <th>Feature</th>
       {%- for browser_id in tab['browsers'] %}
@@ -60,6 +59,8 @@
       {%- endfor %}
 
     </tr>
+  </thead>
+  <tbody>
     {%- for feature_id, browser_map in meta['compat_table']['supports'].items() %}
     {%- if feature_id != data['id'] %}
     {%- set feature = collection['features'][feature_id] %}
@@ -77,8 +78,15 @@
           {%- set version = collection['versions'][version_id] %}
           {%- if not loop.first %}<br>{% endif %}
           {%- if version.version %}
+          {%- if version.release_notes_uri %}
 
-        {{ version.version }}{% if support.support != 'yes'%} ({{support.support}}){% endif %}
+        <a href="{{trans_str(version.release_notes_uri)}}" title="Release Notes">{{version.version}}</a>
+          {%- else %}
+
+        {{version.version}}
+          {%- endif %}
+
+          {%- if support.support != 'yes'%} ({{support.support}}){% endif %}
           {%- else %}
 
         ({{ support.support }})
@@ -89,13 +97,13 @@
           {%- endif %}
           {%- if support.note %}
 
-        <br>({{support.note}})
+        ({{trans_span(support.note)}})
           {%- endif %}
           {%- if support.footnote %}
             {%- set footnum = meta['compat_table']['footnotes'][support_id] %}
             [<a
-              id="browsercompat-{{data['id']}}-footnote-{{footnum}}-back"
-              href="#browsercompat-{{data['id']}}-footnote-{{footnum}}">{{footnum}}</a>]
+              id="wpc-compat-{{data['id']}}-footnote-{{footnum}}-back"
+              href="#wpc-compat-{{data['id']}}-footnote-{{footnum}}">{{footnum}}</a>]
           {%- endif %}
         {%- else %}
 
@@ -116,13 +124,17 @@
 
 {%- endfor %}
 
-{%- for support_id, footnum in meta['compat_table']['footnotes'] | dictsort(by='value') %}
-{%- set support=collection['supports'][support_id] %}
-<p id="browsercompat-{{data['id']}}-footnote-{{footnum}}">
-  <a href="#browsercompat-{{data['id']}}-footnote-{{footnum}}-back">[{{footnum}}]</a>
-  {{trans_span(support.footnote)}}
-</p>
-{% endfor %}
+{% if meta['compat_table']['footnotes'] %}
+<div id="wpc-compat-{{data.id}}-footnotes">
+  {%- for support_id, footnum in meta['compat_table']['footnotes'] | dictsort(by='value') %}
+  {%- set support=collection['supports'][support_id] %}
+  <p id="browsercompat-{{data['id']}}-footnote-{{footnum}}">
+    <a href="#browsercompat-{{data['id']}}-footnote-{{footnum}}-back">[{{footnum}}]</a>
+    {{trans_span(support.footnote)}}
+  </p>
+  {%- endfor %}
+</div>
+{% endif %}
 
 </section>
 <section class="webplatformcompat-feature-meta" lang="{{lang}}">
