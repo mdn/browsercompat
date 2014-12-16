@@ -138,7 +138,7 @@ class Cache(BaseCache):
         return dict((
             ('id', obj.pk),
             ('slug', obj.slug),
-            ('mdn_path', obj.mdn_path),
+            ('mdn_uri', obj.mdn_uri),
             ('experimental', obj.experimental),
             ('standardized', obj.standardized),
             ('stable', obj.stable),

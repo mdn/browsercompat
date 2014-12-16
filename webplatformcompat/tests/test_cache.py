@@ -149,7 +149,7 @@ class TestCache(TestCase):
         expected = {
             'id': feature.id,
             'slug': 'the-slug',
-            'mdn_path': '',
+            'mdn_uri': {},
             'experimental': False,
             'standardized': True,
             'stable': True,

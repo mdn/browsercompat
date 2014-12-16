@@ -3,3 +3,4 @@ branch = True
 
 [report]
 source = webplatformcompat
+omit = webplatformcompat/migrations/*.py

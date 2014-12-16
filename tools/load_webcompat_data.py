@@ -177,7 +177,6 @@ def parse_compat_data_item(key, item, parsed_data):
         # Feature heirarchy
         url = item['links'][0]["url"]
         assert url.startswith('https://developer.mozilla.org/en-US/docs/')
-        mdn_path = url.split('mozilla.org/', 1)[1]
         mdn_subpath = url.split('en-US/docs/', 1)[1]
         path_bits = mdn_subpath.split('/')
         feature_id = ()
@@ -188,12 +187,12 @@ def parse_compat_data_item(key, item, parsed_data):
                 parsed_data['features'][feature_id] = {
                     'slug': unique_slugify(
                         '-'.join(feature_id), parsed_data['feature_slugs']),
-                    'mdn_path': None,
+                    'mdn_uri': None,
                     'name': {'en': bit},
                     'parent_id': last_feature_id,
                 }
         parent_feature_id = feature_id
-        parsed_data['features'][parent_feature_id]['mdn_path'] = mdn_path
+        parsed_data['features'][parent_feature_id]['mdn_uri'] = url
 
         for env, rows in item['contents'].items():
             assert env in ('desktop', 'mobile')
@@ -205,7 +204,7 @@ def parse_compat_data_item(key, item, parsed_data):
                         'slug': unique_slugify(
                             '-'.join(feature_id),
                             parsed_data['feature_slugs']),
-                        'mdn_path': mdn_path,
+                        'mdn_uri': url,
                         'name': {'en': escape(feature)},
                         'parent_id': parent_feature_id,
                     }
@@ -335,8 +334,8 @@ def upload_subset_compat_data(client, parsed_data):
     logger.info("Importing CSS features starting with c...")
     for feature_id in sorted(parsed_data['features'].keys()):
         feature = parsed_data['features'][feature_id]
-        mdn_path = feature['mdn_path']
-        if mdn_path and 'Web/CSS/c' in mdn_path:
+        mdn_uri = feature['mdn_uri']
+        if mdn_uri and 'Web/CSS/c' in mdn_uri:
             upload_feature(client, feature_id, parsed_data, api_ids)
             if len(api_ids['features']) % 100 == 0:
                 logger.info(
@@ -427,12 +426,13 @@ def upload_feature(client, feature_id, parsed_data, api_ids):
             client, parent_id, parsed_data, api_ids)
         data = {
             "slug": feature["slug"],
-            "mdn_path": feature["mdn_path"],
             "name": feature["name"],
             "links": {
                 "parent": parent_api_id,
             }
         }
+        if feature.get("mdn_uri"):
+            data['mdn_uri'] = {'en': feature['mdn_uri']}
         response = client.create('features', data)
         api_id = response['id']
         api_ids['features'][feature_id] = api_id
@@ -518,8 +518,10 @@ if __name__ == '__main__':
     api = args.api
     if api.endswith('/'):
         api = api[:-1]
-    logger.info("Loading data into %s" % api)
     all_data = args.all_data
+    logger.info(
+        "Loading %s data into %s",
+        'all' if all_data else 'subset of', api)
 
     # Get credentials
     user = args.user or input("API username: ")

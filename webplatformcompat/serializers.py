@@ -155,7 +155,7 @@ class FeatureSerializer(HistoricalModelSerializer):
     class Meta:
         model = Feature
         fields = (
-            'id', 'slug', 'mdn_path', 'experimental', 'standardized',
+            'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
             'stable', 'obsolete', 'name',
             'sections', 'supports', 'parent', 'children',
             'history_current', 'history')
@@ -458,7 +458,7 @@ class ViewFeatureListSerializer(ModelSerializer):
     class Meta:
         model = Feature
         fields = (
-            'url', 'id', 'slug', 'mdn_path', 'experimental', 'standardized',
+            'url', 'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
             'stable', 'obsolete', 'name')
 
 

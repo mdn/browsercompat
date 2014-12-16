@@ -255,7 +255,7 @@
                 <td>{{#link-to 'feature' id}}{{slug}}{{/link-to}}</td>
                 <td>{{{flagsHTML}}}</td>
                 <td>{{{nameDefaultHTML}}}</td>
-                <td>{{{mdnFullLinkHTML}}}</td>
+                <td>{{{mdnDefaultHTML}}}</td>
                 <td>{{versionCountText}}</td>
             </tr>
           {{/each}}
@@ -291,8 +291,8 @@
   <dd>{{obsolete}}</dd>
   <dt>Name</dt>
   <dd>{{{nameListHTML}}}</dd>
-  <dt>MDN path</dt>
-  <dd>{{{mdnFullLinkHTML}}}</dd>
+  <dt>MDN URI</dt>
+  <dd>{{{mdnListHTML}}}</dd>
   <dt>Parent Feature</dt>
   <dd>{{#if parent}}{{#with parent controller='feature'}}{{#link-to 'feature' id}}{{{nameDefaultHTML}}}{{/link-to}}{{/with}}{{else}}<em>No Parent</em>{{/if}}</dd>
   <dt>Child Features</dt>

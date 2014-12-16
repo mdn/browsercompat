@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.db.models.signals import post_delete, post_save, m2m_changed
+from django.db.models.signals import (post_delete, post_save, m2m_changed)
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django_extensions.db.fields.json import JSONField
@@ -41,12 +41,9 @@ class Feature(MPTTModel):
     slug = models.SlugField(
         help_text="Unique, human-friendly slug.",
         unique=True)
-    mdn_path = models.CharField(
-        help_text=(
-            "The path to the page on MDN that this feature was first"
-            " scraped from.  May be used in UX or for debugging import"
-            " scripts."),
-        blank=True, max_length=255)
+    mdn_uri = TranslatedField(
+        help_text='The URI of the MDN page that documents this feature.',
+        blank=True, null=True)
     experimental = models.BooleanField(
         help_text=(
             "True if a feature is considered experimental, such as being"
