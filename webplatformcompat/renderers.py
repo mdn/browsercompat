@@ -67,10 +67,10 @@ class JsonApiRenderer(BaseJsonApiRender):
         view_name = '%(model_name)s-detail' % format_kwargs
 
         assert field_name in resource
-        links[field_name] = {
-            "type": resource_type,
-            "href": self.url_to_template(view_name, request, field_name)
-        }
+        links[field_name] = self.dict_class((
+            ("type", resource_type),
+            ("href", self.url_to_template(view_name, request, field_name)),
+        ))
 
         if field.many:
             pks = resource[field_name]

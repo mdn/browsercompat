@@ -3,6 +3,8 @@
 from __future__ import print_function
 
 from cgi import escape
+from collections import defaultdict
+import codecs
 import getpass
 import json
 import logging
@@ -14,6 +16,8 @@ import sys
 import requests
 
 from client import Client
+from resources import (
+    Collection, CollectionChangeset, Browser, Version, Feature, Support)
 
 try:
     input = raw_input  # Get the Py2 raw_input
@@ -21,7 +25,7 @@ except NameError:
     pass  # We're in Py3
 
 
-logger = logging.getLogger('populate_data')
+logger = logging.getLogger('tools.load_webcompat_data')
 COMPAT_DATA_FILENAME = "data-human.json"
 COMPAT_DATA_URL = (
     "https://raw.githubusercontent.com/webplatform/compatibility-data"
@@ -46,58 +50,77 @@ known_browsers = [
 version_re = re.compile("^[.\d]+$")
 
 
-def verify_empty_api(client):
-    """Verify that no data is loaded into this API"""
-    for resource in ('browsers', 'versions', 'features', 'supports'):
-        if client.count(resource) != 0:
-            raise Exception('API already has %s data' % resource)
-
-
 def get_compat_data(filename, url):
     if not os.path.exists(filename):
         logger.info("Downloading " + filename)
         r = requests.get(url)
-        with open(filename, 'wb') as f:
+        with codecs.open(filename, 'wb', 'utf8') as f:
             f.write(r.content)
     else:
         logger.info("Using existing " + filename)
 
-    with open(filename, 'r') as f:
+    with codecs.open(filename, 'r', 'utf8') as f:
         compat_data = json.load(f)
     return compat_data
 
 
-def load_compat_data(client, compat_data, all_data=False):
+def load_compat_data(client, compat_data, all_data=False, confirm=None):
     """Load a dictionary of compatiblity data into the API"""
-    verify_empty_api(client)
-    parsed_data = parse_compat_data(compat_data)
-    logger.info('Opening changeset...')
-    client.open_changeset()
-    counts = {}
-    try:
-        if all_data:
-            counts = upload_compat_data(client, parsed_data)
+    api_collection = Collection(client)
+    local_collection = Collection()
+
+    logger.info('Reading existing feature data from API')
+    load_api_feature_data(api_collection)
+    logger.info('Loading feature data from webplatform repository')
+    parse_compat_data(compat_data, local_collection)
+
+    if not all_data:
+        logger.info('Selecting subset of data')
+        select_subset(local_collection)
+
+    logger.info('Looking for changes...')
+    changeset = CollectionChangeset(api_collection, local_collection)
+    delta = changeset.changes
+
+    if delta['new'] or delta['changed'] or delta['deleted']:
+        logger.info(
+            'Changes detected: %d new, %d changed, %d deleted, %d same.',
+            len(delta['new']), len(delta['changed']), len(delta['deleted']),
+            len(delta['same']))
+        if confirm:
+            confirmed = confirm(client, changeset)
         else:
-            counts = upload_subset_compat_data(client, parsed_data)
-    finally:
-        logger.info('Closing changeset...')
-        client.close_changeset()
+            confirmed = True
+        if not confirmed:
+            return {}
+    else:
+        logger.info('No changes')
+        return {}
+
+    counts = changeset.change_original_collection()
     return counts
 
 
-def parse_compat_data(compat_data):
-    parsed_data = {
-        'browsers': dict(),
-        'features': dict(),
-        'feature_slugs': set(),
-        'versions': dict(),
-        'supports': dict(),
-    }
+def load_api_feature_data(api_collection):
+    api_collection.load_all('browsers')
+    api_collection.load_all('versions')
+    api_collection.load_all('features')
+    api_collection.load_all('supports')
 
+
+def parse_compat_data(compat_data, local_collection):
+    local_collection.feature_slugs = set()
     for key, value in compat_data['data'].items():
-        parse_compat_data_item(key, value, parsed_data)
+        parse_compat_data_item(key, value, local_collection)
 
-    return parsed_data
+    # Populate the sorted versions
+    browser_versions = defaultdict(list)
+    for version in local_collection.get_resources_by_data_id(
+            'versions').values():
+        browser_versions[version.browser.id].append(version)
+    for browser_id, versions in browser_versions.items():
+        browser = local_collection.get('browsers', browser_id)
+        browser.versions = sorted([v.id.id for v in versions])
 
 
 def slugify(word, attempt=0):
@@ -116,7 +139,8 @@ def slugify(word, attempt=0):
         suffix = str(attempt)
     else:
         suffix = ""
-    return slugged[slice(50 - len(suffix))] + suffix
+    with_suffix = slugged[slice(50 - len(suffix))] + suffix
+    return with_suffix.decode('utf-8')
 
 
 def unique_slugify(word, existing):
@@ -129,7 +153,7 @@ def unique_slugify(word, existing):
     return slug
 
 
-def parse_compat_data_item(key, item, parsed_data):
+def parse_compat_data_item(key, item, local_collection):
     browser_conversions = {
         "IE Phone": "IE Mobile",
         "Chrome for Andriod": "Chrome for Android",
@@ -147,26 +171,26 @@ def parse_compat_data_item(key, item, parsed_data):
         'notes',
     ]
     support_map = {
-        'y': 'yes',
-        'u': 'unknown',
-        'x': 'prefix',
-        'n': 'no',
-        'a': 'unknown',
+        'y': u'yes',
+        'u': u'unknown',
+        'x': u'prefix',
+        'n': u'no',
+        'a': u'unknown',
     }
     support_prefix = {
-        'Chrome': '-webkit',
-        'Safari': '-webkit',
-        'Android': '-webkit',
-        'Chrome Mobile': '-webkit',
-        'Chrome for Android': '-webkit',
-        'BlackBerry': '-webkit',
-        'Firefox': '-moz',
-        'Firefox OS': '-moz',
-        'Safari Mobile': '-moz',
-        'Firefox Mobile': '-moz',
-        'Opera': '-o',
-        'Opera Mobile': '-o',
-        'Internet Explorer': '-ms',
+        'Chrome': u'-webkit',
+        'Safari': u'-webkit',
+        'Android': u'-webkit',
+        'Chrome Mobile': u'-webkit',
+        'Chrome for Android': u'-webkit',
+        'BlackBerry': u'-webkit',
+        'Firefox': u'-moz',
+        'Firefox OS': u'-moz',
+        'Safari Mobile': u'-moz',
+        'Firefox Mobile': u'-moz',
+        'Opera': u'-o',
+        'Opera Mobile': u'-o',
+        'Internet Explorer': u'-ms',
     }
 
     if "breadcrumb" in item:
@@ -183,42 +207,41 @@ def parse_compat_data_item(key, item, parsed_data):
         for bit in path_bits:
             last_feature_id = feature_id
             feature_id += (bit,)
-            if feature_id not in parsed_data['features']:
-                parsed_data['features'][feature_id] = {
-                    'slug': unique_slugify(
-                        '-'.join(feature_id), parsed_data['feature_slugs']),
-                    'mdn_uri': None,
-                    'name': {'en': bit},
-                    'parent_id': last_feature_id,
-                }
+            if not local_collection.get('features', feature_id):
+                slug = unique_slugify(
+                    '-'.join(feature_id), local_collection.feature_slugs)
+                local_collection.add(Feature(
+                    id=feature_id, slug=slug, name={u'en': bit},
+                    experimental=False, obsolete=False, stable=True,
+                    standardized=True, mdn_uri=None,
+                    parent=last_feature_id or None))
         parent_feature_id = feature_id
-        parsed_data['features'][parent_feature_id]['mdn_uri'] = url
+        parent_feature = local_collection.get('features', parent_feature_id)
+        parent_feature.mdn_uri = {u'en': url}
 
         for env, rows in item['contents'].items():
             assert env in ('desktop', 'mobile')
             for feature, columns in rows.items():
                 # Add feature
                 feature_id = parent_feature_id + (feature,)
-                if feature_id not in parsed_data['features']:
-                    parsed_data['features'][feature_id] = {
-                        'slug': unique_slugify(
-                            '-'.join(feature_id),
-                            parsed_data['feature_slugs']),
-                        'mdn_uri': url,
-                        'name': {'en': escape(feature)},
-                        'parent_id': parent_feature_id,
-                    }
+                if not local_collection.get('features', feature_id):
+                    slug = unique_slugify(
+                        '-'.join(feature_id), local_collection.feature_slugs)
+                    local_collection.add(Feature(
+                        id=feature_id, slug=slug,
+                        mdn_uri={u'en': url}, name={u'en': escape(feature)},
+                        experimental=False, obsolete=False, stable=True,
+                        standardized=True, parent=parent_feature_id))
 
                 # Add browser
                 for raw_browser, versions in columns.items():
                     browser = browser_conversions.get(raw_browser, raw_browser)
                     assert browser in known_browsers, raw_browser
                     browser_id = known_browsers.index(browser)
-                    if browser_id not in parsed_data['browsers']:
-                        parsed_data['browsers'][browser_id] = {
-                            'slug': slugify(browser),
-                            'name': browser,
-                        }
+                    if not local_collection.get('browsers', browser_id):
+                        local_collection.add(Browser(
+                            id=browser_id, slug=slugify(browser),
+                            name={u'en': browser}, note=None))
 
                     version_note = versions.get('notes', {})
                     for raw_version, raw_support in versions.items():
@@ -227,22 +250,28 @@ def parse_compat_data_item(key, item, parsed_data):
                             continue
                         version, version_id = convert_version(
                             browser_id, raw_version)
-                        if version_id not in parsed_data['versions']:
-                            parsed_data['versions'][version_id] = {
-                                'version': version,
-                            }
+                        if not local_collection.get('versions', version_id):
+                            local_collection.add(Version(
+                                id=version_id, version=version,
+                                browser=browser_id, note=None,
+                                release_day=None, release_notes_uri=None,
+                                retirement_day=None, status=u'unknown'))
 
                         # Add support
                         support_id = (version_id, feature_id)
-                        if support_id not in parsed_data['supports']:
+                        if not local_collection.get('supports', support_id):
                             notes = []
-
-                            support = support_map[raw_support[0]]
-                            if support == 'prefix':
-                                support = 'yes'
-                                prefix = support_prefix[browser]
-                            else:
-                                prefix = None
+                            obj = Support(
+                                id=support_id, feature=feature_id,
+                                version=version_id, alternate_name=None,
+                                alternate_mandatory=False,
+                                default_config=None, footnote=None,
+                                note=None, prefix=None, prefix_mandatory=False,
+                                protected=False, requires_config=None)
+                            obj.support = support_map[raw_support[0]]
+                            if obj.support == 'prefix':
+                                obj.support = 'yes'
+                                obj.prefix = support_prefix[browser]
 
                             if len(raw_support) > 1:
                                 notes.append(
@@ -251,26 +280,24 @@ def parse_compat_data_item(key, item, parsed_data):
                             for item in version_note.items():
                                 notes.append('%s: %s' % item)
 
-                            data = {'support': support}
                             if notes:
                                 joined = '<br>'.join(escape(n) for n in notes)
-                                data['note'] = {'en': joined}
-                            if prefix:
-                                data['prefix'] = prefix
-                                data['prefix_mandatory'] = True
-                            parsed_data['supports'][support_id] = data
+                                obj.note = {'en': joined}
+                            if obj.prefix:
+                                obj.prefix_mandatory = True
+                            local_collection.add(obj)
     else:
         for subkey, subitem in item.items():
-            parse_compat_data_item(subkey, subitem, parsed_data)
+            parse_compat_data_item(subkey, subitem, local_collection)
 
 
 def convert_version(browser_id, raw_version):
-    version = "" if raw_version == "?" else raw_version
     if raw_version == '?':
-        version = ""
+        version = None
     else:
         version = raw_version
-    if version == "":
+    if not version:
+        version = None
         version_id = (browser_id,)
     else:
         assert version_re.match(version), raw_version
@@ -283,191 +310,40 @@ def convert_version(browser_id, raw_version):
     return version, version_id
 
 
-def upload_compat_data(client, parsed_data):
-    api_ids = dict(
-        (n, {}) for n in ['browsers', 'versions', 'features', 'supports'])
-    logger.info("Importing browsers...")
-    for browser_id in sorted(parsed_data['browsers'].keys()):
-        upload_browser(client, browser_id, parsed_data, api_ids)
-        if len(api_ids['browsers']) % 100 == 0:
-            logger.info("Imported %d browsers..." % len(api_ids['browsers']))
+def select_subset(local_collection):
+    """Discard all but a subset of features and supports"""
+    # Select features to keep
+    keep_feature_ids = set()
+    for feature in local_collection.get_resources('features'):
+        if feature.mdn_uri and 'Web/CSS/c' in feature.mdn_uri['en']:
+            keep_feature_ids.add(feature.id.id)
+            parent = feature.parent.get()
+            while parent:
+                keep_feature_ids.add(parent.id.id)
+                parent = parent.parent.get()
 
-    logger.info("Importing versions...")
-    for version_id in sorted(parsed_data['versions'].keys()):
-        upload_version(client, version_id, parsed_data, api_ids)
-        if len(api_ids['versions']) % 100 == 0:
-            logger.info("Imported %d versions..." % len(api_ids['versions']))
+    # Discard unrelated supports
+    for support in local_collection.get_resources('supports')[:]:
+        if support.feature.id not in keep_feature_ids:
+            local_collection.remove(support)
 
-    logger.info("Importing features...")
-    for feature_id in sorted(parsed_data['features'].keys()):
-        upload_feature(client, feature_id, parsed_data, api_ids)
-        if len(api_ids['features']) % 100 == 0:
-            logger.info("Imported %d features..." % len(api_ids['features']))
-
-    logger.info("Importing supports...")
-    for support_id in sorted(parsed_data['supports'].keys()):
-        upload_support(client, support_id, parsed_data, api_ids)
-        if len(api_ids['supports']) % 100 == 0:
-            logger.info("Imported %d supports..." % len(api_ids['supports']))
-
-    counts = dict((n, len(api_ids[n])) for n in api_ids)
-    return counts
+    # Discard unrelated features
+    for feature in local_collection.get_resources('features')[:]:
+        if feature.id.id not in keep_feature_ids:
+            local_collection.remove(feature)
 
 
-def upload_subset_compat_data(client, parsed_data):
-    api_ids = dict(
-        (n, {}) for n in ['browsers', 'versions', 'features', 'supports'])
-
-    # Load all browsers, versions because no Support instances yet
-    logger.info("Importing browsers...")
-    for browser_id in sorted(parsed_data['browsers'].keys()):
-        upload_browser(client, browser_id, parsed_data, api_ids)
-        if len(api_ids['browsers']) % 100 == 0:
-            logger.info("Imported %d browsers..." % len(api_ids['browsers']))
-
-    logger.info("Importing versions...")
-    for version_id in sorted(parsed_data['versions'].keys()):
-        upload_version(client, version_id, parsed_data, api_ids)
-        if len(api_ids['versions']) % 100 == 0:
-            logger.info("Imported %d versions..." % len(api_ids['versions']))
-
-    logger.info("Importing CSS features starting with c...")
-    for feature_id in sorted(parsed_data['features'].keys()):
-        feature = parsed_data['features'][feature_id]
-        mdn_uri = feature['mdn_uri']
-        if mdn_uri and 'Web/CSS/c' in mdn_uri:
-            upload_feature(client, feature_id, parsed_data, api_ids)
-            if len(api_ids['features']) % 100 == 0:
-                logger.info(
-                    "Imported %d features..." % len(api_ids['features']))
-
-    logger.info("Import related supports...")
-    for support_id in sorted(parsed_data['supports'].keys()):
-        feature_id = support_id[1]
-        if feature_id in api_ids['features']:
-            upload_support(client, support_id, parsed_data, api_ids)
-            if len(api_ids['supports']) % 100 == 0:
-                logger.info(
-                    "Imported %d supports..." % len(api_ids['supports']))
-
-    counts = dict((n, len(api_ids[n])) for n in api_ids)
-    return counts
-
-
-def upload_browser(client, browser_id, parsed_data, api_ids):
-    """Upload a parsed browser to the API
-
-    Keyword Arguments:
-    client - authenticated client to use for uploads
-    browser_id - ID of the browser in parsed_data['browsers']
-    parsed_data - dictionary of all the parsed data
-    api_ids - dictionary of IDs of uploaded instances
-
-    Return is the ID generated by the API
-    """
-    if browser_id not in api_ids['browsers']:
-        browser = parsed_data['browsers'][browser_id]
-        data = {
-            "slug": browser['slug'],
-            "name": {'en': browser['name']}
-        }
-        response = client.create('browsers', data)
-        api_id = response['id']
-        api_ids['browsers'][browser_id] = api_id
-    return api_ids['browsers'][browser_id]
-
-
-def upload_version(client, version_id, parsed_data, api_ids):
-    """Upload a parsed version to the API
-
-    Keyword Arguments:
-    client - authenticated client to use for uploads
-    version_id - ID of the version in parsed_data['versions']
-    parsed_data - dictionary of all the parsed data
-    api_ids - dictionary of IDs of uploaded instances
-
-    Return is the ID generated by the API
-    """
-    if version_id not in api_ids['versions']:
-        version = parsed_data['versions'][version_id]
-        browser_id = version_id[0]
-        browser_api_id = upload_browser(
-            client, browser_id, parsed_data, api_ids)
-        data = {
-            "version": version['version'],
-            "status": version.get('status', 'unknown'),
-            "links": {
-                "browser": browser_api_id
-            }
-        }
-        response = client.create('versions', data)
-        api_id = response['id']
-        api_ids['versions'][version_id] = api_id
-    return api_ids['versions'][version_id]
-
-
-def upload_feature(client, feature_id, parsed_data, api_ids):
-    """Upload a parsed feature to the API
-
-    Keyword Arguments:
-    client - authenticated client to use for uploads
-    feature_id - ID of the feature in parsed_data['features']
-    parsed_data - dictionary of all the parsed data
-    api_ids - dictionary of IDs of uploaded instances
-
-    Return is the ID generated by the API
-    """
-    if feature_id == ():
-        return None
-    elif feature_id not in api_ids['features']:
-        feature = parsed_data['features'][feature_id]
-        parent_id = feature["parent_id"]
-        parent_api_id = upload_feature(
-            client, parent_id, parsed_data, api_ids)
-        data = {
-            "slug": feature["slug"],
-            "name": feature["name"],
-            "links": {
-                "parent": parent_api_id,
-            }
-        }
-        if feature.get("mdn_uri"):
-            data['mdn_uri'] = {'en': feature['mdn_uri']}
-        response = client.create('features', data)
-        api_id = response['id']
-        api_ids['features'][feature_id] = api_id
-    return api_ids['features'][feature_id]
-
-
-def upload_support(client, support_id, parsed_data, api_ids):
-    """Upload a parsed support to the API
-
-    Keyword Arguments:
-    client - authenticated client to use for uploads
-    support_id - ID of the support in parsed_data['supports']
-    parsed_data - dictionary of all the parsed data
-    api_ids - dictionary of IDs of uploaded instances
-
-    Return is the ID generated by the API
-    """
-    if support_id not in api_ids['supports']:
-        support = parsed_data['supports'][support_id]
-        version_id, feature_id = support_id
-        version_api_id = upload_version(
-            client, version_id, parsed_data, api_ids)
-        feature_api_id = upload_feature(
-            client, feature_id, parsed_data, api_ids)
-        data = {
-            "support": support['support'],
-            "links": {
-                "version": version_api_id,
-                "feature": feature_api_id,
-            },
-        }
-        response = client.create('supports', data)
-        api_id = response['id']
-        api_ids['supports'][support_id] = api_id
-    return api_ids['supports'][support_id]
+def confirm_changes(client, changeset):
+    while True:
+        choice = input("Make these changes? (Y/N/D for details) ")
+        if choice.upper() == 'Y':
+            return True
+        elif choice.upper() == 'N':
+            return False
+        elif choice.upper() == 'D':
+            print(changeset.summarize())
+        else:
+            print("Please type Y or N or D.")
 
 
 if __name__ == '__main__':
@@ -497,7 +373,7 @@ if __name__ == '__main__':
     quiet = args.quiet
     console = logging.StreamHandler(sys.stderr)
     formatter = logging.Formatter('%(levelname)s - %(message)s')
-    logger_name = 'populate_data'
+    logger_name = 'tools'
     fmat = '%(levelname)s - %(message)s'
     if quiet:
         level = logging.WARNING
@@ -533,8 +409,24 @@ if __name__ == '__main__':
 
     # Load data
     compat_data = get_compat_data(COMPAT_DATA_FILENAME, COMPAT_DATA_URL)
-    counts = load_compat_data(client, compat_data, all_data=all_data)
+    counts = load_compat_data(
+        client, compat_data, all_data=all_data, confirm=confirm_changes)
 
-    logger.info("Upload complete. Counts:")
-    for name, count in counts.items():
-        logger.info("  %s: %d" % (name, count))
+    if counts:
+        logger.info("Changes complete. Counts:")
+        for resource_type, changes in counts.items():
+            c_new = changes.get('new', 0)
+            c_deleted = changes.get('deleted', 0)
+            c_changed = changes.get('changed', 0)
+            c_text = []
+            if c_new:
+                c_text.append("%d new" % c_new)
+            if c_deleted:
+                c_text.append("%d deleted" % c_deleted)
+            if c_changed:
+                c_text.append("%d changed" % c_changed)
+            if c_text:
+                logger.info("  %s: %s" % (
+                    resource_type.title(), ', '.join(c_text)))
+    else:
+        logger.info("No data uploaded.")

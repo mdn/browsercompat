@@ -2,6 +2,7 @@
 """Fields for Django REST Framework serializers."""
 from __future__ import unicode_literals
 
+from collections import OrderedDict
 import json
 
 from django.core.exceptions import ValidationError
@@ -224,7 +225,13 @@ class TranslatedTextField(CharField):
                 else:
                     return None
             else:
-                return value
+                out = OrderedDict()
+                if 'en' in value:
+                    out['en'] = value['en']
+                for lang in sorted(value.keys()):
+                    if lang != 'en':
+                        out[lang] = value[lang]
+                return out
         else:
             return None
 
@@ -232,7 +239,8 @@ class TranslatedTextField(CharField):
         """Convert from serializable data to model"""
         if isinstance(value, dict):
             return value
-        value = value.strip()
+        if value:
+            value = value.strip()
         if value:
             try:
                 native = json.loads(value)

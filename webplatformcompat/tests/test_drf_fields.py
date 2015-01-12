@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for `web-platform-compat` fields module."""
 
+from collections import OrderedDict
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
@@ -18,6 +20,16 @@ class SharedTranslatedTextFieldTests(object):
         # Converting to serializable form, dicts are passed through
         data = {"key": "value"}
         self.assertEqual(data, self.ttf.to_native(data))
+
+    def test_to_native_sorted_dict(self):
+        # Converting to serializable form, dict is sorted, English first
+        data = {'es': 'Spanish', 'en': 'English', 'ru': 'Russian'}
+        expected = OrderedDict([
+            ('en', 'English'),
+            ('es', 'Spanish'),
+            ('ru', 'Russian')])
+        self.assertEqual(expected, self.ttf.to_native(data))
+        self.assertEqual(expected.keys(), self.ttf.to_native(data).keys())
 
     def test_from_native_falsy(self):
         # Converting from serialized form, false values are None
@@ -48,6 +60,9 @@ class TestTranslatedTextField(SharedTranslatedTextFieldTests, TestCase):
         # Converting from serialized form, string remains string, validation
         # will raise an error
         self.assertEqual("display", self.ttf.from_native('"display"'))
+
+    def test_from_native_null(self):
+        self.assertEqual(None, self.ttf.from_native(None))
 
     def test_from_native_bad_json(self):
         # Converting from serialized form, bad JSON becomes ValidationError

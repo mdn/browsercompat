@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+import codecs
 import getpass
 import logging
 import os.path
@@ -12,76 +13,87 @@ import sys
 import requests
 
 from client import Client
+from resources import Collection, CollectionChangeset, Maturity, Specification
 
 try:
     input = raw_input  # Get the Py2 raw_input
 except NameError:
     pass  # We're in Py3
 
-
-logger = logging.getLogger('populate_data')
+logger = logging.getLogger('tools.load_spec_data')
 SPEC2_FILENAME = 'Spec2.txt'
 SPEC2_URL = 'https://developer.mozilla.org/en-US/docs/Template:Spec2?raw'
 SPECNAME_FILENAME = 'SpecName.txt'
 SPECNAME_URL = 'https://developer.mozilla.org/en-US/docs/Template:SpecName?raw'
 
 
-def verify_empty_api(client):
-    """Verify that no data is loaded into this API"""
-    for resource in ('specifications', 'sections', 'maturities'):
-        if client.count(resource) != 0:
-            raise Exception('API already has %s data' % resource)
-
-
 def get_template(filename, url):
     if not os.path.exists(filename):
         logger.info("Downloading " + filename)
         r = requests.get(url)
-        with open(filename, 'wb') as f:
+        with codecs.open(filename, 'wb', 'utf8') as f:
             f.write(r.content)
     else:
         logger.info("Using existing " + filename)
 
-    with open(filename, 'r') as f:
+    with codecs.open(filename, 'r', 'utf8') as f:
         template = f.read()
     return template
 
 
-def load_spec_data(client, specname, spec2):
+def load_spec_data(client, specname, spec2, confirm=None):
     """Load a dictionary of specification data into the API"""
-    verify_empty_api(client)
-    parsed_data = parse_spec_data(specname, spec2)
-    logger.info('Opening changeset...')
-    client.open_changeset()
-    counts = {}
-    try:
-        counts = upload_spec_data(client, parsed_data)
-    finally:
-        logger.info('Closing changeset...')
-        client.close_changeset()
+    api_collection = Collection(client)
+    local_collection = Collection()
+
+    logger.info('Reading existing spec data from API')
+    load_api_spec_data(api_collection)
+    logger.info('Reading spec data from MDN templates')
+    parse_spec_data(specname, spec2, api_collection, local_collection)
+
+    changeset = CollectionChangeset(api_collection, local_collection)
+    delta = changeset.changes
+    if delta['new'] or delta['changed'] or delta['deleted']:
+        logger.info(
+            'Changes detected: %d new, %d changed, %d deleted, %d same.',
+            len(delta['new']), len(delta['changed']), len(delta['deleted']),
+            len(delta['same']))
+        if confirm:
+            confirmed = confirm(client, changeset)
+        else:
+            confirmed = True
+        if not confirmed:
+            return {}
+    else:
+        logger.info('No changes')
+        return {}
+
+    counts = changeset.change_original_collection()
     return counts
 
 
-def parse_spec_data(specname, spec2):
-    parsed_data = {
-        'maturities': dict(),
-        'specifications': dict(),
-        'spec_slugs': set(),
-    }
-
-    parse_specname(specname, parsed_data)
-    parse_spec2(spec2, parsed_data)
-    return parsed_data
+def load_api_spec_data(api_collection):
+    api_collection.load_all('maturities')
+    api_collection.load_all('specifications')
 
 
-def parse_specname(specname, parsed_data):
+def parse_spec_data(specname, spec2, api_collection, local_collection):
+    parse_specname(specname, api_collection, local_collection)
+    parse_spec2(spec2, local_collection)
+
+
+def parse_specname(specname, api_collection, local_collection):
     phase = 0
     mdn_key = None
     name = None
     url = None
+    slugs = set([
+        s.slug for s in api_collection.get_resources('specifications')])
     mdn_key_re = re.compile(r"\s+['\"](.*)['\"]\s*:\s*{")
     name_re = re.compile(r"\s+name\s*:\s*['\"](.*)['\"],?\s*$")
     url_re = re.compile(r"\s+url\s*:\s*['\"](.*)['\"],?\s*$")
+    api_specs = api_collection.get_resources_by_data_id('specifications')
+
     for line in specname.split('\n'):
         if phase == 0:
             # Looking for start of specList
@@ -105,14 +117,15 @@ def parse_specname(specname, parsed_data):
                 assert name is not None
                 assert url is not None
                 if url.startswith('http'):
-                    slug = unique_slugify(mdn_key, parsed_data['spec_slugs'])
-                    spec_id = mdn_key
-                    parsed_data['specifications'][spec_id] = {
-                        'slug': slug,
-                        'mdn_key': mdn_key,
-                        'name': {'en': name},
-                        'uri': {'en': url},
-                    }
+                    api_spec = api_specs.get(('specifications', mdn_key))
+                    if api_spec:
+                        slug = api_spec.slug
+                    else:
+                        slug = unique_slugify(mdn_key, slugs)
+                    spec = Specification(
+                        id="_" + slug, slug=slug, mdn_key=mdn_key,
+                        name={u'en': name}, uri={u'en': url}, sections=[])
+                    local_collection.add(spec)
                 else:
                     logger.warning(
                         'Discarding specification "%s" with url "%s"',
@@ -128,13 +141,14 @@ def parse_specname(specname, parsed_data):
     assert phase == 2, "SpecName didn't match expected format"
 
 
-def parse_spec2(spec2, parsed_data):
+def parse_spec2(specname, local_collection):
     phase = 0
     key = None
     name = None
     status_re = re.compile(r"\s+['\"](.*)['\"]\s+: ['\"](.*)['\"],?\s*$")
     mat_re = re.compile(r"\s+['\"](.*)['\"]\s*:\s*mdn\.localString\({\s*$")
     name_re = re.compile(r"\s+['\"](.*)['\"]\s*:\s*['\"](.*)['\"],?\s*$")
+    local_specs = local_collection.get_resources_by_data_id('specifications')
 
     for line in spec2.split('\n'):
         if phase == 0:
@@ -147,9 +161,9 @@ def parse_spec2(spec2, parsed_data):
                 phase = 2
             elif status_re.match(line):
                 spec_key, maturity_key = status_re.match(line).groups()
-                spec = parsed_data['specifications'].get(spec_key.strip())
+                spec = local_specs.get(('specifications', spec_key))
                 if spec:
-                    spec['maturity_id'] = maturity_key.strip()
+                    spec.maturity = maturity_key
                 else:
                     logger.warning(
                         'Skipping maturity for unknown spec "%s"', spec_key)
@@ -173,21 +187,31 @@ def parse_spec2(spec2, parsed_data):
                 if lang == 'en-US':
                     lang = 'en'
                 assert lang not in name
-                name[lang.strip()] = trans.strip().decode('string_escape')
+                text = trans.strip().replace('\\\\', '&#92;')
+                text = text.replace('\\', '').replace('&#92;', '\\')
+                name[lang.strip()] = text
             elif line.startswith('  })'):
                 assert key is not None
                 assert name
-                mat_id = key
-                parsed_data['maturities'][mat_id] = {
-                    'slug': mat_id,
-                    'name': name,
-                }
+                specs = local_collection.filter(
+                    'specifications', maturity=key)
+                if specs:
+                    maturity = Maturity(id=key, slug=key, name=name)
+                    local_collection.add(maturity)
+                else:
+                    logger.warning('Skipping unused maturity "%s"', key)
                 key = None
                 name = None
         elif phase == 4:
             # Not processing rest of file
             pass
     assert phase == 4, "Spec2 didn't match expected format"
+
+    # Remove Specs without maturities
+    immature_specs = local_collection.filter('specifications', maturity=None)
+    for spec in immature_specs:
+        logger.warning('Skipping spec with no maturity "%s"', spec.name['en'])
+        local_collection.remove(spec)
 
 
 def slugify(word, attempt=0):
@@ -219,79 +243,17 @@ def unique_slugify(word, existing):
     return slug
 
 
-def upload_spec_data(client, parsed_data):
-    api_ids = dict(
-        (n, {}) for n in ['maturities', 'specifications'])
-
-    logger.info("Importing specifications...")
-    for specification_id in sorted(parsed_data['specifications'].keys()):
-        upload_specification(client, specification_id, parsed_data, api_ids)
-        if len(api_ids['specifications']) % 100 == 0:
-            logger.info(
-                "Imported %d specifications..." %
-                len(api_ids['specifications']))
-
-    counts = dict((n, len(api_ids[n])) for n in api_ids)
-    return counts
-
-
-def upload_maturity(client, maturity_id, parsed_data, api_ids):
-    """Upload a parsed maturity to the API
-
-    Keyword Arguments:
-    client - authenticated client to use for uploads
-    maturity_id - ID of the maturity in parsed_data['maturities']
-    parsed_data - dictionary of all the parsed data
-    api_ids - dictionary of IDs of uploaded instances
-
-    Return is the ID generated by the API
-    """
-    if maturity_id not in api_ids['maturities']:
-        maturity = parsed_data['maturities'][maturity_id]
-        data = {
-            "slug": maturity['slug'],
-            "name": maturity['name']
-        }
-        response = client.create('maturities', data)
-        api_id = response['id']
-        api_ids['maturities'][maturity_id] = api_id
-    return api_ids['maturities'][maturity_id]
-
-
-def upload_specification(client, specification_id, parsed_data, api_ids):
-    """Upload a parsed specification to the API
-
-    Keyword Arguments:
-    client - authenticated client to use for uploads
-    specification_id - ID of the specification in parsed_data['specifications']
-    parsed_data - dictionary of all the parsed data
-    api_ids - dictionary of IDs of uploaded instances
-
-    Return is the ID generated by the API
-    """
-    if specification_id not in api_ids['specifications']:
-        specification = parsed_data['specifications'][specification_id]
-        if 'maturity_id' not in specification:
-            logger.warning(
-                'Not uploading specification "%s", no associated maturity',
-                specification_id)
-            return None
-        maturity_id = specification['maturity_id']
-        maturity_api_id = upload_maturity(
-            client, maturity_id, parsed_data, api_ids)
-        data = {
-            "slug": specification['slug'],
-            "mdn_key": specification['mdn_key'],
-            "name": specification['name'],
-            "uri": specification['uri'],
-            "links": {
-                "maturity": maturity_api_id
-            }
-        }
-        response = client.create('specifications', data)
-        api_id = response['id']
-        api_ids['specifications'][specification_id] = api_id
-    return api_ids['specifications'][specification_id]
+def confirm_changes(client, changeset):
+    while True:
+        choice = input("Make these changes? (Y/N/D for details) ")
+        if choice.upper() == 'Y':
+            return True
+        elif choice.upper() == 'N':
+            return False
+        elif choice.upper() == 'D':
+            print(changeset.summarize())
+        else:
+            print("Please type Y or N or D.")
 
 
 if __name__ == '__main__':
@@ -318,7 +280,7 @@ if __name__ == '__main__':
     quiet = args.quiet
     console = logging.StreamHandler(sys.stderr)
     formatter = logging.Formatter('%(levelname)s - %(message)s')
-    logger_name = 'populate_data'
+    logger_name = 'tools'
     fmat = '%(levelname)s - %(message)s'
     if quiet:
         level = logging.WARNING
@@ -352,8 +314,23 @@ if __name__ == '__main__':
     # Load data
     specname = get_template(SPECNAME_FILENAME, SPECNAME_URL)
     spec2 = get_template(SPEC2_FILENAME, SPEC2_URL)
-    counts = load_spec_data(client, specname, spec2)
+    counts = load_spec_data(client, specname, spec2, confirm_changes)
 
-    logger.info("Upload complete. Counts:")
-    for name, count in counts.items():
-        logger.info("  %s: %d" % (name, count))
+    if counts:
+        logger.info("Changes complete. Counts:")
+        for resource_type, changes in counts.items():
+            c_new = changes.get('new', 0)
+            c_deleted = changes.get('deleted', 0)
+            c_changed = changes.get('changed', 0)
+            c_text = []
+            if c_new:
+                c_text.append("%d new" % c_new)
+            if c_deleted:
+                c_text.append("%d deleted" % c_deleted)
+            if c_changed:
+                c_text.append("%d changed" % c_changed)
+            if c_text:
+                logger.info("  %s: %s" % (
+                    resource_type.title(), ', '.join(c_text)))
+    else:
+        logger.info("No data uploaded.")

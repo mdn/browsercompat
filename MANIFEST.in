@@ -3,6 +3,7 @@ include Makefile .coveragerc manage.py
 include requirements.txt requirements.dev.txt
 include Procfile app.json
 
+recursive-include data README.txt
 recursive-include docs Makefile *.gv *.svg conf.py *.rst make.bat
 recursive-include tests *.py
 recursive-include tools *.py
