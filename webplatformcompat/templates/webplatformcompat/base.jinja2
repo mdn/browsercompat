@@ -21,7 +21,7 @@
     {% block body_container -%}
     <div class="container">
         {% block body_title_elem -%}
-        <h1>{% block body_title %}TODO: set block title{% endblock %}</h1>
+        <h1 id="body_title">{% block body_title %}TODO: set block body_title{% endblock %}</h1>
         {%- endblock body_title_elem %}
         {% block content %}{% endblock %}
         <hr>

@@ -2,6 +2,7 @@
 """API Serializers"""
 
 from collections import OrderedDict
+from itertools import chain
 
 from django.db.models import CharField
 from django.conf import settings
@@ -572,6 +573,52 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         ret = super(ViewFeatureExtraSerializer, self).to_native(obj)
         return ret
 
+    def find_languages(self, obj):
+        """Find languages used in feature view."""
+        languages = set()
+
+        def add_langs(item):
+            if hasattr(item, 'keys'):  # pragma: nocover
+                languages.update(item.keys())
+
+        for browser in obj.all_browsers:
+            add_langs(browser.name)
+            add_langs(browser.note)
+
+        for feature in chain([obj], obj.child_features):
+            add_langs(feature.mdn_uri)
+            add_langs(feature.name)
+
+        for maturity in obj.all_maturities:
+            add_langs(maturity.name)
+
+        for section in obj.all_sections:
+            add_langs(section.number)
+            add_langs(section.name)
+            add_langs(section.subpath)
+            add_langs(section.note)
+
+        for spec in obj.all_specs:
+            add_langs(spec.name)
+            add_langs(spec.uri)
+
+        for support in obj.all_supports:
+            add_langs(support.note)
+            add_langs(support.footnote)
+
+        for version in obj.all_versions:
+            add_langs(version.release_notes_uri)
+            add_langs(version.note)
+
+        if 'zxx' in languages:
+            # No linguistic content
+            languages.remove('zxx')
+        if 'en' in languages:
+            languages.remove('en')
+            return ['en'] + sorted(languages)
+        else:
+            return sorted(languages)
+
     def significant_changes(self, obj):
         """Determine what versions are important for support changes.
 
@@ -597,13 +644,25 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             browser = browsers[version.browser.pk]
             version_order = browser.version_ids.index(version.id)
             feature = features[support.feature.pk]
+            support_attrs = (
+                support.support,
+                support.prefix,
+                support.prefix_mandatory,
+                support.alternate_name,
+                support.alternate_mandatory,
+                support.requires_config,
+                support.default_config,
+                support.protected,
+                repr(support.note),
+                repr(support.footnote),
+            )
             supported.append((
                 feature.id, browser.id, version_order, version.id,
-                support.id, support.support))
+                support.id, support_attrs))
         supported.sort()
 
         # Identify significant browser / version / supports by feature
-        significant_changes = {}
+        sig_features = {}
         last_f_id = None
         last_b_id = None
         last_support = None
@@ -616,10 +675,16 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 last_b_id = b_id
 
             if last_support != support:
-                sig_feature = significant_changes.setdefault(str(f_id), {})
+                sig_feature = sig_features.setdefault(f_id, {})
                 sig_browser = sig_feature.setdefault(str(b_id), [])
                 sig_browser.append(str(s_id))
                 last_support = support
+
+        # Order significant features
+        significant_changes = OrderedDict()
+        for f_id in chain([obj.id], [f.id for f in obj.child_features]):
+            significant_changes[str(f_id)] = sig_features.get(f_id, {})
+
         return significant_changes
 
     def browser_tabs(self, obj):
@@ -628,31 +693,32 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         TODO: Move this logic into the database, API
         """
         known_browsers = dict((
-            ('chrome', ('Desktop', 1)),
-            ('firefox', ('Desktop', 2)),
-            ('internet_explorer', ('Desktop', 3)),
-            ('opera', ('Desktop', 4)),
-            ('safari', ('Desktop', 5)),
-            ('android', ('Mobile', 6)),
-            ('chrome_for_android', ('Mobile', 7)),
-            ('chrome_mobile', ('Mobile', 8)),
-            ('firefox_mobile', ('Mobile', 9)),
-            ('ie_mobile', ('Mobile', 10)),
-            ('opera_mini', ('Mobile', 11)),
-            ('opera_mobile', ('Mobile', 12)),
-            ('safari_mobile', ('Mobile', 13)),
-            ('blackberry', ('Mobile', 14)),
-            ('firefox_os', ('Other', 15)),
+            ('chrome', ('Desktop Browsers', 1)),
+            ('firefox', ('Desktop Browsers', 2)),
+            ('internet_explorer', ('Desktop Browsers', 3)),
+            ('opera', ('Desktop Browsers', 4)),
+            ('safari', ('Desktop Browsers', 5)),
+            ('android', ('Mobile Browsers', 6)),
+            ('chrome_for_android', ('Mobile Browsers', 7)),
+            ('chrome_mobile', ('Mobile Browsers', 8)),
+            ('firefox_mobile', ('Mobile Browsers', 9)),
+            ('ie_mobile', ('Mobile Browsers', 10)),
+            ('opera_mini', ('Mobile Browsers', 11)),
+            ('opera_mobile', ('Mobile Browsers', 12)),
+            ('safari_mobile', ('Mobile Browsers', 13)),
+            ('blackberry', ('Mobile Browsers', 14)),
+            ('firefox_os', ('Non-Browser Environments', 15)),
         ))
         next_other = 16
-        sections = ['Desktop', 'Mobile', 'Other']
+        sections = [
+            'Desktop Browsers', 'Mobile Browsers', 'Non-Browser Environments']
         raw_tabs = dict((section, []) for section in sections)
 
         for browser in obj.all_browsers:
             try:
                 section, order = known_browsers[browser.slug]
             except KeyError:
-                section, order = ('Other', next_other)
+                section, order = ('Non-Browser Environments', next_other)
                 next_other += 1
             raw_tabs[section].append((order, browser.id))
 
@@ -674,9 +740,12 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             'next': None,
             'count': obj.descendant_count
         }
+        url_kwargs = {'pk': obj.id}
+        if self.context['format']:
+            url_kwargs['format'] = self.context['format']
+        request = self.context['request']
         url = reverse(
-            'viewfeatures-detail', kwargs={'pk': obj.id},
-            request=self.context['request'])
+            'viewfeatures-detail', kwargs=url_kwargs, request=request)
         if obj.page_child_features.has_previous():
             pagination['previous'] = (
                 url + '?page=' +
@@ -687,16 +756,36 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 str(obj.page_child_features.next_page_number()))
         return {'linked.features': pagination}
 
+    def ordered_footnotes(self, obj, sig_features, tabs):
+        """Gather footnotes from significant features."""
+        supports = dict(
+            [(str(support.id), support) for support in obj.all_supports])
+        footnotes = []
+        for browsers in sig_features.values():
+            for section in tabs:
+                for browser in section['browsers']:
+                    sig_supports = browsers.get(browser, [])
+                    for sig_support_pk in sig_supports:
+                        support = supports[sig_support_pk]
+                        if support.footnote:
+                            footnotes.append(sig_support_pk)
+        return OrderedDict((note, i) for i, note in enumerate(footnotes, 1))
+
     def get_meta(self, obj):
         """Assemble the metadata for the feature view."""
         significant_changes = self.significant_changes(obj)
         browser_tabs = self.browser_tabs(obj)
         pagination = self.pagination(obj)
+        languages = self.find_languages(obj)
+        footnotes = self.ordered_footnotes(
+            obj, significant_changes, browser_tabs)
         meta = OrderedDict((
             ('compat_table', OrderedDict((
                 ('supports', significant_changes),
                 ('tabs', browser_tabs),
                 ('pagination', pagination),
+                ('languages', languages),
+                ('footnotes', footnotes),
             ))),))
         return meta
 

@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+from collections import OrderedDict
 import codecs
 import getpass
 import json
@@ -73,7 +74,7 @@ def load_local_data(local_collection, base_dir):
     for resource in resources:
         filepath = os.path.join(base_dir, '%s.json' % resource)
         with codecs.open(filepath, 'r', 'utf8') as f:
-            data = json.load(f)
+            data = json.load(f, object_pairs_hook=OrderedDict)
         resource_class = local_collection.resource_by_type[resource]
         for item in data[resource]:
             obj = resource_class()

@@ -14,7 +14,7 @@ from .mixins import PartialPutMixin
 from .models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 from .parsers import JsonApiParser
-from .renderers import JsonApiRenderer
+from .renderers import JsonApiRenderer, JsonApiTemplateHTMLRenderer
 from .serializers import (
     BrowserSerializer, FeatureSerializer, MaturitySerializer,
     SectionSerializer, SpecificationSerializer, SupportSerializer,
@@ -174,6 +174,9 @@ class ViewFeaturesViewSet(CachedViewMixin, ReadOnlyModelViewSet):
     model = Feature
     serializer_class = ViewFeatureSerializer
     filter_fields = ('slug',)
+    renderer_classes = (
+        JsonApiRenderer, BrowsableAPIRenderer, JsonApiTemplateHTMLRenderer)
+    template_name = 'webplatformcompat/feature.basic.jinja2'
 
     def get_serializer_class(self):
         """Return the list serializer when needed."""

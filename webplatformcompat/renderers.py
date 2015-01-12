@@ -1,7 +1,9 @@
 from collections import OrderedDict
+from json import loads
 
-from django.utils import encoding
+from django.utils import encoding, translation
 
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.utils.encoders import JSONEncoder
 from rest_framework_json_api.renderers import JsonApiRenderer \
     as BaseJsonApiRender
@@ -90,3 +92,47 @@ class JsonApiRenderer(BaseJsonApiRender):
             linked_ids[field_name] = link_data[0]
 
         return {"linked_ids": linked_ids, "links": links}
+
+
+class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
+    """Render to a template, but use JSON API format as context."""
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        """Generate JSON API representation, as well as collection."""
+        # Set the context to the JSON API represention
+        json_api_renderer = JsonApiRenderer()
+        json_api = json_api_renderer.render(
+            data, accepted_media_type, renderer_context)
+        context = loads(
+            json_api.decode('utf-8'), object_pairs_hook=OrderedDict)
+
+        # Copy main item to generic 'data' key
+        other_keys = ('linked', 'links', 'meta')
+        main_keys = [m for m in context.keys() if m not in other_keys]
+        assert len(main_keys) == 1
+        main_type = main_keys[0]
+        main_obj = context[main_type].copy()
+        main_id = main_obj['id']
+        context['data'] = main_obj
+        context['data']['type'] = main_type
+
+        # Add a collection of types and IDs
+        collection = {}
+        for resource_type, resources in context.get('linked', {}).items():
+            assert resource_type not in collection
+            collection[resource_type] = {}
+            for resource in resources:
+                resource_id = resource['id']
+                assert resource_id not in collection[resource_type]
+                collection[resource_type][resource_id] = resource
+        collection.setdefault(main_type, {})[main_id] = main_obj
+        context['collection'] = collection
+
+        # Add language
+        request = renderer_context['request']
+        lang = request.GET.get('lang', translation.get_language())
+        context['lang'] = lang
+
+        # Render HTML template w/ context
+        return super(JsonApiTemplateHTMLRenderer, self).render(
+            context, accepted_media_type, renderer_context)

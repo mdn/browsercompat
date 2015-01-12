@@ -288,7 +288,7 @@ class TestViewFeatureViewSet(APITestCase):
                 "compat_table": {
                     "tabs": [
                         {
-                            "name": {"en": "Desktop"},
+                            "name": {"en": "Desktop Browsers"},
                             "browsers": [str(browser.pk)]
                         },
                     ],
@@ -304,6 +304,8 @@ class TestViewFeatureViewSet(APITestCase):
                             "count": 0,
                         },
                     },
+                    "languages": ['en'],
+                    "footnotes": {},
                 }
             }
         }
@@ -374,6 +376,73 @@ class TestViewFeatureViewSet(APITestCase):
         }
         actual_pagination = actual_json['meta']['compat_table']['pagination']
         self.assertDataEqual(expected_pagination, actual_pagination)
+
+    def test_important_versions(self):
+        feature = self.create(Feature, slug='feature')
+        browser = self.create(Browser, slug='browser')
+        v1 = self.create(Version, browser=browser, version='1')
+        support = {
+            'support': 'yes',
+            'prefix': '--pre',
+            'prefix_mandatory': True,
+            'alternate_name': 'future',
+            'alternate_mandatory': True,
+            'requires_config': 'feature=Yes',
+            'default_config': 'feature=No',
+            'protected': False,
+            'note': {'en': 'note'},
+            'footnote': {'en': 'footnote'},
+        }
+        s1 = self.create(Support, version=v1, feature=feature, **support)
+
+        v2 = self.create(Version, browser=browser, version='2')
+        support['prefix_mandatory'] = False
+        s2 = self.create(Support, version=v2, feature=feature, **support)
+
+        v3 = self.create(Version, browser=browser, version='3')
+        support['prefix'] = ''
+        s3 = self.create(Support, version=v3, feature=feature, **support)
+
+        v4 = self.create(Version, browser=browser, version='4')
+        support['alternate_mandatory'] = False
+        s4 = self.create(Support, version=v4, feature=feature, **support)
+
+        v5 = self.create(Version, browser=browser, version='5')
+        support['alternate_name'] = ''
+        s5 = self.create(Support, version=v5, feature=feature, **support)
+
+        # BORING VERSION
+        v51 = self.create(Version, browser=browser, version='5.1')
+        self.create(Support, version=v51, feature=feature, **support)
+
+        v6 = self.create(Version, browser=browser, version='6')
+        support['default_config'] = 'feature=Yes'
+        s6 = self.create(Support, version=v6, feature=feature, **support)
+
+        v7 = self.create(Version, browser=browser, version='7')
+        support['protected'] = True
+        s7 = self.create(Support, version=v7, feature=feature, **support)
+
+        v8 = self.create(Version, browser=browser, version='8')
+        support['note']['es'] = 'el note'
+        s8 = self.create(Support, version=v8, feature=feature, **support)
+
+        v9 = self.create(Version, browser=browser, version='9')
+        support['footnote'] = None
+        s9 = self.create(Support, version=v9, feature=feature, **support)
+
+        url = reverse('viewfeatures-detail', kwargs={'pk': feature.pk})
+        response = self.client.get(url)
+        actual_json = loads(response.content.decode('utf-8'))
+        expected_supports = {
+            str(feature.pk): {
+                str(browser.pk): [
+                    str(s1.pk), str(s2.pk), str(s3.pk), str(s4.pk),
+                    str(s5.pk), str(s6.pk), str(s7.pk), str(s8.pk),
+                    str(s9.pk)
+                ]}}
+        actual_supports = actual_json['meta']['compat_table']['supports']
+        self.assertDataEqual(expected_supports, actual_supports)
 
     def test_get_documented(self):
         """Get the viewfeature with the hand-coded values for docs.
@@ -1439,7 +1508,7 @@ class TestViewFeatureViewSet(APITestCase):
                     "tabs": [
                         {
                             "name": {
-                                "en": "Desktop"
+                                "en": "Desktop Browsers"
                             },
                             "browsers": [
                                 str(browser_chrome_1.pk),
@@ -1451,7 +1520,7 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                         {
                             "name": {
-                                "en": "Mobile"
+                                "en": "Mobile Browsers"
                             },
                             "browsers": [
                                 str(browser_android_6.pk),
@@ -1464,6 +1533,7 @@ class TestViewFeatureViewSet(APITestCase):
                         }
                     ],
                     "supports": {
+                        str(feature_816.pk): {},
                         str(feature_row_191.pk): {
                             str(browser_chrome_1.pk): [
                                 str(support_chrome_358.pk)],
@@ -1496,8 +1566,160 @@ class TestViewFeatureViewSet(APITestCase):
                             "count": 1,
                         },
                     },
+                    "languages": ['en', 'ja', 'jp'],
+                    "footnotes": {},
                 }
             }
         }
         actual_json = loads(response.content.decode('utf-8'))
         self.assertDataEqual(expected_json, actual_json)
+
+        response = self.client.get(url + '.html')
+        expected = """\
+<section class="webplatformcompat-feature" lang="en-us" data-type="features"\
+ data-id="%(f_id)s">
+<h2>Specifications</h2>
+<table class="specifications-table">
+  <thead>
+    <tr>
+      <th>Specification</th>
+      <th>Status</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <a href="http://www.whatwg.org/specs/web-apps/current-work/\
+multipage/sections.html#the-address-element">
+          <span lang="en">WHATWG HTML Living Standard</span>
+          <br>
+          <small><span lang="en">4.3.10</span> \
+<span lang="en">The address element</span></small>
+        </a>
+      </td>
+      <td>
+        <span class="maturity-Living" lang="en">Living Standard</span>
+      </td>
+      <td>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="http://www.w3.org/TR/html5/sections.html#the-address-element">
+          <span lang="en">HTML5</span>
+          <br>
+          <small><span lang="en">4.3.9</span> \
+<span lang="en">The address element</span></small>
+        </a>
+      </td>
+      <td>
+        <span class="maturity-PR" lang="en">Proposed Recommendation</span>
+      </td>
+      <td>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="http://www.w3.org/TR/html401/struct/global.html#h-7.5.6">
+          <span lang="en">HTML 4.01 Specification</span>
+          <br>
+          <small><span lang="en">7.5.6</span> \
+<span lang="en">The ADDRESS element</span></small>
+        </a>
+      </td>
+      <td>
+        <span class="maturity-REC" lang="en">Recommendation</span>
+      </td>
+      <td>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Browser compatability</h2>
+
+<h3>Desktop Browsers</h3>
+<table class="compat-table">
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th><span lang="en">Chrome</span></th>
+      <th><span lang="en">Firefox</span></th>
+      <th><span lang="en">Internet Explorer</span></th>
+      <th><span lang="en">Opera</span></th>
+      <th><span lang="en">Safari</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span lang="en">Basic support</span></td>
+      <td>
+        (yes)
+      </td>
+      <td>
+        1.0
+      </td>
+      <td>
+        1.0
+      </td>
+      <td>
+        5.12
+      </td>
+      <td>
+        1.0
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Mobile Browsers</h3>
+<table class="compat-table">
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th><span lang="en">Android</span></th>
+      <th><span lang="en">Firefox Mobile</span></th>
+      <th><span lang="en">IE Mobile</span></th>
+      <th><span lang="en">Opera Mini</span></th>
+      <th><span lang="en">Opera Mobile</span></th>
+      <th><span lang="en">Safari Mobile</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span lang="en">Basic support</span></td>
+      <td>
+        (yes)
+      </td>
+      <td>
+        1.0
+      </td>
+      <td>
+        (yes)
+      </td>
+      <td>
+        (yes)
+      </td>
+      <td>
+        (yes)
+      </td>
+      <td>
+        (yes)
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</section>
+<section class="webplatformcompat-feature-meta" lang="en-us">
+<p><em>Showing language "en-us". Other languages:</em></p>
+<ul>
+  <li><a href="/api/v1/view_features/%(f_id)s?format=html&lang=en">en</a></li>
+  <li><a href="/api/v1/view_features/%(f_id)s?format=html&lang=ja">ja</a></li>
+  <li><a href="/api/v1/view_features/%(f_id)s?format=html&lang=jp">jp</a></li>
+</ul>
+</section>
+""" % {'f_id': feature_816.id}
+        self.assertDataEqual(expected, response.content.decode('utf-8'))
+        self.assertContains(response, expected, html=True)

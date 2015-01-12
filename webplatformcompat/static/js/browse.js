@@ -500,6 +500,10 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     versionCountText: Browse.Properties.IdCounterText('versionCount', 'Version'),
     childCount: Browse.Properties.IdCounter('children'),
     childCountText: Browse.Properties.IdCounterText('childCount', 'Child', 'Children'),
+    viewUrl: Ember.computed('id', function () {
+        var id = this.get('id');
+        return "/view_feature/" + id;
+    }),
 });
 
 Browse.SupportController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {

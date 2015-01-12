@@ -46,3 +46,8 @@ class TestViews(TestCase):
         }
         actual = loads(response.content.decode('utf-8'))
         self.assertDataEqual(expected, actual)
+
+    def test_view_feature(self):
+        response = self.client.get(
+            reverse('view_feature', kwargs={'feature_id': 1}))
+        self.assertEqual(response.status_code, 200)

@@ -31,6 +31,8 @@ MEMCACHE_SERVERS - semicolon-separated list of memcache servers
 MEMCACHE_USERNAME - username for memcache servers
 MEMCACHE_PASSWORD - password for memcache servers
 USE_DRF_INSTANCE_CACHE - 1 to enable, 0 to disable, default enabled
+DRF_INSTANCE_CACHE_POPULATE_COLD - 1 to recursively populate a cold cache on
+  updates, 0 to be eventually consistent, default enabled
 SECRET_KEY - Overrides SECRET_KEY
 SECURE_PROXY_SSL_HEADER - "HTTP_X_FORWARDED_PROTOCOL,https" to enable
 STATIC_ROOT - Overrides STATIC_ROOT
@@ -236,3 +238,5 @@ CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 # DRF Cached Instances - avoid DB reads for Django REST Framework
 USE_DRF_INSTANCE_CACHE = (
     environ.get('USE_DRF_INSTANCE_CACHE', '1') not in (0, '0'))
+DRF_INSTANCE_CACHE_POPULATE_COLD = (
+    environ.get('DRF_INSTANCE_CACHE_POPULATE_COLD', '1') not in (0, '0'))
