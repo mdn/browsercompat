@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
     'django_extensions',
     'django_nose',
     'mptt',
@@ -94,8 +95,10 @@ if environ.get('EXTRA_INSTALLED_APPS'):
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -240,3 +243,7 @@ USE_DRF_INSTANCE_CACHE = (
     environ.get('USE_DRF_INSTANCE_CACHE', '1') not in (0, '0'))
 DRF_INSTANCE_CACHE_POPULATE_COLD = (
     environ.get('DRF_INSTANCE_CACHE_POPULATE_COLD', '1') not in (0, '0'))
+
+# CORS Middleware
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
