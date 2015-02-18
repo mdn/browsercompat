@@ -400,6 +400,33 @@ class TestSection(TestCase):
         collection.add(section)
         self.assertEqual(('sections', '', 'SPEC'), section.get_data_id())
 
+    def test_with_empty_number(self):
+        section = Section(
+            name={'en': 'section foo'}, subpath={'en': '/foo'},
+            specification='_spec', number={})
+        expected = {
+            "sections": {
+                "name": {'en': 'section foo'},
+                "number": {},
+                "subpath": {'en': '/foo'},
+                "links": {
+                    "specification": "_spec",
+                }}}
+        self.assertEqual(expected, section.to_json_api())
+
+    def test_get_data_id_with_empty_number(self):
+        maturity = Maturity(id="2")
+        spec = Specification(id="22", maturity="2", mdn_key="SPEC")
+        feature = Feature(id="222")
+        section = Section(
+            id="_sec", specification="22", features=["222"], number={})
+        collection = Collection()
+        collection.add(maturity)
+        collection.add(spec)
+        collection.add(feature)
+        collection.add(section)
+        self.assertEqual(('sections', '', 'SPEC'), section.get_data_id())
+
 
 class TestMaturity(TestCase):
     def test_to_json(self):

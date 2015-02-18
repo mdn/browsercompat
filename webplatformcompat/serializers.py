@@ -2,6 +2,7 @@
 """API Serializers"""
 
 from collections import OrderedDict
+from datetime import date
 from itertools import chain
 from json import dumps
 
@@ -450,8 +451,55 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
 # View serializers
 #
 
-class ViewFeatureListSerializer(ModelSerializer):
+class ViewBrowserSerializer(BrowserSerializer):
+    class Meta(BrowserSerializer.Meta):
+        fields = [
+            x for x in BrowserSerializer.Meta.fields if x != 'versions']
 
+
+class ViewMaturitySerializer(MaturitySerializer):
+    class Meta(MaturitySerializer.Meta):
+        fields = [
+            x for x in MaturitySerializer.Meta.fields
+            if x != 'specifications']
+
+
+class ViewSectionSerializer(SectionSerializer):
+    class Meta(SectionSerializer.Meta):
+        fields = [
+            x for x in SectionSerializer.Meta.fields if x != 'features']
+
+
+class ViewSpecificationSerializer(SpecificationSerializer):
+    class Meta(SpecificationSerializer.Meta):
+        fields = [
+            x for x in SpecificationSerializer.Meta.fields
+            if x != 'sections']
+
+
+class ViewVersionSerializer(VersionSerializer):
+    class Meta(VersionSerializer.Meta):
+        fields = [
+            x for x in VersionSerializer.Meta.fields if x != 'supports']
+        read_only_fields = [
+            x for x in VersionSerializer.Meta.read_only_fields
+            if x != 'supports']
+
+
+# Map resource names to model, view serializer classes
+view_cls_by_name = {
+    'features': (Feature, FeatureSerializer),
+    'supports': (Support, SupportSerializer),
+    'maturities': (Maturity, ViewMaturitySerializer),
+    'specifications': (Specification, ViewSpecificationSerializer),
+    'sections': (Section, ViewSectionSerializer),
+    'browsers': (Browser, ViewBrowserSerializer),
+    'versions': (Version, ViewVersionSerializer),
+}
+
+
+class ViewFeatureListSerializer(ModelSerializer):
+    """Get list of features"""
     url = SerializerMethodField('get_url')
 
     def get_url(self, obj):
@@ -468,16 +516,6 @@ class ViewFeatureListSerializer(ModelSerializer):
 
 class DjangoResourceClient(object):
     """Implement tools.client.Client using Django native functions"""
-    cls_by_name = {
-        'features': (Feature, FeatureSerializer),
-        'supports': (Support, SupportSerializer),
-        'maturities': (Maturity, MaturitySerializer),
-        'specifications': (Specification, SpecificationSerializer),
-        'sections': (Section, SectionSerializer),
-        'browsers': (Browser, BrowserSerializer),
-        'versions': (Version, VersionSerializer),
-    }
-
     def url(self, resource_type, resource_id=None):
         if resource_type == 'maturities':
             singular = 'maturity'
@@ -496,7 +534,7 @@ class DjangoResourceClient(object):
         pass
 
     def update(self, resource_type, resource_id, resource):
-        model_cls, serializer_cls = self.cls_by_name[resource_type]
+        model_cls, serializer_cls = view_cls_by_name[resource_type]
         instance = model_cls.objects.get(id=resource_id)
         data = resource.copy()
         links = data.pop('links', {})
@@ -506,7 +544,7 @@ class DjangoResourceClient(object):
         serializer.save()
 
     def create(self, resource_type, resource):
-        model_cls, serializer_cls = self.cls_by_name[resource_type]
+        model_cls, serializer_cls = view_cls_by_name[resource_type]
         data = resource.copy()
         links = data.pop('links', {})
         data.update(links)
@@ -521,17 +559,6 @@ class DjangoResourceClient(object):
 
 class FeatureExtra(object):
     """Handle new and updated data in a view_feature update"""
-    # Map resource collection names to Model and Serializer classes
-    cls_by_name = {
-        'features': (Feature, FeatureSerializer),
-        'supports': (Support, SupportSerializer),
-        'maturities': (Maturity, MaturitySerializer),
-        'specifications': (Specification, SpecificationSerializer),
-        'sections': (Section, SectionSerializer),
-        'browsers': (Browser, BrowserSerializer),
-        'versions': (Version, VersionSerializer),
-    }
-
     def __init__(self, all_data, feature, context):
         self.all_data = all_data
         self.feature = feature
@@ -545,7 +572,12 @@ class FeatureExtra(object):
         return not self.errors
 
     def load_resource(self, resource_cls, data):
-        """Load a resource, stringifying IDs"""
+        """Load a resource, converting data to look like wire data
+
+        Conversions:
+        - Stringify IDs (5 -> "5")
+        - Convert Date to ISO 8601 (2015-02-17)
+        """
         rdata = {}
         wlinks = getattr(resource_cls, '_writeable_link_fields', {})
         rlinks = getattr(resource_cls, '_readonly_link_fields', {})
@@ -563,6 +595,8 @@ class FeatureExtra(object):
                     rdata[key] = ids[0]
                 else:
                     rdata[key] = ids
+            elif isinstance(value, date):
+                rdata[key] = value.isoformat()
             else:
                 rdata[key] = value
         return resource_cls(**rdata)
@@ -607,8 +641,7 @@ class FeatureExtra(object):
 
         # Populate collection of current data
         for rtype, items in current_extra.items():
-            resource_cls = r_by_t.get(rtype)
-            assert resource
+            resource_cls = r_by_t[rtype]
             for item in items:
                 resource = self.load_resource(resource_cls, item)
                 current_collection.add(resource)
@@ -638,7 +671,7 @@ class FeatureExtra(object):
                 if int_id and (existing_item is None):
                     rtype = item._resource_type
                     resource_cls = r_by_t[rtype]
-                    model_cls, serializer_cls = self.cls_by_name[rtype]
+                    model_cls, serializer_cls = view_cls_by_name[rtype]
                     obj = model_cls.objects.get(id=int_id)
                     serializer = serializer_cls()
                     data = serializer.to_native(obj)
@@ -678,7 +711,7 @@ class FeatureExtra(object):
         # Validate with DRF serializers
         for data_id, item in new_collection.get_all_by_data_id().items():
             rtype = item._resource_type
-            model_cls, serializer_cls = self.cls_by_name[rtype]
+            model_cls, serializer_cls = view_cls_by_name[rtype]
             seq = getattr(item, '_seq')
             if seq is None:
                 continue
@@ -737,7 +770,6 @@ class FeatureExtra(object):
                     item._resource_type, item._seq, {'id': add_error})
 
         # Validate that "expert" objects are not changed
-        omit_err = 'Field was omitted, but should be set to %s'
         change_err = (
             'Field can not be changed from %s to %s as part of this update.'
             ' Update the resource by itself, and try again.')
@@ -749,10 +781,7 @@ class FeatureExtra(object):
                 orig_json = dict(item._original.to_json_api()[rtype])
                 orig_json.update(orig_json.pop('links', {}))
                 for key, value in orig_json.items():
-                    if key not in new_json:
-                        err = omit_err % dumps(value)
-                        self.add_error(rtype, item._seq, {key: err})
-                    elif value != new_json[key]:
+                    if value != new_json.get(key, "(missing)"):
                         err = change_err % (dumps(value), dumps(new_json[key]))
                         self.add_error(rtype, item._seq, {key: err})
 
@@ -763,37 +792,6 @@ class FeatureExtra(object):
 
 class ViewFeatureExtraSerializer(ModelSerializer):
     """Linked resources and metadata for ViewFeatureSerializer."""
-
-    class ViewBrowserSerializer(BrowserSerializer):
-        class Meta(BrowserSerializer.Meta):
-            fields = [
-                x for x in BrowserSerializer.Meta.fields if x != 'versions']
-
-    class ViewMaturitySerializer(MaturitySerializer):
-        class Meta(MaturitySerializer.Meta):
-            fields = [
-                x for x in MaturitySerializer.Meta.fields
-                if x != 'specifications']
-
-    class ViewSectionSerializer(SectionSerializer):
-        class Meta(SectionSerializer.Meta):
-            fields = [
-                x for x in SectionSerializer.Meta.fields if x != 'features']
-
-    class ViewSpecificationSerializer(SpecificationSerializer):
-        class Meta(SpecificationSerializer.Meta):
-            fields = [
-                x for x in SpecificationSerializer.Meta.fields
-                if x != 'sections']
-
-    class ViewVersionSerializer(VersionSerializer):
-        class Meta(VersionSerializer.Meta):
-            fields = [
-                x for x in VersionSerializer.Meta.fields if x != 'supports']
-            read_only_fields = [
-                x for x in VersionSerializer.Meta.read_only_fields
-                if x != 'supports']
-
     browsers = ViewBrowserSerializer(source='all_browsers', many=True)
     features = FeatureSerializer(source='child_features', many=True)
     maturities = ViewMaturitySerializer(source='all_maturities', many=True)

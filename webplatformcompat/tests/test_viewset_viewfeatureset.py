@@ -1736,7 +1736,8 @@ class TestViewFeatureUpdates(APITestCase):
         self.browser = self.create(
             Browser, slug='browser', name={'en': 'Browser'})
         self.version = self.create(
-            Version, browser=self.browser, version='1.0')
+            Version, browser=self.browser, version='1.0',
+            release_day='2015-02-17')
         self.maturity = self.create(Maturity, slug='M', name={"en": 'Mature'})
         self.spec = self.create(
             Specification, slug='spec', mdn_key='SPEC', name={'en': 'Spec'},
@@ -1748,7 +1749,7 @@ class TestViewFeatureUpdates(APITestCase):
             "links": {"versions": [str(self.version.id)]}}
         self.version_data = {
             "id": str(self.version.id), "version": self.version.version,
-            "release_day": None, "retirement_day": None, "note": None,
+            "release_day": '2015-02-17', "retirement_day": None, "note": None,
             "status": "unknown", "release_notes_uri": None,
             "links": {"browser": str(self.browser.id)}}
         self.maturity_data = {
@@ -2082,30 +2083,6 @@ class TestViewFeatureUpdates(APITestCase):
                 "detail": (
                     'Resource can not be created as part of this update.'
                     ' Create first, and try again.'),
-            }]
-        }
-        actual_error = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_error, actual_error)
-
-    def test_omitted_specification_field_is_error(self):
-        section_data = {
-            "id": "_section", "name": {"en": "Section"},
-            "links": {
-                "specification": str(self.spec.id),
-                "features": [str(self.feature.id)],
-            }}
-        spec_data = self.spec_data.copy()
-        del spec_data['links']['sections']
-        json_data = self.json_api(
-            {'sections': ['_section']}, sections=[section_data],
-            specifications=[spec_data], maturities=[self.maturity_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 400, response.content)
-        expected_error = {
-            'errors': [{
-                "status": "400", "path": "/linked.specifications.0.sections",
-                "detail": 'Field was omitted, but should be set to []'
             }]
         }
         actual_error = loads(response.content.decode('utf-8'))

@@ -1338,7 +1338,7 @@ def scrape_feature_page(fp):
                 feature_ids.append(main_feature_id)
             section_content = OrderedDict((
                 ('id', text_type(section_id)),
-                ('number', section.number),
+                ('number', section.number or None),
                 ('name', section.name),
                 ('subpath', section.subpath),
                 ('note', section.note),
@@ -1348,7 +1348,7 @@ def scrape_feature_page(fp):
             section_id = text_type(spec_id) + '_' + row['section.subpath']
             section_content = OrderedDict((
                 ('id', section_id),
-                ('number', OrderedDict()),
+                ('number', None),
                 ('name', OrderedDict()),
                 ('subpath', OrderedDict()),
                 ('note', OrderedDict()),
@@ -1393,7 +1393,7 @@ def scrape_feature_page(fp):
                     ('id', text_type(browser.id)),
                     ('slug', browser.slug),
                     ('name', browser.name),
-                    ('note', browser.note),
+                    ('note', browser.note or None),
                 ))
             browsers[b['id']] = browser_content
             tab['browsers'].append(browser_content['id'])
@@ -1457,7 +1457,7 @@ def scrape_feature_page(fp):
                 # New Version
                 version_content = OrderedDict((
                     ('id', v['id']),
-                    ('version', v['version']),
+                    ('version', v['version'] or None),
                     ('release_day', None),
                     ('retirement_day', None),
                     ('status', 'unknown'),
@@ -1470,7 +1470,7 @@ def scrape_feature_page(fp):
                 version = Version.objects.get(id=v['id'])
                 version_content = OrderedDict((
                     ('id', text_type(v['id'])),
-                    ('version', version.version),
+                    ('version', version.version or None),
                     ('release_day', date_to_iso(version.release_day)),
                     ('retirement_day', date_to_iso(version.retirement_day)),
                     ('status', version.status),

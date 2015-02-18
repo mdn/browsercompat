@@ -37,9 +37,9 @@
       {% endif %}
     </dd>
 </dl>
-{% if can_refresh_mdn_import(request.user) %}
-<h3>Refresh Import</h3>
+<h3>Actions</h3>
 <div>
+{% if can_refresh_mdn_import(request.user) %}
 <form action="{{url('feature_page_reset', pk=object.pk)}}" method="post">
 {{ csrf() }}
 <input id="submit-reset" class="btn btn-primary" type="submit" value="Reset">
@@ -48,14 +48,27 @@
 <br/>
 {% endif %}
 {% if can_reparse_mdn_import(request.user) %}
-<form action="{{url('feature_page_reparse', pk=object.pk)}}" method="post">
+<form id="form-reparse" action="{{url('feature_page_reparse', pk=object.pk)}}" method="post">
 {{ csrf() }}
 <input id="submit-reparse" class="btn btn-primary" type="submit" value="Reparse">
 <label for="submit-reparse">Re-parse the cached MDN pages</label>
 </form>
+<br/>
+{% endif %}
+{% if can_commit_mdn_import(request.user) %}
+<form id="form-commit" class="hide"
+ action="{{url('viewfeatures-detail', pk=object.feature_id)}}" method="put">
+{{ csrf() }}
+<input id="submit-commit" class="btn btn-primary" type="submit" value="Commit">
+<label for="submit-commit">Commit data to the API</label>
+</form>
+<div id="commit-errors" class="hide">
+    <h4>Errors returned from API:</h4>
+    <pre id="pre-commit-errors"></pre>
 </div>
 <br/>
 {% endif %}
+</div>
 
 {% if object.status == object.STATUS_PARSED %}
 <h1>Sample Presentation of {{object.slug()}}</h1>
@@ -166,12 +179,38 @@ function load_tables(resources, lang) {
     return true;
 };
 
+function commit_json() {
+    var frm, ajaxSettings, jsonData;
+    frm = $("#form-commit");
+    csrf = $("input[name='csrfmiddlewaretoken']").val();
+    jsonData = JSON.stringify(data);
+    ajaxSettings = {
+        type: "PUT",
+        url: frm.attr("action"),
+        data: jsonData,
+        contentType: "application/vnd.api+json",
+        headers: {'X-CSRFToken': csrf},
+        success: function(data, textStatus, jqXHR) {
+            $("#form-reparse").submit();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            $("#pre-commit-errors").html(jqXHR.responseText);
+            $("#commit-errors").removeClass("hide");
+        }
+    }
+    $.ajax(ajaxSettings);
+    return false;
+};
+
 function load_json(data) {
     var resources, json_dump, title;
     json_dump = $("<pre>").text(JSON.stringify(data, null, "  "));
     $("#wpc_data").html(json_dump);
     window.resources = resources = WPC.parse_resources(data);
     load_tables(window.resources, "en");
+    if (data.meta.scrape.errors.length === 0) {
+        $("#form-commit").removeClass('hide').on('submit', commit_json);
+    }
 };
 
 data = {{ object.raw_data | default('null', True) | safe }};

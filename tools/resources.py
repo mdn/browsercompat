@@ -334,7 +334,7 @@ class Section(Resource):
     def number_en(self):
         if self.number is None:
             return None
-        return self.number['en']
+        return self.number.get('en', None)
 
 
 class Maturity(Resource):
