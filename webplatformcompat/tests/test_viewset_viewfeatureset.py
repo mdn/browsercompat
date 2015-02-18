@@ -1806,6 +1806,7 @@ class TestViewFeatureUpdates(APITestCase):
         self.assertEqual(subfeature.parent, self.feature)
         feature = Feature.objects.get(id=self.feature.id)
         self.assertEqual(list(feature.children.all()), [subfeature])
+        self.assertEqual(list(feature.get_descendants()), [subfeature])
 
     def test_post_add_second_subfeature(self):
         sf1 = self.create(

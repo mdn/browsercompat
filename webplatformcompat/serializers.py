@@ -789,6 +789,14 @@ class FeatureExtra(object):
         """Commit changes to linked data"""
         self.changeset.change_original_collection()
 
+        # Adding sub-features will change the MPTT tree through direct SQL.
+        # Load the new tree data from the database before parent serializer
+        # overwrites it with old values.
+        tree_attrs = ['lft', 'rght', 'tree_id', 'level', 'parent']
+        db_feature = Feature.objects.only(*tree_attrs).get(id=self.feature.id)
+        for attr in tree_attrs:
+            setattr(self.feature, attr, getattr(db_feature, attr))
+
 
 class ViewFeatureExtraSerializer(ModelSerializer):
     """Linked resources and metadata for ViewFeatureSerializer."""
