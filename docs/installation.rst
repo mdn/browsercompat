@@ -8,7 +8,8 @@ Install Django Project
 1. Clone project locally
 2. Create virtualenv
 3. Install dependencies via pip
-4. Customize with environment variables (see ``wpcsite/settings.py``)
+4. Customize with environment variables (see ``wpcsite/settings.py``
+   and ``env.dist``)
 5. Setup database, add superuser account (``./manage.py migrate``)
 6. Optionally, run memcached_ for improved performance
 7. Run it (``./manage.py runserver``)

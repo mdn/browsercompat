@@ -18,6 +18,8 @@ $ vi $VIRTUAL_ENV/bin/predeactivate
 unset DJANGO_DEBUG
 $ source $VIRTUAL_ENV/bin/postactivate
 
+A second way to to use autoenv and a .env file.  See env.dist.
+
 To set environment variables in heroku environment
 $ heroku config
 $ heroku config:set DJANGO_DEBUG=1
