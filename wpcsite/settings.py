@@ -30,6 +30,7 @@ ALLOWED_HOSTS - comma-separated list of allowed hosts
 DATABASE_URL - See https://github.com/kennethreitz/dj-database-url
 DEFAULT_FROM_EMAIL - "From" email for emails to users
 DJANGO_DEBUG - 1 to enable, 0 to disable, default disabled
+EMAIL_BACKEND - The backend for email services
 EMAIL_FILE_PATH - File path when FileSystemStorage is used
 EMAIL_HOST - SMTP server, default localhost
 EMAIL_HOST_PASSWORD - SMTP server password, default none

@@ -60,6 +60,8 @@ Development
 
                  https://bugzilla.mozilla.org/showdependencytree.cgi?id=996570&hide_resolved=1 (blocking issues for v1)
 :Dev Docs:       https://web-platform-compat.readthedocs.org
+
+                 https://github.com/jwhitlock/web-platform-compat/wiki
 :Mailing list:   https://lists.mozilla.org/listinfo/dev-mdn
 :IRC:            irc://irc.mozilla.org/mdndev
 
