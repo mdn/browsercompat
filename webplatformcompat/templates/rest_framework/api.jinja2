@@ -9,10 +9,11 @@
 
 {% block head_css %}
   {{ super() }}
-  <link rel="stylesheet" type="text/css" href="{{ static("rest_framework/css/bootstrap-tweaks.css") }}"/>
   <link rel="stylesheet" type="text/css" href="{{ static("rest_framework/css/prettify.css") }}"/>
   <link rel="stylesheet" type="text/css" href="{{ static("rest_framework/css/default.css") }}"/>
 {% endblock head_css %}
+
+{% block body_attr %} class="api" {% endblock %}
 
 {% block content %}
     {% block breadcrumbs %}

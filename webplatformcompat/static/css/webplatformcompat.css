@@ -1,0 +1,35 @@
+/* Selections from rest_framework/css/bootstrap-tweaks.css */
+
+body.api {
+  background: url("../rest_framework/img/grid.png") repeat-x;
+  background-attachment: fixed;
+}
+
+body.api #content a span {
+  text-decoration: underline;
+}
+
+/* DRF's API footer is nice enough to use everywhere */
+
+footer {
+  clear: both;
+  height: 60px;
+  width: 95%;
+  margin: 20px 2.5%;
+}
+
+footer p {
+  text-align: center;
+  color: gray;
+  border-top: 1px solid #DDDDDD;
+  padding-top: 10px;
+}
+
+footer a {
+  color: gray !important;
+  font-weight: bold;
+}
+
+footer a:hover {
+  color: gray;
+}
