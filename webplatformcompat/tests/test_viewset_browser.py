@@ -203,6 +203,15 @@ class TestBrowserViewset(APITestCase):
         }
         self.assertDataEqual(response.data, expected_data)
 
+    def test_post_not_allowed(self):
+        self.login_user(groups=[])
+        response = self.client.post(reverse('browser-list'), {})
+        self.assertEqual(403, response.status_code)
+        expected_data = {
+            'detail': "You do not have permission to perform this action."
+        }
+        self.assertDataEqual(response.data, expected_data)
+
     def test_post_empty(self):
         self.login_user()
         response = self.client.post(reverse('browser-list'), {})
@@ -346,6 +355,26 @@ class TestBrowserViewset(APITestCase):
             "history": [h.pk for h in histories],
             "history_current": histories[0].pk,
             "versions": [],
+        }
+        self.assertDataEqual(response.data, expected_data)
+
+    def test_put_not_allowed(self):
+        self.login_user(groups=[])
+        browser = self.create(
+            Browser, slug='browser', name={'en': 'Old Name'})
+        data = dumps({
+            'browsers': {
+                'name': {
+                    'en': 'New Name'
+                }
+            }
+        })
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.put(
+            url, data=data, content_type="application/vnd.api+json")
+        self.assertEqual(403, response.status_code)
+        expected_data = {
+            'detail': "You do not have permission to perform this action."
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -560,3 +589,15 @@ class TestBrowserViewset(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code, response.content)
         self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())
+
+    def test_delete_not_allowed(self):
+        self.login_user()
+        browser = self.create(
+            Browser, slug='browser', name={'en': 'Old Name'})
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.delete(url)
+        self.assertEqual(403, response.status_code)
+        expected_data = {
+            'detail': "You do not have permission to perform this action."
+        }
+        self.assertDataEqual(response.data, expected_data)
