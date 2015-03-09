@@ -39,6 +39,8 @@ class TestMixin(object):
             groups = ['change-resource']
         group_list = [Group.objects.get(name=g) for g in groups]
         user.groups.add(*group_list)
+        if 'change-resource' not in groups:
+            user.groups.remove(Group.objects.get(name='change-resource'))
         self.assertTrue(
             self.client.login(username=username, password=password))
         self.user = user

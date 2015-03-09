@@ -25,7 +25,7 @@ class TestUserViewset(APITestCase):
             'username': 'user',
             'created': date_joined,
             'agreement': 0,
-            'permissions': [],
+            'permissions': ['change-resource'],
             'changesets': [],
         }
         self.assertDataEqual(response.data, expected_data)
@@ -35,7 +35,7 @@ class TestUserViewset(APITestCase):
                 "username": 'user',
                 "created": '2014-09-04T17:10:21.827Z',
                 "agreement": 0,
-                "permissions": [],
+                "permissions": ['change-resource'],
                 "links": {"changesets": []},
             },
             "links": {
@@ -65,7 +65,7 @@ class TestUserViewset(APITestCase):
                 'username': 'user',
                 'created': date_joined,
                 'agreement': 0,
-                'permissions': [],
+                'permissions': ['change-resource'],
                 'changesets': [],
             }]}
         self.assertDataEqual(response.data, expected_data)

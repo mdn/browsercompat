@@ -595,7 +595,7 @@ class TestCache(TestCase):
                 'model': 'changeset',
                 'pks': []
             },
-            'group_names': [],
+            'group_names': ['change-resource'],
         }
         self.assertEqual(out, expected)
 
