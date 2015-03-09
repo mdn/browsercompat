@@ -436,17 +436,33 @@ class Cache(BaseCache):
     def user_v1_serializer(self, obj):
         if not obj or not obj.is_active:
             return None
+        self.user_v1_add_related_pks(obj)
         return dict((
             ('id', obj.id),
             ('username', obj.username),
             self.field_to_json('DateTime', 'date_joined', obj.date_joined),
+            ('group_names', obj.group_names),
+            self.field_to_json(
+                'PKList', 'changesets', model=Changeset,
+                pks=obj._changeset_pks),
         ))
+
+    def user_v1_add_related_pks(self, obj):
+        """Add related primary keys and data to a User instance"""
+        if not hasattr(obj, 'group_names'):
+            obj.group_names = sorted(obj.groups.values_list('name', flat=True))
+        if not hasattr(obj, '_changeset_pks'):
+            obj._changeset_pks = list(
+                obj.changesets.values_list('pk', flat=True))
 
     def user_v1_loader(self, pk):
         try:
-            return User.objects.get(pk=pk)
+            obj = User.objects.get(pk=pk)
         except User.DoesNotExist:
             return None
+        else:
+            self.user_v1_add_related_pks(obj)
+            return obj
 
     def user_v1_invalidator(self, obj):
         return []

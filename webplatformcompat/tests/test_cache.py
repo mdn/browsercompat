@@ -590,6 +590,12 @@ class TestCache(TestCase):
             'id': user.id,
             'username': '',
             'date_joined:DateTime': '1411373674.000007',
+            'changesets:PKList': {
+                'app': 'webplatformcompat',
+                'model': 'changeset',
+                'pks': []
+            },
+            'group_names': [],
         }
         self.assertEqual(out, expected)
 
@@ -605,7 +611,7 @@ class TestCache(TestCase):
 
     def test_user_v1_loader(self):
         user = self.create(User)
-        with self.assertNumQueries(1):
+        with self.assertNumQueries(3):
             obj = self.cache.user_v1_loader(user.pk)
         with self.assertNumQueries(0):
             serialized = self.cache.user_v1_serializer(obj)
