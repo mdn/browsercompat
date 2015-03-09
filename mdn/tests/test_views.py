@@ -35,6 +35,7 @@ class TestFeaturePageListView(TestCase):
 
 class TestFeaturePageCreateView(TestCase):
     def setUp(self):
+        self.login_user(groups=['import-mdn', 'change-resource'])
         self.url = reverse('feature_page_create')
         self.feature = self.create(Feature)
 
@@ -108,7 +109,7 @@ class TestFeaturePageSearch(TestCase):
         self.assertRedirects(response, next_url)
 
     def test_not_found_with_perms(self):
-        self.login_superuser()
+        self.login_user(groups=['import-mdn'])
         response = self.client.get(self.url, {'url': self.mdn_url})
         next_url = reverse('feature_page_create') + '?url=' + self.mdn_url
         self.assertRedirects(response, next_url)

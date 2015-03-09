@@ -16,12 +16,11 @@ from .base import APITestCase
 class TestHistoricalVersionViewset(APITestCase):
 
     def test_get(self):
-        user = self.login_superuser()
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'})
         version = self.create(
             Version, browser=browser, version="1.0",
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 9, 4, 19, 13, 25, 857510, UTC))
         history = version.history.all()[0]
         url = reverse('historicalversion-detail', kwargs={'pk': history.pk})
@@ -93,13 +92,12 @@ class TestHistoricalVersionViewset(APITestCase):
         self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_id(self):
-        user = self.login_superuser()
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'})
         self.create(Version, browser=browser, version="1.0")
         version = self.create(
             Version, browser=browser, version="2.0",
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 9, 4, 20, 46, 28, 479175, UTC))
         history = version.history.all()[0]
         url = reverse('historicalversion-list')

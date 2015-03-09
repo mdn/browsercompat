@@ -16,7 +16,6 @@ from .base import APITestCase
 class TestHistoricalSectionViewset(APITestCase):
 
     def test_get(self):
-        user = self.login_superuser()
         maturity = self.create(
             Maturity, slug='M', name={'en': 'A Maturity'})
         spec = self.create(
@@ -26,7 +25,7 @@ class TestHistoricalSectionViewset(APITestCase):
         section = self.create(
             Section, specification=spec,
             name={'en': 'The Section'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 19, 13, 6, 22, 602237, UTC))
         history = section.history.all()[0]
         url = reverse(
@@ -93,7 +92,6 @@ class TestHistoricalSectionViewset(APITestCase):
         self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_id(self):
-        user = self.login_superuser()
         maturity = self.create(
             Maturity, slug='M', name={'en': 'A Maturity'})
         self.create(
@@ -105,7 +103,7 @@ class TestHistoricalSectionViewset(APITestCase):
             uri={'en': 'http://example.com/spec.html'})
         section = self.create(
             Section, specification=spec, name={'en': 'A Section'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 19, 13, 3, 39, 223434, UTC))
 
         history = section.history.all()[0]

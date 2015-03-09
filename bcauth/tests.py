@@ -17,7 +17,7 @@ class TestViews(TestCase):
         self.assertEqual(response['Location'], self.reverse('account_login'))
 
     def test_account_logged_in(self):
-        self.login_superuser()
+        self.login_user()
         response = self.client.get(reverse('account_base'))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], self.reverse('account_profile'))
@@ -31,7 +31,8 @@ class TestViews(TestCase):
             self.reverse('account_login') + '?next=' + url)
 
     def test_profile_logged_in(self):
-        self.login_superuser()
+        user = self.login_user()
+        user.emailaddress_set.create(email=user.email)
         response = self.client.get(reverse('account_profile'))
         self.assertEqual(response.status_code, 200)
 

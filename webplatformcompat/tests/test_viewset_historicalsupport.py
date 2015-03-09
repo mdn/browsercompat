@@ -16,13 +16,12 @@ from .base import APITestCase
 class TestHistoricalSupportViewset(APITestCase):
 
     def test_get(self):
-        user = self.login_superuser()
         browser = self.create(Browser)
         version = self.create(Version, browser=browser)
         feature = self.create(Feature)
         support = self.create(
             Support, version=version, feature=feature,
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 7, 13, 59, 46, 86327, UTC))
         history = support.history.all()[0]
         url = reverse('historicalsupport-detail', kwargs={'pk': history.pk})
@@ -102,13 +101,12 @@ class TestHistoricalSupportViewset(APITestCase):
         self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_id(self):
-        user = self.login_superuser()
         browser = self.create(Browser)
         version = self.create(Version, browser=browser)
         feature = self.create(Feature)
         support = self.create(
             Support, version=version, feature=feature,
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 7, 14, 5, 43, 94339, UTC))
         history = support.history.all()[0]
         url = reverse('historicalsupport-list')

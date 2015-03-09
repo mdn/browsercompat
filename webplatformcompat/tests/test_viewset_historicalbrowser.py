@@ -15,11 +15,13 @@ from .base import APITestCase
 
 class TestHistoricalBrowserViewset(APITestCase):
 
+    def setUp(self):
+        self.user = self.login_user()
+
     def test_get(self):
-        user = self.login_superuser()
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 8, 25, 20, 50, 38, 868903, UTC))
         history = browser.history.all()[0]
         url = reverse('historicalbrowser-detail', kwargs={'pk': history.pk})
@@ -82,12 +84,11 @@ class TestHistoricalBrowserViewset(APITestCase):
         self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_id(self):
-        user = self.login_superuser()
         self.create(
             Browser, slug='other', name={'en': 'Other Browser'})
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 9, 4, 17, 58, 26, 915222, UTC))
         history = browser.history.all()[0]
         url = reverse('historicalbrowser-list')
@@ -113,12 +114,11 @@ class TestHistoricalBrowserViewset(APITestCase):
         self.assertDataEqual(expected_data, response.data)
 
     def test_filter_by_slug(self):
-        user = self.login_superuser()
         self.create(
             Browser, slug='other', name={'en': 'Other Browser'})
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 9, 4, 17, 58, 26, 915222, UTC))
         history = browser.history.all()[0]
         url = reverse('historicalbrowser-list')

@@ -14,12 +14,13 @@ from .base import APITestCase
 
 
 class TestHistoricalMaturityViewset(APITestCase):
+    def setUp(self):
+        self.user = self.login_user()
 
     def test_get(self):
-        user = self.login_superuser()
         maturity = self.create(
             Maturity, slug="CR", name={"en": "Candidate Recommendation"},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 19, 10, 20, 45, 609995, UTC))
         history = maturity.history.all()[0]
         url = reverse('historicalmaturity-detail', kwargs={'pk': history.pk})
@@ -79,10 +80,9 @@ class TestHistoricalMaturityViewset(APITestCase):
         self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_id(self):
-        user = self.login_superuser()
         maturity = self.create(
             Maturity, slug="PR", name={'en-US': 'Proposed Recommendation'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 19, 10, 23, 38, 279164, UTC))
         history = maturity.history.all()[0]
         url = reverse('historicalmaturity-list')

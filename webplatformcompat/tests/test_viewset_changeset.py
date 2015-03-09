@@ -17,11 +17,13 @@ from .base import APITestCase
 
 
 class TestChangesetViewSet(APITestCase):
+    def setUp(self):
+        self.user = self.login_user()
+
     def test_get(self):
-        user = self.login_superuser()
         test_date = datetime(2014, 10, 27, 14, 3, 31, 530945, UTC)
         feature = self.create(
-            Feature, _history_user=user, _history_date=test_date)
+            Feature, _history_user=self.user, _history_date=test_date)
         feature_history = feature.history.all()[0]
         changeset = Changeset.objects.get()
         url = reverse('changeset-detail', kwargs={'pk': changeset.pk})
@@ -35,7 +37,7 @@ class TestChangesetViewSet(APITestCase):
             'target_resource_type': None,
             'target_resource_id': None,
             'closed': False,
-            'user': user.pk,
+            'user': self.user.pk,
             'historical_browsers': [],
             'historical_versions': [],
             "historical_features": [feature_history.pk],
@@ -56,7 +58,7 @@ class TestChangesetViewSet(APITestCase):
                 'target_resource_type': None,
                 'target_resource_id': None,
                 "links": {
-                    'user': str(user.pk),
+                    'user': str(self.user.pk),
                     'historical_browsers': [],
                     'historical_versions': [],
                     "historical_features": [str(feature_history.pk)],
@@ -123,7 +125,6 @@ class TestChangesetViewSet(APITestCase):
     @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
     def test_simple_changeset(self, mock_task):
         # A simple changeset is auto-created, auto-closed, cache refreshed
-        self.login_superuser()
         data = {
             'features': {
                 'slug': 'feature',
@@ -144,7 +145,6 @@ class TestChangesetViewSet(APITestCase):
         # A multiple changeset is manually created, and must be marked complete
         # Cache updated are delayed until end
 
-        user = self.login_superuser()
         mock_task.reset_mock()
         mock_task.side_effect = Exception('Not called')
         mock_task.delay.side_effect = Exception('Not called')
@@ -211,7 +211,7 @@ class TestChangesetViewSet(APITestCase):
             u'closed': False,
             u'target_resource_type': None,
             u'target_resource_id': None,
-            u'user': user.id,
+            u'user': self.user.id,
             u'historical_browsers': [browser.history.all()[0].pk],
             u'historical_features': [feature.history.all()[0].pk],
             u'historical_maturities': [],
@@ -244,8 +244,7 @@ class TestChangesetViewSet(APITestCase):
         mock_task.delay.assert_has_calls(expected_calls, any_order=True)
 
     def test_cannot_use_closed_changeset_json_api(self):
-        user = self.login_superuser()
-        changeset = Changeset.objects.create(user=user, closed=True)
+        changeset = Changeset.objects.create(user=self.user, closed=True)
 
         data = {
             'browsers': {
@@ -265,8 +264,7 @@ class TestChangesetViewSet(APITestCase):
             loads(response.content.decode('utf-8')), expected_content)
 
     def test_cannot_use_closed_changeset_regular_request(self):
-        user = self.login_superuser()
-        changeset = Changeset.objects.create(user=user, closed=True)
+        changeset = Changeset.objects.create(user=self.user, closed=True)
 
         data = {
             'slug': 'browser',
@@ -282,7 +280,6 @@ class TestChangesetViewSet(APITestCase):
         other = User.objects.create(username='other')
         changeset = Changeset.objects.create(user=other)
 
-        self.login_superuser()
         data = {
             'slug': 'browser',
             'name': {'en': 'The Browser'},
@@ -294,7 +291,6 @@ class TestChangesetViewSet(APITestCase):
         self.assertEqual(response.content.decode('utf-8'), message)
 
     def test_post_empty(self):
-        user = self.login_superuser()
         response = self.client.post(reverse('changeset-list'), {})
         self.assertEqual(201, response.status_code, response.content)
         changeset = Changeset.objects.get()
@@ -305,7 +301,7 @@ class TestChangesetViewSet(APITestCase):
             u'closed': False,
             u'target_resource_type': None,
             u'target_resource_id': None,
-            u'user': user.id,
+            u'user': self.user.id,
             u'historical_browsers': [],
             u'historical_features': [],
             u'historical_maturities': [],

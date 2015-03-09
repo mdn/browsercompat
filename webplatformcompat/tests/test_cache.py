@@ -18,6 +18,7 @@ from .base import TestCase
 class TestCache(TestCase):
     def setUp(self):
         self.cache = Cache()
+        self.login_user(groups=['change-resource'])
 
     def test_browser_v1_serializer(self):
         browser = self.create(Browser)
@@ -65,9 +66,8 @@ class TestCache(TestCase):
         self.assertEqual([], self.cache.browser_v1_invalidator(browser))
 
     def test_changeset_v1_serializer(self):
-        user = self.login_superuser()
         created = datetime(2014, 10, 29, 8, 57, 21, 806744, UTC)
-        changeset = self.create(Changeset, user=user, created=created)
+        changeset = self.create(Changeset, user=self.user, created=created)
         Changeset.objects.filter(pk=changeset.pk).update(modified=created)
         changeset = Changeset.objects.get(pk=changeset.pk)
         out = self.cache.changeset_v1_serializer(changeset)
@@ -81,7 +81,7 @@ class TestCache(TestCase):
             'user:PK': {
                 'app': u'auth',
                 'model': 'user',
-                'pk': user.pk,
+                'pk': self.user.pk,
             },
             'historical_browsers:PKList': {
                 'app': u'webplatformcompat',
@@ -125,8 +125,7 @@ class TestCache(TestCase):
         self.assertEqual(None, self.cache.changeset_v1_serializer(None))
 
     def test_changeset_v1_loader(self):
-        user = self.login_superuser()
-        changeset = self.create(Changeset, user=user)
+        changeset = self.create(Changeset, user=self.user)
         with self.assertNumQueries(8):
             obj = self.cache.changeset_v1_loader(changeset.pk)
         with self.assertNumQueries(0):
@@ -138,8 +137,7 @@ class TestCache(TestCase):
         self.assertIsNone(self.cache.changeset_v1_loader(666))
 
     def test_changeset_v1_invalidator(self):
-        user = self.login_superuser()
-        changeset = self.create(Changeset, user=user)
+        changeset = self.create(Changeset, user=self.user)
         self.assertEqual([], self.cache.changeset_v1_invalidator(changeset))
 
     def test_feature_v1_serializer(self):

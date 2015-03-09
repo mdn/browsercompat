@@ -92,7 +92,7 @@ class TestM2MChangedSignal(TestCase):
     def setUp(self):
         self.patcher = mock.patch(
             'webplatformcompat.tasks.update_cache_for_instance')
-        self.login_superuser()
+        self.login_user()
         self.mocked_update_cache = self.patcher.start()
         self.maturity = self.create(Maturity, slug='Foo')
         self.specification = self.create(Specification, maturity=self.maturity)

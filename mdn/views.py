@@ -14,7 +14,7 @@ from .tasks import start_crawl, parse_page
 
 
 def can_create(user):
-    return user.is_authenticated and user.is_staff
+    return user.has_perm('mdn.add_featurepage')
 
 
 def can_refresh(user):
