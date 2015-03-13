@@ -3,10 +3,37 @@
 
 from __future__ import unicode_literals
 
+from django.core.urlresolvers import reverse
 import mock
 
 from webplatformcompat.tests.base import TestCase
 from .helpers import providers_media_js, provider_login_url
+
+
+class TestViews(TestCase):
+    def test_account_anon(self):
+        response = self.client.get(reverse('account_base'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], self.reverse('account_login'))
+
+    def test_account_logged_in(self):
+        self.login_superuser()
+        response = self.client.get(reverse('account_base'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], self.reverse('account_profile'))
+
+    def test_profile_anon(self):
+        url = reverse('account_profile')
+        response = self.client.get(reverse('account_profile'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response['Location'],
+            self.reverse('account_login') + '?next=' + url)
+
+    def test_profile_logged_in(self):
+        self.login_superuser()
+        response = self.client.get(reverse('account_profile'))
+        self.assertEqual(response.status_code, 200)
 
 
 class TestProvidersMediaJS(TestCase):
