@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Fields for Django models. """
+"""Fields for Django models."""
 from django_extensions.db.fields.json import JSONField
 
 from .validators import LanguageDictValidator
