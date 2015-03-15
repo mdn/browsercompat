@@ -39,6 +39,10 @@ Browse.Router.map(function () {
     this.resource('section', {path: '/sections/:section_id'});
     this.resource('maturities');
     this.resource('maturity', {path: '/maturities/:maturity_id'});
+    this.resource('users');
+    this.resource('user', {path: '/users/:user_id'});
+    this.resource('changesets');
+    this.resource('changeset', {path: '/changesets/:changeset_id'});
 });
 
 /* Serializer - JsonApiSerializer with modifictions */
@@ -161,6 +165,18 @@ Browse.SectionsRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
     }
 });
 
+Browse.UsersRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
+    model: function () {
+        return this.store.find('user');
+    }
+});
+
+Browse.ChangesetsRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
+    model: function () {
+        return this.store.find('changeset');
+    }
+});
+
 /* Models */
 var attr = DS.attr;
 
@@ -234,6 +250,23 @@ Browse.Section = DS.Model.extend({
     note: attr(),
     specification: DS.belongsTo('specification', {async: true}),
     features: DS.hasMany('feature', {async: true}),
+});
+
+Browse.User = DS.Model.extend({
+    username: attr('string'),
+    created: attr('date'),
+    agreement: attr(),
+    permissions: attr(),
+    changesets: DS.hasMany('changeset', {async: true}),
+});
+
+Browse.Changeset = DS.Model.extend({
+    created: attr('date'),
+    modified: attr('date'),
+    closed: attr('boolean'),
+    target_resource_type: attr(),
+    target_resource_id: attr(),
+    user: DS.belongsTo('user', {async: true}),
 });
 
 /* Controllers */
@@ -411,6 +444,8 @@ Browse.SupportsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SpecificationsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SectionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.MaturitiesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+Browse.UsersController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+Browse.ChangesetsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 
 Browse.BrowserController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     versionCount: Browse.Properties.IdCounter('versions'),
@@ -643,4 +678,61 @@ Browse.MaturityController = Ember.ObjectController.extend(Browse.LoadMoreMixin, 
     nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
     specificationCount: Browse.Properties.IdCounter('specifications'),
     specificationCountText: Browse.Properties.IdCounterText('specificationCount', 'Specification'),
+});
+
+Browse.UserController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
+    changesetCount: Browse.Properties.IdCounter('changesets'),
+    changesetCountText: Browse.Properties.IdCounterText('changesetCount', 'Changeset'),
+    createdHTML: Browse.Properties.OptionalDateHTML('created'),
+    permissionsText: Ember.computed('permissions', function () {
+        var permissions = this.get('permissions'),
+            arrayLen = permissions.length,
+            out,
+            i;
+        for (i = 0; i < arrayLen; i += 1) {
+            out = permissions[i];
+            if (i < (arrayLen - 1)) {
+                out += ', ';
+            }
+        }
+        return out;
+    }),
+    permissionsListHTML: Ember.computed('permissions', function () {
+        var permissions = this.get('permissions'),
+            arrayLen = permissions.length,
+            ul = "<ul>",
+            i;
+        for (i = 0; i < arrayLen; i += 1) {
+            ul += '<li>' + permissions[i] + '</li>';
+        }
+        ul += '</ul>';
+        return ul;
+    }),
+});
+
+Browse.ChangesetController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
+    changeCount: Ember.computed(function () {
+        return "to do";
+    }),
+    closedText: Ember.computed('closed', function () {
+        var closed = this.get('closed');
+        if (closed) {
+            return 'closed';
+        }
+        return 'open';
+    }),
+    createdHTML: Browse.Properties.OptionalDateHTML('created'),
+    modifiedHTML: Browse.Properties.OptionalDateHTML('modified'),
+    targetHTML: Ember.computed('target_resource_type', 'target_resource_id', function () {
+        var target_resource_type = this.get('target_resource_type'),
+            target_resource_id = this.get('target_resource_id'),
+            link;
+        if (target_resource_type && target_resource_id) {
+            link = "<a href=\"/browse/" + target_resource_type + "/" +
+                   target_resource_id + "\">" + target_resource_type + " " +
+                   target_resource_id + "</a>";
+            return link;
+        }
+        return "<em>Not set</em>";
+    }),
 });

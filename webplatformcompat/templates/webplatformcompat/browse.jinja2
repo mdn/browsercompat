@@ -54,6 +54,8 @@
     'specifications',
     'sections',
     'maturities',
+    'users',
+    'changesets',
     ] -%}
 {% set models = {
    'browsers': {
@@ -242,6 +244,30 @@
         'related': [
             {'name': 'specifications',
                 'title': '{{specCountText}} with this maturity'},
+        ]},
+    'users': {
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Username', 'property': 'username',
+                'link': 'user'},
+            {'name': 'Created', 'property': 'createdHTML'},
+            {'name': 'Permissions', 'property': 'permissionsText'},
+            {'name': 'Changesets', 'property': 'changesetCount'},
+        ],
+        'related': [
+            {'name': 'changesets',
+                'title': '{{changesetCountText}} by this user'},
+        ]},
+    'changesets': {
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Target Resource', 'property': 'targetHTML',
+                'link': 'changeset'},
+            {'name': 'Created', 'property': 'createdHTML'},
+            {'name': 'Modified', 'property': 'modifiedHTML'},
+            {'name': 'Closed?', 'property': 'closedText'},
+            {'name': 'User', 'property': 'user.username',
+                'link': 'user', 'linkid': 'user.id', 'omit': ['user']},
         ]},
     }
 -%}
