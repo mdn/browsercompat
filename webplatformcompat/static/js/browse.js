@@ -439,8 +439,8 @@ Browse.VersionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     }),
     releaseDayHTML: Browse.Properties.OptionalDateHTML('release_day'),
     retirementDayHTML: Browse.Properties.OptionalDateHTML('retirement_day'),
-    featureCount: Browse.Properties.IdCounter('supports'),
-    featureCountText: Browse.Properties.IdCounterText('featureCount', 'Feature'),
+    supportCount: Browse.Properties.IdCounter('supports'),
+    supportCountText: Browse.Properties.IdCounterText('supportCount', 'Feature'),
     releaseNoteUriArray: Browse.Properties.TranslationArray('release_notes_uri'),
     releaseNoteUriDefaultHTML: Browse.Properties.TranslationDefaultHTML('release_notes_uri'),
     releaseNoteUriListHTML: Browse.Properties.TranslationListHTML('releaseNoteUriArray'),
@@ -468,6 +468,9 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
             ul = "<ul>",
             uri,
             i;
+        if (arrayLen === 0) {
+            return "<em>none</em>";
+        }
         for (i = 0; i < arrayLen; i += 1) {
             uri = mdnArray[i];
             ul += (
@@ -496,8 +499,8 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
     nameArray: Browse.Properties.TranslationArray('name'),
     nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
-    versionCount: Browse.Properties.IdCounter('supports'),
-    versionCountText: Browse.Properties.IdCounterText('versionCount', 'Version'),
+    supportCount: Browse.Properties.IdCounter('supports'),
+    supportCountText: Browse.Properties.IdCounterText('supportCount', 'Version'),
     childCount: Browse.Properties.IdCounter('children'),
     childCountText: Browse.Properties.IdCounterText('childCount', 'Child', 'Children'),
     viewUrl: Ember.computed('id', function () {
@@ -555,29 +558,24 @@ Browse.SupportController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
 });
 
 Browse.SpecificationController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
-    namesArray: Browse.Properties.TranslationArray('name'),
+    nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
+    nameArray: Browse.Properties.TranslationArray('name'),
+    nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
     uriArray: Browse.Properties.TranslationArray('uri'),
-    uriDefaultHTML: Ember.computed('uri', 'name', function () {
-        var uri = this.get('uri'),
-            name = this.get('name');
-        return '<a href="' + uri.en + '">' + name.en + '</a>';
+    uriDefaultHTML: Ember.computed('uri', function () {
+        var uri = this.get('uri');
+        return '<a href="' + uri.en + '">' + uri.en + '</a>';
     }),
-    uriListHTML: Ember.computed('uriArray', 'name', function () {
+    uriListHTML: Ember.computed('uriArray', function () {
         var uriArray = this.get('uriArray'),
-            name = this.get('name'),
             arrayLen = uriArray.length,
             ul = "<ul>",
             uri,
             i;
         for (i = 0; i < arrayLen; i += 1) {
             uri = uriArray[i];
-            ul += '<li>' + uri.lang + ': <a href="' +  uri.value + '">';
-            if (name.hasOwnProperty(uri.lang)) {
-                ul += name[uri.lang];
-            } else {
-                ul += '(' + name.en + ')';
-            }
-            ul += '</a></li>';
+            ul += '<li>' + uri.lang + ': <a href="' + uri.value + '">' +
+                  uri.value + '</a></li>';
         }
         ul += '</ul>';
         return ul;
@@ -590,6 +588,8 @@ Browse.MaturityController = Ember.ObjectController.extend(Browse.LoadMoreMixin, 
     specCount: Browse.Properties.IdCounter('specifications'),
     specCountText: Browse.Properties.IdCounterText('specCount', 'Specification'),
     nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
-    namesArray: Browse.Properties.TranslationArray('name'),
-    namesListHTML: Browse.Properties.TranslationListHTML('namesArray'),
+    nameArray: Browse.Properties.TranslationArray('name'),
+    nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
+    specificationCount: Browse.Properties.IdCounter('specifications'),
+    specificationCountText: Browse.Properties.IdCounterText('specificationCount', 'Specification'),
 });
