@@ -52,6 +52,7 @@
     'features',
     'supports',
     'specifications',
+    'sections',
     'maturities',
     ] -%}
 {% set models = {
@@ -200,6 +201,30 @@
                 'linkid': 'maturity.id', 'omit': ['maturity']},
             {'name': 'Sections', 'property': 'sectionCountText',
                 'omit': ['specification']},
+        ],
+        'related': [
+            {'name': 'sections',
+                'title': '{{sectionCountText}} in this Specification'},
+        ]},
+    'sections': {
+        'detail_title': 'Section "{{{nameDefaultHTML}}}"',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Name', 'property': 'nameDefaultHTML',
+                'detail': 'nameListHTML', 'link': 'section'},
+            {'name': 'Subpath', 'property': 'subpathDefaultHTML',
+                'detail': 'subpathListHTML'},
+            {'name': 'Note', 'property': 'noteDefaultHTML',
+                'detail': 'noteListHTML'},
+            {'name': 'Specification',
+                'property': 'nameDefaultHTML',
+                'with': 'specification', 'link': 'specification'},
+            {'name': 'Features', 'property': 'featureCountText',
+                'omit': ['section']},
+        ],
+        'related': [
+            {'name': 'features',
+                'title': '{{featureCountText}} for this Section'},
         ]},
     'maturities': {
         'singular': 'maturity',

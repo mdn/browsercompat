@@ -35,9 +35,10 @@ Browse.Router.map(function () {
     this.resource('support', {path: '/supports/:support_id'});
     this.resource('specifications');
     this.resource('specification', {path: '/specifications/:specification_id'});
+    this.resource('sections');
+    this.resource('section', {path: '/sections/:section_id'});
     this.resource('maturities');
     this.resource('maturity', {path: '/maturities/:maturity_id'});
-
 });
 
 /* Serializer - JsonApiSerializer with modifictions */
@@ -408,6 +409,7 @@ Browse.VersionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.FeaturesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SupportsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SpecificationsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+Browse.SectionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.MaturitiesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 
 Browse.BrowserController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
@@ -582,6 +584,55 @@ Browse.SpecificationController = Ember.ObjectController.extend(Browse.LoadMoreMi
     }),
     sectionCount: Browse.Properties.IdCounter('sections'),
     sectionCountText: Browse.Properties.IdCounterText('sectionCount', 'Section'),
+});
+
+Browse.SectionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
+    nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
+    nameArray: Browse.Properties.TranslationArray('name'),
+    nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
+    noteDefaultHTML: Browse.Properties.TranslationDefaultHTML('note'),
+    noteArray: Browse.Properties.TranslationArray('note'),
+    noteListHTML: Browse.Properties.TranslationListHTML('noteArray'),
+    subpathDefaultHTML: Ember.computed('subpath', 'specification.uri', function () {
+        var subpath = this.get('subpath'),
+            specUri = this.get('specification.uri'),
+            subpathDefault;
+        if (!subpath) {
+            subpathDefault = "<em>no path</em>";
+        } else {
+            subpathDefault = subpath.en;
+        }
+        if (specUri) {
+            return '<a href="' + specUri.en + subpathDefault + '">' + subpathDefault + '</a>';
+        }
+        return subpathDefault;
+    }),
+    subpathArray: Browse.Properties.TranslationArray('subpath'),
+    subpathListHTML: Ember.computed('subpathArray', 'specification.uri', function () {
+        var subpathArray = this.get('subpathArray'),
+            specUri = this.get('specification.uri'),
+            arrayLen = subpathArray.length,
+            subpath,
+            ul = "<ul>",
+            uri,
+            i;
+        for (i = 0; i < arrayLen; i += 1) {
+            subpath = subpathArray[i];
+            if (!specUri) {
+                uri = subpath.value;
+            } else if (specUri.hasOwnProperty(subpath.lang)) {
+                uri = specUri[subpath.lang] + subpath.value;
+            } else {
+                uri = specUri.en + subpath.value;
+            }
+            ul += '<li>' + subpath.lang + ': <a href="' + uri + '">' +
+                  subpath.value + '</a></li>';
+        }
+        ul += '</ul>';
+        return ul;
+    }),
+    featureCount: Browse.Properties.IdCounter('features'),
+    featureCountText: Browse.Properties.IdCounterText('featureCount', 'Feature'),
 });
 
 Browse.MaturityController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
