@@ -218,7 +218,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "758",
                         "feature": "191",
@@ -236,7 +235,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "759",
                         "feature": "191",
@@ -254,7 +252,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "760",
                         "feature": "191",
@@ -272,7 +269,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "761",
                         "feature": "191",
@@ -290,7 +286,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "762",
                         "feature": "191",
@@ -308,7 +303,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "762",
                         "feature": "191",
@@ -326,7 +320,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "763",
                         "feature": "191",
@@ -344,7 +337,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "764",
                         "feature": "191",
@@ -362,7 +354,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "765",
                         "feature": "191",
@@ -380,7 +371,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "766",
                         "feature": "191",
@@ -398,7 +388,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "767",
                         "feature": "191",
@@ -416,7 +405,6 @@ A sample response is:
                     "default_config": null,
                     "protected": false,
                     "note": null,
-                    "footnote": null,
                     "links": {
                         "version": "768",
                         "feature": "191",
@@ -882,10 +870,10 @@ The process for using this representation is:
             - If just one, display "<``version``>", or "<``support``>",
               depending on the defined attributes
             - If multiple, display as subcells
-            - Add prefixes, alternate names, config, notes, and footnotes links
+            - Add prefixes, alternate names, config, ank notes link
               as appropriate
     5. Close each table, add an edit button
-    6. Add footnotes for displayed supports
+    6. Add notes for displayed supports
 
 This may be done by including the JSON in the page as sent over the wire,
 or loaded asynchronously, with the tables built after initial page load.
@@ -1099,7 +1087,6 @@ A sample response is:
             "default_config": null,
             "protected": false,
             "note": null,
-            "footnote": null,
             "links": {
                 "version": "4477",
                 "feature": "191",

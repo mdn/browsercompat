@@ -137,9 +137,9 @@ window.WPC = {
     },
     generate_browser_tables: function (resources, lang) {
         var a, backlink, browser, browserCnt, browserId, browserIdx,
-            browserMap, feature, featureId, footnote, footnoteArray,
-            footnoteCnt, footnoteDiv, footnoteId, footnoteIdx, footnoteNum,
-            footnoteSup, idPrefix, nosupport, note, noteTxt, panel, prefix,
+            browserMap, feature, featureId, note, noteArray,
+            noteCnt, noteDiv, noteId, noteIdx, noteNum,
+            noteSup, idPrefix, nosupport, panel, prefix,
             releaseUri, span1, span2, support, supportCnt, supportId,
             supportIdx, supportMap, supports, tab, tabCnt, tabContent,
             tabContentItem, tabId, tabIdx, tabList, tabListItem, table, tabs,
@@ -317,28 +317,17 @@ window.WPC = {
                                     // Note
                                     if (support.note) {
                                         td.appendChild(document.createTextNode(' '));
-                                        noteTxt = "(" + this.trans_str(support.note) + ")";
-                                        note = document.createElement("span");
-                                        note.appendChild(document.createTextNode(noteTxt));
-                                        td.appendChild(note);
+                                        noteNum = resources.meta.compat_table.notes[supportId];
+                                        noteId = 'wpc-compat-' + resources.data.id + '-note-' + noteNum;
+                                        noteSup = document.createElement('sup');
+                                        note = document.createElement('a');
+                                        note.setAttribute('id', noteId + '-back');
+                                        note.setAttribute('href', '#' + noteId);
+                                        note.appendChild(document.createTextNode("[" + noteNum + "]"));
+                                        noteSup.appendChild(note);
+                                        td.appendChild(noteSup);
                                     } else {
                                         note = null;
-                                    }
-
-                                    // Footnote
-                                    if (support.footnote) {
-                                        td.appendChild(document.createTextNode(' '));
-                                        footnoteNum = resources.meta.compat_table.footnotes[supportId];
-                                        footnoteId = 'wpc-compat-' + resources.data.id + '-footnote-' + footnoteNum;
-                                        footnoteSup = document.createElement('sup');
-                                        footnote = document.createElement('a');
-                                        footnote.setAttribute('id', footnoteId + '-back');
-                                        footnote.setAttribute('href', '#' + footnoteId);
-                                        footnote.appendChild(document.createTextNode("[" + footnoteNum + "]"));
-                                        footnoteSup.appendChild(footnote);
-                                        td.appendChild(footnoteSup);
-                                    } else {
-                                        footnote = null;
                                     }
                                 }
                             } else {
@@ -361,40 +350,40 @@ window.WPC = {
                 tabContent.appendChild(tabContentItem);
             }
 
-            // Add footnotes
-            if (resources.meta.compat_table.footnotes) {
-                supportMap = resources.meta.compat_table.footnotes;
-                footnoteArray = [];
+            // Add notes
+            if (resources.meta.compat_table.notes) {
+                supportMap = resources.meta.compat_table.notes;
+                noteArray = [];
                 for (supportId in supportMap) {
                     if (supportMap.hasOwnProperty(supportId)) {
                         support = resources.supports[supportId];
-                        footnoteNum = supportMap[supportId];
-                        footnote = document.createElement('p');
-                        footnoteId = 'wpc-compat-' + resources.data.id + '-footnote-' + footnoteNum;
-                        footnote.setAttribute('id', footnoteId);
+                        noteNum = supportMap[supportId];
+                        note = document.createElement('p');
+                        noteId = 'wpc-compat-' + resources.data.id + '-note-' + noteNum;
+                        note.setAttribute('id', noteId);
                         backlink = document.createElement('a');
-                        backlink.setAttribute('href', '#' + footnoteId + '-back');
-                        backlink.appendChild(document.createTextNode('[' + footnoteNum + ']'));
-                        footnote.appendChild(backlink);
-                        footnote.appendChild(document.createTextNode(' '));
-                        footnote.appendChild(this.trans_span(support.footnote, lang));
-                        footnoteArray[footnoteNum] = footnote;
+                        backlink.setAttribute('href', '#' + noteId + '-back');
+                        backlink.appendChild(document.createTextNode('[' + noteNum + ']'));
+                        note.appendChild(backlink);
+                        note.appendChild(document.createTextNode(' '));
+                        note.appendChild(this.trans_span(support.note, lang));
+                        noteArray[noteNum] = note;
                     }
                 }
-                footnoteDiv = document.createElement('div');
-                footnoteDiv.setAttribute('id', 'wpc-compat-' + resources.data.id + '-footnotes');
-                footnoteCnt = footnoteArray.length;
-                for (footnoteIdx = 1; footnoteIdx < footnoteCnt; footnoteIdx += 1) {
-                    footnoteDiv.appendChild(footnoteArray[footnoteIdx]);
+                noteDiv = document.createElement('div');
+                noteDiv.setAttribute('id', 'wpc-compat-' + resources.data.id + '-notes');
+                noteCnt = noteArray.length;
+                for (noteIdx = 1; noteIdx < noteCnt; noteIdx += 1) {
+                    noteDiv.appendChild(noteArray[noteIdx]);
                 }
             } else {
-                footnoteDiv = null;
+                noteDiv = null;
             }
 
             panel.appendChild(tabList);
             panel.appendChild(tabContent);
-            if (footnoteDiv) {
-                panel.appendChild(footnoteDiv);
+            if (noteDiv) {
+                panel.appendChild(noteDiv);
             }
             return panel;
         }

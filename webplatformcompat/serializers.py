@@ -220,7 +220,7 @@ class SupportSerializer(HistoricalModelSerializer):
             'id', 'version', 'feature', 'support', 'prefix',
             'prefix_mandatory', 'alternate_name', 'alternate_mandatory',
             'requires_config', 'default_config', 'protected', 'note',
-            'footnote', 'history_current', 'history')
+            'history_current', 'history')
 
 
 class VersionSerializer(HistoricalModelSerializer):
@@ -939,7 +939,6 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
         for support in obj.all_supports:
             add_langs(support.note)
-            add_langs(support.footnote)
 
         for version in obj.all_versions:
             add_langs(version.release_notes_uri)
@@ -989,7 +988,6 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 support.default_config,
                 support.protected,
                 repr(support.note),
-                repr(support.footnote),
             )
             supported.append((
                 feature.id, browser.id, version_order, version.id,
@@ -1091,20 +1089,20 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 str(obj.page_child_features.next_page_number()))
         return {'linked.features': pagination}
 
-    def ordered_footnotes(self, obj, sig_features, tabs):
-        """Gather footnotes from significant features."""
+    def ordered_notes(self, obj, sig_features, tabs):
+        """Gather notes from significant features."""
         supports = dict(
             [(str(support.id), support) for support in obj.all_supports])
-        footnotes = []
+        notes = []
         for browsers in sig_features.values():
             for section in tabs:
                 for browser in section['browsers']:
                     sig_supports = browsers.get(browser, [])
                     for sig_support_pk in sig_supports:
                         support = supports[sig_support_pk]
-                        if support.footnote:
-                            footnotes.append(sig_support_pk)
-        return OrderedDict((note, i) for i, note in enumerate(footnotes, 1))
+                        if support.note:
+                            notes.append(sig_support_pk)
+        return OrderedDict((note, i) for i, note in enumerate(notes, 1))
 
     def get_meta(self, obj):
         """Assemble the metadata for the feature view."""
@@ -1112,7 +1110,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         browser_tabs = self.browser_tabs(obj)
         pagination = self.pagination(obj)
         languages = self.find_languages(obj)
-        footnotes = self.ordered_footnotes(
+        notes = self.ordered_notes(
             obj, significant_changes, browser_tabs)
         meta = OrderedDict((
             ('compat_table', OrderedDict((
@@ -1120,7 +1118,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 ('tabs', browser_tabs),
                 ('pagination', pagination),
                 ('languages', languages),
-                ('footnotes', footnotes),
+                ('notes', notes),
             ))),))
         return meta
 

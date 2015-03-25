@@ -2398,7 +2398,7 @@ class TestScrapeFeaturePage(ScrapeTestCase):
         version = self.versions[('ie', '4.0')]
         expected = {'__basic support-%d' % version.id: 1}
         self.assertDataEqual(
-            expected, fp.data['meta']['compat_table']['footnotes'])
+            expected, fp.data['meta']['compat_table']['notes'])
 
     def test_scrape_with_footnote_link(self):
         orig = "<td>4.0</td>"
@@ -2420,7 +2420,7 @@ class TestScrapeFeaturePage(ScrapeTestCase):
         version = self.versions[('ie', '4.0')]
         expected = {'__basic support-%d' % version.id: 1}
         self.assertDataEqual(
-            expected, fp.data['meta']['compat_table']['footnotes'])
+            expected, fp.data['meta']['compat_table']['notes'])
 
     def test_scrape_with_footnote_link_sup(self):
         orig = "<td>4.0</td>"
@@ -2442,7 +2442,7 @@ class TestScrapeFeaturePage(ScrapeTestCase):
         version = self.versions[('ie', '4.0')]
         expected = {'__basic support-%d' % version.id: 1}
         self.assertDataEqual(
-            expected, fp.data['meta']['compat_table']['footnotes'])
+            expected, fp.data['meta']['compat_table']['notes'])
 
     def test_scrape_with_footnote_star(self):
         orig = "<td>4.0</td>"
@@ -2464,7 +2464,7 @@ class TestScrapeFeaturePage(ScrapeTestCase):
         version = self.versions[('ie', '4.0')]
         expected = {'__basic support-%d' % version.id: 1}
         self.assertDataEqual(
-            expected, fp.data['meta']['compat_table']['footnotes'])
+            expected, fp.data['meta']['compat_table']['notes'])
 
 
 class TestRangeErrorToHtml(ScrapeTestCase):

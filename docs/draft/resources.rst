@@ -1033,10 +1033,8 @@ The **support** representation includes:
     - **protected** - True if the feature requires additional steps to enable
       in order to protect the user's security or privacy, such as geolocation
       and the Bluetooth API.
-    - **note** *(localized)* - Short note on support, designed for inline
-      display, max 20 characters
-    - **footnote** *(localized)* - Long note on support, designed for
-      display after a compatibility table, MDN wiki format
+    - **note** *(localized)* - Note on support, designed for
+      display after a compatibility table, can contain HTML
 * **links**
     - **version** *(one)* - The associated version_.  Cannot be changed by
       the user after creation.
@@ -1078,7 +1076,6 @@ A sample response is:
             "default_config": null,
             "protected": false,
             "note": null,
-            "footnote": null,
             "links": {
                 "version": "123",
                 "feature": "276",

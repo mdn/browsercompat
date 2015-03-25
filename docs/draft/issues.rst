@@ -68,10 +68,10 @@ These changes are:
       `"media.peerconnection.enabled=on"`
     - **default_config** - The configuration string in the shipping
       browser, such as `"media.peerconnection.enabled=off"`
-    - **note** - short note, length limited, translated, or null.  Supports
-      inline notes currently in use on MDN
-    - **footnote** - longer note, may include code samples, translated, or null.
-      Supports extended footnote in use on MDN.
+    - **note** - Note, which can be null, but if included, can be translated,
+      and may contain HTML and code samples. Supports extended footnote in use
+      on MDN. MDN inline notes are not supported, and must be converted to
+      footnotes.
 
 There are also additional Resources_:
 
@@ -169,7 +169,7 @@ features to add, or existing features that will be dropped.
 * `Web/CSS/text-transform`_ - Interesting use of non-ascii unicode in feature
   names, good test case.
 * `Web/CSS/transform-origin`_ - IE may justify a 'alternate' value for
-  supports.support, or just 'no' with a footnote.
+  supports.support, or just 'no' with a note.
 
 Some pages will require manual intervention to get them into the data store.
 Here's a sample:
@@ -179,10 +179,10 @@ Here's a sample:
   an inline note.
 * `Web/CSS/break-inside`_ - Will need to add a skeleton compatibility table.
 * `Web/CSS/@document`_ - Specification paragraph rather than normal table.
-* `Web/CSS/clip`_ - Long inline notes should be converted to footnotes.
+* `Web/CSS/clip`_ - Long inline notes should be converted to notes.
 * `Web/CSS/:invalid`_ - Links in feature names to other MDN docs
 * `Web/CSS/outline-color`_ - Instead of version, long note about support.
-  Convert to two versions, footnote.
+  Convert to two versions and a footnote.
 * `Web/CSS/radial-gradient`_ - Evolving standard, used version notes instead of
   marking feature as experimental or deprecated.
 * `Web/CSS/ratio`_ - Strange Chrome version
@@ -320,8 +320,8 @@ This will be converted to API resources:
       version.version, and support.support is
       ``"yes"``.
 * **Content after table** - This is usually formatted as a paragraph,
-  containing HTML.  It should become supports.footnotes,
-  but it will challenging to auto-parse and associate.
+  containing HTML.  If it resembles a footnote, it will be converted to
+  supports.notes.
 
 Once the initial conversion has been done for a page, it may be useful to
 perform additional steps:

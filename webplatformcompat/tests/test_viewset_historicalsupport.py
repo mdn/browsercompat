@@ -45,7 +45,6 @@ class TestHistoricalSupportViewset(APITestCase):
                 'default_config': None,
                 'protected': False,
                 'note': None,
-                'footnote': None,
                 'links': {
                     'feature': str(feature.id),
                     'version': str(version.id),
@@ -70,7 +69,6 @@ class TestHistoricalSupportViewset(APITestCase):
                     'default_config': None,
                     'protected': False,
                     'note': None,
-                    'footnote': None,
                     'links': {
                         'feature': str(feature.id),
                         'version': str(version.id),
@@ -132,7 +130,6 @@ class TestHistoricalSupportViewset(APITestCase):
                     'default_config': None,
                     'protected': False,
                     'note': None,
-                    'footnote': None,
                     'links': {
                         'feature': str(feature.id),
                         'version': str(version.id),

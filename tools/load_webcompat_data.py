@@ -268,7 +268,7 @@ def parse_compat_data_item(key, item, local_collection):
                                 id=support_id, feature=feature_id,
                                 version=version_id, alternate_name=None,
                                 alternate_mandatory=False,
-                                default_config=None, footnote=None,
+                                default_config=None,
                                 note=None, prefix=None, prefix_mandatory=False,
                                 protected=False, requires_config=None)
                             obj.support = support_map[raw_support[0]]

@@ -223,7 +223,6 @@ Browse.Support = DS.Model.extend({
     default_config: attr('string'),
     protected: attr('boolean'),
     note: attr(),
-    footnote: attr(),
     version: DS.belongsTo('version', {async: true}),
     feature: DS.belongsTo('feature', {async: true}),
 });
@@ -589,9 +588,6 @@ Browse.SupportController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     noteArray: Browse.Properties.TranslationArray('note'),
     noteDefaultHTML: Browse.Properties.TranslationDefaultHTML('note'),
     noteListHTML: Browse.Properties.TranslationListHTML('noteArray'),
-    footnoteArray: Browse.Properties.TranslationArray('footnote'),
-    footnoteDefaultHTML: Browse.Properties.TranslationDefaultHTML('footnote'),
-    footnoteListHTML: Browse.Properties.TranslationListHTML('footnoteArray'),
 });
 
 Browse.SpecificationController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
