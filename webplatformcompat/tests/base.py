@@ -84,8 +84,12 @@ class TestMixin(object):
         n_second = self.normalizeData(second)
         self.assertEqual(n_first, n_second)
 
+    def dt_repr(self, dt):
+        """Convert a datetime to DRF serialized representation."""
+        return dt
+
     def dt_json(self, dt):
-        """Convert a datetime to DRF encoded JSON"""
+        """Convert a datetime to DRF encoded JSON."""
         return JSONEncoder().default(dt)
 
     def history_pk(self, obj):

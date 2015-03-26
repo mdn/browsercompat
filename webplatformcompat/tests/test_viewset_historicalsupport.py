@@ -30,7 +30,7 @@ class TestHistoricalSupportViewset(APITestCase):
 
         expected_data = {
             'id': history.pk,
-            'date': support._history_date,
+            'date': self.dt_repr(support._history_date),
             'event': 'created',
             'changeset': history.history_changeset_id,
             'support': support.pk,
@@ -56,7 +56,7 @@ class TestHistoricalSupportViewset(APITestCase):
         expected_json = {
             'historical_supports': {
                 'id': str(history.pk),
-                'date': '2014-10-07T13:59:46.086Z',
+                'date': self.dt_json(support._history_date),
                 'event': 'created',
                 'supports': {
                     'id': str(support.id),
@@ -115,7 +115,7 @@ class TestHistoricalSupportViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': support._history_date,
+                'date': self.dt_repr(support._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'support': support.pk,

@@ -29,7 +29,7 @@ class TestHistoricalVersionViewset(APITestCase):
 
         expected_data = {
             'id': history.pk,
-            'date': version._history_date,
+            'date': self.dt_repr(version._history_date),
             'event': 'created',
             'changeset': history.history_changeset_id,
             'version': version.pk,
@@ -52,7 +52,7 @@ class TestHistoricalVersionViewset(APITestCase):
         expected_json = {
             'historical_versions': {
                 'id': str(history.pk),
-                'date': '2014-09-04T19:13:25.857Z',
+                'date': self.dt_json(version._history_date),
                 'event': 'created',
                 'versions': {
                     'id': str(version.id),
@@ -108,7 +108,7 @@ class TestHistoricalVersionViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': version._history_date,
+                'date': self.dt_repr(version._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'version': version.pk,

@@ -310,6 +310,38 @@ class TestFeatureViewSet(APITestCase):
         }
         self.assertDataEqual(response.data, expected_data)
 
+    def test_post_minimal(self):
+        self.login_user()
+        data = {
+            'features': {
+                'slug': 'feature',
+                'name': {'en': 'The Feature'}
+            }
+        }
+        response = self.client.post(
+            reverse('feature-list'), dumps(data),
+            content_type='application/vnd.api+json')
+        self.assertEqual(201, response.status_code, response.content)
+        feature = Feature.objects.latest('id')
+        fhistory_pk = feature.history.all()[0].pk
+        expected_data = {
+            'id': feature.id,
+            'slug': 'feature',
+            'mdn_uri': None,
+            'experimental': False,
+            'standardized': True,
+            'stable': True,
+            'obsolete': False,
+            'name': {'en': 'The Feature'},
+            'supports': [],
+            'sections': [],
+            'parent': None,
+            'children': [],
+            'history': [fhistory_pk],
+            'history_current': fhistory_pk,
+        }
+        self.assertDataEqual(response.data, expected_data)
+
     def test_add_sections(self):
         feature = self.create(
             Feature, slug='feature', name={'en': 'The Feature'})
