@@ -24,7 +24,8 @@ from .serializers import (
     HistoricalBrowserSerializer, HistoricalFeatureSerializer,
     HistoricalMaturitySerializer, HistoricalSectionSerializer,
     HistoricalSpecificationSerializer, HistoricalSupportSerializer,
-    HistoricalVersionSerializer,
+    HistoricalVersionSerializer)
+from .view_serializers import (
     ViewFeatureListSerializer, ViewFeatureSerializer)
 
 

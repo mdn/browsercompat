@@ -10,7 +10,7 @@ from django.test.utils import override_settings
 
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
-from webplatformcompat.serializers import (
+from webplatformcompat.view_serializers import (
     DjangoResourceClient, ViewFeatureExtraSerializer)
 
 from .base import APITestCase, TestCase
