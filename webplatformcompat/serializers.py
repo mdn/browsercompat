@@ -17,6 +17,13 @@ from .models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 
 
+def omit_some(source_list, *omitted):
+    """Return a list with some items omitted"""
+    for item in omitted:
+        assert item in source_list, '%r not in %r' % (item, source_list)
+    return [x for x in source_list if x not in omitted]
+
+
 #
 # "Regular" Serializers
 #
@@ -73,16 +80,16 @@ class HistoricalModelSerializer(
         cls = self.opts.model
         view_name = "historical%s-detail" % cls.__name__.lower()
 
-        assert 'history' in self.opts.fields
-        assert 'history' not in fields
-        fields['history'] = HistoryField(view_name=view_name)
+        if 'history' in self.opts.fields:
+            assert 'history' not in fields
+            fields['history'] = HistoryField(view_name=view_name)
 
-        assert 'history_current' in self.opts.fields
-        assert 'history_current' not in fields
-        view = self.context.get('view', None)
-        read_only = view and view.action in ('list', 'create')
-        fields['history_current'] = CurrentHistoryField(
-            view_name=view_name, read_only=read_only)
+        if 'history_current' in self.opts.fields:
+            assert 'history_current' not in fields
+            view = self.context.get('view', None)
+            read_only = view and view.action in ('list', 'create')
+            fields['history_current'] = CurrentHistoryField(
+                view_name=view_name, read_only=read_only)
 
         return fields
 
@@ -347,7 +354,9 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(BrowserSerializer):
         class Meta(BrowserSerializer.Meta):
-            exclude = ('history_current', 'history', 'versions')
+            fields = omit_some(
+                BrowserSerializer.Meta.fields,
+                'history_current', 'history', 'versions')
 
     browser = HistoricalObjectField()
     browsers = SerializerMethodField('get_archive')
@@ -362,9 +371,12 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(FeatureSerializer):
         class Meta(FeatureSerializer.Meta):
-            exclude = (
+            fields = omit_some(
+                FeatureSerializer.Meta.fields,
                 'history_current', 'history', 'sections', 'supports',
                 'children')
+            read_only_fields = omit_some(
+                FeatureSerializer.Meta.read_only_fields, 'supports')
 
     feature = HistoricalObjectField()
     features = SerializerMethodField('get_archive')
@@ -381,7 +393,9 @@ class HistoricalMaturitySerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(MaturitySerializer):
         class Meta(MaturitySerializer.Meta):
-            exclude = ('specifications', 'history_current', 'history')
+            fields = omit_some(
+                MaturitySerializer.Meta.fields,
+                'specifications', 'history_current', 'history')
 
     maturity = HistoricalObjectField()
     maturities = SerializerMethodField('get_archive')
@@ -396,7 +410,9 @@ class HistoricalSectionSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(SectionSerializer):
         class Meta(SectionSerializer.Meta):
-            exclude = ('features', 'history_current', 'history')
+            fields = omit_some(
+                SectionSerializer.Meta.fields,
+                'features', 'history_current', 'history')
 
     section = HistoricalObjectField()
     sections = SerializerMethodField('get_archive')
@@ -412,7 +428,9 @@ class HistoricalSpecificationSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(SpecificationSerializer):
         class Meta(SpecificationSerializer.Meta):
-            exclude = ('sections', 'history_current', 'history')
+            fields = omit_some(
+                SpecificationSerializer.Meta.fields,
+                'sections', 'history_current', 'history')
 
     specification = HistoricalObjectField()
     specifications = SerializerMethodField('get_archive')
@@ -428,7 +446,8 @@ class HistoricalSupportSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(SupportSerializer):
         class Meta(SupportSerializer.Meta):
-            exclude = ('history_current', 'history')
+            fields = omit_some(
+                SupportSerializer.Meta.fields, 'history_current', 'history')
 
     support = HistoricalObjectField()
     supports = SerializerMethodField('get_archive')
@@ -444,7 +463,11 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(VersionSerializer):
         class Meta(VersionSerializer.Meta):
-            exclude = ('supports', 'history_current', 'history')
+            fields = omit_some(
+                VersionSerializer.Meta.fields,
+                'supports', 'history_current', 'history')
+            read_only_fields = omit_some(
+                VersionSerializer.Meta.read_only_fields, 'supports')
 
     version = HistoricalObjectField()
     versions = SerializerMethodField('get_archive')

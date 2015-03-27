@@ -20,42 +20,34 @@ from .models import (
 from .serializers import (
     BrowserSerializer, FeatureSerializer, MaturitySerializer,
     SectionSerializer, SpecificationSerializer, SupportSerializer,
-    VersionSerializer)
+    VersionSerializer, omit_some)
 
 
 class ViewBrowserSerializer(BrowserSerializer):
     class Meta(BrowserSerializer.Meta):
-        fields = [
-            x for x in BrowserSerializer.Meta.fields if x != 'versions']
+        fields = omit_some(BrowserSerializer.Meta.fields, 'versions')
 
 
 class ViewMaturitySerializer(MaturitySerializer):
     class Meta(MaturitySerializer.Meta):
-        fields = [
-            x for x in MaturitySerializer.Meta.fields
-            if x != 'specifications']
+        fields = omit_some(MaturitySerializer.Meta.fields, 'specifications')
 
 
 class ViewSectionSerializer(SectionSerializer):
     class Meta(SectionSerializer.Meta):
-        fields = [
-            x for x in SectionSerializer.Meta.fields if x != 'features']
+        fields = omit_some(SectionSerializer.Meta.fields, 'features')
 
 
 class ViewSpecificationSerializer(SpecificationSerializer):
     class Meta(SpecificationSerializer.Meta):
-        fields = [
-            x for x in SpecificationSerializer.Meta.fields
-            if x != 'sections']
+        fields = omit_some(SpecificationSerializer.Meta.fields, 'sections')
 
 
 class ViewVersionSerializer(VersionSerializer):
     class Meta(VersionSerializer.Meta):
-        fields = [
-            x for x in VersionSerializer.Meta.fields if x != 'supports']
-        read_only_fields = [
-            x for x in VersionSerializer.Meta.read_only_fields
-            if x != 'supports']
+        fields = omit_some(VersionSerializer.Meta.fields, 'supports')
+        read_only_fields = omit_some(
+            VersionSerializer.Meta.read_only_fields, 'supports')
 
 
 # Map resource names to model, view serializer classes
