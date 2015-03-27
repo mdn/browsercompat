@@ -4,7 +4,7 @@
 from django.db.models import CharField
 from django.contrib.auth.models import User
 from rest_framework.serializers import (
-    DateField, DateTimeField, IntegerField, ModelSerializer,
+    DateTimeField, IntegerField, ModelSerializer,
     PrimaryKeyRelatedField, SerializerMethodField, ValidationError)
 
 from . import fields
@@ -258,7 +258,7 @@ class ChangesetSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     """User Serializer"""
 
-    created = DateField(source='date_joined', read_only=True)
+    created = DateTimeField(source='date_joined', read_only=True)
     agreement = SerializerMethodField('get_agreement')
     permissions = SerializerMethodField('get_permissions')
 
