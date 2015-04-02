@@ -24,6 +24,9 @@ class TestUserViewset(APITestCase):
             'id': user.pk,
             'username': 'user',
             'created': date_joined,
+            'agreement': 0,
+            'permissions': ['change-resource'],
+            'changesets': [],
         }
         self.assertDataEqual(response.data, expected_data)
         expected_content = {
@@ -31,6 +34,17 @@ class TestUserViewset(APITestCase):
                 "id": str(user.pk),
                 "username": 'user',
                 "created": '2014-09-04T17:10:21.827Z',
+                "agreement": 0,
+                "permissions": ['change-resource'],
+                "links": {"changesets": []},
+            },
+            "links": {
+                "users.changesets": {
+                    "href": (
+                        "http://testserver/api/v1/changesets/"
+                        "{users.changesets}"),
+                    "type": "changesets"
+                }
             }
         }
         actual_content = loads(response.content.decode('utf-8'))
@@ -50,5 +64,8 @@ class TestUserViewset(APITestCase):
                 'id': user.pk,
                 'username': 'user',
                 'created': date_joined,
+                'agreement': 0,
+                'permissions': ['change-resource'],
+                'changesets': [],
             }]}
         self.assertDataEqual(response.data, expected_data)

@@ -50,6 +50,18 @@ class ReadOnlyModelViewSet(BaseROModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
 
 
+class UpdateOnlyModelViewSet(
+        PartialPutMixin, CachedViewMixin, UpdateModelMixin,
+        ReadOnlyModelViewSet):
+    renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
+    parser_classes = (JsonApiParser, FormParser, MultiPartParser)
+
+    def pre_save(self, obj):
+        """Delay cache refresh if requested by changeset middleware"""
+        if getattr(self.request, 'delay_cache', False):
+            obj._delay_cache = True
+
+
 #
 # 'Regular' viewsets
 #
@@ -115,7 +127,7 @@ class ChangesetViewSet(ModelViewSet):
     serializer_class = ChangesetSerializer
 
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(CachedViewMixin, ReadOnlyModelViewSet):
     model = User
     serializer_class = UserSerializer
     filter_fields = ('username',)
@@ -171,9 +183,7 @@ class HistoricalVersionViewSet(ReadOnlyModelViewSet):
 # Views
 #
 
-class ViewFeaturesViewSet(
-        PartialPutMixin, CachedViewMixin, UpdateModelMixin,
-        ReadOnlyModelViewSet):
+class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
     model = Feature
     serializer_class = ViewFeatureSerializer
     filter_fields = ('slug',)

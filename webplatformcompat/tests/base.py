@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -22,13 +22,27 @@ class TestMixin(object):
         """Create a full URL for a view"""
         return self.baseUrl + reverse(viewname, kwargs=kwargs)
 
-    def login_superuser(self):
-        """Create and login a superuser, saving to self.user"""
+    def login_user(self, groups=None):
+        """Create and login a user, saving to self.user.
+
+        groups - default groups for new users.  Defaults to ['change-resource']
+        """
+        self.assertFalse(getattr(self, 'user', None))
+        username = 'user'
+        password = 'password'
         user = User.objects.create(
-            username='staff', is_staff=True, is_superuser=True)
-        user.set_password('5T@FF')
+            username='user', is_staff=False, is_superuser=False,
+            email='user@example.com')
+        user.set_password('password')
         user.save()
-        self.assertTrue(self.client.login(username='staff', password='5T@FF'))
+        if groups is None:
+            groups = ['change-resource']
+        group_list = [Group.objects.get(name=g) for g in groups]
+        user.groups.add(*group_list)
+        if 'change-resource' not in groups:
+            user.groups.remove(Group.objects.get(name='change-resource'))
+        self.assertTrue(
+            self.client.login(username=username, password=password))
         self.user = user
         return user
 
@@ -36,8 +50,7 @@ class TestMixin(object):
         """Create a model, setting the historical relations"""
         obj = klass(**kwargs)
         obj._history_user = (
-            _history_user or getattr(self, 'user', None) or
-            self.login_superuser())
+            _history_user or getattr(self, 'user', None) or self.login_user())
 
         if not hasattr(self, 'changeset'):
             hc_kwargs = {'user': obj._history_user}

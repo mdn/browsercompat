@@ -1,15 +1,13 @@
 {% extends "webplatformcompat/base.jinja2" %}
-
-{% block head_title %}Browse Web Platform Compatability Data{% endblock %}
+{% block head_title %}Browse Web Platform Compatibility Data{% endblock %}
 
 {% block body_container %}
 <script type="text/x-handlebars">
 <div class="container">
     <header>
-      <h1>Browse Web Platform Compatability Data</h1>
+      <h1>Browse Web Platform Compatibility Data</h1>
     </header>
     {{ '{{outlet}}' }}
-    <hr>
     <footer>
         <p>Built on <a href="http://emberjs.com/">Ember.js</a>.  © 2014 - {{current_year()}} Mozilla</p>
     </footer>
@@ -17,583 +15,23 @@
 </script>
 
 <script type="text/x-handlebars" data-template-name="index">
-{% raw %}
 <p>
-    This is an application to view Web Platform Compatability Data.
+    This is an application to view Web Platform Compatibility Data.
 </p>
 <p>
     The following is available:
 </p>
 <ul>
-    <li>{{#link-to 'browsers'}}Browsers{{/link-to}}</li>
-    <li>{{#link-to 'versions'}}Versions{{/link-to}}</li>
-    <li>{{#link-to 'features'}}Features{{/link-to}}</li>
-    <li>{{#link-to 'supports'}}Supports{{/link-to}}</li>
-    <li>{{#link-to 'specifications'}}Specifications{{/link-to}}</li>
-    <li>{{#link-to 'maturities'}}Specification Maturities{{/link-to}}</li>
+    {% for name in model_order -%}
+    <li>{{ "{{#link-to '%s'}}%s{{/link-to}}" | format(name, models[name].get('title', name.title())) | safe }}</li>
+    {% endfor -%}
 </ul>
-{% endraw %}
 </script>
 
-<script type="text/x-handlebars" data-template-name="browsers">
-{% raw %}
-<h2>{{pagination.count}} Browsers</h2>
-<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Slug</th>
-                <th>Name</th>
-                <th>Note</th>
-                <th>Versions</th>
-            </tr>
-        </thead>
-        <tbody>
-          {{#each itemController='browser'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'browser' id}}{{slug}}{{/link-to}}</td>
-                <td>{{{nameDefaultHTML}}}</td>
-                <td>{{{noteDefaultHTML}}}</td>
-                <td>{{{versionCountText}}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-    </table>
-</div>
-{{#if canLoadMore }}
-<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more browsers...</button>
-{{else}}{{#if loading}}
-<button type="button" class="btn btn-default" disabled="disabled">Loading more browsers...</button>
-{{else}}
-<button type="button" class="btn btn-default" disabled="disabled">All Browsers Loaded.</button>
-{{/if}}{{/if}}
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="browser">
-{% raw %}
-<h2>{{{nameDefaultHTML}}} Browser</h2>
-<p><em>back to {{#link-to 'browsers'}}Browsers{{/link-to}}, {{#link-to 'index'}}Index{{/link-to}}</em></p>
-<dl>
-  <dt>Id</dt>
-  <dd>{{id}}</dd>
-  <dt>Slug</dt>
-  <dd><code>{{slug}}</code></dd>
-  <dt>Name</dt>
-  <dd>{{{nameListHTML}}}</dd>
-  <dt>Note</dt>
-  <dd>{{{noteListHTML}}}</dd>
-</dl>
-
-<h3>{{versionCountText}} for this Browser</h3>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Version</th>
-                <th>Release Day</th>
-                <th>Retirement Day</th>
-                <th>Status</th>
-                <th>Release Notes URI</th>
-                <th>Note</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{#if versionCount}}
-          {{#each versions itemController='version'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'version' id}}{{{versionHTML}}}{{/link-to}}</td>
-                <td>{{{releaseDayHTML}}}</td>
-                <td>{{{retirementDayHTML}}}</td>
-                <td>{{status}}</td>
-                <td>{{{releaseNoteUriDefaultHTML}}}</td>
-                <td>{{{noteDefaultHTML}}}</td>
-            </tr>
-          {{else}}
-            <tr><td rowspan=0><em>Loading {{versionCountText}}...</em></td></tr>
-          {{/each}}
-        {{/if}}
-        </tbody>
-    </table>
-</div>
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="versions">
-{% raw %}
-<h2>{{pagination.count}} Versions</h2>
-<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Version</th>
-                <th>Release Day</th>
-                <th>Retirement Day</th>
-                <th>Status</th>
-                <th>Release Notes URI</th>
-                <th>Note</th>
-                <th>Related Features</th>
-            </tr>
-        </thead>
-        <tbody>
-          {{#each itemController='version'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'version' id}}{{{fullVersionHTML}}}{{/link-to}}</td>
-                <td>{{{releaseDayHTML}}}</td>
-                <td>{{{retirementDayHTML}}}</td>
-                <td>{{status}}</td>
-                <td>{{{releaseNoteUriDefaultHTML}}}</td>
-                <td>{{{noteDefaultHTML}}}</td>
-                <td>{{#link-to 'version' id}}{{featureCountText}}{{/link-to}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-    </table>
-</div>
-{{#if canLoadMore }}
-<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more versions...</button>
-{{else}}{{#if loading}}
-<button type="button" class="btn btn-default" disabled="disabled">Loading more versions...</button>
-{{else}}
-<button type="button" class="btn btn-default" disabled="disabled">All Versions Loaded.</button>
-{{/if}}{{/if}}
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="version">
-{% raw %}
-<h2>{{{fullVersionHTML}}}</h2>
-<p><em>back to {{#link-to 'versions'}}Versions{{/link-to}}, {{#link-to 'index'}}Index{{/link-to}}</em></p>
-<dl>
-  <dt>Id</dt>
-  <dd>{{id}}</dd>
-  <dt>Browser</dt>
-  <dd>{{#link-to 'browser' browser.id}}{{browser.name.en}}{{/link-to}}</td>
-  <dt>Version</dt>
-  <dd>{{{versionHTML}}}</dd>
-  <dt>Release Day</dt>
-  <dd>{{{releaseDayHTML}}}</dd>
-  <dt>Retirement Day</dt>
-  <dd>{{{retirementDayHTML}}}</dd>
-  <dt>Status</dt>
-  <dd>{{status}}</dd>
-  <dt>Release Note URI</dt>
-  <dd>{{{releaseNoteUriListHTML}}}</dd>
-  <dt>Note</dt>
-  <dd>{{{noteListHTML}}}</dd>
-</dl>
-
-<h3>{{featureCountText}} with Support Info</h3>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Feature</th>
-                <th>Supported</th>
-                <th>Prefix</th>
-                <th>Alternate Name</th>
-                <th>Config</th>
-                <th>Protected</th>
-                <th>Note</th>
-                <th>Footnote</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{#if featureCount}}
-          {{#each supports itemController='support'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'feature' feature.id}}{{feature.slug}}{{/link-to}}</td>
-                <td>{{support}}</td>
-                <td>{{{prefixHTML}}}</td>
-                <td>{{{alternateNameHTML}}}</td>
-                <td>{{{requiredConfigHTML}}}</td>
-                <td>{{{protected}}}</td>
-                <td>{{{noteDefaultHTML}}}</td>
-                <td>{{{footnoteDefaultHTML}}}</td>
-            </tr>
-          {{else}}
-            <tr><td rowspan=0><em>Loading {{featureCountText}}...</em></td></tr>
-          {{/each}}
-        {{/if}}
-        </tbody>
-    </table>
-</div>
-{% endraw %}
-</script>
-
-
-<script type="text/x-handlebars" data-template-name="features">
-{% raw %}
-<h2>{{pagination.count}} Features</h2>
-<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Slug</th>
-                <th>Flags</th>
-                <th>Name</th>
-                <th>MDN Link</th>
-                <th>Related Versions</th>
-            </tr>
-        </thead>
-        <tbody>
-          {{#each itemController='feature'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'feature' id}}{{slug}}{{/link-to}}</td>
-                <td>{{{flagsHTML}}}</td>
-                <td>{{{nameDefaultHTML}}}</td>
-                <td>{{{mdnDefaultHTML}}}</td>
-                <td>{{versionCountText}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-    </table>
-</div>
-{{#if canLoadMore }}
-<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more features...</button>
-{{else}}{{#if loading}}
-<button type="button" class="btn btn-default" disabled="disabled">Loading more features...</button>
-{{else}}
-<button type="button" class="btn btn-default" disabled="disabled">All Features Loaded.</button>
-{{/if}}{{/if}}
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="feature">
-{% raw %}
-<h2>Feature {{{nameDefaultHTML}}}</h2>
-<p><em>back to {{#link-to 'features'}}Features{{/link-to}}, {{#link-to 'index'}}Index{{/link-to}}</em></p>
-<p class="lead"><strong><a {{bind-attr href=viewUrl}}>View this feature with related data</a>.</strong></p>
-<dl>
-  <dt>Id</dt>
-  <dd>{{id}}</dd>
-  <dt>Slug</dt>
-  <dd><code>{{slug}}</code></dd>
-  <dt>Experimental</dt>
-  <dd>{{experimental}}</dd>
-  <dt>Standardized</dt>
-  <dd>{{standardized}}</dd>
-  <dt>Stable</dt>
-  <dd>{{stable}}</dd>
-  <dt>Obsolete</dt>
-  <dd>{{obsolete}}</dd>
-  <dt>Name</dt>
-  <dd>{{{nameListHTML}}}</dd>
-  <dt>MDN URI</dt>
-  <dd>{{{mdnListHTML}}}</dd>
-  <dt>Parent Feature</dt>
-  <dd>{{#if parent}}{{#with parent controller='feature'}}{{#link-to 'feature' id}}{{{nameDefaultHTML}}}{{/link-to}}{{/with}}{{else}}<em>No Parent</em>{{/if}}</dd>
-  <dt>Child Features</dt>
-  <dd>
-    {{#if childCount}}
-      {{#if children}}
-      <ul>
-        {{#each children itemController='feature'}}<li>{{#link-to 'feature' id}}{{{nameDefaultHTML}}}{{/link-to}}</li>{{/each}}
-      </ul>
-      {{else}}
-      <em>Loading {{childCountText}}...</em>
-      {{/if}}
-    {{else}}
-      <em>No children</em>
-    {{/if}}
-  </dd>
-</dl>
-
-<h3>{{versionCountText}} with Support Info</h3>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Version</th>
-                <th>Supported</th>
-                <th>Prefix</th>
-                <th>Alternate Name</th>
-                <th>Requires Config</th>
-                <th>Protected</th>
-                <th>Note</th>
-                <th>Footnote</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{#if versionCount}}
-          {{#each supports itemController='support'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#with version controller='version'}}{{#link-to 'version' id}}{{{fullVersionHTML}}}{{/link-to}}{{/with}}</td>
-                <td>{{support}}</td>
-                <td>{{{prefixHTML}}}</td>
-                <td>{{{alternateNameHTML}}}</td>
-                <td>{{{requiredConfigHTML}}}</td>
-                <td>{{protected}}</td>
-                <td>{{{noteDefaultHTML}}}</td>
-                <td>{{{footnoteDefaultHTML}}}</td>
-            </tr>
-          {{else}}
-            <tr><td rowspan=0><em>Loading {{versionCountText}}...</em></td></tr>
-          {{/each}}
-        {{/if}}
-        </tbody>
-    </table>
-</div>
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="supports">
-{% raw %}
-<h2>{{pagination.count}} Supports</h2>
-<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Support</th>
-                <th>Version</th>
-                <th>Feature</th>
-                <th>Prefix</th>
-                <th>Alternate Name</th>
-                <th>Required Config</th>
-                <th>Protected</th>
-                <th>Note</th>
-                <th>Footnote</th>
-            </tr>
-        </thead>
-        <tbody>
-          {{#each itemController='support'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'support' id}}{{support}}{{/link-to}}</td>
-                <td>{{#with version controller='version'}}{{{fullVersionHTML}}}{{/with}}</td>
-                <td>{{#with feature controller='feature'}}{{{nameDefaultHTML}}}{{/with}}</td>
-                <th>{{{prefixHTML}}}</th>
-                <th>{{{alternateNameHTML}}}</th>
-                <th>{{{requiredConfigHTML}}}</th>
-                <th>{{protected}}</th>
-                <th>{{{noteDefaultHTML}}}</th>
-                <th>{{{footnoteDefaultHTML}}}</th>
-            </tr>
-          {{/each}}
-        </tbody>
-    </table>
-</div>
-{{#if canLoadMore }}
-<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more supports...</button>
-{{else}}{{#if loading}}
-<button type="button" class="btn btn-default" disabled="disabled">Loading more supports...</button>
-{{else}}
-<button type="button" class="btn btn-default" disabled="disabled">All Supports Loaded.</button>
-{{/if}}{{/if}}
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="support">
-{% raw %}
-<h2>Support {{supportName}}</h2>
-<p><em>back to {{#link-to 'supports'}}Supports{{/link-to}}, {{#link-to 'index'}}Index{{/link-to}}</em></p>
-<dl>
-  <dt>Id</dt>
-  <dd>{{id}}</dd>
-  <dt>Support</dt>
-  <dd>{{support}}</dd>
-  <dt>Version</dt>
-  <dd>{{#with version controller='version'}}{{#link-to 'version' id}}{{{fullVersionHTML}}}{{/link-to}}{{/with}}</td>
-  <dt>Feature</dt>
-  <dd>{{#with feature controller='feature'}}{{#link-to 'feature' id}}{{{nameDefaultHTML}}}{{/link-to}}{{/with}}</td>
-  <dt>Prefix</dt>
-  <dd>{{{prefixHTML}}}</dd>
-  <dt>Alternate Name</dt>
-  <dd>{{{alternateNameHTML}}}</dd>
-  <dt>Required Config</dt>
-  <dd>{{{requiredConfigHTML}}}</dd>
-  <dt>Protected</dt>
-  <dd>{{{protected}}}</dd>
-  <dt>Note</dt>
-  <dd>{{{noteListHTML}}}</dd>
-  <dt>Footnote</dt>
-  <dd>{{{footnoteListHTML}}}</dd>
-</dl>
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="specifications">
-{% raw %}
-<h2>{{pagination.count}} Specifications</h2>
-<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Slug</th>
-                <th>MDN key</th>
-                <th>Specification URI</th>
-                <th>Maturity</th>
-                <th>Sections</th>
-            </tr>
-        </thead>
-        <tbody>
-          {{#each itemController='specification'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'specification' id}}{{slug}}{{/link-to}}</td>
-                <td><code>{{mdn_key}}</code></td>
-                <td>{{{uriDefaultHTML}}}</td>
-                <td>{{#link-to 'maturity' maturity.id}}{{{maturity.name.en}}}{{/link-to}}</td>
-                <td>{{sectionCount}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-    </table>
-</div>
-{{#if canLoadMore }}
-<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more specifications...</button>
-{{else}}{{#if loading}}
-<button type="button" class="btn btn-default" disabled="disabled">Loading more specifications...</button>
-{{else}}
-<button type="button" class="btn btn-default" disabled="disabled">All Specifications Loaded.</button>
-{{/if}}{{/if}}
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="specification">
-{% raw %}
-<h2>Specification {{name.en}}</h2>
-<p><em>back to {{#link-to 'specifications'}}Specifications{{/link-to}}, {{#link-to 'index'}}Index{{/link-to}}</em></p>
-<dl>
-  <dt>Id</dt>
-  <dd>{{id}}</dd>
-  <dt>Slug</dt>
-  <dd><code>{{slug}}</code></dd>
-  <dt>MDN key</dt>
-  <dd><code>{{mdn_key}}</code></dd>
-  <dt>Specification URI</dt>
-  <dd>{{{uriListHTML}}}</dd>
-  <dt>Maturity</dt>
-  <dd>{{#link-to 'maturity' maturity.id}}{{maturity.name.en}}{{/link-to}}</dd>
-</dl>
-
-<h3>{{sectionCountText}} in this Specification</h3>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>title</th>
-                <th>subpath</th>
-                <th>note</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{#if sectionCount}}
-          {{#each sections}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'section' id}}{{number}} {{{name.en}}}{{/link-to}}</td>
-                <td><a {{bind-attr href=fullPath}}>{{subpath}}</a></td>
-                <td>{{#if note}}{{note.en}}{{else}}<em>none</em>{{/if}}</td>
-            </tr>
-          {{else}}
-            <tr><td rowspan=0><em>Loading {{sectionCountText}}...</em></td></tr>
-          {{/each}}
-        {{/if}}
-        </tbody>
-    </table>
-</div>
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="maturities">
-{% raw %}
-<h2>{{pagination.count}} Maturities</h2>
-<p><em>{{#link-to 'index'}}back to Index{{/link-to}}</em></p>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Slug</th>
-                <th>Maturity</th>
-                <th>Specifications</th>
-            </tr>
-        </thead>
-        <tbody>
-          {{#each itemController='maturity'}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'maturity' id}}{{slug}}{{/link-to}}</td>
-                <td>{{{nameDefaultHTML}}}</td>
-                <td>{{specCountText}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-    </table>
-</div>
-{{#if canLoadMore }}
-<button type="button" class="btn btn-default" {{action 'loadMore'}}>Load more maturities...</button>
-{{else}}{{#if loading}}
-<button type="button" class="btn btn-default" disabled="disabled">Loading more maturities...</button>
-{{else}}
-<button type="button" class="btn btn-default" disabled="disabled">All Maturities Loaded.</button>
-{{/if}}{{/if}}
-{% endraw %}
-</script>
-
-<script type="text/x-handlebars" data-template-name="maturity">
-{% raw %}
-<h2>Maturity {{name.en}}</h2>
-<p><em>back to {{#link-to 'maturities'}}Maturities{{/link-to}}, {{#link-to 'index'}}Index{{/link-to}}</em></p>
-<dl>
-  <dt>Id</dt>
-  <dd>{{id}}</dd>
-  <dt>Slug</dt>
-  <dd><code>{{slug}}</code></dd>
-  <dt>Name</dt>
-  <dd>{{{namesListHTML}}}</dd>
-</dl>
-
-<h3>{{specCountText}} with this maturity</h3>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>slug</th>
-                <th>MDN key</th>
-                <th>Specification URI</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{#if specCount}}
-          {{#each specifications}}
-            <tr>
-                <td>{{id}}</td>
-                <td>{{#link-to 'specification' id}}{{slug}}{{/link-to}}</td>
-                <td><code>{{mdn_key}}</code></td>
-                <td><a {{bind-attr href=uri.en}}>{{{name.en}}}</a></td>
-            </tr>
-          {{else}}
-            <tr><td rowspan=0><em>Loading {{specCountText}}...</em></td></tr>
-          {{/each}}
-        {{/if}}
-        </tbody>
-    </table>
-</div>
-{% endraw %}
-</script>
+{% for name in model_order -%}
+{{ index_page(name, models) }}
+{{ detail_page(name, models) }}
+{% endfor -%}
 {%- endblock body_container %}
 
 {% block body_js_extra %}
@@ -603,3 +41,352 @@
 <script src="{{ static('vendor/ember-json-api-1.0-beta.3/json_api_adapter.js')}}"></script>
 <script src="{{ static('js/browse.js') }}"></script>
 {% endblock %}
+
+{#
+ # Define the models and their attributes
+ #}
+
+{% set model_order = [
+    'browsers',
+    'versions',
+    'features',
+    'supports',
+    'specifications',
+    'sections',
+    'maturities',
+    'users',
+    'changesets',
+    ] -%}
+{% set models = {
+   'browsers': {
+        'detail_title': '{{{nameDefaultHTML}}} Browser',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Slug', 'property': 'slug', 'link': 'browser',
+                'code': True},
+            {'name': 'Name', 'property': 'nameDefaultHTML',
+                'detail': 'nameListHTML'},
+            {'name': 'Note', 'property': 'noteDefaultHTML',
+                'detail': 'noteDefaultHTML'},
+            {'name': 'Versions', 'property': 'versionCountText',
+                'omit': ['browser']},
+        ],
+        'related': [
+            {'name': 'versions',
+                'title': '{{versionCountText}} for {{nameDefaultHTML}}'},
+        ]},
+    'versions': {
+        'detail_title': '{{{fullVersionHTML}}}',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Browser', 'property': 'browser.name.en',
+                'link': 'browser', 'linkid': 'browser.id',
+                'omit': ['browser', 'versions']},
+            {'name': 'Version', 'property': 'versionHTML',
+                'link': 'version', 'omit': ['version', 'versions']},
+            {'name': 'Version', 'property': 'fullVersionHTML',
+                'detail': 'versionHTML', 'link': 'version',
+                'omit': ['browser']},
+            {'name': 'Release Day', 'property': 'releaseDayHTML'},
+            {'name': 'Retirement Day',
+                'property': 'retirementDayHTML'},
+            {'name': 'Status', 'property': 'status'},
+            {'name': 'Release Notes URI',
+                'property': 'releaseNoteUriDefaultHTML',
+                'detail': 'releaseNoteUriListHTML'},
+            {'name': 'Note', 'property': 'noteDefaultHTML',
+                'detail': 'noteListHTML'},
+            {'name': 'Related Features',
+                'property': 'supportCountText', 'omit': ['version']},
+        ],
+        'related': [
+            {'name': 'supports',
+                'title': '{{supportCountText}} with Support Info'},
+        ]},
+    'features': {
+        'detail_title': 'Feature {{{nameDefaultHTML}}}',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Slug', 'property': 'slug', 'link': 'feature',
+                'code': True},
+            {'name': 'Name', 'property': 'nameDefaultHTML',
+                'detail': 'nameListHTML'},
+            {'name': 'Experimental', 'property': 'experimental',
+                'omit': ['features', 'section']},
+            {'name': 'Standardized', 'property': 'standardized',
+                'omit': ['features', 'section']},
+            {'name': 'Stable', 'property': 'stable',
+                'omit': ['features', 'section']},
+            {'name': 'Obsolete', 'property': 'obsolete',
+                'omit': ['features', 'section']},
+            {'name': 'MDN URI', 'property': 'mdnDefaultHTML',
+                'detail': 'mdnListHTML'},
+            {'name': 'Flags', 'property': 'flagsHTML',
+                'omit': ['feature']},
+            {'name': 'Related Versions',
+                'property': 'supportCountText', 'omit': ['feature']},
+        ],
+        'related': [
+            {'name': 'supports',
+                'title': '{{supportCountText}} with Support Info'},
+        ],
+        'detail_hack_nav': (
+            '<p class="lead"><strong><a {{bind-attr href=viewUrl}}>'
+            'View this feature with related data</a>.</strong></p>'),
+        'detail_hack_data': [
+            {'name': 'Parent Feature', 'raw': """
+                {{#if parent}}
+                {{#with parent controller='feature'}}
+                    {{#link-to 'feature' id}}
+                    {{{nameDefaultHTML}}}
+                    {{/link-to}}
+                {{/with}}
+                {{else}}
+                <em>No Parent</em>
+                {{/if}}"""},
+            {'name': 'Child Feature', 'raw': """
+                {{#if childCount}}
+                {{#if children}}
+                    <ul>
+                    {{#each children itemController='feature'}}<li>
+                        {{#link-to 'feature' id}}{{{nameDefaultHTML}}}{{/link-to}}
+                    </li>{{/each}}
+                    </ul>
+                {{else}}
+                    <em>Loading {{childCountText}}...</em>
+                {{/if}}
+                {{else}}
+                    <em>No children</em>
+                {{/if}}"""},
+        ]},
+    'supports': {
+        'detail_title': 'Support Details',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Supported?', 'property': 'support',
+                'link': 'support', 'omit': ['version', 'feature']},
+            {'name': 'Version', 'property': 'fullVersionHTML',
+                'with': 'version', 'link': 'version',
+                'linkid': 'version.id', 'omit': ['supports', 'version']},
+            {'name': 'Version', 'property': 'fullVersionHTML',
+                'with': 'version',
+                'omit': ['support', 'version', 'feature']},
+            {'name': 'Feature', 'property': 'feature.slug',
+                'link': 'feature', 'linkid': 'feature.id',
+                'omit': ['supports', 'feature']},
+            {'name': 'Feature', 'property': 'feature.slug',
+                'omit': ['support', 'version', 'feature']},
+            {'name': 'Supported?', 'property': 'support',
+                'omit': ['supports', 'support']},
+            {'name': 'Prefix', 'property': 'prefixHTML'},
+            {'name': 'Alternate Name',
+                'property': 'alternateNameHTML'},
+            {'name': 'Required Config',
+                'property': 'requiredConfigHTML'},
+            {'name': 'Protected', 'property': 'protected'},
+            {'name': 'Note', 'property': 'noteDefaultHTML'},
+            {'name': 'Footnote', 'property': 'footnoteDefaultHTML'},
+        ]},
+    'specifications': {
+        'detail_title': '{{{nameDefaultHTML}}} Specification',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Name', 'property': 'nameDefaultHTML',
+                'detail': 'nameListHTML', 'link': 'specification'},
+            {'name': 'Slug', 'property': 'slug', 'code': True},
+            {'name': 'MDN key', 'property': 'mdn_key', 'code': True},
+            {'name': 'Specification URI',
+                'property': 'uriDefaultHTML', 'detail': 'uriListHTML',
+                'omit': ['maturity']},
+            {'name': 'Maturity', 'property': 'maturity.name.en',
+                'html': True, 'link': 'maturity',
+                'linkid': 'maturity.id', 'omit': ['maturity']},
+            {'name': 'Sections', 'property': 'sectionCountText',
+                'omit': ['specification']},
+        ],
+        'related': [
+            {'name': 'sections',
+                'title': '{{sectionCountText}} in this Specification'},
+        ]},
+    'sections': {
+        'detail_title': 'Section "{{{nameDefaultHTML}}}"',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Name', 'property': 'nameDefaultHTML',
+                'detail': 'nameListHTML', 'link': 'section'},
+            {'name': 'Subpath', 'property': 'subpathDefaultHTML',
+                'detail': 'subpathListHTML'},
+            {'name': 'Note', 'property': 'noteDefaultHTML',
+                'detail': 'noteListHTML'},
+            {'name': 'Specification',
+                'property': 'nameDefaultHTML',
+                'with': 'specification', 'link': 'specification'},
+            {'name': 'Features', 'property': 'featureCountText',
+                'omit': ['section']},
+        ],
+        'related': [
+            {'name': 'features',
+                'title': '{{featureCountText}} for this Section'},
+        ]},
+    'maturities': {
+        'singular': 'maturity',
+        'title': 'Specification Maturities',
+        'detail_title': 'Maturity "{{{nameDefaultHTML}}}"',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Slug', 'property': 'slug',
+                'link': 'maturity', 'code': True},
+            {'name': 'Name', 'property': 'nameDefaultHTML',
+                'detail': 'nameListHTML'},
+            {'name': 'Specifications', 'property': 'specCountText',
+                'omit': ['maturity']},
+        ],
+        'related': [
+            {'name': 'specifications',
+                'title': '{{specCountText}} with this maturity'},
+        ]},
+    'users': {
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Username', 'property': 'username',
+                'link': 'user'},
+            {'name': 'Created', 'property': 'createdHTML'},
+            {'name': 'Permissions', 'property': 'permissionsText'},
+            {'name': 'Changesets', 'property': 'changesetCount'},
+        ],
+        'related': [
+            {'name': 'changesets',
+                'title': '{{changesetCountText}} by this user'},
+        ]},
+    'changesets': {
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Target Resource', 'property': 'targetHTML',
+                'link': 'changeset'},
+            {'name': 'Created', 'property': 'createdHTML'},
+            {'name': 'Modified', 'property': 'modifiedHTML'},
+            {'name': 'Closed?', 'property': 'closedText'},
+            {'name': 'User', 'property': 'user.username',
+                'link': 'user', 'linkid': 'user.id', 'omit': ['user']},
+        ]},
+    }
+-%}
+
+{#
+ # Define the macros for generating Ember's Handlebar templates
+ #}
+
+{# Display the "Load more X" button, with loading states #}
+{% macro load_more(name) -%}
+{{ "{{#if canLoadMore }}" | safe }}
+<button type="button" class="btn btn-default" {{ "{{action 'loadMore'}}" | safe }}>Load more {{name | lower}}...</button>
+{{ "{{else}}{{#if loading}}" | safe }}
+<button type="button" class="btn btn-default" disabled="disabled">Loading more {{name | lower}}...</button>
+{{ "{{else}}" | safe }}
+<button type="button" class="btn btn-default" disabled="disabled">All {{name | title}} Loaded.</button>
+{{ "{{/if}}{{/if}}" }}
+{% endmacro %}
+
+{# Display a bound property on a Ember controller #}
+{% macro display(obj, view, detail=False) -%}
+{% if obj.get('with') -%}{{ "{{#with %s controller='%s'}}" | format(obj['with'], obj['with']) | safe }}{% endif -%}
+{% if obj.get('link') and obj['link'] != view -%}{{ "{{#link-to '%s' %s}}" | format(obj['link'], obj.get('linkid', 'id')) | safe }}
+  {%- elif obj.get('code') -%}<code>{% endif -%}
+{% if obj.get('html') or obj['property'].endswith('HTML') -%}{{ "{{{" }}{% else -%}{{ "{{" }}{% endif -%}
+{% if detail and 'detail' in obj %}{{ obj['detail'] }}{% else %}{{ obj['property'] }}{% endif %}
+{%- if obj.get('html') or obj['property'].endswith('HTML') -%}{{ "}}}" }}{% else -%}{{ "}}" }}{% endif -%}
+{% if obj.get('link') and obj['link'] != view -%}{{ "{{/link-to}}" }}
+  {%- elif obj.get('code') -%}</code>{% endif -%}
+{% if obj.get('with') -%}{{ "{{/with}}" }}{% endif -%}
+{% endmacro %}
+
+{# Display a summary table #}
+{% macro summary_table(name, model, view, through=None, as_related=False) -%}
+{% set singular = model.get('singular', name[:-1]) %}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                {% for item in model['data'] -%}
+                {% if view not in item.get('omit', []) -%}
+                <th>{% if item['name'] == 'Id' %}#{% else %}{{item['name']}}{% endif %}</th>
+                {% endif -%}
+                {% endfor -%}
+            </tr>
+        </thead>
+        <tbody>
+        {% if as_related -%}
+        {{ "{{#if %sCount}}" | format(singular) }}
+          {% if through -%}
+          {{ "{{#each %s itemController='%s'}}" | format(*through) | safe }}
+          {% else -%}
+          {{ "{{#each %s itemController='%s'}}" | format(name, singular) | safe }}
+          {% endif -%}
+        {% else -%}
+          {{ "{{#each itemController='%s'}}" | format(singular) | safe }}
+        {% endif %}
+            <tr>
+                {% for item in model['data'] -%}
+                {% if view not in item.get('omit', []) -%}
+                <td>{{ display(item, view) }}</td>
+                {% endif -%}
+                {% endfor -%}
+            </tr>
+          {% if as_related -%}
+          {{ "{{else}}" }}
+            <tr><td rowspan=0><em>Loading {{ "{{%sCountText}}" % singular }}...</em></td></tr>
+          {{ "{{/each}}" }}
+        {{ "{{/if}}" }}
+        {% else -%}
+        {{ "{{/each}}" }}
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+{% if not as_related %}{{ load_more(name) }}{% endif -%}
+{% endmacro %}
+
+{# Display index page #}
+{% macro index_page(name, models) -%}
+{% set model = models[name] %}
+<script type="text/x-handlebars" data-template-name="{{name}}">
+<h2>{{ "{{pagination.count}}" }} {{ model.get('title', name.title()) }}</h2>
+<p><em>{{ "{{#link-to 'index'}}" | safe }}back to Index{{ "{{/link-to}}" }}</em></p>
+{{ summary_table(name, model, name) }}</script>
+{% endmacro %}
+
+{# Display detail page #}
+{% macro detail_page(name, models) -%}
+{% set model = models[name] %}
+{% set view = model.get('singular', name[:-1]) %}
+<script type="text/x-handlebars" data-template-name="{{view}}">
+<h2>{{model.get('detail_title', view.title() + ' {{id}}')}}</h2>
+<p><em>back to
+  {{ "{{#link-to '%s'}}%s{{/link-to}}" | format(name, name.title()) | safe }},
+  {{ "{{#link-to 'index'}}Index{{/link-to}}" | safe }}</em>
+</p>
+{% if model.get('detail_hack_nav') -%}
+{# Hack for Feature page #}
+{{ model['detail_hack_nav'] | safe }}
+{% endif -%}
+
+<dl>
+  {% for item in model['data'] -%}
+  {% if view not in item.get('omit', []) -%}
+  <dt>{{ item['name'] }}</dt>
+  <dd>{{ display(item, view, detail=True) }}</dd>
+  {% endif -%}
+  {% endfor -%}
+  {% for item in model.get('detail_hack_data', []) -%}
+  <dt>{{ item['name'] }}</dt>
+  <dd>{{ item['raw'] | safe }}</dt>
+  {% endfor -%}
+</dl>
+
+{% for item in model['related'] %}
+{% set name = item['name'] %}
+<h3>{{ item.get('title', name.title() + " for " + view.title() + ' {{id}}') }}</h2>
+{{ summary_table(name, models[name], view, through=item.get('through'), as_related=True) }}
+{%- endfor -%}
+</script>
+{% endmacro %}

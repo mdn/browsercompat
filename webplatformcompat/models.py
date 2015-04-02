@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_delete, post_save, m2m_changed
 from django.dispatch import receiver
@@ -336,3 +337,17 @@ def post_save_update_cache(sender, instance, created, raw, **kwargs):
         if not delay_cache:
             from .tasks import update_cache_for_instance
             update_cache_for_instance(name, instance.pk, instance, False)
+
+
+#
+# New user signals
+#
+@receiver(
+    post_save, sender=settings.AUTH_USER_MODEL,
+    dispatch_uid='add_user_to_change_resource_group')
+def add_user_to_change_resource_group(
+        signal, sender, instance, created, raw, **kwargs):
+    if created and not raw:
+        from django.contrib.auth.models import Group
+        instance.groups.add(Group.objects.get(name='change-resource'))
+        post_save_update_cache(sender, instance, created, raw, **kwargs)

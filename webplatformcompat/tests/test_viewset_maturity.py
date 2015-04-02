@@ -172,7 +172,7 @@ class TestMaturityViewSet(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_empty(self):
-        self.login_superuser()
+        self.login_user()
         response = self.client.post(reverse('maturity-list'), {})
         self.assertEqual(400, response.status_code)
         expected_data = {

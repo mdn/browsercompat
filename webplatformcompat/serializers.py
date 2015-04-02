@@ -271,10 +271,31 @@ class UserSerializer(ModelSerializer):
     """User Serializer"""
 
     created = DateField(source='date_joined', read_only=True)
+    agreement = SerializerMethodField('get_agreement')
+    permissions = SerializerMethodField('get_permissions')
+
+    def get_agreement(self, obj):
+        """What version of the contribution terms did the user agree to?
+
+        Placeholder for when we have a license agreement.
+        """
+        return 0
+
+    def get_permissions(self, obj):
+        """Return names of django.contrib.auth Groups
+
+        Can not be used with a writable view, since django.contrib.auth User
+        doesn't have this method.  Will need updating or a proxy class.
+        """
+        assert hasattr(obj, 'group_names'), "Expecting cached User object"
+        return obj.group_names
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'created')
+        fields = (
+            'id', 'username', 'created', 'agreement', 'permissions',
+            'changesets')
+        read_only_fields = ('username', 'changesets')
 
 
 #

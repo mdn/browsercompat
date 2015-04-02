@@ -50,7 +50,7 @@ class Changeset(models.Model):
 
     created = CreationDateTimeField()
     modified = ModificationDateTimeField()
-    user = models.ForeignKey(user_model)
+    user = models.ForeignKey(user_model, related_name="changesets")
     closed = models.BooleanField(
         help_text="Is the changeset closed to new changes?",
         default=False)

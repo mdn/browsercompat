@@ -51,3 +51,7 @@ class TestViews(TestCase):
         response = self.client.get(
             reverse('view_feature', kwargs={'feature_id': 1}))
         self.assertEqual(response.status_code, 200)
+
+    def test_browse_app(self):
+        response = self.client.get(reverse('browse'))
+        self.assertEqual(response.status_code, 200)

@@ -16,14 +16,13 @@ from .base import APITestCase
 class TestHistoricalSpecificationViewset(APITestCase):
 
     def test_get(self):
-        user = self.login_superuser()
         maturity = self.create(
             Maturity, slug='M', name={'en': 'A Maturity'})
         spec = self.create(
             Specification, maturity=maturity, slug="spec",
             name={'en': 'A Specification'},
             uri={'en': 'http://example.com/spec.html'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 19, 11, 46, 10, 834522, UTC))
         history = spec.history.all()[0]
         url = reverse(
@@ -90,7 +89,6 @@ class TestHistoricalSpecificationViewset(APITestCase):
         self.assertDataEqual(expected_json, actual_json)
 
     def test_filter_by_id(self):
-        user = self.login_superuser()
         maturity = self.create(
             Maturity, slug='M', name={'en': 'A Maturity'})
         self.create(
@@ -100,7 +98,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             Specification, maturity=maturity, slug="spec",
             name={'en': 'A Specification'},
             uri={'en': 'http://example.com/spec.html'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 19, 11, 47, 22, 595634, UTC))
         history = spec.history.all()[0]
         url = reverse('historicalspecification-list')
@@ -130,7 +128,6 @@ class TestHistoricalSpecificationViewset(APITestCase):
         self.assertDataEqual(expected_data, response.data)
 
     def test_filter_by_slug(self):
-        user = self.login_superuser()
         maturity = self.create(
             Maturity, slug='M', name={'en': 'A Maturity'})
         self.create(
@@ -140,7 +137,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             Specification, maturity=maturity, slug="spec",
             name={'en': 'A Specification'},
             uri={'en': 'http://example.com/spec.html'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 19, 11, 47, 22, 595634, UTC))
         history = spec.history.all()[0]
         url = reverse('historicalspecification-list')
@@ -170,7 +167,6 @@ class TestHistoricalSpecificationViewset(APITestCase):
         self.assertDataEqual(expected_data, response.data)
 
     def test_filter_by_mdn_key(self):
-        user = self.login_superuser()
         maturity = self.create(
             Maturity, slug='M', name={'en': 'A Maturity'})
         self.create(
@@ -180,7 +176,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             Specification, maturity=maturity, slug="spec", mdn_key="Spec",
             name={'en': 'A Specification'},
             uri={'en': 'http://example.com/spec.html'},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 19, 11, 47, 22, 595634, UTC))
         history = spec.history.all()[0]
         url = reverse('historicalspecification-list')

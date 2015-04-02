@@ -14,12 +14,13 @@ from .base import APITestCase
 
 
 class TestHistoricalFeatureViewset(APITestCase):
+    def setUp(self):
+        self.user = self.login_user()
 
     def test_get(self):
-        user = self.login_superuser()
         feature = self.create(
             Feature, slug="the_feature", name={"en": "The Feature"},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 1, 14, 25, 14, 955097, UTC))
         history = feature.history.all()[0]
         url = reverse('historicalfeature-detail', kwargs={'pk': history.pk})
@@ -93,10 +94,9 @@ class TestHistoricalFeatureViewset(APITestCase):
         self.assertDataEqual(expected_json, actual_json)
 
     def test_get_with_sections(self):
-        user = self.login_superuser()
         feature = self.create(
             Feature, slug="the_feature", name={"en": "The Feature"},
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 1, 14, 25, 14, 955097, UTC))
         maturity = self.create(Maturity, slug='Bar')
         specification = self.create(Specification, maturity=maturity)
@@ -134,11 +134,10 @@ class TestHistoricalFeatureViewset(APITestCase):
         self.assertDataEqual(expected_data, response.data)
 
     def test_filter_by_id(self):
-        user = self.login_superuser()
         parent = self.create(Feature, slug="parent-feature")
         feature = self.create(
             Feature, slug="a-feature", parent=parent,
-            _history_user=user,
+            _history_user=self.user,
             _history_date=datetime(2014, 10, 1, 14, 29, 33, 22803, UTC))
         history = feature.history.all()[0]
         url = reverse('historicalfeature-list')

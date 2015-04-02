@@ -203,8 +203,17 @@ class TestBrowserViewset(APITestCase):
         }
         self.assertDataEqual(response.data, expected_data)
 
+    def test_post_not_allowed(self):
+        self.login_user(groups=[])
+        response = self.client.post(reverse('browser-list'), {})
+        self.assertEqual(403, response.status_code)
+        expected_data = {
+            'detail': "You do not have permission to perform this action."
+        }
+        self.assertDataEqual(response.data, expected_data)
+
     def test_post_empty(self):
-        self.login_superuser()
+        self.login_user()
         response = self.client.post(reverse('browser-list'), {})
         self.assertEqual(400, response.status_code)
         expected_data = {
@@ -214,7 +223,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_minimal(self):
-        self.login_superuser()
+        self.login_user()
         data = {'slug': 'firefox', 'name': '{"en": "Firefox"}'}
         response = self.client.post(reverse('browser-list'), data)
         self.assertEqual(201, response.status_code, response.data)
@@ -232,7 +241,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_empty_slug_not_allowed(self):
-        self.login_superuser()
+        self.login_user()
         data = {'slug': '', 'name': '{"en": "Firefox"}'}
         response = self.client.post(reverse('browser-list'), data)
         self.assertEqual(400, response.status_code, response.data)
@@ -242,7 +251,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_whitespace_slug_not_allowed(self):
-        self.login_superuser()
+        self.login_user()
         data = {'slug': ' ', 'name': '{"en": "Firefox"}'}
         response = self.client.post(reverse('browser-list'), data)
         self.assertEqual(400, response.status_code, response.data)
@@ -254,7 +263,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_minimal_json_api(self):
-        self.login_superuser()
+        self.login_user()
         data = dumps({
             'browsers': {
                 'slug': 'firefox',
@@ -281,7 +290,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_full(self):
-        self.login_superuser()
+        self.login_user()
         data = {
             'slug': 'firefox',
             'name': '{"en": "Firefox"}',
@@ -303,7 +312,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_post_bad_data(self):
-        self.login_superuser()
+        self.login_user()
         data = {
             'slug': 'bad slug',
             'name': '"Firefox"',
@@ -346,6 +355,26 @@ class TestBrowserViewset(APITestCase):
             "history": [h.pk for h in histories],
             "history_current": histories[0].pk,
             "versions": [],
+        }
+        self.assertDataEqual(response.data, expected_data)
+
+    def test_put_not_allowed(self):
+        self.login_user(groups=[])
+        browser = self.create(
+            Browser, slug='browser', name={'en': 'Old Name'})
+        data = dumps({
+            'browsers': {
+                'name': {
+                    'en': 'New Name'
+                }
+            }
+        })
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.put(
+            url, data=data, content_type="application/vnd.api+json")
+        self.assertEqual(403, response.status_code)
+        expected_data = {
+            'detail': "You do not have permission to perform this action."
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -554,8 +583,21 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
     def test_delete(self):
+        self.login_user(groups=["change-resource", "delete-resource"])
         browser = self.create(Browser, slug='firesux', name={'en': 'Firesux'})
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code, response.content)
         self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())
+
+    def test_delete_not_allowed(self):
+        self.login_user()
+        browser = self.create(
+            Browser, slug='browser', name={'en': 'Old Name'})
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        response = self.client.delete(url)
+        self.assertEqual(403, response.status_code)
+        expected_data = {
+            'detail': "You do not have permission to perform this action."
+        }
+        self.assertDataEqual(response.data, expected_data)

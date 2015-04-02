@@ -35,9 +35,14 @@ Browse.Router.map(function () {
     this.resource('support', {path: '/supports/:support_id'});
     this.resource('specifications');
     this.resource('specification', {path: '/specifications/:specification_id'});
+    this.resource('sections');
+    this.resource('section', {path: '/sections/:section_id'});
     this.resource('maturities');
     this.resource('maturity', {path: '/maturities/:maturity_id'});
-
+    this.resource('users');
+    this.resource('user', {path: '/users/:user_id'});
+    this.resource('changesets');
+    this.resource('changeset', {path: '/changesets/:changeset_id'});
 });
 
 /* Serializer - JsonApiSerializer with modifictions */
@@ -160,6 +165,18 @@ Browse.SectionsRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
     }
 });
 
+Browse.UsersRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
+    model: function () {
+        return this.store.find('user');
+    }
+});
+
+Browse.ChangesetsRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
+    model: function () {
+        return this.store.find('changeset');
+    }
+});
+
 /* Models */
 var attr = DS.attr;
 
@@ -233,6 +250,23 @@ Browse.Section = DS.Model.extend({
     note: attr(),
     specification: DS.belongsTo('specification', {async: true}),
     features: DS.hasMany('feature', {async: true}),
+});
+
+Browse.User = DS.Model.extend({
+    username: attr('string'),
+    created: attr('date'),
+    agreement: attr(),
+    permissions: attr(),
+    changesets: DS.hasMany('changeset', {async: true}),
+});
+
+Browse.Changeset = DS.Model.extend({
+    created: attr('date'),
+    modified: attr('date'),
+    closed: attr('boolean'),
+    target_resource_type: attr(),
+    target_resource_id: attr(),
+    user: DS.belongsTo('user', {async: true}),
 });
 
 /* Controllers */
@@ -408,7 +442,10 @@ Browse.VersionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.FeaturesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SupportsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SpecificationsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+Browse.SectionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.MaturitiesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+Browse.UsersController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+Browse.ChangesetsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 
 Browse.BrowserController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     versionCount: Browse.Properties.IdCounter('versions'),
@@ -439,8 +476,8 @@ Browse.VersionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     }),
     releaseDayHTML: Browse.Properties.OptionalDateHTML('release_day'),
     retirementDayHTML: Browse.Properties.OptionalDateHTML('retirement_day'),
-    featureCount: Browse.Properties.IdCounter('supports'),
-    featureCountText: Browse.Properties.IdCounterText('featureCount', 'Feature'),
+    supportCount: Browse.Properties.IdCounter('supports'),
+    supportCountText: Browse.Properties.IdCounterText('supportCount', 'Feature'),
     releaseNoteUriArray: Browse.Properties.TranslationArray('release_notes_uri'),
     releaseNoteUriDefaultHTML: Browse.Properties.TranslationDefaultHTML('release_notes_uri'),
     releaseNoteUriListHTML: Browse.Properties.TranslationListHTML('releaseNoteUriArray'),
@@ -468,6 +505,9 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
             ul = "<ul>",
             uri,
             i;
+        if (arrayLen === 0) {
+            return "<em>none</em>";
+        }
         for (i = 0; i < arrayLen; i += 1) {
             uri = mdnArray[i];
             ul += (
@@ -496,8 +536,8 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
     nameArray: Browse.Properties.TranslationArray('name'),
     nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
-    versionCount: Browse.Properties.IdCounter('supports'),
-    versionCountText: Browse.Properties.IdCounterText('versionCount', 'Version'),
+    supportCount: Browse.Properties.IdCounter('supports'),
+    supportCountText: Browse.Properties.IdCounterText('supportCount', 'Version'),
     childCount: Browse.Properties.IdCounter('children'),
     childCountText: Browse.Properties.IdCounterText('childCount', 'Child', 'Children'),
     viewUrl: Ember.computed('id', function () {
@@ -555,29 +595,24 @@ Browse.SupportController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
 });
 
 Browse.SpecificationController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
-    namesArray: Browse.Properties.TranslationArray('name'),
+    nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
+    nameArray: Browse.Properties.TranslationArray('name'),
+    nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
     uriArray: Browse.Properties.TranslationArray('uri'),
-    uriDefaultHTML: Ember.computed('uri', 'name', function () {
-        var uri = this.get('uri'),
-            name = this.get('name');
-        return '<a href="' + uri.en + '">' + name.en + '</a>';
+    uriDefaultHTML: Ember.computed('uri', function () {
+        var uri = this.get('uri');
+        return '<a href="' + uri.en + '">' + uri.en + '</a>';
     }),
-    uriListHTML: Ember.computed('uriArray', 'name', function () {
+    uriListHTML: Ember.computed('uriArray', function () {
         var uriArray = this.get('uriArray'),
-            name = this.get('name'),
             arrayLen = uriArray.length,
             ul = "<ul>",
             uri,
             i;
         for (i = 0; i < arrayLen; i += 1) {
             uri = uriArray[i];
-            ul += '<li>' + uri.lang + ': <a href="' +  uri.value + '">';
-            if (name.hasOwnProperty(uri.lang)) {
-                ul += name[uri.lang];
-            } else {
-                ul += '(' + name.en + ')';
-            }
-            ul += '</a></li>';
+            ul += '<li>' + uri.lang + ': <a href="' + uri.value + '">' +
+                  uri.value + '</a></li>';
         }
         ul += '</ul>';
         return ul;
@@ -586,10 +621,118 @@ Browse.SpecificationController = Ember.ObjectController.extend(Browse.LoadMoreMi
     sectionCountText: Browse.Properties.IdCounterText('sectionCount', 'Section'),
 });
 
+Browse.SectionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
+    nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
+    nameArray: Browse.Properties.TranslationArray('name'),
+    nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
+    noteDefaultHTML: Browse.Properties.TranslationDefaultHTML('note'),
+    noteArray: Browse.Properties.TranslationArray('note'),
+    noteListHTML: Browse.Properties.TranslationListHTML('noteArray'),
+    subpathDefaultHTML: Ember.computed('subpath', 'specification.uri', function () {
+        var subpath = this.get('subpath'),
+            specUri = this.get('specification.uri'),
+            subpathDefault;
+        if (!subpath) {
+            subpathDefault = "<em>no path</em>";
+        } else {
+            subpathDefault = subpath.en;
+        }
+        if (specUri) {
+            return '<a href="' + specUri.en + subpathDefault + '">' + subpathDefault + '</a>';
+        }
+        return subpathDefault;
+    }),
+    subpathArray: Browse.Properties.TranslationArray('subpath'),
+    subpathListHTML: Ember.computed('subpathArray', 'specification.uri', function () {
+        var subpathArray = this.get('subpathArray'),
+            specUri = this.get('specification.uri'),
+            arrayLen = subpathArray.length,
+            subpath,
+            ul = "<ul>",
+            uri,
+            i;
+        for (i = 0; i < arrayLen; i += 1) {
+            subpath = subpathArray[i];
+            if (!specUri) {
+                uri = subpath.value;
+            } else if (specUri.hasOwnProperty(subpath.lang)) {
+                uri = specUri[subpath.lang] + subpath.value;
+            } else {
+                uri = specUri.en + subpath.value;
+            }
+            ul += '<li>' + subpath.lang + ': <a href="' + uri + '">' +
+                  subpath.value + '</a></li>';
+        }
+        ul += '</ul>';
+        return ul;
+    }),
+    featureCount: Browse.Properties.IdCounter('features'),
+    featureCountText: Browse.Properties.IdCounterText('featureCount', 'Feature'),
+});
+
 Browse.MaturityController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     specCount: Browse.Properties.IdCounter('specifications'),
     specCountText: Browse.Properties.IdCounterText('specCount', 'Specification'),
     nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
-    namesArray: Browse.Properties.TranslationArray('name'),
-    namesListHTML: Browse.Properties.TranslationListHTML('namesArray'),
+    nameArray: Browse.Properties.TranslationArray('name'),
+    nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
+    specificationCount: Browse.Properties.IdCounter('specifications'),
+    specificationCountText: Browse.Properties.IdCounterText('specificationCount', 'Specification'),
+});
+
+Browse.UserController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
+    changesetCount: Browse.Properties.IdCounter('changesets'),
+    changesetCountText: Browse.Properties.IdCounterText('changesetCount', 'Changeset'),
+    createdHTML: Browse.Properties.OptionalDateHTML('created'),
+    permissionsText: Ember.computed('permissions', function () {
+        var permissions = this.get('permissions'),
+            arrayLen = permissions.length,
+            out,
+            i;
+        for (i = 0; i < arrayLen; i += 1) {
+            out = permissions[i];
+            if (i < (arrayLen - 1)) {
+                out += ', ';
+            }
+        }
+        return out;
+    }),
+    permissionsListHTML: Ember.computed('permissions', function () {
+        var permissions = this.get('permissions'),
+            arrayLen = permissions.length,
+            ul = "<ul>",
+            i;
+        for (i = 0; i < arrayLen; i += 1) {
+            ul += '<li>' + permissions[i] + '</li>';
+        }
+        ul += '</ul>';
+        return ul;
+    }),
+});
+
+Browse.ChangesetController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
+    changeCount: Ember.computed(function () {
+        return "to do";
+    }),
+    closedText: Ember.computed('closed', function () {
+        var closed = this.get('closed');
+        if (closed) {
+            return 'closed';
+        }
+        return 'open';
+    }),
+    createdHTML: Browse.Properties.OptionalDateHTML('created'),
+    modifiedHTML: Browse.Properties.OptionalDateHTML('modified'),
+    targetHTML: Ember.computed('target_resource_type', 'target_resource_id', function () {
+        var target_resource_type = this.get('target_resource_type'),
+            target_resource_id = this.get('target_resource_id'),
+            link;
+        if (target_resource_type && target_resource_id) {
+            link = "<a href=\"/browse/" + target_resource_type + "/" +
+                   target_resource_id + "\">" + target_resource_type + " " +
+                   target_resource_id + "</a>";
+            return link;
+        }
+        return "<em>Not set</em>";
+    }),
 });

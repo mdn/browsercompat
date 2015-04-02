@@ -22,7 +22,7 @@
     <![endif]-->
     {%- block head_extra %}{% endblock %}
   </head>
-  <body>
+  <body{% block body_attr%}{% endblock %}>
     {%- block navbar %}
     <nav class="navbar navbar-inverse">
       <div class="container">
@@ -80,7 +80,6 @@
           {% endif %}
         {% endblock messages %}
         {% block content %}{% endblock %}
-        <hr>
         {% block footer_elem %}
         <footer>
             <p>{% block footer %}© 2014 - {{current_year()}} Mozilla{% endblock footer %}</p>

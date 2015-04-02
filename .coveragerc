@@ -16,4 +16,5 @@ omit =
     tools/sample_mdn.py
     tools/sync_from_api.py
     tools/upload_data.py
+    mdn/migrations/*.py
     webplatformcompat/migrations/*.py

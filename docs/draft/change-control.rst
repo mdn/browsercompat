@@ -19,11 +19,10 @@ The representation includes:
     - **agreement** - The version of the contribution agreement the
       user has accepted.  "0" for not agreed, "1" for first version, etc.
     - **permissions** - A list of permissions.  Permissions include
-      ``"change-support"`` (add or change a support_),
       ``"change-resource"`` (add or change any resource except users_ or
       history resources),
-      ``"change-user"`` (change a user_ resource), and
       ``"delete-resource"`` (delete any resource)
+      ``"import-mdn"`` (setup import of an MDN page)
 * **links**
     - **changesets** *(many)* - Associated changesets_, in ID order, changes
       are ignored.
@@ -51,7 +50,7 @@ A sample response is:
             "username": "askDNA@tdv.com",
             "created": "1405000551.750000",
             "agreement": "1",
-            "permissions": ["change-support"],
+            "permissions": ["change-resource"],
             "links": {
                 "changesets": ["73"]
             }
@@ -138,9 +137,9 @@ A sample response is:
             "id": "73",
             "created": "1405353048.910000",
             "modified": "1405353048.910000",
+            "closed": true,
             "target_resource_type": "features",
             "target_resource_id": "35",
-            "closed": true,
             "links": {
                 "user": "42",
                 "historical_browsers": [],
