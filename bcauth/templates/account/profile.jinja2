@@ -78,7 +78,7 @@
             {% else %}
             <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span>
             {{primary.email}}
-            <a href="{{url("account_email")}}">unverified</a>)
+            (<a href="{{url("account_email")}}">unverified</a>)
             {% endif %}
             {% if verified_cnt or unverified_cnt %}
               plus
