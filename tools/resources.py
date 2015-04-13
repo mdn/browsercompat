@@ -291,7 +291,7 @@ class Support(Resource):
     _writeable_property_fields = (
         'support', 'prefix', 'prefix_mandatory', 'alternate_name',
         'alternate_mandatory', 'requires_config', 'default_config',
-        'protected', 'note', 'footnote')
+        'protected', 'note')
     _writeable_link_fields = {
         'version': ('versions', False),
         'feature': ('features', False),

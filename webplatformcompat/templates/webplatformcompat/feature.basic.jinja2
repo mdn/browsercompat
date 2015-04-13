@@ -96,14 +96,10 @@
         <code>{{support.prefix}}</code>
           {%- endif %}
           {%- if support.note %}
-
-        ({{trans_span(support.note)}})
-          {%- endif %}
-          {%- if support.footnote %}
-            {%- set footnum = meta['compat_table']['footnotes'][support_id] %}
+            {%- set notenum = meta['compat_table']['notes'][support_id] %}
             [<a
-              id="wpc-compat-{{data['id']}}-footnote-{{footnum}}-back"
-              href="#wpc-compat-{{data['id']}}-footnote-{{footnum}}">{{footnum}}</a>]
+              id="wpc-compat-{{data['id']}}-note-{{notenum}}-back"
+              href="#wpc-compat-{{data['id']}}-note-{{notenum}}">{{notenum}}</a>]
           {%- endif %}
         {%- else %}
 
@@ -124,13 +120,13 @@
 
 {%- endfor %}
 
-{% if meta['compat_table']['footnotes'] %}
-<div id="wpc-compat-{{data.id}}-footnotes">
-  {%- for support_id, footnum in meta['compat_table']['footnotes'] | dictsort(by='value') %}
+{% if meta['compat_table']['notes'] %}
+<div id="wpc-compat-{{data.id}}-notes">
+  {%- for support_id, notenum in meta['compat_table']['notes'] | dictsort(by='value') %}
   {%- set support=collection['supports'][support_id] %}
-  <p id="browsercompat-{{data['id']}}-footnote-{{footnum}}">
-    <a href="#browsercompat-{{data['id']}}-footnote-{{footnum}}-back">[{{footnum}}]</a>
-    {{trans_span(support.footnote)}}
+  <p id="browsercompat-{{data['id']}}-note-{{notenum}}">
+    <a href="#browsercompat-{{data['id']}}-note-{{notenum}}-back">[{{notenum}}]</a>
+    {{trans_span(support.note)}}
   </p>
   {%- endfor %}
 </div>

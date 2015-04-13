@@ -1515,7 +1515,7 @@ def scrape_feature_page(fp):
     features = {}
     supports = {}
     compat_table_supports = OrderedDict(((text_type(fp.feature.id), {}),))
-    footnotes = OrderedDict()
+    notes = OrderedDict()
     tab_name = {
         'desktop': 'Desktop Browsers',
         'mobile': 'Mobile Browsers',
@@ -1644,13 +1644,12 @@ def scrape_feature_page(fp):
                     ('requires_config', s.get('requires_config')),
                     ('default_config', s.get('default_config')),
                     ('protected', s.get('protected', False)),
-                    ('note', s.get('note')),
-                    ('footnote', None),
+                    ('note', None),
                     ('links', OrderedDict((
                         ('version', text_type(s['version'])),
                         ('feature', text_type(s['feature'])))))))
                 if s.get('footnote'):
-                    support_content['footnote'] = {'en': s['footnote']}
+                    support_content['note'] = {'en': s['footnote']}
                 version_id = s['version']
                 feature_id = s['feature']
             else:
@@ -1667,15 +1666,14 @@ def scrape_feature_page(fp):
                     ('default_config', support.default_config or None),
                     ('protected', support.protected),
                     ('note', support.note or None),
-                    ('footnote', support.footnote or None),
                     ('links', OrderedDict((
                         ('version', text_type(support.version_id)),
                         ('feature', text_type(support.feature_id)))))))
                 version_id = support.version_id
                 feature_id = support.feature_id
             supports.setdefault(s['id'], support_content)
-            if support_content['footnote']:
-                footnotes[text_type(s['id'])] = len(footnotes) + 1
+            if support_content['note']:
+                notes[text_type(s['id'])] = len(notes) + 1
 
             # Set the meta lookup
             version = versions[version_id]
@@ -1703,7 +1701,7 @@ def scrape_feature_page(fp):
     fp_data['meta']['compat_table']['languages'] = list(languages)
     fp_data['meta']['compat_table']['tabs'] = tabs
     fp_data['meta']['compat_table']['supports'] = compat_table_supports
-    fp_data['meta']['compat_table']['footnotes'] = footnotes
+    fp_data['meta']['compat_table']['notes'] = notes
     fp.data = fp_data
 
     # Add issues

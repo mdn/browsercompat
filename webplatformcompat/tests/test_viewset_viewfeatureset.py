@@ -121,7 +121,6 @@ class TestViewFeatureViewSet(APITestCase):
                     "default_config": None,
                     "protected": False,
                     "note": None,
-                    "footnote": None,
                     "links": {
                         "version": str(version.id),
                         "feature": str(feature.id),
@@ -306,7 +305,7 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                     },
                     "languages": ['en'],
-                    "footnotes": {},
+                    "notes": {},
                 }
             }
         }
@@ -392,7 +391,6 @@ class TestViewFeatureViewSet(APITestCase):
             'default_config': 'feature=No',
             'protected': False,
             'note': {'en': 'note'},
-            'footnote': {'en': 'footnote'},
         }
         s1 = self.create(Support, version=v1, feature=feature, **support)
 
@@ -429,7 +427,7 @@ class TestViewFeatureViewSet(APITestCase):
         s8 = self.create(Support, version=v8, feature=feature, **support)
 
         v9 = self.create(Version, browser=browser, version='9')
-        support['footnote'] = None
+        support['note'] = None
         s9 = self.create(Support, version=v9, feature=feature, **support)
 
         url = reverse('viewfeatures-detail', kwargs={'pk': feature.pk})
@@ -953,7 +951,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_chrome_758.id),
                             "feature": str(feature_row_191.id),
@@ -974,7 +971,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_firefox_759.id),
                             "feature": str(feature_row_191.id),
@@ -995,7 +991,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_ie_760.id),
                             "feature": str(feature_row_191.id),
@@ -1016,7 +1011,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_opera_761.id),
                             "feature": str(feature_row_191.id),
@@ -1037,7 +1031,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_safari_762.id),
                             "feature": str(feature_row_191.id),
@@ -1058,7 +1051,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_android_763.id),
                             "feature": str(feature_row_191.id),
@@ -1079,7 +1071,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_ffmobile_764.id),
                             "feature": str(feature_row_191.id),
@@ -1100,7 +1091,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_iephone_765.id),
                             "feature": str(feature_row_191.id),
@@ -1121,7 +1111,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_operamobile_766.id),
                             "feature": str(feature_row_191.id),
@@ -1142,7 +1131,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_safarimobile_767.id),
                             "feature": str(feature_row_191.id),
@@ -1163,7 +1151,6 @@ class TestViewFeatureViewSet(APITestCase):
                         "default_config": None,
                         "protected": False,
                         "note": None,
-                        "footnote": None,
                         "links": {
                             "version": str(version_operamini_768.id),
                             "feature": str(feature_row_191.id),
@@ -1568,7 +1555,7 @@ class TestViewFeatureViewSet(APITestCase):
                         },
                     },
                     "languages": ['en', 'ja', 'jp'],
-                    "footnotes": {},
+                    "notes": {},
                 }
             }
         }

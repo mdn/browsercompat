@@ -185,12 +185,7 @@ class Support(models.Model):
             " protect the user's security or privacy."),
         default=False)
     note = TranslatedField(
-        help_text="Short note on support, designed for inline display.",
-        null=True, blank=True)
-    footnote = TranslatedField(
-        help_text=(
-            "Long note on support, designed for display after a compatiblity"
-            " table, in MDN wiki format."),
+        help_text="Notes for this support",
         null=True, blank=True)
     history = HistoricalRecords()
 

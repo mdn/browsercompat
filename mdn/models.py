@@ -161,7 +161,7 @@ class FeaturePage(models.Model):
                     ("tabs", []),
                     ("pagination", OrderedDict()),
                     ("languages", []),
-                    ("footnotes", OrderedDict()),
+                    ("notes", OrderedDict()),
                 ))),
                 ("scrape", OrderedDict((
                     ("phase", "Starting Import"),

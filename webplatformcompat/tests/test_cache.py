@@ -471,7 +471,6 @@ class TestCache(TestCase):
             "default_config": u"",
             "protected": False,
             "note": {},
-            "footnote": {},
             'version:PK': {
                 'app': u'webplatformcompat',
                 'model': 'version',
