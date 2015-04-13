@@ -5,7 +5,6 @@ from django.test import TestCase
 from django.utils import encoding, six
 
 from rest_framework.test import APITestCase as BaseAPITestCase
-from rest_framework.utils.encoders import JSONEncoder
 
 from webplatformcompat.history import Changeset
 
@@ -86,11 +85,9 @@ class TestMixin(object):
 
     def dt_repr(self, dt):
         """Convert a datetime to DRF serialized representation."""
-        return dt
+        return dt.isoformat().replace("+00:00", "Z")
 
-    def dt_json(self, dt):
-        """Convert a datetime to DRF encoded JSON."""
-        return JSONEncoder().default(dt)
+    dt_json = dt_repr
 
     def history_pk(self, obj):
         """Get the primary key of the current history instance."""
@@ -116,4 +113,3 @@ class TestCase(TestMixin, TestCase):
 
 class APITestCase(TestMixin, BaseAPITestCase):
     """APITestCase with useful methods"""
-    pass

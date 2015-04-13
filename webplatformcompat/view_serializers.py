@@ -2,7 +2,6 @@
 """API Serializers"""
 
 from collections import OrderedDict
-from datetime import date
 from itertools import chain
 from json import dumps
 
@@ -11,7 +10,8 @@ from django.core.paginator import Paginator
 from drf_cached_instances.models import CachedQueryset
 from rest_framework.reverse import reverse
 from rest_framework.serializers import (
-    NestedValidationError, ModelSerializer, SerializerMethodField)
+    ModelSerializer, SerializerMethodField, ValidationError)
+from rest_framework.utils.serializer_helpers import ReturnDict
 
 from tools.resources import Collection, CollectionChangeset
 from .cache import Cache
@@ -64,7 +64,7 @@ view_cls_by_name = {
 
 class ViewFeatureListSerializer(ModelSerializer):
     """Get list of features"""
-    url = SerializerMethodField('get_url')
+    url = SerializerMethodField()
 
     def get_url(self, obj):
         return reverse(
@@ -104,7 +104,7 @@ class DjangoResourceClient(object):
         links = data.pop('links', {})
         data.update(links)
         serializer = serializer_cls(instance=instance, data=data)
-        assert serializer.is_valid()
+        assert serializer.is_valid(), serializer.errors
         serializer.save()
 
     def create(self, resource_type, resource):
@@ -113,7 +113,7 @@ class DjangoResourceClient(object):
         links = data.pop('links', {})
         data.update(links)
         serializer = serializer_cls(data=data)
-        assert serializer.is_valid()
+        assert serializer.is_valid(), serializer.errors
         obj = serializer.save()
         return {'id': obj.id}
 
@@ -123,8 +123,8 @@ class DjangoResourceClient(object):
 
 class FeatureExtra(object):
     """Handle new and updated data in a view_feature update"""
-    def __init__(self, all_data, feature, context):
-        self.all_data = all_data
+    def __init__(self, data, feature, context):
+        self.data = data
         self.feature = feature
         self.context = context
 
@@ -154,13 +154,16 @@ class FeatureExtra(object):
                 else:
                     raw_ids = [value]
                     unlist = True
-                ids = [str(i) for i in raw_ids]
+                ids = []
+                for i in raw_ids:
+                    if i is None:
+                        ids.append(None)
+                    else:
+                        ids.append(str(i))
                 if unlist:
                     rdata[key] = ids[0]
                 else:
                     rdata[key] = ids
-            elif isinstance(value, date):
-                rdata[key] = value.isoformat()
             else:
                 rdata[key] = value
         return resource_cls(**rdata)
@@ -173,8 +176,7 @@ class FeatureExtra(object):
 
         # Create and load collection of new data
         new_collection = Collection()
-        new_extra = self.all_data['_view_extra']
-        for rtype, items in new_extra.items():
+        for rtype, items in self.data.items():
             resource_cls = r_by_t.get(rtype)
             if resource_cls:
                 for seq, json_api_item in enumerate(items):
@@ -188,7 +190,7 @@ class FeatureExtra(object):
         # Create native representation of current feature data
         current_collection = Collection(DjangoResourceClient())
         feature_serializer = ViewFeatureSerializer(context=self.context)
-        current_feature = feature_serializer.to_native(self.feature)
+        current_feature = feature_serializer.to_representation(self.feature)
         current_extra = current_feature.pop('_view_extra')
         del current_extra['meta']
 
@@ -238,7 +240,7 @@ class FeatureExtra(object):
                     model_cls, serializer_cls = view_cls_by_name[rtype]
                     obj = model_cls.objects.get(id=int_id)
                     serializer = serializer_cls()
-                    data = serializer.to_native(obj)
+                    data = serializer.to_representation(obj)
                     resource = self.load_resource(resource_cls, data)
                     current_collection.add(resource)
 
@@ -371,7 +373,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
     specifications = ViewSpecificationSerializer(source='all_specs', many=True)
     supports = SupportSerializer(source='all_supports', many=True)
     versions = ViewVersionSerializer(source='all_versions', many=True)
-    meta = SerializerMethodField('get_meta')
+    meta = SerializerMethodField()
 
     def add_sources(self, obj):
         """Add the sources used by the serializer fields."""
@@ -431,7 +433,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         obj.all_browsers = list(CachedQueryset(
             Cache(), Browser.objects.all(), sorted(browser_pks)))
 
-    def to_native(self, obj):
+    def to_representation(self, obj):
         """Add addditonal data for the ViewFeatureSerializer.
 
         For most features, all the related data is cachable, and no database
@@ -448,8 +450,8 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             # This happens when OPTIONS is called from browsable API
             return None
         self.add_sources(obj)
-        ret = super(ViewFeatureExtraSerializer, self).to_native(obj)
-        return ret
+        ret = super(ViewFeatureExtraSerializer, self).to_representation(obj)
+        return ReturnDict(ret, serializer=self)
 
     def find_languages(self, obj):
         """Find languages used in feature view."""
@@ -665,36 +667,18 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             ))),))
         return meta
 
-    def field_from_native(self, data, files, field_name, reverted_data):
-        """Deserialize objects in the "linked" field of JSON API
+    def to_internal_value(self, data):
+        self.instance = self.parent.instance
+        assert self.instance
+        self.add_sources(self.instance)
+        self.instance._in_extra = self.parent._in_extra
 
-        This acts a bit like a nested Serializer, but because JSON-API doesn't
-        use nested representions, we have to do some gymnastics to fit in
-        Django REST Framework.
-
-        Return will be a FeatureExtra instance that will update the
-        database with new and updated linked data when .save() is called.
-
-        Some validation errors can be detected at this point, which will raise
-        a NestedValidationError.  Other objects won't be validated until
-        related objects are saved, which may cause validation errors.
-        """
-        linked = data.get(field_name, {})
-        if linked:
-            # Add existing related data to target Feature
-            self.object = self.parent.object
-            assert self.object
-            self.add_sources(self.object)
-            self.object._in_extra = self.parent._in_extra
-
-            # Validate the linked data
-            extra = FeatureExtra(data, self.object, self.context)
-            if extra.is_valid():
-                # Parent serializer will call extra.save()
-                reverted_data[field_name] = extra
-            else:
-                assert extra.errors
-                raise NestedValidationError(extra.errors)
+        extra = FeatureExtra(data, self.instance, self.context)
+        if extra.is_valid():
+            return {'_view_extra': extra}
+        else:
+            assert extra.errors
+            raise ValidationError(extra.errors)
 
     class Meta:
         model = Feature
@@ -711,19 +695,14 @@ class ViewFeatureSerializer(FeatureSerializer):
     class Meta(FeatureSerializer.Meta):
         fields = FeatureSerializer.Meta.fields + ('_view_extra',)
 
-    def restore_object(self, attrs, instance=None):
-        """Restore feature, and convert _view_extra"""
-        obj = super(ViewFeatureSerializer, self).restore_object(
-            attrs, instance)
-        return obj
-
-    def restore_fields(self, data, files):
+    def to_internal_value(self, data):
         self._in_extra = {
             'sections': data.pop('sections', []),
             'supports': data.pop('supports', []),
             'children': data.pop('children', []),
         }
-        return super(ViewFeatureSerializer, self).restore_fields(data, files)
+        data = super(ViewFeatureSerializer, self).to_internal_value(data)
+        return data
 
     def save(self, *args, **kwargs):
         """Save the feature plus linked elements.
@@ -744,6 +723,8 @@ class ViewFeatureSerializer(FeatureSerializer):
             changeset.save()
 
         ret = super(ViewFeatureSerializer, self).save(*args, **kwargs)
+        if hasattr(ret, '_view_extra'):
+            ret._view_extra.save(*args, **kwargs)
 
         if close_changeset:
             changeset.closed = True

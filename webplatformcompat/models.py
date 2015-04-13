@@ -14,9 +14,20 @@ from .fields import TranslatedField
 from .history import register, HistoricalRecords
 
 
+class CachingManager(models.Manager):
+    def create(self, **kwargs):
+        """Add the _delay_cache value to the object before saving"""
+        delay_cache = kwargs.pop('_delay_cache', False)
+        obj = self.model(**kwargs)
+        self._for_write = True
+        obj._delay_cache = delay_cache
+        obj.save(force_insert=True, using=self.db)
+        return obj
+
 #
 # "Regular" (non-historical) models
 #
+
 
 @python_2_unicode_compatible
 class Browser(models.Model):
@@ -29,6 +40,7 @@ class Browser(models.Model):
     note = TranslatedField(
         help_text="Extended information about browser, client, or platform.",
         blank=True, null=True)
+    objects = CachingManager()
     history = HistoricalRecords()
 
     def __str__(self):
@@ -71,6 +83,7 @@ class Feature(MPTTModel):
         'self', help_text="Feature set that contains this feature",
         null=True, blank=True, related_name='children')
     sections = SortedManyToManyField('Section', related_name='features')
+    objects = CachingManager()
     # history = HistoricalFeatureRecords()  # Registered below
 
     def __str__(self):
@@ -87,6 +100,7 @@ class Maturity(models.Model):
         unique=True)
     name = TranslatedField(
         help_text="Name of maturity")
+    objects = CachingManager()
     # history = HistoricalMaturityRecords()  # Registered below
 
     class Meta:
@@ -113,6 +127,7 @@ class Section(models.Model):
     note = TranslatedField(
         help_text="Notes for this section",
         blank=True)
+    objects = CachingManager()
     history = HistoricalRecords()
 
     class Meta:
@@ -139,7 +154,7 @@ class Specification(models.Model):
         help_text="Name of specification")
     uri = TranslatedField(
         help_text="Specification URI, without subpath and anchor")
-
+    objects = CachingManager()
     history = HistoricalRecords()
 
     def __str__(self):
@@ -187,6 +202,7 @@ class Support(models.Model):
     note = TranslatedField(
         help_text="Notes for this support",
         null=True, blank=True)
+    objects = CachingManager()
     history = HistoricalRecords()
 
     class Meta:
@@ -228,6 +244,7 @@ class Version(models.Model):
     note = TranslatedField(
         help_text="Notes about this version.",
         blank=True, null=True)
+    objects = CachingManager()
     history = HistoricalRecords()
 
     def __str__(self):
@@ -247,14 +264,8 @@ class HistoricalFeatureRecords(HistoricalRecords):
     }
 
     def get_sections_value(self, instance, mtype):
-        new_section_data = (
-            hasattr(instance, '_m2m_data') and
-            instance._m2m_data.get('sections') is not None)
-        if new_section_data:
-            section_pks = [s.pk for s in instance._m2m_data['sections']]
-        else:
-            section_pks = list(
-                instance.sections.values_list('pk', flat=True))
+        section_pks = list(
+            instance.sections.values_list('pk', flat=True))
         return section_pks
 
 

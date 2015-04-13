@@ -281,15 +281,15 @@ class TestSupportViewSet(APITestCase):
         response = self.client.post(reverse('support-list'), data)
         self.assertEqual(400, response.status_code, response.content)
         expected_data = {
-            "__all__": [
-                "Support with this Version and Feature already exists."],
+            "non_field_errors": [
+                "The fields version, feature must make a unique set."],
         }
         self.assertDataEqual(response.data, expected_data)
         expected_json = {
             "errors": [{
                 "status": "400",
                 "detail": (
-                    "Support with this Version and Feature already exists."),
+                    "The fields version, feature must make a unique set."),
                 "path": "/-",
             }]
         }

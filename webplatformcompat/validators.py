@@ -12,6 +12,8 @@ class LanguageDictValidator(object):
         self.allow_canonical = allow_canonical
 
     def __call__(self, value):
+        if value is None:
+            return
         if not isinstance(value, dict):
             raise ValidationError(
                 _("Value must be a JSON dictionary of language codes to"
