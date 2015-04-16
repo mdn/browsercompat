@@ -48,6 +48,11 @@ class CachedViewMixin(BaseCacheViewMixin):
             kwargs['_delay_cache'] = True
         serializer.save(**kwargs)
 
+    def perform_destroy(self, instance):
+        if getattr(self.request, 'delay_cache', False):
+            instance._delay_cache = True
+        instance.delete()
+
 
 class ModelViewSet(PartialPutMixin, CachedViewMixin, BaseModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)

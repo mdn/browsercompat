@@ -601,3 +601,14 @@ class TestBrowserViewset(APITestCase):
             'detail': "You do not have permission to perform this action."
         }
         self.assertDataEqual(response.data, expected_data)
+
+    def test_delete_in_changeset(self):
+        self.login_user(groups=["change-resource", "delete-resource"])
+        browser = self.create(
+            Browser, slug="internet_exploder",
+            name={'en': 'Internet Exploder'})
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        url += "?changeset=%d" % self.changeset.id
+        response = self.client.delete(url)
+        self.assertEqual(204, response.status_code, response.content)
+        self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())

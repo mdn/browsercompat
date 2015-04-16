@@ -329,8 +329,10 @@ def feature_sections_changed_update_order(
 def post_delete_update_cache(sender, instance, **kwargs):
     name = sender.__name__
     if name in cached_model_names:
-        from .tasks import update_cache_for_instance
-        update_cache_for_instance(name, instance.pk, instance, False)
+        delay_cache = getattr(instance, '_delay_cache', False)
+        if not delay_cache:
+            from .tasks import update_cache_for_instance
+            update_cache_for_instance(name, instance.pk, instance, False)
 
 
 @receiver(post_save, dispatch_uid='post_save_update_cache')
