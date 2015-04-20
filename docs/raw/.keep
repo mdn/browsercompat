@@ -1,1 +1,3 @@
-Placeholder for requests and responses for documentation and integration testing.
+Requests and responses for documentation and integration testing.
+Regenerate to reflect API changes, new cases with:
+make docs-regen-api
