@@ -81,6 +81,7 @@ class ViewFeatureListSerializer(ModelSerializer):
 class DjangoResourceClient(object):
     """Implement tools.client.Client using Django native functions"""
     def url(self, resource_type, resource_id=None):
+        """Use Django reverse to determine URL."""
         if resource_type == 'maturities':
             singular = 'maturity'
         else:
@@ -92,9 +93,11 @@ class DjangoResourceClient(object):
             return reverse(singular + '-list')
 
     def open_changeset(self):
+        """Skip opening changesets (opened at the request/view level)."""
         pass
 
     def close_changeset(self):
+        """Skip closing changesets (closed at the request/view level)."""
         pass
 
     def update(self, resource_type, resource_id, resource):

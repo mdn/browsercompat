@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for `web-platform-compat.viewsets.ViewFeaturesViewSet` class."""
+"""
+Tests for web-platform-compat.view_serializers.
+
+TODO: Refactor this code to be more unit tests than integration tests.
+This should wait until bug 1153288 (Reimplement DRF serializers and renderer)
+"""
 from __future__ import unicode_literals
 from datetime import date
 from json import dumps, loads
@@ -8,6 +13,7 @@ from json import dumps, loads
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 
+from webplatformcompat.history import Changeset
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 from webplatformcompat.view_serializers import (
@@ -2112,6 +2118,14 @@ class TestDjangoResourceClient(TestCase):
     def test_url_feature_detail(self):
         expected = reverse('feature-detail', kwargs={'pk': '55'})
         self.assertEqual(expected, self.client.url('features', '55'))
+
+    def test_open_changeset(self):
+        self.client.open_changeset()
+        self.assertFalse(Changeset.objects.exists())
+
+    def test_close_changeset(self):
+        self.client.close_changeset()
+        self.assertFalse(Changeset.objects.exists())
 
     def test_delete(self):
         self.assertRaises(
