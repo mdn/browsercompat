@@ -1,0 +1,31 @@
+{
+    "browsers": {
+        "id": "16",
+        "slug": "amazon-silk-mobile",
+        "name": {
+            "en": "Amazon Silk Mobile"
+        },
+        "note": null,
+        "links": {
+            "history": [
+                "16"
+            ],
+            "history_current": "16",
+            "versions": []
+        }
+    },
+    "links": {
+        "browsers.history": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+        },
+        "browsers.history_current": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
+        },
+        "browsers.versions": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
+        }
+    }
+}

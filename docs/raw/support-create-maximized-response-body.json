@@ -1,0 +1,42 @@
+{
+    "supports": {
+        "id": "28",
+        "support": "partial",
+        "prefix": "-o",
+        "prefix_mandatory": true,
+        "alternate_name": "float",
+        "alternate_mandatory": true,
+        "requires_config": "future=true",
+        "default_config": "future=false",
+        "protected": true,
+        "note": {
+            "en": "This is fake."
+        },
+        "links": {
+            "version": "37",
+            "feature": "6",
+            "history_current": "28",
+            "history": [
+                "28"
+            ]
+        }
+    },
+    "links": {
+        "supports.version": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{supports.version}"
+        },
+        "supports.feature": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{supports.feature}"
+        },
+        "supports.history_current": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{supports.history_current}"
+        },
+        "supports.history": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{supports.history}"
+        }
+    }
+}

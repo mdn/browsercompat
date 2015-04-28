@@ -1,0 +1,15 @@
+{
+    "specifications": {
+        "slug": "html_whatwg",
+        "mdn_key": "HTML WHATWG",
+        "name": {
+            "en": "WHATWG HTML Living Standard"
+        },
+        "uri": {
+            "en": "https://html.spec.whatwg.org/multipage/"
+        },
+        "links": {
+            "maturity": "6"
+        }
+    }
+}

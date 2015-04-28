@@ -1,0 +1,218 @@
+{
+    "versions": [
+        {
+            "id": "1",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "1",
+                "supports": [],
+                "history": [
+                    "1"
+                ],
+                "history_current": "1"
+            }
+        },
+        {
+            "id": "2",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "1",
+                "supports": [
+                    "1"
+                ],
+                "history": [
+                    "2"
+                ],
+                "history_current": "2"
+            }
+        },
+        {
+            "id": "3",
+            "version": "6.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "1",
+                "supports": [],
+                "history": [
+                    "3"
+                ],
+                "history_current": "3"
+            }
+        },
+        {
+            "id": "4",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "2",
+                "supports": [],
+                "history": [
+                    "4"
+                ],
+                "history_current": "4"
+            }
+        },
+        {
+            "id": "5",
+            "version": "6.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "2",
+                "supports": [],
+                "history": [
+                    "5"
+                ],
+                "history_current": "5"
+            }
+        },
+        {
+            "id": "6",
+            "version": "10.2",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "2",
+                "supports": [],
+                "history": [
+                    "6"
+                ],
+                "history_current": "6"
+            }
+        },
+        {
+            "id": "7",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "3",
+                "supports": [
+                    "11",
+                    "20"
+                ],
+                "history": [
+                    "7"
+                ],
+                "history_current": "7"
+            }
+        },
+        {
+            "id": "8",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "3",
+                "supports": [
+                    "2"
+                ],
+                "history": [
+                    "8"
+                ],
+                "history_current": "8"
+            }
+        },
+        {
+            "id": "9",
+            "version": "35.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "3",
+                "supports": [],
+                "history": [
+                    "9"
+                ],
+                "history_current": "9"
+            }
+        },
+        {
+            "id": "10",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "4",
+                "supports": [],
+                "history": [
+                    "10"
+                ],
+                "history_current": "10"
+            }
+        }
+    ],
+    "links": {
+        "versions.browser": {
+            "type": "browsers",
+            "href": "https://browsercompat.org/api/v1/browsers/{versions.browser}"
+        },
+        "versions.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{versions.supports}"
+        },
+        "versions.history": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
+        },
+        "versions.history_current": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history_current}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "versions": {
+                "previous": null,
+                "next": "https://browsercompat.org/api/v1/versions?page=2",
+                "count": 47
+            }
+        }
+    }
+}

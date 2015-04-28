@@ -1,0 +1,40 @@
+{
+    "supports": {
+        "id": "27",
+        "support": "yes",
+        "prefix": null,
+        "prefix_mandatory": false,
+        "alternate_name": null,
+        "alternate_mandatory": false,
+        "requires_config": null,
+        "default_config": null,
+        "protected": false,
+        "note": null,
+        "links": {
+            "version": "4",
+            "feature": "6",
+            "history_current": "27",
+            "history": [
+                "27"
+            ]
+        }
+    },
+    "links": {
+        "supports.version": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{supports.version}"
+        },
+        "supports.feature": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{supports.feature}"
+        },
+        "supports.history_current": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{supports.history_current}"
+        },
+        "supports.history": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{supports.history}"
+        }
+    }
+}

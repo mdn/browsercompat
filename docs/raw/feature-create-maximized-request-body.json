@@ -1,0 +1,16 @@
+{
+    "features": {
+        "slug": "web-css-display_ruby_ruby-base_ruby-text_ruby-base",
+        "mdn_uri": null,
+        "experimental": true,
+        "standardized": true,
+        "stable": true,
+        "obsolete": false,
+        "name": {
+            "en": "<code>ruby</code>, <code>ruby-base</code>, <code>ruby-text</code>, <code>ruby-base-container</code>, <code>ruby-text-container</code>"
+        },
+        "links": {
+            "parent": "14"
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "specifications": {
+        "id": "7",
+        "slug": "html5_w3c",
+        "mdn_key": "HTML5 W3C",
+        "name": {
+            "en": "HTML5"
+        },
+        "uri": {
+            "en": "http://www.w3.org/TR/html5/"
+        },
+        "links": {
+            "maturity": "1",
+            "sections": [],
+            "history_current": "9",
+            "history": [
+                "9"
+            ]
+        }
+    },
+    "links": {
+        "specifications.maturity": {
+            "type": "maturities",
+            "href": "https://browsercompat.org/api/v1/maturities/{specifications.maturity}"
+        },
+        "specifications.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{specifications.sections}"
+        },
+        "specifications.history_current": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history_current}"
+        },
+        "specifications.history": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history}"
+        }
+    }
+}

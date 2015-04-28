@@ -1,0 +1,50 @@
+{
+    "features": {
+        "id": "15",
+        "slug": "web-css-display_ruby_ruby-base_ruby-text_ruby-base",
+        "mdn_uri": null,
+        "experimental": true,
+        "standardized": true,
+        "stable": true,
+        "obsolete": false,
+        "name": {
+            "en": "<code>ruby</code>, <code>ruby-base</code>, <code>ruby-text</code>, <code>ruby-base-container</code>, <code>ruby-text-container</code>"
+        },
+        "links": {
+            "sections": [],
+            "supports": [],
+            "parent": "14",
+            "children": [],
+            "history_current": "15",
+            "history": [
+                "15"
+            ]
+        }
+    },
+    "links": {
+        "features.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
+        },
+        "features.parent": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.parent}"
+        },
+        "features.children": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.history_current": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history_current}"
+        },
+        "features.history": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history}"
+        }
+    }
+}

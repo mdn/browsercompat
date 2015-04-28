@@ -1,0 +1,30 @@
+{
+    "maturities": {
+        "id": "10",
+        "slug": "Idea",
+        "name": {
+            "en": "Idea"
+        },
+        "links": {
+            "specifications": [],
+            "history_current": "10",
+            "history": [
+                "10"
+            ]
+        }
+    },
+    "links": {
+        "maturities.specifications": {
+            "type": "specifications",
+            "href": "https://browsercompat.org/api/v1/specifications/{maturities.specifications}"
+        },
+        "maturities.history_current": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{maturities.history_current}"
+        },
+        "maturities.history": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{maturities.history}"
+        }
+    }
+}

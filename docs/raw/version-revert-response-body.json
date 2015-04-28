@@ -1,0 +1,55 @@
+{
+    "versions": {
+        "id": "18",
+        "version": "16.0",
+        "release_day": "2012-10-09",
+        "retirement_day": "2012-11-20",
+        "status": "retired",
+        "release_notes_uri": {
+            "en": "https://developer.mozilla.org/en/Firefox/Releases/16",
+            "de": "https://developer.mozilla.org/de/Firefox/Releases/16",
+            "es": "https://developer.mozilla.org/es/Firefox/Releases/16",
+            "fr": "https://developer.mozilla.org/fr/Firefox/Versions/16",
+            "ja": "https://developer.mozilla.org/ja/Firefox/Releases/16",
+            "ko": "https://developer.mozilla.org/ko/Firefox/Releases/16",
+            "pl": "https://developer.mozilla.org/pl/Firefox/Releases/16",
+            "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/16",
+            "ru": "https://developer.mozilla.org/ru/Firefox/Releases/16",
+            "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/16",
+            "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/16"
+        },
+        "note": null,
+        "order": 4,
+        "links": {
+            "browser": "6",
+            "supports": [
+                "12",
+                "22"
+            ],
+            "history": [
+                "51",
+                "50",
+                "18"
+            ],
+            "history_current": "51"
+        }
+    },
+    "links": {
+        "versions.browser": {
+            "type": "browsers",
+            "href": "https://browsercompat.org/api/v1/browsers/{versions.browser}"
+        },
+        "versions.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{versions.supports}"
+        },
+        "versions.history": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
+        },
+        "versions.history_current": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history_current}"
+        }
+    }
+}

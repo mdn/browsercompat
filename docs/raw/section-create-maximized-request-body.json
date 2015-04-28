@@ -1,0 +1,20 @@
+{
+    "sections": {
+        "number": {
+            "en": "2.1"
+        },
+        "name": {
+            "en": "Ruby-specific 'display' Values"
+        },
+        "subpath": {
+            "en": "#ruby-display"
+        },
+        "note": null,
+        "links": {
+            "specification": "5",
+            "features": [
+                "13"
+            ]
+        }
+    }
+}

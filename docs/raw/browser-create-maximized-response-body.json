@@ -1,0 +1,33 @@
+{
+    "browsers": {
+        "id": "17",
+        "slug": "konqueror",
+        "name": {
+            "en": "Konqueror"
+        },
+        "note": {
+            "en": "First comes the Navigator, then Explorer, and then the Konqueror."
+        },
+        "links": {
+            "history": [
+                "17"
+            ],
+            "history_current": "17",
+            "versions": []
+        }
+    },
+    "links": {
+        "browsers.history": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+        },
+        "browsers.history_current": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
+        },
+        "browsers.versions": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
+        }
+    }
+}

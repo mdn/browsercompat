@@ -1,0 +1,19 @@
+{
+    "supports": {
+        "support": "partial",
+        "prefix": "-o",
+        "prefix_mandatory": true,
+        "alternate_name": "float",
+        "alternate_mandatory": true,
+        "requires_config": "future=true",
+        "default_config": "future=false",
+        "protected": true,
+        "note": {
+            "en": "This is fake."
+        },
+        "links": {
+            "version": "37",
+            "feature": "6"
+        }
+    }
+}

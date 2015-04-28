@@ -1,0 +1,51 @@
+{
+    "historical_sections": [
+        {
+            "id": "3",
+            "date": "2015-04-20T18:57:10.558830Z",
+            "event": "created",
+            "sections": {
+                "id": "3",
+                "number": {
+                    "en": "16"
+                },
+                "name": {
+                    "en": "The float property"
+                },
+                "subpath": {
+                    "en": "#the-float-property"
+                },
+                "note": {
+                    "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+                },
+                "links": {
+                    "specification": "3",
+                    "history_current": "3"
+                }
+            },
+            "links": {
+                "changeset": "1",
+                "section": "3"
+            }
+        }
+    ],
+    "links": {
+        "historical_sections.changeset": {
+            "type": "changesets",
+            "href": "https://browsercompat.org/api/v1/changesets/{historical_sections.changeset}"
+        },
+        "historical_sections.section": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{historical_sections.section}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "historical_sections": {
+                "previous": null,
+                "next": null,
+                "count": 1
+            }
+        }
+    }
+}

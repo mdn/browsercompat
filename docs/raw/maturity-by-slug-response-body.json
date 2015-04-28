@@ -1,0 +1,47 @@
+{
+    "maturities": [
+        {
+            "id": "2",
+            "slug": "WD",
+            "name": {
+                "en": "Working Draft",
+                "de": "Arbeitsentwurf",
+                "ja": "草案",
+                "ru": "Рабочий черновик"
+            },
+            "links": {
+                "specifications": [
+                    "3",
+                    "4"
+                ],
+                "history_current": "2",
+                "history": [
+                    "2"
+                ]
+            }
+        }
+    ],
+    "links": {
+        "maturities.specifications": {
+            "type": "specifications",
+            "href": "https://browsercompat.org/api/v1/specifications/{maturities.specifications}"
+        },
+        "maturities.history_current": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{maturities.history_current}"
+        },
+        "maturities.history": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{maturities.history}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "maturities": {
+                "previous": null,
+                "next": null,
+                "count": 1
+            }
+        }
+    }
+}

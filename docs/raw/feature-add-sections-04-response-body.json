@@ -1,0 +1,41 @@
+{
+    "sections": {
+        "id": "8",
+        "number": {
+            "en": "4.7.7"
+        },
+        "name": {
+            "en": "The audio element"
+        },
+        "subpath": {
+            "en": "embedded-content-0.html#the-audio-element"
+        },
+        "note": null,
+        "links": {
+            "specification": "7",
+            "features": [],
+            "history_current": "11",
+            "history": [
+                "11"
+            ]
+        }
+    },
+    "links": {
+        "sections.specification": {
+            "type": "specifications",
+            "href": "https://browsercompat.org/api/v1/specifications/{sections.specification}"
+        },
+        "sections.features": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{sections.features}"
+        },
+        "sections.history_current": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history_current}"
+        },
+        "sections.history": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history}"
+        }
+    }
+}

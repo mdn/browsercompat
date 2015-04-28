@@ -1,0 +1,56 @@
+{
+    "changesets": {
+        "id": "2",
+        "created": "2015-04-20T18:22:47.046692Z",
+        "modified": "2015-04-20T18:22:47.056433Z",
+        "closed": true,
+        "target_resource_type": null,
+        "target_resource_id": null,
+        "links": {
+            "user": "1",
+            "historical_browsers": [
+                "16"
+            ],
+            "historical_features": [],
+            "historical_maturities": [],
+            "historical_sections": [],
+            "historical_specifications": [],
+            "historical_supports": [],
+            "historical_versions": []
+        }
+    },
+    "links": {
+        "changesets.user": {
+            "type": "users",
+            "href": "https://browsercompat.org/api/v1/users/{changesets.user}"
+        },
+        "changesets.historical_browsers": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{changesets.historical_browsers}"
+        },
+        "changesets.historical_features": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{changesets.historical_features}"
+        },
+        "changesets.historical_maturities": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{changesets.historical_maturities}"
+        },
+        "changesets.historical_sections": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{changesets.historical_sections}"
+        },
+        "changesets.historical_specifications": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{changesets.historical_specifications}"
+        },
+        "changesets.historical_supports": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{changesets.historical_supports}"
+        },
+        "changesets.historical_versions": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{changesets.historical_versions}"
+        }
+    }
+}

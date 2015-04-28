@@ -1,0 +1,38 @@
+{
+    "versions": {
+        "id": "50",
+        "version": "2.0",
+        "release_day": null,
+        "retirement_day": null,
+        "status": "retired",
+        "release_notes_uri": null,
+        "note": null,
+        "order": 3,
+        "links": {
+            "browser": "3",
+            "supports": [],
+            "history": [
+                "53"
+            ],
+            "history_current": "53"
+        }
+    },
+    "links": {
+        "versions.browser": {
+            "type": "browsers",
+            "href": "https://browsercompat.org/api/v1/browsers/{versions.browser}"
+        },
+        "versions.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{versions.supports}"
+        },
+        "versions.history": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
+        },
+        "versions.history_current": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history_current}"
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "browsers": {
+        "id": "18",
+        "slug": "nintendo-ds",
+        "name": {
+            "en": "Nintendo DS Browser",
+            "ja": "ニンテンドーＤＳブラウザ"
+        },
+        "note": null,
+        "links": {
+            "history": [
+                "18"
+            ],
+            "history_current": "18",
+            "versions": []
+        }
+    },
+    "links": {
+        "browsers.history": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+        },
+        "browsers.history_current": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
+        },
+        "browsers.versions": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
+        }
+    }
+}

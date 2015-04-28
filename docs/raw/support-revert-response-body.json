@@ -1,0 +1,42 @@
+{
+    "supports": {
+        "id": "26",
+        "support": "yes",
+        "prefix": "--webkit",
+        "prefix_mandatory": true,
+        "alternate_name": null,
+        "alternate_mandatory": false,
+        "requires_config": null,
+        "default_config": null,
+        "protected": false,
+        "note": null,
+        "links": {
+            "version": "41",
+            "feature": "13",
+            "history_current": "30",
+            "history": [
+                "30",
+                "29",
+                "26"
+            ]
+        }
+    },
+    "links": {
+        "supports.version": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{supports.version}"
+        },
+        "supports.feature": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{supports.feature}"
+        },
+        "supports.history_current": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{supports.history_current}"
+        },
+        "supports.history": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{supports.history}"
+        }
+    }
+}

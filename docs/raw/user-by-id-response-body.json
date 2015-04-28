@@ -1,0 +1,23 @@
+{
+    "users": {
+        "id": "1",
+        "username": "user",
+        "created": "2015-04-20T18:06:48.567514Z",
+        "agreement": 0,
+        "permissions": [
+            "change-resource",
+            "delete-resource"
+        ],
+        "links": {
+            "changesets": [
+                "1"
+            ]
+        }
+    },
+    "links": {
+        "users.changesets": {
+            "type": "changesets",
+            "href": "https://browsercompat.org/api/v1/changesets/{users.changesets}"
+        }
+    }
+}

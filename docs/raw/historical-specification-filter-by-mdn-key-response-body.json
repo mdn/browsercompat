@@ -1,0 +1,47 @@
+{
+    "historical_specifications": [
+        {
+            "id": "2",
+            "date": "2015-04-20T18:57:10.470658Z",
+            "event": "created",
+            "specifications": {
+                "id": "2",
+                "slug": "css2_1",
+                "mdn_key": "CSS2.1",
+                "name": {
+                    "en": "CSS Level&nbsp;2 (Revision&nbsp;1)"
+                },
+                "uri": {
+                    "en": "http://www.w3.org/TR/CSS2/"
+                },
+                "links": {
+                    "maturity": "1",
+                    "history_current": "2"
+                }
+            },
+            "links": {
+                "changeset": "1",
+                "specification": "2"
+            }
+        }
+    ],
+    "links": {
+        "historical_specifications.changeset": {
+            "type": "changesets",
+            "href": "https://browsercompat.org/api/v1/changesets/{historical_specifications.changeset}"
+        },
+        "historical_specifications.specification": {
+            "type": "specifications",
+            "href": "https://browsercompat.org/api/v1/specifications/{historical_specifications.specification}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "historical_specifications": {
+                "previous": null,
+                "next": null,
+                "count": 1
+            }
+        }
+    }
+}

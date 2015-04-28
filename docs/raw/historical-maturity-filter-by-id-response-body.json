@@ -1,0 +1,45 @@
+{
+    "historical_maturities": [
+        {
+            "id": "1",
+            "date": "2015-04-20T18:57:10.394547Z",
+            "event": "created",
+            "maturities": {
+                "id": "1",
+                "slug": "REC",
+                "name": {
+                    "en": "Recommendation",
+                    "de": "Empfehlung",
+                    "ja": "勧告",
+                    "ru": "Рекомендация"
+                },
+                "links": {
+                    "history_current": "1"
+                }
+            },
+            "links": {
+                "changeset": "1",
+                "maturity": "1"
+            }
+        }
+    ],
+    "links": {
+        "historical_maturities.changeset": {
+            "type": "changesets",
+            "href": "https://browsercompat.org/api/v1/changesets/{historical_maturities.changeset}"
+        },
+        "historical_maturities.maturity": {
+            "type": "maturities",
+            "href": "https://browsercompat.org/api/v1/maturities/{historical_maturities.maturity}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "historical_maturities": {
+                "previous": null,
+                "next": null,
+                "count": 1
+            }
+        }
+    }
+}

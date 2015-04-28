@@ -1,0 +1,219 @@
+{
+    "browsers": [
+        {
+            "id": "1",
+            "slug": "android",
+            "name": {
+                "en": "Android"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "1"
+                ],
+                "history_current": "1",
+                "versions": [
+                    "1",
+                    "2",
+                    "3"
+                ]
+            }
+        },
+        {
+            "id": "2",
+            "slug": "blackberry",
+            "name": {
+                "en": "BlackBerry"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "2"
+                ],
+                "history_current": "2",
+                "versions": [
+                    "4",
+                    "5",
+                    "6"
+                ]
+            }
+        },
+        {
+            "id": "3",
+            "slug": "chrome",
+            "name": {
+                "en": "Chrome"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "3"
+                ],
+                "history_current": "3",
+                "versions": [
+                    "7",
+                    "8",
+                    "9"
+                ]
+            }
+        },
+        {
+            "id": "4",
+            "slug": "chrome_for_android",
+            "name": {
+                "en": "Chrome for Android"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "4"
+                ],
+                "history_current": "4",
+                "versions": [
+                    "10",
+                    "11",
+                    "12"
+                ]
+            }
+        },
+        {
+            "id": "5",
+            "slug": "chrome_mobile",
+            "name": {
+                "en": "Chrome Mobile"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "5"
+                ],
+                "history_current": "5",
+                "versions": [
+                    "13"
+                ]
+            }
+        },
+        {
+            "id": "6",
+            "slug": "firefox",
+            "name": {
+                "en": "Firefox"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "6"
+                ],
+                "history_current": "6",
+                "versions": [
+                    "14",
+                    "15",
+                    "16",
+                    "17",
+                    "18"
+                ]
+            }
+        },
+        {
+            "id": "7",
+            "slug": "firefox_mobile",
+            "name": {
+                "en": "Firefox Mobile"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "7"
+                ],
+                "history_current": "7",
+                "versions": [
+                    "19",
+                    "20",
+                    "21"
+                ]
+            }
+        },
+        {
+            "id": "8",
+            "slug": "firefox_os",
+            "name": {
+                "en": "Firefox OS"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "8"
+                ],
+                "history_current": "8",
+                "versions": [
+                    "22",
+                    "23",
+                    "24"
+                ]
+            }
+        },
+        {
+            "id": "9",
+            "slug": "ie_mobile",
+            "name": {
+                "en": "IE Mobile"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "9"
+                ],
+                "history_current": "9",
+                "versions": [
+                    "25",
+                    "26",
+                    "27"
+                ]
+            }
+        },
+        {
+            "id": "10",
+            "slug": "internet_explorer",
+            "name": {
+                "en": "Internet Explorer"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "10"
+                ],
+                "history_current": "10",
+                "versions": [
+                    "28",
+                    "29",
+                    "30",
+                    "31",
+                    "32"
+                ]
+            }
+        }
+    ],
+    "links": {
+        "browsers.history": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+        },
+        "browsers.history_current": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
+        },
+        "browsers.versions": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "browsers": {
+                "previous": null,
+                "next": "https://browsercompat.org/api/v1/browsers?page=2",
+                "count": 15
+            }
+        }
+    }
+}

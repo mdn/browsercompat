@@ -1,0 +1,39 @@
+{
+    "specifications": {
+        "id": "5",
+        "slug": "css3-ruby",
+        "mdn_key": "CSS3 Ruby",
+        "name": {
+            "en": "CSS Ruby Layout Module Level 1"
+        },
+        "uri": {
+            "en": "http://dev.w3.org/csswg/css-ruby/"
+        },
+        "links": {
+            "maturity": "2",
+            "sections": [],
+            "history_current": "5",
+            "history": [
+                "5"
+            ]
+        }
+    },
+    "links": {
+        "specifications.maturity": {
+            "type": "maturities",
+            "href": "https://browsercompat.org/api/v1/maturities/{specifications.maturity}"
+        },
+        "specifications.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{specifications.sections}"
+        },
+        "specifications.history_current": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history_current}"
+        },
+        "specifications.history": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history}"
+        }
+    }
+}
