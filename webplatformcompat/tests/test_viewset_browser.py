@@ -246,7 +246,7 @@ class TestBrowserViewset(APITestCase):
         response = self.client.post(reverse('browser-list'), data)
         self.assertEqual(400, response.status_code, response.data)
         expected_data = {
-            "slug": ["This field is required."],
+            "slug": ["This field may not be blank."],
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -257,8 +257,8 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(400, response.status_code, response.data)
         expected_data = {
             "slug": [
-                "Enter a valid 'slug' consisting of letters, numbers,"
-                " underscores or hyphens."],
+                'Enter a valid "slug" consisting of letters, numbers,'
+                ' underscores or hyphens.'],
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -322,8 +322,8 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(400, response.status_code, response.data)
         expected_data = {
             'slug': [
-                "Enter a valid 'slug' consisting of letters, numbers,"
-                " underscores or hyphens."],
+                'Enter a valid "slug" consisting of letters, numbers,'
+                ' underscores or hyphens.'],
             'name': [
                 "Value must be a JSON dictionary of language codes to"
                 " strings."],
@@ -448,7 +448,7 @@ class TestBrowserViewset(APITestCase):
             url, data=data, content_type="application/vnd.api+json")
         self.assertEqual(400, response.status_code, response.data)
         expected_data = {
-            'history_current': ['history is for a different object']
+            'history_current': ['Invalid history ID for this object']
         }
         self.assertDataEqual(response.data, expected_data)
 
@@ -601,3 +601,14 @@ class TestBrowserViewset(APITestCase):
             'detail': "You do not have permission to perform this action."
         }
         self.assertDataEqual(response.data, expected_data)
+
+    def test_delete_in_changeset(self):
+        self.login_user(groups=["change-resource", "delete-resource"])
+        browser = self.create(
+            Browser, slug="internet_exploder",
+            name={'en': 'Internet Exploder'})
+        url = reverse('browser-detail', kwargs={'pk': browser.pk})
+        url += "?changeset=%d" % self.changeset.id
+        response = self.client.delete(url)
+        self.assertEqual(204, response.status_code, response.content)
+        self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())

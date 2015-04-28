@@ -14,8 +14,8 @@ The representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **username** - The user's email or ID
-    - **created** *(server selected)* - UTC timestamp of when this user
-      account was created
+    - **created** *(server selected)* - Time that the account was created, in
+      `ISO 8601`_ format.
     - **agreement** - The version of the contribution agreement the
       user has accepted.  "0" for not agreed, "1" for first version, etc.
     - **permissions** - A list of permissions.  Permissions include
@@ -48,7 +48,7 @@ A sample response is:
         "users": {
             "id": "42",
             "username": "askDNA@tdv.com",
-            "created": "1405000551.750000",
+            "created": "2014-07-10T13:55:51.750Z",
             "agreement": "1",
             "permissions": ["change-resource"],
             "links": {
@@ -84,10 +84,10 @@ The representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **created** *(server selected)* - UTC timestamp of when this changeset
-      was created
-    - **modified** *(server selected)* - UTC timestamp of when this changeset
-      was last modified
+    - **created** *(server selected)* - When the changeset was created, in
+      `ISO 8601`_ format.
+    - **modified** *(server selected)* - When the changeset was last modified,
+      in `ISO 8601`_ format.
     - **target_resource_type** *(write-once, optional)* - The name of the
       primary resource for this changeset, for example "browsers", "versions",
       etc.
@@ -135,8 +135,8 @@ A sample response is:
     {
         "changesets": {
             "id": "73",
-            "created": "1405353048.910000",
-            "modified": "1405353048.910000",
+            "created": "2014-07-14T15:50:48.910Z",
+            "modified": "2014-07-14T15:50:48.910Z",
             "closed": true,
             "target_resource_type": "features",
             "target_resource_id": "35",
@@ -198,3 +198,5 @@ A sample response is:
 .. _historical_specificationss: history.html#historical-specificationss
 .. _historical_supports: history.html#historical-supports
 .. _historical_versions: history.html#historical-versions
+
+.. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601

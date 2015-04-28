@@ -35,7 +35,7 @@ class TestHistoricalSectionViewset(APITestCase):
 
         expected_data = {
             'id': history.pk,
-            'date': section._history_date,
+            'date': self.dt_repr(section._history_date),
             'event': 'created',
             'changeset': history.history_changeset_id,
             'section': section.pk,
@@ -55,7 +55,7 @@ class TestHistoricalSectionViewset(APITestCase):
         expected_json = {
             'historical_sections': {
                 'id': str(history.pk),
-                'date': '2014-10-19T13:06:22.602Z',
+                'date': self.dt_json(section._history_date),
                 'event': 'created',
                 'sections': {
                     'id': str(section.id),
@@ -115,7 +115,7 @@ class TestHistoricalSectionViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': section._history_date,
+                'date': self.dt_repr(section._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'section': section.pk,

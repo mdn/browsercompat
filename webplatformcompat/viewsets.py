@@ -24,7 +24,8 @@ from .serializers import (
     HistoricalBrowserSerializer, HistoricalFeatureSerializer,
     HistoricalMaturitySerializer, HistoricalSectionSerializer,
     HistoricalSpecificationSerializer, HistoricalSupportSerializer,
-    HistoricalVersionSerializer,
+    HistoricalVersionSerializer)
+from .view_serializers import (
     ViewFeatureListSerializer, ViewFeatureSerializer)
 
 
@@ -35,15 +36,27 @@ from .serializers import (
 class CachedViewMixin(BaseCacheViewMixin):
     cache_class = Cache
 
+    def perform_create(self, serializer):
+        kwargs = {}
+        if getattr(self.request, 'delay_cache', False):
+            kwargs['_delay_cache'] = True
+        serializer.save(**kwargs)
+
+    def perform_update(self, serializer):
+        kwargs = {}
+        if getattr(self.request, 'delay_cache', False):
+            kwargs['_delay_cache'] = True
+        serializer.save(**kwargs)
+
+    def perform_destroy(self, instance):
+        if getattr(self.request, 'delay_cache', False):
+            instance._delay_cache = True
+        instance.delete()
+
 
 class ModelViewSet(PartialPutMixin, CachedViewMixin, BaseModelViewSet):
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
-
-    def pre_save(self, obj):
-        """Delay cache refresh if requested by changeset middleware"""
-        if getattr(self.request, 'delay_cache', False):
-            obj._delay_cache = True
 
 
 class ReadOnlyModelViewSet(BaseROModelViewSet):
@@ -56,25 +69,19 @@ class UpdateOnlyModelViewSet(
     renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
 
-    def pre_save(self, obj):
-        """Delay cache refresh if requested by changeset middleware"""
-        if getattr(self.request, 'delay_cache', False):
-            obj._delay_cache = True
-
 
 #
 # 'Regular' viewsets
 #
 
 class BrowserViewSet(ModelViewSet):
-    model = Browser
     queryset = Browser.objects.order_by('id')
     serializer_class = BrowserSerializer
     filter_fields = ('slug',)
 
 
 class FeatureViewSet(ModelViewSet):
-    model = Feature
+    queryset = Feature.objects.order_by('id')
     serializer_class = FeatureSerializer
     filter_fields = ('slug', 'parent')
 
@@ -88,32 +95,30 @@ class FeatureViewSet(ModelViewSet):
 
 
 class MaturityViewSet(ModelViewSet):
-    model = Maturity
+    queryset = Maturity.objects.order_by('id')
     serializer_class = MaturitySerializer
     filter_fields = ('slug',)
 
 
 class SectionViewSet(ModelViewSet):
-    model = Section
+    queryset = Section.objects.order_by('id')
     serializer_class = SectionSerializer
 
 
 class SpecificationViewSet(ModelViewSet):
-    model = Specification
     queryset = Specification.objects.order_by('id')
     serializer_class = SpecificationSerializer
     filter_fields = ('slug', 'mdn_key')
 
 
 class SupportViewSet(ModelViewSet):
-    model = Support
+    queryset = Support.objects.order_by('id')
     serializer_class = SupportSerializer
     filter_fields = ('version', 'feature')
 
 
 class VersionViewSet(ModelViewSet):
     queryset = Version.objects.order_by('id')
-    model = Version
     serializer_class = VersionSerializer
     filter_fields = ('browser', 'browser__slug', 'version', 'status')
 
@@ -123,12 +128,12 @@ class VersionViewSet(ModelViewSet):
 #
 
 class ChangesetViewSet(ModelViewSet):
-    model = Changeset
+    queryset = Changeset.objects.order_by('id')
     serializer_class = ChangesetSerializer
 
 
 class UserViewSet(CachedViewMixin, ReadOnlyModelViewSet):
-    model = User
+    queryset = User.objects.order_by('id')
     serializer_class = UserSerializer
     filter_fields = ('username',)
 
@@ -138,43 +143,43 @@ class UserViewSet(CachedViewMixin, ReadOnlyModelViewSet):
 #
 
 class HistoricalBrowserViewSet(ReadOnlyModelViewSet):
-    model = Browser.history.model
+    queryset = Browser.history.model.objects.order_by('id')
     serializer_class = HistoricalBrowserSerializer
     filter_fields = ('id', 'slug')
 
 
 class HistoricalFeatureViewSet(ReadOnlyModelViewSet):
-    model = Feature.history.model
+    queryset = Feature.history.model.objects.order_by('id')
     serializer_class = HistoricalFeatureSerializer
     filter_fields = ('id', 'slug')
 
 
 class HistoricalMaturityViewSet(ReadOnlyModelViewSet):
-    model = Maturity.history.model
+    queryset = Maturity.history.model.objects.order_by('id')
     serializer_class = HistoricalMaturitySerializer
     filter_fields = ('id', 'slug')
 
 
 class HistoricalSectionViewSet(ReadOnlyModelViewSet):
-    model = Section.history.model
+    queryset = Section.history.model.objects.order_by('id')
     serializer_class = HistoricalSectionSerializer
     filter_fields = ('id',)
 
 
 class HistoricalSpecificationViewSet(ReadOnlyModelViewSet):
-    model = Specification.history.model
+    queryset = Specification.history.model.objects.order_by('id')
     serializer_class = HistoricalSpecificationSerializer
     filter_fields = ('id', 'slug', 'mdn_key')
 
 
 class HistoricalSupportViewSet(ReadOnlyModelViewSet):
-    model = Support.history.model
+    queryset = Support.history.model.objects.order_by('id')
     serializer_class = HistoricalSupportSerializer
     filter_fields = ('id',)
 
 
 class HistoricalVersionViewSet(ReadOnlyModelViewSet):
-    model = Version.history.model
+    queryset = Version.history.model.objects.order_by('id')
     serializer_class = HistoricalVersionSerializer
     filter_fields = ('id',)
 
@@ -184,7 +189,7 @@ class HistoricalVersionViewSet(ReadOnlyModelViewSet):
 #
 
 class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
-    model = Feature
+    queryset = Feature.objects.order_by('id')
     serializer_class = ViewFeatureSerializer
     filter_fields = ('slug',)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)

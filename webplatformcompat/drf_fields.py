@@ -6,21 +6,11 @@ from collections import OrderedDict
 import json
 
 from django.core.exceptions import ValidationError
-from django.forms import Textarea
 from django.utils import six
+from rest_framework.relations import PKOnlyObject
 from rest_framework.serializers import (
-    CharField, IntegerField, PrimaryKeyRelatedField)
-
-from .validators import LanguageDictValidator
-
-
-class AutoUserField(PrimaryKeyRelatedField):
-    """Field defaults to the logged-in user"""
-
-    def get_default_value(self):
-        request = self.context.get('request')
-        user = getattr(request, 'user')
-        return user and user.id
+    CharField, IntegerField, PrimaryKeyRelatedField, ManyRelatedField,
+    MANY_RELATION_KWARGS)
 
 
 class CurrentHistoryField(PrimaryKeyRelatedField):
@@ -32,14 +22,16 @@ class CurrentHistoryField(PrimaryKeyRelatedField):
 
     def __init__(self, *args, **kwargs):
         self.manager = kwargs.pop('manager', 'history')
+        read_only = kwargs.pop('read_only', None)
+        queryset = None if read_only else 'to do'
         required = kwargs.pop('required', False)
         assert not required, 'required must be False'
-        self.view_name = kwargs.pop('view_name', '')
         super(CurrentHistoryField, self).__init__(
-            required=required, *args, **kwargs)
+            required=required, queryset=queryset, read_only=read_only,
+            *args, **kwargs)
 
-    def initialize(self, parent, field_name):
-        """Initialize field
+    def bind(self, field_name, parent):
+        """Initialize the field_name and parent for the instance
 
         history_current only makes sense in the context of an object.
         However, some views, such as the browsable API, might try to access
@@ -47,11 +39,16 @@ class CurrentHistoryField(PrimaryKeyRelatedField):
         queryset to the none() queryset, so certain operations (such as
         determining the model or calling all()) will return expected data.
         """
-        self.full_queryset = getattr(parent.opts.model, self.manager)
+        self.full_queryset = getattr(parent.Meta.model, self.manager)
         self.queryset = self.full_queryset
-        super(CurrentHistoryField, self).initialize(parent, field_name)
+        super(CurrentHistoryField, self).bind(field_name, parent)
 
-    def field_to_native(self, obj, field_name):
+    def get_attribute(self, obj):
+        """Return the entire object versus just the attribute value."""
+        self.queryset = getattr(obj, self.manager)
+        return obj
+
+    def to_representation(self, obj):
         """Convert to the ID of the current history
 
         With a valid object, the queryset can be set to the proper history for
@@ -59,13 +56,7 @@ class CurrentHistoryField(PrimaryKeyRelatedField):
         the object is not set, so we leave it as the none() queryset set in
         initialize.
         """
-        if obj is None:  # pragma: no cover
-            # From Browsable API renderer, for example after a DELETE:
-            # self.get_raw_data_form(view, 'POST', request)
-            return None
-        self.queryset = getattr(obj, self.manager)
-        most_recent_id = self.queryset.values_list('history_id', flat=True)[0]
-        return self.to_native(most_recent_id)
+        return self.queryset.values_list('history_id', flat=True)[0]
 
 
 class HistoricalObjectField(PrimaryKeyRelatedField):
@@ -79,15 +70,11 @@ class HistoricalObjectField(PrimaryKeyRelatedField):
         super(HistoricalObjectField, self).__init__(
             source=source, read_only=read_only, *args, **kwargs)
 
-    def field_to_native(self, obj, field_name):
-        """Convert to the primary key of the history object
-
-        With a valid object, the queryset can be set to the proper model for
-        this object.
-        """
-        self.queryset = type(obj.history_object)._default_manager
-        return super(HistoricalObjectField, self).field_to_native(
-            obj, field_name).pk
+    def get_attribute(self, instance):
+        """Return the entire object versus just the attribute value."""
+        self.queryset = type(instance.history_object)._default_manager
+        return PKOnlyObject(
+            pk=instance.serializable_value('history_object').pk)
 
 
 class HistoryField(PrimaryKeyRelatedField):
@@ -98,37 +85,27 @@ class HistoryField(PrimaryKeyRelatedField):
     """
 
     def __init__(self, *args, **kwargs):
-        many = kwargs.pop('many', True)
-        assert many, 'many must be True'
         read_only = kwargs.pop('read_only', True)
         assert read_only, 'read_only must be True'
-        self.view_name = kwargs.pop('view_name', '')
         super(HistoryField, self).__init__(
-            many=many, read_only=read_only, *args, **kwargs)
+            read_only=read_only, *args, **kwargs)
 
-    def initialize(self, parent, field_name):
-        """Initialize field
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        list_kwargs = {'child_relation': cls(*args, **kwargs)}
+        for key in kwargs.keys():
+            assert key in MANY_RELATION_KWARGS
+            list_kwargs[key] = kwargs[key]
+        return ManyHistoryField(**list_kwargs)
 
-        history only makes sense in the context of an object.  However, some
-        views, such as the browsable API, might try to access the queryset
-        outside of an object context.  We initialize the queryset to the none()
-        queryset, so certain operations (such as determining the model or
-        calling all()) will return expected data.
-        """
-        manager = getattr(parent.opts.model, self.source or field_name)
-        self.full_queryset = manager
-        self.queryset = manager.none()
-        super(HistoryField, self).initialize(parent, field_name)
 
-    def field_to_native(self, obj, field_name):
-        """Convert a field to the native represenation
-
-        With a valid object, the queryset can be set to the object's
-        queryset, which may be more limited than the generic queryset.
-        """
-        assert obj
-        self.queryset = getattr(obj, self.source or field_name)
-        return super(HistoryField, self).field_to_native(obj, field_name)
+class ManyHistoryField(ManyRelatedField):
+    def get_attribute(self, instance):
+        """Set the queryset when the instance is available."""
+        queryset = super(ManyHistoryField, self).get_attribute(instance)
+        self.queryset = queryset
+        self.child_relation.queryset = queryset
+        return queryset
 
 
 class MPTTRelationField(PrimaryKeyRelatedField):
@@ -147,49 +124,45 @@ class MPTTRelationField(PrimaryKeyRelatedField):
     ancestors = MPTTRelationField(many=True, source="ancestors")
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.relation = kwargs.pop('source', None)
         read_only = kwargs.pop('read_only', True)
         assert read_only, 'read_only must be True'
         super(MPTTRelationField, self).__init__(
-            read_only=read_only, *args, **kwargs)
-
-    def field_to_native(self, obj, field_name):
-        """Convert a field to the native represenation
-
-        With a valid object, the queryset can be set to the related object's
-        queryset, which may be more limited than the generic queryset.
-        """
-        assert obj
-        self.queryset = getattr(obj, self.relation)
-        return super(MPTTRelationField, self).field_to_native(obj, field_name)
+            read_only=read_only, **kwargs)
 
 
 class OptionalCharField(CharField):
     """Field is a CharField that serializes as None when omitted"""
-    def to_native(self, value):
+    def to_representation(self, value):
         if value:
             return value
         else:
             return None
 
-    def from_native(self, value):
+    def to_internal_value(self, value):
         if value:
             return value
         else:
             return ''
 
+    def run_validation(self, value):
+        """Validate nulls from to_representation."""
+        if value is None:
+            return ''
+        return super(OptionalCharField, self).run_validation(value)
+
 
 class OptionalIntegerField(IntegerField):
     """Field is a IntegerField that serialized as None when 0"""
 
-    def to_native(self, value):
+    def to_representation(self, value):
         if value:
             return value
         else:
             return None
 
-    def from_native(self, value):
+    def to_internal_value(self, value):
         if value:
             return int(value)
         else:
@@ -209,14 +182,9 @@ class TranslatedTextField(CharField):
     """
     def __init__(self, *args, **kwargs):
         self.allow_canonical = kwargs.pop('allow_canonical', False)
-        widget = kwargs.pop('widget', Textarea)
-        validators = kwargs.pop(
-            'validators',
-            [LanguageDictValidator(allow_canonical=self.allow_canonical)])
-        super(TranslatedTextField, self).__init__(
-            widget=widget, validators=validators, *args, **kwargs)
+        super(TranslatedTextField, self).__init__(*args, **kwargs)
 
-    def to_native(self, value):
+    def to_representation(self, value):
         """Convert from model Python to serializable data"""
         if value:
             if list(value.keys()) == ['zxx']:
@@ -235,10 +203,10 @@ class TranslatedTextField(CharField):
         else:
             return None
 
-    def from_native(self, value):
+    def to_internal_value(self, value):
         """Convert from serializable data to model"""
         if isinstance(value, dict):
-            return value
+            return value or None
         if value:
             value = value.strip()
         if value:
@@ -255,3 +223,9 @@ class TranslatedTextField(CharField):
                 return native
         else:
             return None
+
+    def run_validation(self, value):
+        """Validate nulls from to_representation."""
+        if value is None:
+            return None
+        return super(TranslatedTextField, self).run_validation(value)

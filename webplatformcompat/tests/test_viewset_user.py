@@ -23,7 +23,7 @@ class TestUserViewset(APITestCase):
         expected_data = {
             'id': user.pk,
             'username': 'user',
-            'created': date_joined,
+            'created': self.dt_repr(date_joined),
             'agreement': 0,
             'permissions': ['change-resource'],
             'changesets': [],
@@ -33,7 +33,7 @@ class TestUserViewset(APITestCase):
             "users": {
                 "id": str(user.pk),
                 "username": 'user',
-                "created": '2014-09-04T17:10:21.827Z',
+                "created": self.dt_json(date_joined),
                 "agreement": 0,
                 "permissions": ['change-resource'],
                 "links": {"changesets": []},
@@ -63,7 +63,7 @@ class TestUserViewset(APITestCase):
             'results': [{
                 'id': user.pk,
                 'username': 'user',
-                'created': date_joined,
+                "created": self.dt_repr(date_joined),
                 'agreement': 0,
                 'permissions': ['change-resource'],
                 'changesets': [],

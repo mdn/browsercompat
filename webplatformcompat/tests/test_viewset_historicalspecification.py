@@ -32,7 +32,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
 
         expected_data = {
             'id': history.pk,
-            'date': spec._history_date,
+            'date': self.dt_repr(spec._history_date),
             'event': 'created',
             'changeset': history.history_changeset_id,
             'specification': spec.pk,
@@ -52,7 +52,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
         expected_json = {
             'historical_specifications': {
                 'id': str(history.pk),
-                'date': '2014-10-19T11:46:10.834Z',
+                'date': self.dt_json(spec._history_date),
                 'event': 'created',
                 'specifications': {
                     'id': str(spec.id),
@@ -109,7 +109,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': spec._history_date,
+                'date': self.dt_repr(spec._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'specification': spec.pk,
@@ -148,7 +148,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': spec._history_date,
+                'date': self.dt_repr(spec._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'specification': spec.pk,
@@ -187,7 +187,7 @@ class TestHistoricalSpecificationViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': spec._history_date,
+                'date': self.dt_repr(spec._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'specification': spec.pk,

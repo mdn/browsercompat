@@ -29,7 +29,7 @@ class TestHistoricalMaturityViewset(APITestCase):
 
         expected_data = {
             'id': history.pk,
-            'date': maturity._history_date,
+            'date': self.dt_repr(maturity._history_date),
             'event': 'created',
             'changeset': history.history_changeset_id,
             'maturity': maturity.pk,
@@ -46,7 +46,7 @@ class TestHistoricalMaturityViewset(APITestCase):
         expected_json = {
             'historical_maturities': {
                 'id': str(history.pk),
-                'date': '2014-10-19T10:20:45.609Z',
+                'date': self.dt_json(maturity._history_date),
                 'event': 'created',
                 'maturities': {
                     'id': str(maturity.id),
@@ -93,7 +93,7 @@ class TestHistoricalMaturityViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': maturity._history_date,
+                'date': self.dt_repr(maturity._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'maturity': maturity.pk,

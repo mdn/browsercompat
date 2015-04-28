@@ -31,7 +31,7 @@ class TestHistoricalBrowserViewset(APITestCase):
 
         expected_data = {
             'id': history.pk,
-            'date': browser._history_date,
+            'date': self.dt_repr(browser._history_date),
             'event': 'created',
             'changeset': history.history_changeset_id,
             'browser': browser.pk,
@@ -47,7 +47,7 @@ class TestHistoricalBrowserViewset(APITestCase):
         expected_json = {
             'historical_browsers': {
                 'id': str(history.pk),
-                'date': '2014-08-25T20:50:38.868Z',
+                'date': self.dt_json(browser._history_date),
                 'event': 'created',
                 'browsers': {
                     'id': str(browser.pk),
@@ -99,7 +99,7 @@ class TestHistoricalBrowserViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': browser._history_date,
+                'date': self.dt_repr(browser._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'browser': browser.pk,
@@ -129,7 +129,7 @@ class TestHistoricalBrowserViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': browser._history_date,
+                'date': self.dt_repr(browser._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'browser': browser.pk,

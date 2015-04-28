@@ -671,7 +671,7 @@ class CollectionChangeset(object):
                 if (count % checkpoint == 0):  # pragma nocover
                     logger.info("Changed %d %s" % (count, resource_type))
         finally:
-            logger.info('Closing changeset...')
+            logger.info('Closing changeset, updating cache...')
             client.close_changeset()
         return counts
 

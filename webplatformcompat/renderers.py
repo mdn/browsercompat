@@ -3,18 +3,26 @@ from json import loads
 
 from django.utils import encoding, translation
 
+from rest_framework.relations import ManyRelatedField
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.serializers import ListSerializer
 from rest_framework.utils.encoders import JSONEncoder
+from rest_framework.utils.serializer_helpers import ReturnList
 from rest_framework_json_api.renderers import JsonApiRenderer \
     as BaseJsonApiRender
 from rest_framework_json_api.renderers import WrapperNotApplicable
-from rest_framework_json_api.utils import snakecase
+from rest_framework_json_api.utils import snakecase, model_from_obj
 
 
 class JsonApiRenderer(BaseJsonApiRender):
     convert_by_name = BaseJsonApiRender.convert_by_name
     convert_by_name.update({
         'meta': 'add_meta',
+    })
+    convert_by_type = BaseJsonApiRender.convert_by_type
+    convert_by_type.update({
+        ManyRelatedField: 'handle_related_field',
+        ListSerializer: 'handle_list_serializer',
     })
     dict_class = OrderedDict
     encoder_class = JSONEncoder
@@ -28,6 +36,73 @@ class JsonApiRenderer(BaseJsonApiRender):
         data = resource[field_name]
         return {'meta': data}
 
+    def wrap_paginated(self, data, renderer_context):
+        """Convert paginated data to JSON API with meta"""
+        pagination_keys = ['count', 'next', 'previous', 'results']
+        for key in pagination_keys:
+            if not (data and key in data):
+                raise WrapperNotApplicable('Not paginated results')
+
+        view = renderer_context.get("view", None)
+        model = self.model_from_obj(view)
+        resource_type = self.model_to_resource_type(model)
+
+        # Use default wrapper for results
+        # DRF 3.x - data['results'] is ReturnList
+        assert isinstance(data['results'], ReturnList)
+        results = []
+        fields = self.fields_from_resource(data['results'].serializer.child)
+        assert fields
+        for result in data['results']:
+            result.fields = fields
+            results.append(result)
+        wrapper = self.wrap_default(results, renderer_context)
+
+        # Add pagination metadata
+        pagination = self.dict_class()
+        pagination['previous'] = data['previous']
+        pagination['next'] = data['next']
+        pagination['count'] = data['count']
+        wrapper.setdefault('meta', self.dict_class())
+        wrapper['meta'].setdefault('pagination', self.dict_class())
+        wrapper['meta']['pagination'].setdefault(
+            resource_type, self.dict_class()).update(pagination)
+        return wrapper
+
+    def handle_list_serializer(self, resource, field, field_name, request):
+        serializer = field.child
+        model = serializer.Meta.model
+        resource_type = self.model_to_resource_type(model)
+
+        linked_ids = self.dict_class()
+        links = self.dict_class()
+        linked = self.dict_class()
+        linked[resource_type] = []
+
+        many = field.many
+        assert many
+        items = resource[field_name]
+
+        obj_ids = []
+        for item in items:
+            item.serializer = serializer
+            item.serializer.model = model
+            converted = self.convert_resource(item, request)
+            linked_obj = converted["data"]
+            converted_ids = converted.pop("linked_ids", {})
+            assert converted_ids
+            linked_obj["links"] = converted_ids
+            obj_ids.append(converted["data"]["id"])
+
+            field_links = self.prepend_links_with_name(
+                converted.get("links", {}), resource_type)
+            links.update(field_links)
+
+            linked[resource_type].append(linked_obj)
+
+        linked_ids[field_name] = obj_ids
+        return {"linked_ids": linked_ids, "links": links, "linked": linked}
+
     def wrap_view_extra(self, data, renderer_context):
         """Add nested data w/o adding links to main resource."""
         if not (data and '_view_extra' in data):
@@ -38,7 +113,7 @@ class JsonApiRenderer(BaseJsonApiRender):
             raise WrapperNotApplicable('Status code must not be 400.')
 
         linked = data.pop('_view_extra')
-        data.fields.pop('_view_extra')
+        data.serializer.fields.pop('_view_extra')
         wrapper = self.wrap_default(data, renderer_context)
         assert 'linked' not in wrapper
 
@@ -59,10 +134,9 @@ class JsonApiRenderer(BaseJsonApiRender):
             raise WrapperNotApplicable('Not linked results')
 
         view_extra = data.pop('_view_extra')
-        assert isinstance(view_extra, list)
-        assert len(view_extra) == 1
+        assert isinstance(view_extra, dict)
         converted = {}
-        for rname, error_dict in view_extra[0].items():
+        for rname, error_dict in view_extra.items():
             assert rname != 'meta'
             for seq, errors in error_dict.items():
                 for fieldname, error in errors.items():
@@ -85,25 +159,28 @@ class JsonApiRenderer(BaseJsonApiRender):
         Same as base handle_related_field, but:
         - adds href to links, using DRF default name
         - doesn't handle data not in fields
+        - uses presence of child_relation attribute to signify "many"
         """
         links = self.dict_class()
         linked_ids = self.dict_class()
 
+        many = hasattr(field, 'child_relation')
         model = self.model_from_obj(field)
-        resource_type = self.model_to_resource_type(model)
+        if model:
+            resource_type = self.model_to_resource_type(model)
 
-        format_kwargs = {
-            'model_name': model._meta.object_name.lower()
-        }
-        view_name = '%(model_name)s-detail' % format_kwargs
+            format_kwargs = {
+                'model_name': model._meta.object_name.lower()
+            }
+            view_name = '%(model_name)s-detail' % format_kwargs
+
+            links[field_name] = self.dict_class((
+                ("type", resource_type),
+                ("href", self.url_to_template(view_name, request, field_name)),
+            ))
 
         assert field_name in resource
-        links[field_name] = self.dict_class((
-            ("type", resource_type),
-            ("href", self.url_to_template(view_name, request, field_name)),
-        ))
-
-        if field.many:
+        if many:
             pks = resource[field_name]
         else:
             pks = [resource[field_name]]
@@ -115,12 +192,33 @@ class JsonApiRenderer(BaseJsonApiRender):
             else:
                 link_data.append(encoding.force_text(pk))
 
-        if field.many:
+        if many:
             linked_ids[field_name] = link_data
         else:
             linked_ids[field_name] = link_data[0]
 
         return {"linked_ids": linked_ids, "links": links}
+
+    def model_from_obj(self, obj):
+        model = model_from_obj(obj)
+        if not model and hasattr(obj, 'child_relation'):
+            model = model_from_obj(obj.child_relation)
+        if (not model and hasattr(obj, 'parent') and
+                hasattr(obj.parent, 'instance') and hasattr(obj, 'source')):
+            instance = obj.parent.instance
+            if instance:
+                if isinstance(instance, list):
+                    instance = instance[0]
+                model = model_from_obj(getattr(instance, obj.source))
+                if not model:
+                    model = type(getattr(instance, obj.source))
+        return model
+
+    def fields_from_resource(self, resource):
+        if hasattr(resource, 'serializer'):
+            return getattr(resource.serializer, 'fields', None)
+        else:
+            return super(JsonApiRenderer, self).fields_from_resource(resource)
 
 
 class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):

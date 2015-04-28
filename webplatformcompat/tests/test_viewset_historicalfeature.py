@@ -29,7 +29,7 @@ class TestHistoricalFeatureViewset(APITestCase):
 
         expected_data = {
             'id': history.pk,
-            'date': feature._history_date,
+            'date': self.dt_repr(feature._history_date),
             'event': 'created',
             'changeset': history.history_changeset_id,
             'feature': feature.pk,
@@ -53,7 +53,7 @@ class TestHistoricalFeatureViewset(APITestCase):
         expected_json = {
             'historical_features': {
                 'id': str(history.pk),
-                'date': '2014-10-01T14:25:14.955Z',
+                'date': self.dt_json(feature._history_date),
                 'event': 'created',
                 'features': {
                     'id': str(feature.id),
@@ -111,7 +111,7 @@ class TestHistoricalFeatureViewset(APITestCase):
 
         expected_data = {
             'id': history.pk,
-            'date': feature._history_date,
+            'date': self.dt_repr(feature._history_date),
             'event': 'changed',
             'changeset': history.history_changeset_id,
             'feature': feature.pk,
@@ -148,7 +148,7 @@ class TestHistoricalFeatureViewset(APITestCase):
             'next': None,
             'results': [{
                 'id': history.pk,
-                'date': feature._history_date,
+                'date': self.dt_repr(feature._history_date),
                 'event': 'created',
                 'changeset': history.history_changeset_id,
                 'feature': feature.pk,

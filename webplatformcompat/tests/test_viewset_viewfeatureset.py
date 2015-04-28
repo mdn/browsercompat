@@ -10,7 +10,7 @@ from django.test.utils import override_settings
 
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
-from webplatformcompat.serializers import (
+from webplatformcompat.view_serializers import (
     DjangoResourceClient, ViewFeatureExtraSerializer)
 
 from .base import APITestCase, TestCase
@@ -1910,7 +1910,7 @@ class TestViewFeatureUpdates(APITestCase):
         expected_error = {
             'errors': [{
                 "status": "400", "path": "/linked.features.0.slug",
-                "detail": "This field is required.",
+                "detail": "This field may not be null.",
             }]
         }
         actual_error = loads(response.content.decode('utf-8'))
@@ -1932,9 +1932,7 @@ class TestViewFeatureUpdates(APITestCase):
         expected_error = {
             'errors': [{
                 "status": "400", "path": "/linked.supports.0.support",
-                "detail": (
-                    "Select a valid choice. maybe is not one of the available"
-                    " choices."),
+                "detail": '"maybe" is not a valid choice.',
             }]
         }
         actual_error = loads(response.content.decode('utf-8'))
@@ -1975,9 +1973,9 @@ class TestViewFeatureUpdates(APITestCase):
         self.assertEqual(self.feature, support.feature)
         self.assertEqual('yes', support.support)
 
-    def test_to_native_none(self):
+    def test_to_reprepsentation_none(self):
         # This is used by the DRF browsable API
-        self.assertIsNone(ViewFeatureExtraSerializer().to_native(None))
+        self.assertIsNone(ViewFeatureExtraSerializer().to_representation(None))
 
     def test_top_level_feature_is_error(self):
         subfeature = {

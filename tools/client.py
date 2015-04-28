@@ -8,7 +8,7 @@ grow features and get moved to its own repo.
 from __future__ import print_function, unicode_literals
 
 from collections import OrderedDict
-from json import dumps, loads
+from json import dumps
 from time import time
 import logging
 
@@ -47,7 +47,7 @@ class Client(object):
 
     def request(
             self, method, resource_type, resource_id=None, params=None,
-            data=None, as_json=True):
+            data=None, json_params=None):
         """Request data from the API"""
         start = time()
         url = self.url(resource_type, resource_id)
@@ -66,7 +66,7 @@ class Client(object):
         if method in create_methods:
             expected_statuses = [201]
         elif method in delete_methods:
-            expected_statuses = [204]
+            expected_statuses = [204, 404]
         else:
             expected_statuses = [200]
         if data:
@@ -84,12 +84,12 @@ class Client(object):
 
         end = time()
         logger.debug('%s %s completed in %0.1fs', method, url, end - start)
-        if as_json:
-            try:
-                return response.json()
-            except:
-                pass
-        return response.text
+        kwargs = json_params or {}
+        try:
+            return response.json(**kwargs)
+        except ValueError:
+            # 204 Gone is empty, maybe others
+            return response.text
 
     def login(self, user, password, next_path='/api/v1/browsers'):
         """Log into the API."""
@@ -201,9 +201,9 @@ class Client(object):
                     count, total, resource_type, percent)
                 last_time = current_time
             params = {'page': page}
-            raw = self.request(
-                'GET', resource_type, params=params, as_json=False)
-            response = loads(raw, object_pairs_hook=OrderedDict)
+            response = self.request(
+                'GET', resource_type, params=params,
+                json_params={'object_pairs_hook': OrderedDict})
             assert resource_type in response
             if data:
                 data[resource_type].extend(response[resource_type])

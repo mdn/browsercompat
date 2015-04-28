@@ -32,8 +32,8 @@ class TestChangesetViewSet(APITestCase):
 
         expected_data = {
             'id': changeset.id,
-            'created': changeset.created,
-            'modified': changeset.modified,
+            'created': self.dt_repr(changeset.created),
+            'modified': self.dt_repr(changeset.modified),
             'target_resource_type': None,
             'target_resource_id': None,
             'closed': False,
@@ -52,7 +52,7 @@ class TestChangesetViewSet(APITestCase):
         expected_json = {
             "changesets": {
                 "id": str(changeset.id),
-                "created": "2014-10-27T14:03:31.530Z",
+                "created": self.dt_json(changeset.created),
                 "modified": self.dt_json(changeset.modified),
                 "closed": False,
                 'target_resource_type': None,
@@ -206,8 +206,8 @@ class TestChangesetViewSet(APITestCase):
         changeset = Changeset.objects.get()
         expected_data = {
             u'id': changeset.id,
-            u'created': changeset.created,
-            u'modified': changeset.modified,
+            u'created': self.dt_repr(changeset.created),
+            u'modified': self.dt_repr(changeset.modified),
             u'closed': False,
             u'target_resource_type': None,
             u'target_resource_id': None,
@@ -231,7 +231,7 @@ class TestChangesetViewSet(APITestCase):
         response = self.client.put(url, dumps(data), content_type=japi)
         self.assertEqual(200, response.status_code, response.content)
         changeset = Changeset.objects.get()
-        expected_data['modified'] = changeset.modified
+        expected_data['modified'] = self.dt_repr(changeset.modified)
         expected_data['closed'] = True
         self.assertDataEqual(response.data, expected_data)
         expected_calls = [
@@ -296,8 +296,8 @@ class TestChangesetViewSet(APITestCase):
         changeset = Changeset.objects.get()
         expected_data = {
             u'id': changeset.id,
-            u'created': changeset.created,
-            u'modified': changeset.modified,
+            u'created': self.dt_repr(changeset.created),
+            u'modified': self.dt_repr(changeset.modified),
             u'closed': False,
             u'target_resource_type': None,
             u'target_resource_id': None,
