@@ -29,39 +29,16 @@ The representation includes:
 
 To get a single **user** representation:
 
-.. code-block:: http
-
-    GET /api/v1/users/42 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/user-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/user-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "users": {
-            "id": "42",
-            "username": "askDNA@tdv.com",
-            "created": "2014-07-10T13:55:51.750Z",
-            "agreement": "1",
-            "permissions": ["change-resource"],
-            "links": {
-                "changesets": ["73"]
-            }
-        },
-        "links": {
-            "users.changesets": {
-                "href": "https://browsersupports.org/api/v1/changesets/{users.changesets}",
-                "type": "changesets"
-            }
-        }
-    }
+.. literalinclude:: /raw/user-by-id-response-body.json
+    :language: json
 
 If a client is authenticated, the logged-in user's account can be retrieved with:
 
@@ -117,75 +94,16 @@ The representation includes:
 
 To get a single **changeset** representation:
 
-.. code-block:: http
-
-    GET /api/v1/changeset/73 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/changeset-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/changeset-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "changesets": {
-            "id": "73",
-            "created": "2014-07-14T15:50:48.910Z",
-            "modified": "2014-07-14T15:50:48.910Z",
-            "closed": true,
-            "target_resource_type": "features",
-            "target_resource_id": "35",
-            "links": {
-                "user": "42",
-                "historical_browsers": [],
-                "historical_features": [],
-                "historical_maturities": [],
-                "historical_sections": [],
-                "historical_specifications": [],
-                "historical_supports": ["1789", "1790"],
-                "historical_versions": []
-            }
-        },
-        "links": {
-            "changesets.user": {
-                "href": "https://browsersupports.org/api/v1/users/{changesets.user}",
-                "type": "users"
-            },
-            "changesets.historical_browsers": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{changesets.historical_browsers}",
-                "type": "historical_browsers"
-            },
-            "changesets.historical_features": {
-                "href": "https://browsersupports.org/api/v1/historical_features/{changesets.historical_features}",
-                "type": "historical_features"
-            },
-            "changesets.historical_maturities": {
-                "href": "https://browsersupports.org/api/v1/historical_maturities/{changesets.historical_maturities}",
-                "type": "historical_maturities"
-            },
-            "changesets.historical_sections": {
-                "href": "https://browsersections.org/api/v1/historical_sections/{changesets.historical_sections}",
-                "type": "historical_sections"
-            },
-            "changesets.historical_specifications": {
-                "href": "https://browserspecifications.org/api/v1/historical_specifications/{changesets.historical_specifications}",
-                "type": "historical_specifications"
-            },
-            "changesets.historical_supports": {
-                "href": "https://browsersupports.org/api/v1/historical_supports/{changesets.historical_supports}",
-                "type": "historical_supports"
-            },
-            "changesets.historical_versions": {
-                "href": "https://browsersupports.org/api/v1/historical_versions/{changesets.historical_versions}",
-                "type": "historical_versions"
-            }
-        }
-    }
+.. literalinclude:: /raw/changeset-by-id-response-body.json
+    :language: json
 
 .. _user: Users_
 
