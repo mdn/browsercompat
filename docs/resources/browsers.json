@@ -1,0 +1,246 @@
+{
+    "browsers": [
+        {
+            "id": "1",
+            "slug": "android",
+            "name": {
+                "en": "Android"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "1",
+                    "2",
+                    "3"
+                ]
+            }
+        },
+        {
+            "id": "2",
+            "slug": "blackberry",
+            "name": {
+                "en": "BlackBerry"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "4",
+                    "5",
+                    "6"
+                ]
+            }
+        },
+        {
+            "id": "3",
+            "slug": "chrome",
+            "name": {
+                "en": "Chrome"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "7",
+                    "8",
+                    "9"
+                ]
+            }
+        },
+        {
+            "id": "4",
+            "slug": "chrome_for_android",
+            "name": {
+                "en": "Chrome for Android"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "10",
+                    "11",
+                    "12"
+                ]
+            }
+        },
+        {
+            "id": "5",
+            "slug": "chrome_mobile",
+            "name": {
+                "en": "Chrome Mobile"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "13"
+                ]
+            }
+        },
+        {
+            "id": "6",
+            "slug": "firefox",
+            "name": {
+                "en": "Firefox"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "14",
+                    "15",
+                    "16",
+                    "17",
+                    "18"
+                ]
+            }
+        },
+        {
+            "id": "7",
+            "slug": "firefox_mobile",
+            "name": {
+                "en": "Firefox Mobile"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "19",
+                    "20",
+                    "21"
+                ]
+            }
+        },
+        {
+            "id": "8",
+            "slug": "firefox_os",
+            "name": {
+                "en": "Firefox OS"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "22",
+                    "23",
+                    "24"
+                ]
+            }
+        },
+        {
+            "id": "9",
+            "slug": "ie_mobile",
+            "name": {
+                "en": "IE Mobile"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "25",
+                    "26",
+                    "27"
+                ]
+            }
+        },
+        {
+            "id": "10",
+            "slug": "internet_explorer",
+            "name": {
+                "en": "Internet Explorer"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "28",
+                    "29",
+                    "30",
+                    "31",
+                    "32"
+                ]
+            }
+        },
+        {
+            "id": "11",
+            "slug": "opera",
+            "name": {
+                "en": "Opera"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "33",
+                    "34",
+                    "35",
+                    "36"
+                ]
+            }
+        },
+        {
+            "id": "12",
+            "slug": "opera_mini",
+            "name": {
+                "en": "Opera Mini"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "37"
+                ]
+            }
+        },
+        {
+            "id": "13",
+            "slug": "opera_mobile",
+            "name": {
+                "en": "Opera Mobile"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "38",
+                    "39",
+                    "40"
+                ]
+            }
+        },
+        {
+            "id": "14",
+            "slug": "safari",
+            "name": {
+                "en": "Safari"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "41",
+                    "42",
+                    "43",
+                    "44"
+                ]
+            }
+        },
+        {
+            "id": "15",
+            "slug": "safari_mobile",
+            "name": {
+                "en": "Safari Mobile"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "45",
+                    "46",
+                    "47"
+                ]
+            }
+        }
+    ],
+    "links": {
+        "browsers.versions": {
+            "type": "versions",
+            "href": "http://localhost:8000/api/v1/versions/{browsers.versions}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "browsers": {
+                "previous": null,
+                "next": null,
+                "count": 15
+            }
+        }
+    }
+}

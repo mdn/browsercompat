@@ -1,0 +1,766 @@
+{
+    "versions": [
+        {
+            "id": "1",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "1",
+                "supports": []
+            }
+        },
+        {
+            "id": "2",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "1",
+                "supports": [
+                    "1"
+                ]
+            }
+        },
+        {
+            "id": "3",
+            "version": "6.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "1",
+                "supports": []
+            }
+        },
+        {
+            "id": "4",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "2",
+                "supports": []
+            }
+        },
+        {
+            "id": "5",
+            "version": "6.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "2",
+                "supports": []
+            }
+        },
+        {
+            "id": "6",
+            "version": "10.2",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "2",
+                "supports": []
+            }
+        },
+        {
+            "id": "7",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "3",
+                "supports": [
+                    "11",
+                    "20"
+                ]
+            }
+        },
+        {
+            "id": "8",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "3",
+                "supports": [
+                    "2"
+                ]
+            }
+        },
+        {
+            "id": "9",
+            "version": "35.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "3",
+                "supports": []
+            }
+        },
+        {
+            "id": "10",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "4",
+                "supports": []
+            }
+        },
+        {
+            "id": "11",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "4",
+                "supports": []
+            }
+        },
+        {
+            "id": "12",
+            "version": "33.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "4",
+                "supports": []
+            }
+        },
+        {
+            "id": "13",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "5",
+                "supports": []
+            }
+        },
+        {
+            "id": "14",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "6",
+                "supports": []
+            }
+        },
+        {
+            "id": "15",
+            "version": "1.0",
+            "release_day": "2004-11-09",
+            "retirement_day": "2005-11-29",
+            "status": "retired",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "6",
+                "supports": [
+                    "3"
+                ]
+            }
+        },
+        {
+            "id": "16",
+            "version": "3.5",
+            "release_day": "2009-06-30",
+            "retirement_day": "2010-01-21",
+            "status": "retired",
+            "release_notes_uri": {
+                "en": "https://developer.mozilla.org/en/Firefox/Releases/3.5",
+                "de": "https://developer.mozilla.org/de/docs/Firefox_3.5_f%C3%BCr_Entwickler",
+                "es": "https://developer.mozilla.org/es/docs/Firefox_3.5_para_desarrolladores",
+                "fr": "https://developer.mozilla.org/fr/Firefox/Versions/3.5",
+                "ja": "https://developer.mozilla.org/ja/Firefox/Releases/3.5",
+                "ko": "https://developer.mozilla.org/ko/docs/Firefox_3.5_for_developers",
+                "pl": "https://developer.mozilla.org/pl/Firefox/Releases/3.5",
+                "pt-PT": "https://developer.mozilla.org/pt-PT/docs/Firefox_3.5_para_desenvolvedores",
+                "ru": "https://developer.mozilla.org/ru/docs/Firefox_3.5_%D0%B4%D0%BB%D1%8F_%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B0",
+                "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/3.5",
+                "zh-TW": "https://developer.mozilla.org/zh-TW/docs/Firefox_3.1_%E6%8A%80%E8%A1%93%E6%96%87%E4%BB%B6"
+            },
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "6",
+                "supports": [
+                    "13"
+                ]
+            }
+        },
+        {
+            "id": "17",
+            "version": "10.0",
+            "release_day": "2012-01-31",
+            "retirement_day": "2012-03-13",
+            "status": "retired",
+            "release_notes_uri": {
+                "en": "https://developer.mozilla.org/en/Firefox/Releases/10",
+                "de": "https://developer.mozilla.org/de/Firefox/Releases/10",
+                "es": "https://developer.mozilla.org/es/Firefox/Releases/10",
+                "fr": "https://developer.mozilla.org/fr/Firefox/Releases/10",
+                "ja": "https://developer.mozilla.org/ja/docs/Firefox_10_for_developers",
+                "ko": "https://developer.mozilla.org/ko/Firefox/Releases/10",
+                "pl": "https://developer.mozilla.org/pl/Firefox/Releases/10",
+                "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/10",
+                "ru": "https://developer.mozilla.org/ru/Firefox/Releases/10",
+                "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/10",
+                "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/10"
+            },
+            "note": null,
+            "order": 3,
+            "links": {
+                "browser": "6",
+                "supports": [
+                    "21"
+                ]
+            }
+        },
+        {
+            "id": "18",
+            "version": "16.0",
+            "release_day": "2012-10-09",
+            "retirement_day": "2012-11-20",
+            "status": "retired",
+            "release_notes_uri": {
+                "en": "https://developer.mozilla.org/en/Firefox/Releases/16",
+                "de": "https://developer.mozilla.org/de/Firefox/Releases/16",
+                "es": "https://developer.mozilla.org/es/Firefox/Releases/16",
+                "fr": "https://developer.mozilla.org/fr/Firefox/Versions/16",
+                "ja": "https://developer.mozilla.org/ja/Firefox/Releases/16",
+                "ko": "https://developer.mozilla.org/ko/Firefox/Releases/16",
+                "pl": "https://developer.mozilla.org/pl/Firefox/Releases/16",
+                "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/16",
+                "ru": "https://developer.mozilla.org/ru/Firefox/Releases/16",
+                "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/16",
+                "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/16"
+            },
+            "note": null,
+            "order": 4,
+            "links": {
+                "browser": "6",
+                "supports": [
+                    "12",
+                    "22"
+                ]
+            }
+        },
+        {
+            "id": "19",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "7",
+                "supports": []
+            }
+        },
+        {
+            "id": "20",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "7",
+                "supports": [
+                    "4"
+                ]
+            }
+        },
+        {
+            "id": "21",
+            "version": "33.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "7",
+                "supports": []
+            }
+        },
+        {
+            "id": "22",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "8",
+                "supports": []
+            }
+        },
+        {
+            "id": "23",
+            "version": "1.1",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "8",
+                "supports": []
+            }
+        },
+        {
+            "id": "24",
+            "version": "1.4",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "8",
+                "supports": []
+            }
+        },
+        {
+            "id": "25",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "9",
+                "supports": []
+            }
+        },
+        {
+            "id": "26",
+            "version": "4.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "9",
+                "supports": []
+            }
+        },
+        {
+            "id": "27",
+            "version": "6.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "9",
+                "supports": [
+                    "5"
+                ]
+            }
+        },
+        {
+            "id": "28",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "10",
+                "supports": []
+            }
+        },
+        {
+            "id": "29",
+            "version": "4.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "10",
+                "supports": [
+                    "6"
+                ]
+            }
+        },
+        {
+            "id": "30",
+            "version": "5.5",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "10",
+                "supports": [
+                    "15"
+                ]
+            }
+        },
+        {
+            "id": "31",
+            "version": "9.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 3,
+            "links": {
+                "browser": "10",
+                "supports": [
+                    "16"
+                ]
+            }
+        },
+        {
+            "id": "32",
+            "version": "10.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 4,
+            "links": {
+                "browser": "10",
+                "supports": [
+                    "14",
+                    "23"
+                ]
+            }
+        },
+        {
+            "id": "33",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "11",
+                "supports": [
+                    "24"
+                ]
+            }
+        },
+        {
+            "id": "34",
+            "version": "7.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "11",
+                "supports": [
+                    "7"
+                ]
+            }
+        },
+        {
+            "id": "35",
+            "version": "10.5",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "11",
+                "supports": [
+                    "17"
+                ]
+            }
+        },
+        {
+            "id": "36",
+            "version": "12.10",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 3,
+            "links": {
+                "browser": "11",
+                "supports": [
+                    "18"
+                ]
+            }
+        },
+        {
+            "id": "37",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "12",
+                "supports": []
+            }
+        },
+        {
+            "id": "38",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "13",
+                "supports": [
+                    "25"
+                ]
+            }
+        },
+        {
+            "id": "39",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "13",
+                "supports": []
+            }
+        },
+        {
+            "id": "40",
+            "version": "22.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "13",
+                "supports": []
+            }
+        },
+        {
+            "id": "41",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "14",
+                "supports": [
+                    "26"
+                ]
+            }
+        },
+        {
+            "id": "42",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "14",
+                "supports": [
+                    "8"
+                ]
+            }
+        },
+        {
+            "id": "43",
+            "version": "3.1",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "14",
+                "supports": [
+                    "19"
+                ]
+            }
+        },
+        {
+            "id": "44",
+            "version": "5.1",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 3,
+            "links": {
+                "browser": "14",
+                "supports": [
+                    "9"
+                ]
+            }
+        },
+        {
+            "id": "45",
+            "version": null,
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "15",
+                "supports": []
+            }
+        },
+        {
+            "id": "46",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "15",
+                "supports": [
+                    "10"
+                ]
+            }
+        },
+        {
+            "id": "47",
+            "version": "8.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "15",
+                "supports": []
+            }
+        }
+    ],
+    "links": {
+        "versions.browser": {
+            "type": "browsers",
+            "href": "http://localhost:8000/api/v1/browsers/{versions.browser}"
+        },
+        "versions.supports": {
+            "type": "supports",
+            "href": "http://localhost:8000/api/v1/supports/{versions.supports}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "versions": {
+                "previous": null,
+                "next": null,
+                "count": 47
+            }
+        }
+    }
+}

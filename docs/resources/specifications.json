@@ -1,0 +1,91 @@
+{
+    "specifications": [
+        {
+            "id": "1",
+            "slug": "css1",
+            "mdn_key": "CSS1",
+            "name": {
+                "en": "CSS Level&nbsp;1"
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/CSS1/"
+            },
+            "links": {
+                "maturity": "1",
+                "sections": [
+                    "1"
+                ]
+            }
+        },
+        {
+            "id": "2",
+            "slug": "css2_1",
+            "mdn_key": "CSS2.1",
+            "name": {
+                "en": "CSS Level&nbsp;2 (Revision&nbsp;1)"
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/CSS2/"
+            },
+            "links": {
+                "maturity": "1",
+                "sections": [
+                    "2"
+                ]
+            }
+        },
+        {
+            "id": "3",
+            "slug": "css3_box",
+            "mdn_key": "CSS3 Box",
+            "name": {
+                "en": "CSS Basic Box Model"
+            },
+            "uri": {
+                "en": "http://dev.w3.org/csswg/css3-box/"
+            },
+            "links": {
+                "maturity": "2",
+                "sections": [
+                    "3"
+                ]
+            }
+        },
+        {
+            "id": "4",
+            "slug": "css3_transforms",
+            "mdn_key": "CSS3 Transforms",
+            "name": {
+                "en": "CSS Transforms Level&nbsp;1"
+            },
+            "uri": {
+                "en": "http://dev.w3.org/csswg/css-transforms/"
+            },
+            "links": {
+                "maturity": "2",
+                "sections": [
+                    "4"
+                ]
+            }
+        }
+    ],
+    "links": {
+        "specifications.maturity": {
+            "type": "maturities",
+            "href": "http://localhost:8000/api/v1/maturities/{specifications.maturity}"
+        },
+        "specifications.sections": {
+            "type": "sections",
+            "href": "http://localhost:8000/api/v1/sections/{specifications.sections}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "specifications": {
+                "previous": null,
+                "next": null,
+                "count": 4
+            }
+        }
+    }
+}
