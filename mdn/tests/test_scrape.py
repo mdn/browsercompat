@@ -14,157 +14,183 @@ from webplatformcompat.tests.base import TestCase
 
 
 class TestGrammar(TestCase):
-    def test_other_h2_plain(self):
-        text = "<h2 id=\"Summary\">Summary</h2>"
-        parsed = page_grammar['other_h2'].parse(text)
+    def assert_other_h2(self, other_h2, expected_title):
+        """Assert the title is extracted by rule other_h2"""
+        parsed = page_grammar['other_h2'].parse(other_h2)
         capture = parsed.children[6]
-        self.assertEqual("Summary", capture.text)
+        self.assertEqual(expected_title, capture.text)
+
+    def test_other_h2_plain(self):
+        other_h2 = "<h2 id=\"Summary\">Summary</h2>"
+        expected_title = "Summary"
+        self.assert_other_h2(other_h2, expected_title)
 
     def test_other_h2_code(self):
-        text = "<h2 id=\"Summary\"><code>Summary</code></h2>"
-        parsed = page_grammar['other_h2'].parse(text)
-        capture = parsed.children[6]
-        self.assertEqual("<code>Summary</code>", capture.text)
+        other_h2 = "<h2 id=\"Summary\"><code>Summary</code></h2>"
+        expected_title = "<code>Summary</code>"
+        self.assert_other_h2(other_h2, expected_title)
+
+    def assert_spec_headers(self, spec_headers, expected_tag, expected_title):
+        parsed = page_grammar['spec_headers'].parse(spec_headers)
+        th_elems = parsed.children[2]
+        col1 = th_elems.children[0]
+        tag = col1.children[0]
+        title = col1.children[2]
+        self.assertEqual(expected_tag, tag.text)
+        self.assertEqual(expected_title, title.text)
 
     def test_spec_headers_scoped(self):
         # Most common version
-        text = """<tr>
+        spec_headers = """<tr>
           <th scope="col">Specification</th>
           <th scope="col">Status</th>
           <th scope="col">Comment</th>
         </tr>"""
-        parsed = page_grammar['spec_headers'].parse(text)
-        th_elems = parsed.children[2]
-        col1 = th_elems.children[0]
-        tag = col1.children[0]
-        title = col1.children[2]
-        self.assertEqual('<th scope="col">', tag.text)
-        self.assertEqual('Specification', title.text)
+        expected_tag = '<th scope="col">'
+        expected_title = 'Specification'
+        self.assert_spec_headers(spec_headers, expected_tag, expected_title)
 
     def test_spec_headers_unscoped(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/inherit
-        text = """<tr>
+        spec_headers = """<tr>
           <th>Specification</th>
           <th>Status</th>
           <th>Comment</th>
         </tr>"""
-        parsed = page_grammar['spec_headers'].parse(text)
-        th_elems = parsed.children[2]
-        col1 = th_elems.children[0]
-        tag = col1.children[0]
-        title = col1.children[2]
-        self.assertEqual('<th>', tag.text)
-        self.assertEqual('Specification', title.text)
+        expected_tag = '<th>'
+        expected_title = 'Specification'
+        self.assert_spec_headers(spec_headers, expected_tag, expected_title)
 
     def test_spec_headers_strong(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
-        text = """<tr>
+        spec_headers = """<tr>
           <th scope="col"><strong>Specification</strong></th>
           <th scope="col"><strong>Status</strong></th>
           <th scope="col"><strong>Comment</strong></th>
         </tr>"""
-        parsed = page_grammar['spec_headers'].parse(text)
-        th_elems = parsed.children[2]
-        col1 = th_elems.children[0]
-        tag = col1.children[0]
-        title = col1.children[2]
-        self.assertEqual('<th scope="col">', tag.text)
-        self.assertEqual('<strong>Specification</strong>', title.text)
+        expected_tag = '<th scope="col">'
+        expected_title = '<strong>Specification</strong>'
+        self.assert_spec_headers(spec_headers, expected_tag, expected_title)
+
+    def assert_spec_row(self, spec_row, expected_tag):
+        parsed = page_grammar['spec_row'].parse(spec_row)
+        tr = parsed.children[0]
+        self.assertEqual(expected_tag, tr.text)
 
     def test_spec_row_standard(self):
-        text = """<tr>
+        spec_row = """<tr>
           <td>{{SpecName('CSS3 Backgrounds', '#the-background-size',
             'background-size')}}</td>
           <td>{{Spec2('CSS3 Backgrounds')}}</td>
           <td></td>
         </tr>"""
-        parsed = page_grammar['spec_row'].parse(text)
-        tr = parsed.children[0]
-        self.assertEqual('<tr>', tr.text)
+        expected_tag = '<tr>'
+        self.assert_spec_row(spec_row, expected_tag)
 
     def test_spec_row_styled(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/inherit
-        text = """<tr style="vertical-align: top;">
+        spec_row = """<tr style="vertical-align: top;">
           <td>{{ SpecName('CSS2.1', "cascade.html#value-def-inherit",
             "inherit") }}</td>
           <td>{{ Spec2('CSS2.1') }}</td>
           <td>Initial definition</td>
         </tr>"""
-        parsed = page_grammar['spec_row'].parse(text)
+        expected_tag = '<tr style="vertical-align: top;">'
+        self.assert_spec_row(spec_row, expected_tag)
+
+    def assert_specname_td(self, specname_td, expected_tag):
+        parsed = page_grammar['specname_td'].parse(specname_td)
         tr = parsed.children[0]
-        self.assertEqual('<tr style="vertical-align: top;">', tr.text)
+        self.assertEqual(expected_tag, tr.text)
 
     def test_specname_td_standard(self):
-        text = """<td>{{SpecName('CSS3 Backgrounds', '#the-background-size',
+        specname_td = """<td>{{SpecName('CSS3 Backgrounds', '#the-background-size',
             'background-size')}}</td>"""
-        parsed = page_grammar['specname_td'].parse(text)
-        tr = parsed.children[0]
-        self.assertEqual('<td>', tr.text)
+        expected_tag = '<td>'
+        self.assert_specname_td(specname_td, expected_tag)
 
     def test_specname_td_styled(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/inherit
-        text = """<td style="vertical-align: top;">{{ SpecName('CSS2.1',
+        specname_td = """<td style="vertical-align: top;">{{ SpecName('CSS2.1',
             "cascade.html#value-def-inherit", "inherit") }}</td>"""
-        parsed = page_grammar['specname_td'].parse(text)
+        expected_tag = '<td style="vertical-align: top;">'
+        self.assert_specname_td(specname_td, expected_tag)
+
+    def assert_spec2_td(self, spec2_td, expected_tag):
+        parsed = page_grammar['spec2_td'].parse(spec2_td)
         tr = parsed.children[0]
-        self.assertEqual('<td style="vertical-align: top;">', tr.text)
+        self.assertEqual(expected_tag, tr.text)
 
     def test_spec2_td_standard(self):
-        text = "<td>{{Spec2('CSS3 Backgrounds')}}</td>"
-        parsed = page_grammar['spec2_td'].parse(text)
-        tr = parsed.children[0]
-        self.assertEqual('<td>', tr.text)
+        spec2_td = "<td>{{Spec2('CSS3 Backgrounds')}}</td>"
+        expected_tag = '<td>'
+        self.assert_spec2_td(spec2_td, expected_tag)
 
     def test_spec2_td_styled(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/inherit
-        text = '<td style="vertical-align: top;">{{ Spec2("CSS2.1") }}</td>'
-        parsed = page_grammar['spec2_td'].parse(text)
-        tr = parsed.children[0]
-        self.assertEqual('<td style="vertical-align: top;">', tr.text)
+        spec2_td = """<td style="vertical-align: top;">
+            {{ Spec2("CSS2.1") }}
+        </td>"""
+        expected_tag = '<td style="vertical-align: top;">'
+        self.assert_spec2_td(spec2_td, expected_tag)
+
+    def assert_specdesc_td(self, specdesc_td, expected_tag, expected_desc):
+        parsed = page_grammar['specdesc_td'].parse(specdesc_td)
+        tag = parsed.children[0]
+        self.assertEqual(expected_tag, tag.text)
+        capture = parsed.children[2]
+        self.assertEqual(expected_desc, capture.text)
 
     def test_specdesc_td_empty(self):
-        text = '<td></td>'
-        parsed = page_grammar['specdesc_td'].parse(text)
-        capture = parsed.children[2]
-        self.assertEqual('', capture.text)
+        specdesc_td = '<td></td>'
+        expected_tag = '<td>'
+        expected_desc = ''
+        self.assert_specdesc_td(specdesc_td, expected_tag, expected_desc)
 
     def test_specdesc_td_plain_text(self):
-        text = '<td>Plain Text</td>'
-        parsed = page_grammar['specdesc_td'].parse(text)
-        capture = parsed.children[2]
-        self.assertEqual('Plain Text', capture.text)
+        specdesc_td = '<td>Plain Text</td>'
+        expected_tag = '<td>'
+        expected_desc = 'Plain Text'
+        self.assert_specdesc_td(specdesc_td, expected_tag, expected_desc)
 
     def test_specdesc_td_html(self):
-        text = "<td>Defines <code>right</code> as animatable.</td>"
-        parsed = page_grammar['specdesc_td'].parse(text)
-        capture = parsed.children[2]
-        self.assertEqual(
-            'Defines <code>right</code> as animatable.', capture.text)
+        specdesc_td = "<td>Defines <code>right</code> as animatable.</td>"
+        expected_tag = '<td>'
+        expected_desc = 'Defines <code>right</code> as animatable.'
+        self.assert_specdesc_td(specdesc_td, expected_tag, expected_desc)
 
     def test_specdesc_td_styled(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/inherit
-        text = "<td style=\"vertical-align: top;\">Initial definition.</td>"
-        parsed = page_grammar['specdesc_td'].parse(text)
-        td = parsed.children[0]
-        self.assertEqual('<td style="vertical-align: top;">', td.text)
+        specdesc_td = """<td style=\"vertical-align: top;\">
+            Initial definition.
+        </td>"""
+        expected_tag = '<td style="vertical-align: top;">'
+        expected_desc = "Initial definition.\n        "
+        self.assert_specdesc_td(specdesc_td, expected_tag, expected_desc)
+
+    def assert_compat_headers(
+            self, headers, expected_feature, expected_browsers):
+        parsed = page_grammar['compat_headers'].parse(headers)
+        feature = parsed.children[2]
+        browsers = parsed.children[4]
+        self.assertEqual(expected_feature, feature.text)
+        self.assertEqual(expected_browsers, browsers.text)
 
     def test_compat_headers_standard(self):
-        text = "<tr><th>Feature</th><th>Firefox</th></tr>"
-        parsed = page_grammar['compat_headers'].parse(text)
-        feature = parsed.children[2]
-        firefox = parsed.children[4]
-        self.assertEqual('<th>Feature</th>', feature.text)
-        self.assertEqual('<th>Firefox</th>', firefox.text)
+        headers = "<tr><th>Feature</th><th>Firefox</th></tr>"
+        expected_feature = '<th>Feature</th>'
+        expected_browsers = '<th>Firefox</th>'
+        self.assert_compat_headers(
+            headers, expected_feature, expected_browsers)
 
     def test_compat_headers_strong(self):
-        text = (
+        headers = (
             "<tr><th><strong>Feature</strong></th>"
             "<th><strong>Firefox</strong></th></tr>")
-        parsed = page_grammar['compat_headers'].parse(text)
-        feature = parsed.children[2]
-        firefox = parsed.children[4]
-        self.assertEqual('<th><strong>Feature</strong></th>', feature.text)
-        self.assertEqual('<th><strong>Firefox</strong></th>', firefox.text)
+        expected_feature = '<th><strong>Feature</strong></th>'
+        expected_browsers = '<th><strong>Firefox</strong></th>'
+        self.assert_compat_headers(
+            headers, expected_feature, expected_browsers)
 
     def assert_cell_version(self, text, version, eng_version=None):
         match = page_grammar['cell_version'].parse(text).match.groupdict()
