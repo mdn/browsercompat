@@ -168,66 +168,69 @@ class CaseRunner(object):
 
     def generate(self, casenum, case, response):
         """Generate the documentation version of the case."""
-        formatted = self.format_response_for_docs(response, case)
-        base_path = os.path.join(raw_dir, case['name'])
-        for phase in ('request', 'response'):
-            is_json = (
-                'Content-Type: application/vnd.api+json' in
-                formatted[phase].get('headers', ''))
-            for part in ('headers', 'body'):
-                ext = 'json' if (part == 'body' and is_json) else 'txt'
-                path = base_path + '-%s-%s.%s' % (phase, part, ext)
-                if formatted[phase][part]:
-                    with open(path, 'w', encoding='utf8') as out:
-                        out.write(formatted[phase][part])
-                elif os.path.exists(path):
-                    os.remove(path)
+        for phase, stype, path, section in self.case_sections(case, response):
+            if section:
+                section = self.ensure_ending_newline(section)
+                with open(path, 'w', encoding='utf8') as out:
+                    out.write(section)
+            elif os.path.exists(path):
+                os.remove(path)
         status_issue = self.check_status(case, response)
         if status_issue:
             return [status_issue]
         else:
             return []
 
-    def diff(self, expected, actual):
-        """Generate a diff for two text strings"""
-        expected_lines = expected.splitlines(1)
-        actual_lines = actual.splitlines(1)
-        diff = ndiff(expected_lines, actual_lines)
-        return ''.join(diff)
-
     def verify(self, casenum, case, response):
         """Verify the response matches the documentation."""
-        formatted = self.format_response_for_docs(response, case)
-        base_path = os.path.join(raw_dir, case['name'])
         issues = []
-        for phase in ('request', 'response'):
-            is_json = (
-                'Content-Type: application/vnd.api+json' in
-                formatted[phase].get('headers', ''))
-            for part in ('headers', 'body'):
-                ext = 'json' if (part == 'body' and is_json) else 'txt'
-                path = base_path + '-%s-%s.%s' % (phase, part, ext)
-                if os.path.exists(path):
-                    with open(path, 'r', encoding='utf8') as doc:
-                        expected = doc.read()
-                    if expected and expected[-1] != '\n':
-                        expected += '\n'
-                else:
-                    expected = ""
-                if formatted[phase][part]:
-                    actual = formatted[phase][part]
-                    if actual and actual[-1] != '\n':
-                        actual += '\n'
+        for phase, stype, path, section in self.case_sections(case, response):
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf8') as doc:
+                    expected = doc.read()
+                expected = self.ensure_ending_newline(expected)
+                if section:
+                    actual = self.ensure_ending_newline(section)
                 else:
                     actual = ""
                 if expected != actual:
+                    expected_lines = expected.splitlines(1)
+                    actual_lines = actual.splitlines(1)
+                    diff = ''.join(ndiff(expected_lines, actual_lines))
                     issues.append(
-                        "Difference in %s %s\n%s" % (
-                            phase, part, self.diff(expected, actual)))
+                        "Difference in %s %s\n%s" % (phase, stype, diff))
         status_issue = self.check_status(case, response)
         if status_issue:
             issues.append(status_issue)
         return issues
+
+    def case_sections(self, case, response):
+        """Generate the documentation case, section by section
+
+        Yields a tuple:
+        phase - 'request' or 'response'
+        section_type - 'headers' or 'body'
+        path - Path to the file with expected contents
+        section - The formatted section from the live test
+        """
+        formatted = self.format_response_for_docs(response, case)
+        base_path = os.path.join(raw_dir, case['name'])
+        for phase in ('request', 'response'):
+            is_json = (
+                'Content-Type: application/vnd.api+json' in
+                formatted[phase].get('headers', ''))
+            for section_type in ('headers', 'body'):
+                ext = 'json' if (section_type == 'body' and is_json) else 'txt'
+                path = base_path + '-%s-%s.%s' % (phase, section_type, ext)
+                section = formatted[phase][section_type]
+                yield phase, section_type, path, section
+
+    def ensure_ending_newline(self, text):
+        """Add an ending newline, if needed."""
+        if text and text[-1] != '\n':
+            return text + '\n'
+        else:
+            return text
 
     def check_status(self, case, response):
         method = case['method']
