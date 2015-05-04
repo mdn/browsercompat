@@ -133,7 +133,7 @@ else
 fi
 
 # Create an empty database
-rm -f doc.sqlite3
+rm -f $DATABASE_NAME
 python manage.py migrate --verbosity=$VERBOSITY
 
 # Add the documentation user
