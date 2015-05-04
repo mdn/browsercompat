@@ -1760,8 +1760,7 @@ def range_error_to_html(page, start, end, reason, rule=None):
     # Highlight the errored portion
     err_page_bits = []
     err_line_count = 1
-    assert page
-    for p, c in enumerate(page):  # pragma: nocover - page always enumerates
+    for p, c in enumerate(page):  # pragma: no branch
         if c == '\n':
             err_page_bits.append(c)
             err_line_count += 1
