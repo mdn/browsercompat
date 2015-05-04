@@ -13,7 +13,10 @@ import re
 import requests
 
 my_dir = os.path.dirname(os.path.realpath(__file__))
-raw_dir = os.path.realpath(os.path.join(my_dir, 'raw'))
+doc_dir = os.path.realpath(os.path.join(my_dir, '..', 'docs'))
+default_api = 'http://localhost:8000'
+default_cases_file = os.path.realpath(os.path.join(doc_dir, 'doc_cases.json'))
+default_raw_dir = os.path.realpath(os.path.join(doc_dir, 'raw'))
 
 
 class CaseRunner(object):
@@ -32,9 +35,11 @@ class CaseRunner(object):
     modification_methods = ('PUT', 'PATCH', 'DELETE', 'POST')
 
     def __init__(
-            self, cases, api, mode=None, username=None, password=None):
-        self.cases = cases
-        self.api = api
+            self, cases=None, api=None, raw_dir=None, mode=None,
+            username=None, password=None):
+        self.cases = cases or default_cases_file
+        self.api = api or default_api
+        self.raw_dir = raw_dir or default_raw_dir
         self.mode = mode or "verify"
         assert self.mode in ("verify", "display", "generate"), "Invalid mode"
         self.handler = getattr(self, self.mode)
@@ -214,7 +219,7 @@ class CaseRunner(object):
         section - The formatted section from the live test
         """
         formatted = self.format_response_for_docs(response, case)
-        base_path = os.path.join(raw_dir, case['name'])
+        base_path = os.path.join(self.raw_dir, case['name'])
         for phase in ('request', 'response'):
             is_json = (
                 'Content-Type: application/vnd.api+json' in
@@ -395,23 +400,20 @@ if __name__ == '__main__':
     import argparse
     import getpass
     import sys
+
     description = 'Make raw requests to API'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
         'casenames', metavar="case name", nargs="*",
         help='Case names to run, defaults to all cases')
     parser.add_argument(
-        '-a', '--api',
-        default="http://localhost:8000",
+        '-a', '--api', default=default_api,
         help='Base URL of the API (default: http://localhost:8000)')
-    doc_dir = os.path.join(my_dir, '..', 'docs')
-    raw_dir = os.path.realpath(os.path.join(doc_dir, 'raw'))
     parser.add_argument(
-        '-r', '--raw', default=raw_dir,
+        '-r', '--raw', default=default_raw_dir,
         help="Path to requests/responses folder")
-    cases_file = os.path.realpath(os.path.join(doc_dir, 'doc_cases.json'))
     parser.add_argument(
-        '-c', '--cases', default=cases_file,
+        '-c', '--cases', default=default_cases_file,
         help="Path to cases JSON")
     parser.add_argument(
         '-v', '--verbose', action="store_true",
@@ -477,7 +479,8 @@ if __name__ == '__main__':
     with open(args.cases, 'r') as cases_file:
         cases = json.load(cases_file, object_pairs_hook=OrderedDict)
     runner = CaseRunner(
-        cases=cases, api=api, mode=mode, username=args.user, password=password)
+        cases=cases, api=api, raw_dir=args.raw, mode=mode,
+        username=args.user, password=password)
     success, failure, skipped = runner.run(args.casenames, include_mod)
 
     if skipped:
