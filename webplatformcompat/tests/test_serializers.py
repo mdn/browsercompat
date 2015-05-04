@@ -9,92 +9,106 @@ from django.core.urlresolvers import reverse
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Version)
 
-from .base import APITestCase
+from .base import APITestCase as BaseCase
+
+
+class APITestCase(BaseCase):
+    """Add integration test helpers to APITestCase."""
+    longMessage = True  # Display inequalities and message parameter
+
+    def get_via_json_api(self, url):
+        """Get instance via API."""
+        response = self.client.get(url, HTTP_ACCEPT='application/vnd.api+json')
+        self.assertEqual(200, response.status_code, response.data)
+        return response
+
+    def update_via_json_api(self, url, data, expected_status=200):
+        """Update instance via API using JSON-API formatted data."""
+        json_data = dumps(data)
+        content_type = 'application/vnd.api+json'
+        response = self.client.put(
+            url, data=json_data, content_type=content_type,
+            HTTP_ACCEPT='application/vnd.api+json')
+        self.assertEqual(expected_status, response.status_code, response.data)
+        return response
 
 
 class TestHistoricalModelSerializer(APITestCase):
     """Test common serializer functionality through BrowserSerializer."""
+
+    def setUp(self):
+        self.browser = self.create(
+            Browser, slug='browser', name={'en': 'Old Name'})
+        self.url = reverse('browser-detail', kwargs={'pk': self.browser.pk})
+
     def test_put_history_current(self):
-        browser = self.create(Browser, slug='browser', name={'en': 'Old Name'})
-        old_history = browser.history.latest('history_date')
-        browser.name = {'en': 'Browser'}
-        browser.save()
-        data = dumps({
+        old_history_id = self.browser.history.latest('history_date').history_id
+        self.browser.name = {'en': 'Browser'}
+        self.browser.save()
+        data = {
             'browsers': {
                 'links': {
-                    'history_current': str(old_history.history_id)
+                    'history_current': str(old_history_id)
                 }
             }
-        })
-        url = reverse('browser-detail', kwargs={'pk': browser.pk})
-        response = self.client.put(
-            url, data=data, content_type="application/vnd.api+json")
-        self.assertEqual(200, response.status_code, response.data)
-        current_history = browser.history.all()[0]
-        self.assertNotEqual(old_history.history_id, current_history.history_id)
-        histories = browser.history.all()
+        }
+        response = self.update_via_json_api(self.url, data)
+        current_history_id = self.browser.history.all()[0].history_id
+        self.assertNotEqual(old_history_id, current_history_id)
+        histories = self.browser.history.all()
         self.assertEqual(3, len(histories))
         expected_data = {
-            "id": browser.pk,
+            "id": self.browser.pk,
             "slug": "browser",
             "name": {"en": "Old Name"},
             "note": None,
             'history': [h.pk for h in histories],
-            'history_current': current_history.pk,
+            'history_current': current_history_id,
             'versions': [],
         }
         self.assertDataEqual(response.data, expected_data)
 
     def test_put_history_current_wrong_browser_fails(self):
-        browser = self.create(
-            Browser, slug='browser', name={'en': 'Old Name'})
         other_browser = self.create(
             Browser, slug='other-browser', name={'en': 'Other Browser'})
-        bad_history = other_browser.history.all()[0]
-        data = dumps({
+        bad_history_id = other_browser.history.all()[0].history_id
+        data = {
             'browsers': {
                 'slug': 'browser',
                 'links': {
-                    'history_current': str(bad_history.history_id)
+                    'history_current': str(bad_history_id)
                 }
             }
-        })
-        url = reverse('browser-detail', kwargs={'pk': browser.pk})
-        response = self.client.put(
-            url, data=data, content_type="application/vnd.api+json")
-        self.assertEqual(400, response.status_code, response.data)
+        }
+        response = self.update_via_json_api(self.url, data, 400)
         expected_data = {
             'history_current': ['Invalid history ID for this object']
         }
         self.assertDataEqual(response.data, expected_data)
 
     def test_put_history_same(self):
-        browser = self.create(Browser, slug='browser', name={'en': 'Old Name'})
-        browser.name = {'en': 'Browser'}
-        browser.save()
-        current_history = browser.history.latest('history_date')
-        data = dumps({
+        self.browser.name = {'en': 'Browser'}
+        self.browser.save()
+        current_history_id = self.browser.history.all()[0].history_id
+        data = {
             'browsers': {
                 'links': {
-                    'history_current': str(current_history.history_id)
+                    'history_current': str(current_history_id)
                 }
             }
-        })
-        url = reverse('browser-detail', kwargs={'pk': browser.pk})
-        response = self.client.put(
-            url, data=data, content_type="application/vnd.api+json")
-        self.assertEqual(200, response.status_code, response.data)
-        new_history = browser.history.all()[0]
-        self.assertNotEqual(new_history.history_id, current_history.history_id)
-        histories = browser.history.all()
+        }
+        response = self.update_via_json_api(self.url, data)
+        new_history_id = self.browser.history.all()[0].history_id
+        self.assertNotEqual(new_history_id, current_history_id)
+        histories = self.browser.history.all()
         self.assertEqual(3, len(histories))
         expected_data = {
-            "id": browser.pk,
+            "id": self.browser.pk,
             "slug": "browser",
             "name": {"en": "Browser"},
             "note": None,
             'history': [h.pk for h in histories],
-            'history_current': new_history.pk,
+            'history_current': new_history_id,
             'versions': [],
         }
         self.assertDataEqual(response.data, expected_data)
@@ -110,33 +124,27 @@ class TestBrowserSerializer(APITestCase):
         self.url = reverse('browser-detail', kwargs={'pk': self.browser.pk})
 
     def test_versions_change_order(self):
-        data = dumps({
+        data = {
             'browsers': {
                 'links': {
                     'versions': [str(self.v2.pk), str(self.v1.pk)]
                 }
             }
-        })
-        response = self.client.put(
-            self.url, data=data, content_type='application/vnd.api+json',
-            HTTP_ACCEPT='application/vnd.api+json')
-        self.assertEqual(200, response.status_code, response.data)
+        }
+        response = self.update_via_json_api(self.url, data)
         expected_versions = [v.pk for v in (self.v2, self.v1)]
         actual_versions = response.data['versions']
         self.assertEqual(expected_versions, actual_versions)
 
     def test_versions_same_order(self):
-        data = dumps({
+        data = {
             'browsers': {
                 'links': {
                     'versions': [str(self.v1.pk), str(self.v2.pk)]
                 }
             }
-        })
-        response = self.client.put(
-            self.url, data=data, content_type='application/vnd.api+json',
-            HTTP_ACCEPT='application/vnd.api+json')
-        self.assertEqual(200, response.status_code, response.data)
+        }
+        response = self.update_via_json_api(self.url, data)
         expected_versions = [v.pk for v in (self.v1, self.v2)]
         actual_versions = response.data['versions']
         self.assertEqual(expected_versions, actual_versions)
@@ -164,46 +172,37 @@ class TestSpecificationSerializer(APITestCase):
         self.url = reverse('specification-detail', kwargs={'pk': self.spec.pk})
 
     def test_update_without_sections(self):
-        data = dumps({
+        data = {
             'specifications': {
                 'name': {'en': 'CSS3 Animations'}
             }
-        })
-        response = self.client.put(
-            self.url, data=data, content_type='application/vnd.api+json',
-            HTTP_ACCEPT='application/vnd.api+json')
-        self.assertEqual(200, response.status_code, response.data)
+        }
+        self.update_via_json_api(self.url, data)
         spec = Specification.objects.get(id=self.spec.id)
         self.assertEqual({'en': 'CSS3 Animations'}, spec.name)
 
     def test_sections_change_order(self):
-        data = dumps({
+        data = {
             'specifications': {
                 'links': {
                     'sections': [str(self.s45.pk), str(self.s46.pk)]
                 }
             }
-        })
-        response = self.client.put(
-            self.url, data=data, content_type='application/vnd.api+json',
-            HTTP_ACCEPT='application/vnd.api+json')
-        self.assertEqual(200, response.status_code, response.data)
+        }
+        response = self.update_via_json_api(self.url, data)
         expected_sections = [self.s45.pk, self.s46.pk]
         actual_sections = response.data['sections']
         self.assertEqual(expected_sections, actual_sections)
 
     def test_sections_same_order(self):
-        data = dumps({
+        data = {
             'specifications': {
                 'links': {
                     'sections': [str(self.s46.pk), str(self.s45.pk)]
                 }
             }
-        })
-        response = self.client.put(
-            self.url, data=data, content_type='application/vnd.api+json',
-            HTTP_ACCEPT='application/vnd.api+json')
-        self.assertEqual(200, response.status_code, response.data)
+        }
+        response = self.update_via_json_api(self.url, data)
         expected_sections = [self.s46.pk, self.s45.pk]
         actual_sections = response.data['sections']
         self.assertEqual(expected_sections, actual_sections)
@@ -214,8 +213,7 @@ class TestUserSerializer(APITestCase):
     def test_get(self):
         self.login_user()
         url = reverse('user-detail', kwargs={'pk': self.user.pk})
-        response = self.client.get(url)
-        self.assertEqual(200, response.status_code, response.data)
+        response = self.get_via_json_api(url)
         actual_data = response.data
         self.assertEqual(0, actual_data['agreement'])
         self.assertEqual(['change-resource'], actual_data['permissions'])
@@ -228,8 +226,7 @@ class TestHistoricalFeatureSerializer(APITestCase):
             Feature, slug="the_feature", name={"en": "The Feature"})
         history = feature.history.all()[0]
         url = reverse('historicalfeature-detail', kwargs={'pk': history.pk})
-        response = self.client.get(url)
-        self.assertEqual(200, response.status_code, response.data)
+        response = self.get_via_json_api(url)
         actual_sections = response.data['features']['links']['sections']
         self.assertEqual([], actual_sections)
         actual_parent = response.data['features']['links']['parent']
@@ -243,8 +240,7 @@ class TestHistoricalFeatureSerializer(APITestCase):
             parent=parent)
         history = feature.history.all()[0]
         url = reverse('historicalfeature-detail', kwargs={'pk': history.pk})
-        response = self.client.get(url)
-        self.assertEqual(200, response.status_code, response.data)
+        response = self.get_via_json_api(url)
         expected_parent = str(parent.pk)
         actual_parent = response.data['features']['links']['parent']
         self.assertEqual(expected_parent, actual_parent)
