@@ -1,7 +1,6 @@
 # coding: utf-8
 """Test mdn.scrape."""
 from __future__ import unicode_literals
-from collections import OrderedDict
 from datetime import date
 from json import dumps
 
@@ -264,6 +263,14 @@ class ScrapeTestCase(TestCase):
  property is then reset to its initial value by the shorthand property.</div>
 <p>{{cssbox("background-size")}}</p>
 """
+    simple_spec_row = """\
+<tr>
+   <td>{{SpecName('CSS3 Backgrounds', '#the-background-size',\
+ 'background-size')}}</td>
+   <td>{{Spec2('CSS3 Backgrounds')}}</td>
+   <td></td>
+  </tr>"""
+
     simple_spec_section = """\
 <h2 id="Specifications" name="Specifications">Specifications</h2>
 <table class="standard-table">
@@ -275,15 +282,10 @@ class ScrapeTestCase(TestCase):
   </tr>
  </thead>
  <tbody>
-  <tr>
-   <td>{{SpecName('CSS3 Backgrounds', '#the-background-size',\
- 'background-size')}}</td>
-   <td>{{Spec2('CSS3 Backgrounds')}}</td>
-   <td></td>
-  </tr>
+  %s
  </tbody>
 </table>
-"""
+""" % simple_spec_row
 
     # From https://developer.mozilla.org/en-US/docs/Web/CSS/float?raw
     simple_compat_section = """\
@@ -621,14 +623,63 @@ class TestPageVisitor(ScrapeTestCase):
         feature = self.get_instance(Feature, 'web-css-background-size')
         self.visitor = PageVisitor(feature)
 
-    def test_cleanup_whitespace(self):
-        text = """ This
-        text <br/>
-        has\t lots\xa0of
-        extra&nbsp;whitespace.
-        """
-        expected = "This text has lots of extra whitespace."
-        self.assertEqual(expected, self.visitor.cleanup_whitespace(text))
+    def test_doc_no_spec(self):
+        doc = '<h2 id="Specless">No specs here</h2>'
+        parsed = page_grammar['doc'].parse(doc)
+        doc_parts = self.visitor.visit(parsed)
+        expected = {
+            'locale': 'en', 'specs': [], 'issues': [], 'errors': [],
+            'compat': [], 'footnotes': None}
+        self.assertEqual(expected, doc_parts)
+        self.assertEqual([], self.visitor.issues)
+        self.assertEqual([], self.visitor.errors)
+
+    def assert_last_section(self, last_section, errors):
+        parsed = page_grammar['last_section'].parse(last_section)
+        self.visitor.visit(parsed)
+        self.assertEqual([], self.visitor.issues)
+        self.assertEqual(errors, self.visitor.errors)
+
+    def test_last_section_ignored(self):
+        last_section = (
+            "<h2 id=\"summary\">Summary</h2>\n"
+            "<p>In summary, this section is ignored.</p>\n")
+        self.assert_last_section(last_section, [])
+
+    def test_last_section_invalid(self):
+        last_section = (
+            "<h2 id=\"specifications\">Specifications</h2>\n"
+            "<p><em>TODO:</em> Specs go here</p>")
+        errors = [
+            (44, 79,
+             "Section <h2>Specifications</h2> was not parsed. The parser"
+             " failed on rule \"spec_table\", but the real cause may be"
+             " unexpected content after this position. Definition:",
+             'spec_table = "<table class="standard-table">" _ spec_head'
+             ' _ spec_body _ "</table>" _')]
+        self.assert_last_section(last_section, errors)
+
+    def test_last_section_invalid_after_other_errors(self):
+        self.visitor.errors = [(0, 0, 'An existing error')]
+        last_section = (
+            "<h2 id=\"specifications\">Specifications</h2>\n"
+            "<p><em>TODO:</em> Specs go here</p>")
+        errors = [
+            (0, 0, 'An existing error'),
+            (44, 79,
+             "Section <h2>Specifications</h2> was not parsed. The parser"
+             " failed on rule \"spec_table\", but the real cause is"
+             " probably earlier issues. Definition:",
+             'spec_table = "<table class="standard-table">" _ spec_head'
+             ' _ spec_body _ "</table>" _')]
+        self.assert_last_section(last_section, errors)
+
+    def test_last_section_valid_specifications(self):
+        errors = [
+            (0, 65,
+             "Section Specifications not parsed, probably due to earlier"
+             " errors.")]
+        self.assert_last_section(self.simple_spec_section, errors)
 
     def assert_spec_h2(self, spec_h2, expected_issues):
         parsed = page_grammar['spec_h2'].parse(spec_h2)
@@ -657,25 +708,6 @@ class TestPageVisitor(ScrapeTestCase):
               ('In Specifications section, expected <h2'
                ' name="Specifications"> or no name attribute, actual'
                ' name="Browser_compatibility"'))])
-
-    def assert_specname_td(self, specname_td, expected):
-        parsed = page_grammar['specname_td'].parse(specname_td)
-        specname = self.visitor.visit(parsed)
-        self.assertEqual(expected, specname)
-
-    def test_specname_td_3_arg(self):
-        # Common usage of SpecName
-        spec = self.get_instance(Specification, 'css3_backgrounds')
-        specname_td = (
-            '<td>{{SpecName("CSS3 Backgrounds", "#subpath", "Name")}}</td>')
-        expected = ('CSS3 Backgrounds', spec.id, "#subpath", "Name")
-        self.assert_specname_td(specname_td, expected)
-
-    def test_specname_1_arg(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
-        specname_td = '<td>{{SpecName("Device Orientation")}}</td>'
-        expected = ("Device Orientation", None, '', '')
-        self.assert_specname_td(specname_td, expected)
 
     def assert_spec_row(self, spec_table, expected_specs, errors):
         parsed = page_grammar['spec_row'].parse(spec_table)
@@ -750,6 +782,156 @@ class TestPageVisitor(ScrapeTestCase):
         errors = [(7, 92, 'Unknown Specification "Web Audio API"')]
         self.assert_spec_row(spec_row, expected_specs, errors)
 
+    def test_spec_row_known_spec(self):
+        spec = self.get_instance(Specification, 'css3_backgrounds')
+        self.create(Section, specification=spec)
+        expected_specs = [{
+            'section.note': '',
+            'section.subpath': '#the-background-size',
+            'section.name': 'background-size',
+            'specification.mdn_key': 'CSS3 Backgrounds',
+            'section.id': None,
+            'specification.id': spec.id}]
+        self.assert_spec_row(self.simple_spec_row, expected_specs, [])
+
+    def test_spec_row_known_spec_and_section(self):
+        section = self.get_instance(Section, 'background-size')
+        spec = section.specification
+        expected_specs = [{
+            'section.note': '',
+            'section.subpath': '#the-background-size',
+            'section.name': 'background-size',
+            'specification.mdn_key': 'CSS3 Backgrounds',
+            'section.id': section.id,
+            'specification.id': spec.id}]
+        self.assert_spec_row(self.simple_spec_row, expected_specs, [])
+
+    def assert_specname_td(self, specname_td, expected):
+        parsed = page_grammar['specname_td'].parse(specname_td)
+        specname = self.visitor.visit(parsed)
+        self.assertEqual(expected, specname)
+
+    def test_specname_td_3_arg(self):
+        # Common usage of SpecName
+        spec = self.get_instance(Specification, 'css3_backgrounds')
+        specname_td = (
+            '<td>{{SpecName("CSS3 Backgrounds", "#subpath", "Name")}}</td>')
+        expected = ('CSS3 Backgrounds', spec.id, "#subpath", "Name")
+        self.assert_specname_td(specname_td, expected)
+
+    def test_specname_td_1_arg(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
+        specname_td = '<td>{{SpecName("Device Orientation")}}</td>'
+        expected = ("Device Orientation", None, '', '')
+        self.assert_specname_td(specname_td, expected)
+
+    def assert_compat_section(self, compat_section, compat, footnotes, errors):
+        parsed = page_grammar['compat_section'].parse(compat_section)
+        self.visitor.visit(parsed)
+        self.assertEqual(compat, self.visitor.compat)
+        self.assertEqual(footnotes, self.visitor.footnotes)
+        self.assertEqual([], self.visitor.issues)
+        self.assertEqual(errors, self.visitor.errors)
+
+    def test_compat_section_minimal(self):
+        compat_section = """\
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+<div>{{CompatibilityTable}}</div>
+<div id="compat-desktop">
+ <table class="compat-table">
+  <tbody>
+   <tr><th>Feature</th><th>Firefox (Gecko)</th></tr>
+   <tr><td>Basic support</td><td>{{CompatGeckoDesktop("1")}}</td></tr>
+  </tbody>
+ </table>
+</div>
+"""
+        expected_compat = [{
+            'name': u'desktop',
+            'browsers': [{
+                'id': '_Firefox (Gecko)', 'name': 'Firefox',
+                'slug': '_Firefox (Gecko)'}],
+            'versions': [{
+                'browser': '_Firefox (Gecko)', 'id': '_Firefox-1.0',
+                'version': '1.0'}],
+            'features': [{
+                'id': '_basic support', 'name': 'Basic support',
+                'slug': 'web-css-background-size_basic_support'}],
+            'supports': [{
+                'feature': '_basic support',
+                'id': '__basic support-_Firefox-1.0',
+                'support': 'yes', 'version': '_Firefox-1.0'}]}]
+        errors = [(185, 200, 'Unknown Browser "Firefox (Gecko)"')]
+        self.assert_compat_section(compat_section, expected_compat, {}, errors)
+
+    def test_compat_section_footnote(self):
+        compat_section = """\
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+<div>{{CompatibilityTable}}</div>
+<div id="compat-desktop">
+ <table class="compat-table">
+  <tbody>
+   <tr><th>Feature</th><th>Chrome</th></tr>
+   <tr><td>Basic support</td><td>1.0 [1]</td></tr>
+  </tbody>
+ </table>
+</div>
+<p>[1] This is a footnote.</p>
+"""
+        expected_compat = [{
+            'name': u'desktop',
+            'browsers': [{
+                'id': '_Chrome', 'name': 'Chrome', 'slug': '_Chrome'}],
+            'versions': [{
+                'browser': '_Chrome', 'id': '_Chrome-1.0', 'version': '1.0'}],
+            'features': [{
+                'id': '_basic support', 'name': 'Basic support',
+                'slug': 'web-css-background-size_basic_support'}],
+            'supports': [{
+                'feature': '_basic support',
+                'id': '__basic support-_Chrome-1.0',
+                'support': 'yes', 'version': '_Chrome-1.0',
+                'footnote': 'This is a footnote.',
+                'footnote_id': ('1', 239, 242)}]}]
+        errors = [(185, 191, 'Unknown Browser "Chrome"')]
+        self.assert_compat_section(compat_section, expected_compat, {}, errors)
+
+    def test_compat_section_footnote_mismatch(self):
+        compat_section = """\
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+<div>{{CompatibilityTable}}</div>
+<div id="compat-desktop">
+ <table class="compat-table">
+  <tbody>
+   <tr><th>Feature</th><th>Chrome</th></tr>
+   <tr><td>Basic support</td><td>3.0 [1]</td></tr>
+  </tbody>
+ </table>
+</div>
+<p>[2] Oops, footnote ID is wrong.</p>
+"""
+        expected_compat = [{
+            'name': u'desktop',
+            'browsers': [{
+                'id': '_Chrome', 'name': 'Chrome', 'slug': '_Chrome'}],
+            'versions': [{
+                'browser': '_Chrome', 'id': '_Chrome-3.0', 'version': '3.0'}],
+            'features': [{
+                'id': '_basic support', 'name': 'Basic support',
+                'slug': 'web-css-background-size_basic_support'}],
+            'supports': [{
+                'feature': '_basic support',
+                'id': '__basic support-_Chrome-3.0',
+                'support': 'yes', 'version': '_Chrome-3.0',
+                'footnote_id': ('1', 239, 242)}]}]
+        footnotes = {'2': ('Oops, footnote ID is wrong.', 281, 320)}
+        errors = [
+            (185, 191, 'Unknown Browser "Chrome"'),
+            (239, 242, 'Footnote [1] not found'),
+            (281, 320, 'Footnote [2] not used')]
+        self.assert_compat_section(
+            compat_section, expected_compat, footnotes, errors)
+
     def assert_compat_headers(self, compat_headers, expected, issues, errors):
         parsed = page_grammar['compat_headers'].parse(compat_headers)
         headers = self.visitor.visit(parsed)
@@ -787,6 +969,20 @@ class TestPageVisitor(ScrapeTestCase):
         expected = [{'slug': 'firefox', 'name': 'Firefox', 'id': firefox.id}]
         issues = [(16, 24, 'Expected header "Feature"')]
         self.assert_compat_headers(compat_headers, expected, issues, [])
+
+    def test_compat_headers_with_colspan(self):
+        # https://developer.mozilla.org/en-US/Web/CSS/background-size
+        compat_headers = (
+            "<tr><th>Feature</th>"
+            "<th colspan=\"3\">Safari (WebKit)</th></tr>")
+        expected = [{
+            'slug': '_Safari (WebKit)',
+            'name': 'Safari',
+            'id': '_Safari (WebKit)',
+            'colspan': '3'
+        }]
+        errors = [(36, 51, 'Unknown Browser "Safari (WebKit)"')]
+        self.assert_compat_headers(compat_headers, expected, [], errors)
 
     def assert_compat_row_cell(self, row_cell, expected_cell, issues):
         parsed = page_grammar['compat_row_cell'].parse(row_cell)
@@ -1438,57 +1634,10 @@ class TestPageVisitor(ScrapeTestCase):
                 0, 103)}
         self.assert_compat_footnotes(footnotes, expected, [])
 
-    def test_compat_footnotes_complex_page(self):
-        # TODO: Re-evaluate after refactor of TestScrape
-        # Full return is in TestScrape.test_complex_page_with_data
-        expected = OrderedDict((
-            ('1', (
-                "Opera 9.5's computation of the background positioning"
-                " area is incorrect for fixed backgrounds.\xa0 Opera 9.5"
-                " also interprets the two-value form as a horizontal scaling"
-                " factor and, from appearances, a vertical <em>clipping</em>"
-                " dimension. This has been fixed in Opera 10.", 14, 293)),
-            ('2', (
-                "WebKit-based browsers originally implemented an older"
-                " draft of CSS3<code> background-size </code>in which an"
-                " omitted second value is treated as <em>duplicating</em> the"
-                " first value; this draft does not include the<code> contain"
-                " </code>or<code> cover </code>keywords.", 293, 571)),
-            ('3', (
-                "Konqueror 3.5.4 supports<code> -khtml-background-size"
-                "</code>.", 571, 644)),
-            ('4', (
-                "<p>While this property is new in Gecko 1.9.2 (Firefox 3.6),"
-                " it is possible to stretch a image fully over the background"
-                " in Firefox 3.5 by using <code>-moz-border-image</code>."
-                "</p>\n"
-                "<pre class=\"brush:css\">.foo {\n"
-                "  background-image: url(bg-image.png);\n\n"
-                "  -webkit-background-size: 100% 100%;"
-                "           /* Safari 3.0 */\n"
-                "     -moz-background-size: 100% 100%;"
-                "           /* Gecko 1.9.2 (Firefox 3.6) */\n"
-                "       -o-background-size: 100% 100%;"
-                "           /* Opera 9.5 */\n"
-                "          background-size: 100% 100%;"
-                "           /* Gecko 2.0 (Firefox 4.0)"
-                " and other CSS3-compliant browsers */\n\n"
-                "  -moz-border-image: url(bg-image.png) 0;"
-                "    /* Gecko 1.9.1 (Firefox 3.5) */\n"
-                "}</pre>", 644, 1307)),
-            ('5', (
-                "<p>Though Internet Explorer 8 doesn't support the"
-                " <code>background-size</code> property, it is possible"
-                " to emulate some of its functionality using the non-standard"
-                " <code>-ms-filter</code> function:</p>\n"
-                "<pre class=\"brush:css\">-ms-filter: "
-                "\"progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"
-                "path_relative_to_the_HTML_file', sizingMethod='scale')\""
-                ";</pre>\n<p>This simulates the value <code>cover</code>."
-                "</p>", 1307, 1720))))
-        errors = [(0, 14, 'No ID in footnote.')]
-        self.assert_compat_footnotes(
-            self.complex_compat_footnotes, expected, errors)
+    def test_compat_footnotes_asterisk(self):
+        footnotes = "<p>[*] A footnote</p>"
+        expected = {'1': ('A footnote', 0, 21)}
+        self.assert_compat_footnotes(footnotes, expected, [])
 
     def test_compat_footnotes_bad_footnote(self):
         footnotes = "<p>A footnote.</p>"
@@ -1565,6 +1714,15 @@ class TestPageVisitor(ScrapeTestCase):
                 'start': 12, 'end': 18, 'text': 'Strong', 'strong': True}}
         self.assert_th(th, expected)
 
+    def test_cleanup_whitespace(self):
+        text = """ This
+        text <br/>
+        has\t lots\xa0of
+        extra&nbsp;whitespace.
+        """
+        expected = "This text has lots of extra whitespace."
+        self.assertEqual(expected, self.visitor.cleanup_whitespace(text))
+
     def test_unquote_double(self):
         self.assertEqual('foo', self.visitor.unquote('"foo"'))
 
@@ -1576,6 +1734,63 @@ class TestPageVisitor(ScrapeTestCase):
 
     def test_unquote_unbalanced(self):
         self.assertRaises(ValueError, self.visitor.unquote, "'Mixed\"")
+
+    def assert_browser_lookup(self, name, browser_id, fixed_name, slug):
+        lookup = self.visitor.browser_id_name_and_slug(name)
+        self.assertEqual(browser_id, lookup[0])
+        self.assertEqual(fixed_name, lookup[1])
+        self.assertEqual(slug, lookup[2])
+
+    def test_browser_lookup_not_found(self):
+        self.assert_browser_lookup(
+            'Firefox (Gecko)', '_Firefox (Gecko)', 'Firefox',
+            '_Firefox (Gecko)')
+
+    def test_browser_id_name_and_slug_found(self):
+        firefox = self.get_instance(Browser, 'firefox')
+        self.assert_browser_lookup(
+            'Firefox (Gecko)', firefox.id, 'Firefox', 'firefox')
+
+    def test_browser_id_name_and_slug_cached(self):
+        self.assert_browser_lookup(
+            'Firefox (Gecko)', '_Firefox (Gecko)', 'Firefox',
+            '_Firefox (Gecko)')
+        self.get_instance(Browser, 'firefox')
+        self.assert_browser_lookup(
+            'Firefox (Gecko)', '_Firefox (Gecko)', 'Firefox',
+            '_Firefox (Gecko)')  # Still not found
+
+    def assert_feature_lookup(self, name, feature_id, slug):
+        lookup = self.visitor.feature_id_and_slug(name)
+        self.assertEqual(feature_id, lookup[0])
+        self.assertEqual(slug, lookup[1])
+
+    def test_feature_id_and_slug_not_found(self):
+        self.assert_feature_lookup(
+            'Basic support', '_basic support',
+            'web-css-background-size_basic_support')
+
+    def test_feature_id_and_slug_found(self):
+        feature = self.get_instance(
+            Feature, 'web-css-background-size-basic_support')
+        self.assert_feature_lookup(
+            'Basic support', feature.id,
+            'web-css-background-size-basic_support')
+
+    def test_feature_id_and_slug_cached(self):
+        self.assert_feature_lookup(
+            'Basic support', '_basic support',
+            'web-css-background-size_basic_support')
+        self.get_instance(Feature, 'web-css-background-size-basic_support')
+        self.assert_feature_lookup(
+            'Basic support', '_basic support',
+            'web-css-background-size_basic_support')  # Still not found
+
+    def test_feature_id_and_slug_existing_slug(self):
+        self.create(Feature, slug='web-css-background-size_basic_support')
+        self.assert_feature_lookup(
+            'Basic support', '_basic support',
+            'web-css-background-size_basic_support1')
 
 
 class TestScrape(ScrapeTestCase):

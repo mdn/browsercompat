@@ -274,7 +274,7 @@ class PageVisitor(NodeVisitor):
                             end_of_line(pe.text, pe.pos) + start,
                             description, rule.as_rule()))
 
-                else:  # pragma: nocover
+                else:
                     error = (
                         start, end_of_line(text, 0) + start,
                         "Section %s not parsed, probably due to earlier"
