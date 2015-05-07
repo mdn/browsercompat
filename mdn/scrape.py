@@ -1283,7 +1283,9 @@ class PageVisitor(NodeVisitor):
             if version_found is not None:
                 version_id, version_name = self.version_id_and_name(
                     version_found, browser)
-                if is_fake_id(version_id) and not is_fake_id(browser['id']):
+                new_version = is_fake_id(version_id)
+                new_browser = is_fake_id(browser['id'])
+                if new_version and not new_browser:
                     self.errors.append((
                         item['start'], item['end'],
                         'Unknown version "%s" for browser "%s"'
@@ -1419,302 +1421,378 @@ def scrape_page(mdn_page, feature, locale='en'):
     return data
 
 
-def scrape_feature_page(fp):
-    """Scrape a FeaturePage object"""
-    en_content = fp.translatedcontent_set.get(locale='en-US')
-    fp_data = fp.reset_data()
-    main_feature_id = text_type(fp.feature.id)
-    data = scrape_page(en_content.raw, fp.feature)
-    fp_data['meta']['scrape']['raw'] = data
+class ScrapedViewFeature(object):
+    """Combine a scraped MDN page with existing API data."""
 
-    # Load specification section data
-    specifications = {}
-    maturities = {}
-    sections = {}
-    for row in data['specs']:
-        # Load Specifications and Maturity
-        spec_id = row['specification.id']
-        if spec_id:
-            spec = Specification.objects.get(id=spec_id)
-            section_ids = [
-                text_type(s_id) for s_id in spec.sections.values_list(
-                    'id', flat=True)]
-            spec_content = OrderedDict((
-                ('id', text_type(spec_id)),
-                ('slug', spec.slug),
-                ('mdn_key', spec.mdn_key),
-                ('name', spec.name),
-                ('uri', spec.uri),
-                ('links', OrderedDict((
-                    ('maturity', text_type(spec.maturity_id)),
-                    ('sections', section_ids)
-                )))))
-            specifications[spec_id] = spec_content
-
-            mat = spec.maturity
-            mat_content = OrderedDict((
-                ('id', text_type(mat.id)),
-                ('slug', mat.slug),
-                ('name', mat.name)))
-            maturities[mat.id] = mat_content
-        else:
-            spec_id = '_' + row['specification.mdn_key']
-            spec_content = OrderedDict((
-                ('id', spec_id),
-                ('mdn_key', row['specification.mdn_key']),
-                ('links', OrderedDict((
-                    ('maturity', '_unknown'),
-                    ('sections', [])
-                )))))
-            specifications[spec_id] = spec_content
-
-            mat = maturities.get('_unknown', OrderedDict((
-                ('id', '_unknown'),
-                ('slug', ''),
-                ('name', {'en': 'Unknown'}),
-                ('links', {'specifications': []}))))
-            maturities['_unknown'] = mat
-
-        # Load (specification) Section
-        section_id = row['section.id']
-        if section_id:
-            section = Section.objects.get(id=section_id)
-            feature_ids = [
-                text_type(f_id) for f_id in section.features.values_list(
-                    'id', flat=True)]
-            if main_feature_id not in feature_ids:
-                feature_ids.append(main_feature_id)
-            section_content = OrderedDict((
-                ('id', text_type(section_id)),
-                ('number', section.number or None),
-                ('name', section.name),
-                ('subpath', section.subpath),
-                ('note', section.note),
-                ('links', OrderedDict((
-                    ('specification', text_type(spec_id)),)))))
-        else:
-            section_id = text_type(spec_id) + '_' + row['section.subpath']
-            section_content = OrderedDict((
-                ('id', section_id),
-                ('number', None),
-                ('name', OrderedDict()),
-                ('subpath', OrderedDict()),
-                ('note', OrderedDict()),
-                ('links', OrderedDict((
-                    ('specification', text_type(spec_id)),)))))
-        section_content['name']['en'] = row['section.name']
-        section_content['subpath']['en'] = row['section.subpath']
-        section_content['note']['en'] = row['section.note']
-        sections[section_id] = section_content
-        fp_data['features']['links']['sections'].append(text_type(section_id))
-
-    # Load compatibility section
-    tabs = []
-    browsers = {}
-    versions = {}
-    features = {}
-    supports = {}
-    compat_table_supports = OrderedDict(((text_type(fp.feature.id), {}),))
-    notes = OrderedDict()
     tab_name = {
         'desktop': 'Desktop Browsers',
         'mobile': 'Mobile Browsers',
     }
-    for table in data['compat']:
+
+    def __init__(self, feature_page, scraped_data):
+        self.feature_page = feature_page
+        self.feature = feature_page.feature
+        self.scraped_data = scraped_data
+        self.specifications = {}
+        self.maturities = {}
+        self.sections = {}
+        self.tabs = []
+        self.browsers = {}
+        self.versions = {}
+        self.features = {}
+        self.supports = {}
+        self.compat_table_supports = OrderedDict(
+            ((text_type(self.feature.id), {}),))
+        self.notes = OrderedDict()
+
+    def generate_data(self):
+        fp_data = self.feature_page.reset_data()
+        fp_data['meta']['scrape']['raw'] = self.scraped_data
+
+        for spec_row in self.scraped_data['specs']:
+            self.load_specification_row(spec_row)
+        for table in self.scraped_data['compat']:
+            self.load_compat_table(table)
+        for section in self.sections.values():
+            fp_data['features']['links']['sections'].append(
+                text_type(section['id']))
+
+        sections = (
+            'specifications', 'maturities', 'sections', 'browsers', 'versions',
+            'features', 'supports')
+        for section in sections:
+            fp_data['linked'][section] = self.sort_values(
+                getattr(self, section))
+        languages = fp_data['features']['mdn_uri'].keys()
+        fp_data['meta']['compat_table']['languages'] = list(languages)
+        fp_data['meta']['compat_table']['tabs'] = self.tabs
+        fp_data['meta']['compat_table']['supports'] = (
+            self.compat_table_supports)
+        fp_data['meta']['compat_table']['notes'] = self.notes
+        return fp_data
+
+    def load_specification_row(self, spec_row):
+        """Load Specification, Maturity, and Section"""
+        # Load Specification and Maturity
+        spec_id = spec_row['specification.id']
+        if spec_id:
+            spec_content, mat_content = self.load_specification(spec_id)
+            spec_id = int(spec_content['id'])
+            mat_id = int(mat_content['id'])
+        else:
+            spec_content, mat_content = self.new_specification(spec_row)
+            spec_id = spec_content['id']
+            mat_id = mat_content['id']
+        self.specifications[spec_id] = spec_content
+        self.maturities[mat_id] = mat_content
+
+        # Load Specification Section
+        section_id = spec_row['section.id']
+        if section_id:
+            section_content = self.load_section(section_id)
+            section_id = int(section_content['id'])
+        else:
+            section_content = self.new_section(spec_row, spec_id)
+            section_id = section_content['id']
+
+        # Update Specification Section with scraped data, save
+        section_content['name']['en'] = spec_row['section.name']
+        section_content['subpath']['en'] = spec_row['section.subpath']
+        section_content['note']['en'] = spec_row['section.note']
+        self.sections[section_id] = section_content
+
+    def load_compat_table(self, table):
+        """Load a compat table."""
         tab = OrderedDict((
             ("name",
-             {"en": tab_name.get(table['name'], 'Other Environments')}),
+             {"en": self.tab_name.get(table['name'], 'Other Environments')}),
             ("browsers", []),
         ))
         # Load Browsers (first row)
-        for b in table['browsers']:
-            if is_fake_id(b['id']):
-                browser_content = OrderedDict((
-                    ('id', b['id']),
-                    ('slug', ''),
-                    ('name', {'en': b['name']}),
-                    ('note', None),
-                ))
+        for browser_entry in table['browsers']:
+            if is_fake_id(browser_entry['id']):
+                browser_content = self.new_browser(browser_entry)
+                browser_id = browser_content['id']
             else:
-                browser = Browser.objects.get(id=b['id'])
-                browser_content = OrderedDict((
-                    ('id', text_type(browser.id)),
-                    ('slug', browser.slug),
-                    ('name', browser.name),
-                    ('note', browser.note or None),
-                ))
-            browsers[b['id']] = browser_content
-            tab['browsers'].append(browser_content['id'])
+                browser_id = int(browser_entry['id'])
+                browser_content = self.load_browser(browser_id)
+            self.browsers[browser_id] = browser_content
+            tab['browsers'].append(browser_id)
 
         # Load Features (first column)
-        for f in table['features']:
-            if is_fake_id(f['id']):
-                # Fake feature
-                if f.get('canonical'):
-                    fname = f['name']
-                else:
-                    fname = {'en': f['name']}
-                feature_content = OrderedDict((
-                    ('id', f['id']),
-                    ('slug', f['slug']),
-                    ('mdn_uri', None),
-                    ('experimental', f.get('experimental', False)),
-                    ('standardized', f.get('standardized', True)),
-                    ('stable', f.get('stable', True)),
-                    ('obsolete', f.get('obsolete', False)),
-                    ('name', fname),
-                    ('links', OrderedDict((
-                        ('sections', []),
-                        ('supports', []),
-                        ('parent', text_type(fp.feature.id)),
-                        ('children', []))))))
+        for feature_entry in table['features']:
+            if is_fake_id(feature_entry['id']):
+                feature_content = self.new_feature(feature_entry)
+                feature_id = feature_content['id']
             else:
-                feature = Feature.objects.get(id=f['id'])
-                section_ids = [
-                    text_type(s_id) for s_id in
-                    feature.sections.values_list('pk', flat=True)]
-                support_ids = [
-                    text_type(s_id) for s_id in
-                    sorted(feature.supports.values_list('pk', flat=True))]
-                parent_id = (
-                    text_type(feature.parent_id) if feature.parent_id
-                    else None)
-                children_ids = [
-                    text_type(c_id) for c_id in
-                    feature.children.values_list('pk', flat=True)]
-                feature_content = OrderedDict((
-                    ('id', text_type(f['id'])),
-                    ('slug', feature.slug),
-                    ('mdn_uri', feature.mdn_uri or None),
-                    ('experimental', feature.experimental),
-                    ('standardized', feature.standardized),
-                    ('stable', feature.stable),
-                    ('obsolete', feature.obsolete),
-                    ('name', feature.name),
-                    ('links', OrderedDict((
-                        ('sections', section_ids),
-                        ('supports', support_ids),
-                        ('parent', parent_id),
-                        ('children', children_ids))))))
-            features.setdefault(f['id'], feature_content)
-            compat_table_supports.setdefault(f['id'], OrderedDict())
+                feature_id = int(feature_entry['id'])
+                feature_content = self.load_feature(feature_id)
+            self.features.setdefault(feature_id, feature_content)
+            self.compat_table_supports.setdefault(feature_id, OrderedDict())
 
-        # Load Versions
-        for v in table['versions']:
-            if is_fake_id(v['id']):
-                # New Version
-                version_content = OrderedDict((
-                    ('id', v['id']),
-                    ('version', v['version'] or None),
-                    ('release_day', None),
-                    ('retirement_day', None),
-                    ('status', 'unknown'),
-                    ('release_notes_uri', None),
-                    ('note', None),
-                    ('links', OrderedDict((
-                        ('browser', text_type(v['browser'])),)))))
+        # Load Versions (explicit or implied in cells)
+        for version_entry in table['versions']:
+            if is_fake_id(version_entry['id']):
+                version_content = self.new_version(version_entry)
+                version_id = version_content['id']
             else:
-                # Existing Version
-                version = Version.objects.get(id=v['id'])
-                version_content = OrderedDict((
-                    ('id', text_type(v['id'])),
-                    ('version', version.version or None),
-                    ('release_day', date_to_iso(version.release_day)),
-                    ('retirement_day', date_to_iso(version.retirement_day)),
-                    ('status', version.status),
-                    ('release_notes_uri', version.release_notes_uri or None),
-                    ('note', version.note or None),
-                    ('order', version._order),
-                    ('links', OrderedDict((
-                        ('browser', text_type(version.browser_id)),)))))
-            versions.setdefault(v['id'], version_content)
+                version_id = int(version_entry['id'])
+                version_content = self.load_version(version_id)
+            self.versions.setdefault(version_id, version_content)
 
-        # Load Supports
-        for s in table['supports']:
-            if is_fake_id(s['id']):
-                # New support
-                support_content = OrderedDict((
-                    ('id', s['id']),
-                    ('support', s['support']),
-                    ('prefix', s.get('prefix')),
-                    ('prefix_mandatory', bool(s.get('prefix', False))),
-                    ('alternate_name', s.get('alternate_name')),
-                    ('alternate_mandatory',
-                     s.get('alternate_mandatory', False)),
-                    ('requires_config', s.get('requires_config')),
-                    ('default_config', s.get('default_config')),
-                    ('protected', s.get('protected', False)),
-                    ('note', None),
-                    ('links', OrderedDict((
-                        ('version', text_type(s['version'])),
-                        ('feature', text_type(s['feature'])))))))
-                if s.get('footnote'):
-                    support_content['note'] = {'en': s['footnote']}
-                version_id = s['version']
-                feature_id = s['feature']
+        # Load Supports (cells)
+        for support_entry in table['supports']:
+            if is_fake_id(support_entry['id']):
+                support_content = self.new_support(support_entry)
+                support_id = support_content['id']
+                version_id = support_content['links']['version']
+                if not is_fake_id(version_id):
+                    version_id = int(version_id)
+                feature_id = support_content['links']['feature']
+                if not is_fake_id(feature_id):
+                    feature_id = int(feature_id)
             else:
-                # Existing support
-                support = Support.objects.get(id=s['id'])
-                support_content = OrderedDict((
-                    ('id', text_type(support.id)),
-                    ('support', support.support),
-                    ('prefix', support.prefix or None),
-                    ('prefix_mandatory', support.prefix_mandatory),
-                    ('alternate_name', support.alternate_name or None),
-                    ('alternate_mandatory', support.alternate_mandatory),
-                    ('requires_config', support.requires_config or None),
-                    ('default_config', support.default_config or None),
-                    ('protected', support.protected),
-                    ('note', support.note or None),
-                    ('links', OrderedDict((
-                        ('version', text_type(support.version_id)),
-                        ('feature', text_type(support.feature_id)))))))
-                version_id = support.version_id
-                feature_id = support.feature_id
-            supports.setdefault(s['id'], support_content)
+                support_id = int(support_entry['id'])
+                support_content = self.load_support(support_id)
+                version_id = int(support_content['links']['version'])
+                feature_id = int(support_content['links']['feature'])
+            self.supports.setdefault(support_id, support_content)
             if support_content['note']:
-                notes[text_type(s['id'])] = len(notes) + 1
+                note_id = len(self.notes) + 1
+                self.notes[text_type(support_id)] = note_id
 
             # Set the meta lookup
-            version = versions[version_id]
+            version = self.versions[version_id]
             browser_id = version['links']['browser']
-            compat_table_supports[feature_id].setdefault(browser_id, [])
-            compat_table_supports[feature_id][browser_id].append(
-                text_type(s['id']))
+            self.compat_table_supports[feature_id].setdefault(browser_id, [])
+            self.compat_table_supports[feature_id][browser_id].append(
+                text_type(support_id))
+        self.tabs.append(tab)
 
-        tabs.append(tab)
-
-    # Add linked data, meta
-    def sorted_values(d):
+    def sort_values(self, d):
+        """Return dictionary values, sorted by keys."""
         int_keys = sorted([k for k in d.keys() if isinstance(k, int)])
         nonint_keys = sorted([k for k in d.keys() if not isinstance(k, int)])
         return list(d[k] for k in chain(int_keys, nonint_keys))
 
-    fp_data['linked']['specifications'] = sorted_values(specifications)
-    fp_data['linked']['maturities'] = sorted_values(maturities)
-    fp_data['linked']['sections'] = sorted_values(sections)
-    fp_data['linked']['browsers'] = sorted_values(browsers)
-    fp_data['linked']['versions'] = sorted_values(versions)
-    fp_data['linked']['features'] = sorted_values(features)
-    fp_data['linked']['supports'] = sorted_values(supports)
-    languages = fp_data['features']['mdn_uri'].keys()
-    fp_data['meta']['compat_table']['languages'] = list(languages)
-    fp_data['meta']['compat_table']['tabs'] = tabs
-    fp_data['meta']['compat_table']['supports'] = compat_table_supports
-    fp_data['meta']['compat_table']['notes'] = notes
-    fp.data = fp_data
+    def load_specification(self, spec_id):
+        spec = Specification.objects.get(id=spec_id)
+        section_ids = [
+            text_type(s_id) for s_id in spec.sections.values_list(
+                'id', flat=True)]
+        spec_content = OrderedDict((
+            ('id', text_type(spec_id)),
+            ('slug', spec.slug),
+            ('mdn_key', spec.mdn_key),
+            ('name', spec.name),
+            ('uri', spec.uri),
+            ('links', OrderedDict((
+                ('maturity', text_type(spec.maturity_id)),
+                ('sections', section_ids)
+            )))))
+        mat = spec.maturity
+        mat_content = OrderedDict((
+            ('id', text_type(mat.id)),
+            ('slug', mat.slug),
+            ('name', mat.name)))
+        return spec_content, mat_content
+
+    def new_specification(self, spec_row):
+        spec_id = '_' + spec_row['specification.mdn_key']
+        mat_id = '_unknown'
+        spec_content = OrderedDict((
+            ('id', spec_id),
+            ('mdn_key', spec_row['specification.mdn_key']),
+            ('links', OrderedDict((
+                ('maturity', mat_id),
+                ('sections', [])
+            )))))
+        mat_content = self.maturities.get(mat_id, OrderedDict((
+            ('id', mat_id),
+            ('slug', ''),
+            ('name', {'en': 'Unknown'}),
+            ('links', {'specifications': []}))))
+        return spec_content, mat_content
+
+    def load_section(self, section_id):
+        section = Section.objects.get(id=section_id)
+        section_content = OrderedDict((
+            ('id', text_type(section_id)),
+            ('number', section.number or None),
+            ('name', section.name),
+            ('subpath', section.subpath),
+            ('note', section.note),
+            ('links', OrderedDict((
+                ('specification', text_type(section.specification_id)),)))))
+        return section_content
+
+    def new_section(self, spec_row, spec_id):
+        section_id = text_type(spec_id) + '_' + spec_row['section.subpath']
+        section_content = OrderedDict((
+            ('id', section_id),
+            ('number', None),
+            ('name', OrderedDict()),
+            ('subpath', OrderedDict()),
+            ('note', OrderedDict()),
+            ('links', OrderedDict((
+                ('specification', text_type(spec_id)),)))))
+        return section_content
+
+    def load_browser(self, browser_id):
+        browser = Browser.objects.get(id=browser_id)
+        browser_content = OrderedDict((
+            ('id', text_type(browser.id)),
+            ('slug', browser.slug),
+            ('name', browser.name),
+            ('note', browser.note or None),
+        ))
+        return browser_content
+
+    def new_browser(self, browser_entry):
+        browser_content = OrderedDict((
+            ('id', browser_entry['id']),
+            ('slug', ''),
+            ('name', {'en': browser_entry['name']}),
+            ('note', None),
+        ))
+        return browser_content
+
+    def load_feature(self, feature_id):
+        feature = Feature.objects.get(id=feature_id)
+        section_ids = [
+            text_type(s_id) for s_id in
+            feature.sections.values_list('pk', flat=True)]
+        support_ids = [
+            text_type(s_id) for s_id in
+            sorted(feature.supports.values_list('pk', flat=True))]
+        parent_id = (
+            text_type(feature.parent_id) if feature.parent_id
+            else None)
+        children_ids = [
+            text_type(c_id) for c_id in
+            feature.children.values_list('pk', flat=True)]
+        feature_content = OrderedDict((
+            ('id', text_type(feature_id)),
+            ('slug', feature.slug),
+            ('mdn_uri', feature.mdn_uri or None),
+            ('experimental', feature.experimental),
+            ('standardized', feature.standardized),
+            ('stable', feature.stable),
+            ('obsolete', feature.obsolete),
+            ('name', feature.name),
+            ('links', OrderedDict((
+                ('sections', section_ids),
+                ('supports', support_ids),
+                ('parent', parent_id),
+                ('children', children_ids))))))
+        return feature_content
+
+    def new_feature(self, feature_entry):
+        if feature_entry.get('canonical'):
+            fname = feature_entry['name']
+        else:
+            fname = {'en': feature_entry['name']}
+        feature_content = OrderedDict((
+            ('id', feature_entry['id']),
+            ('slug', feature_entry['slug']),
+            ('mdn_uri', None),
+            ('experimental', feature_entry.get('experimental', False)),
+            ('standardized', feature_entry.get('standardized', True)),
+            ('stable', feature_entry.get('stable', True)),
+            ('obsolete', feature_entry.get('obsolete', False)),
+            ('name', fname),
+            ('links', OrderedDict((
+                ('sections', []),
+                ('supports', []),
+                ('parent', text_type(self.feature.id)),
+                ('children', []))))))
+        return feature_content
+
+    def load_version(self, version_id):
+        version = Version.objects.get(id=version_id)
+        version_content = OrderedDict((
+            ('id', text_type(version.id)),
+            ('version', version.version or None),
+            ('release_day', date_to_iso(version.release_day)),
+            ('retirement_day', date_to_iso(version.retirement_day)),
+            ('status', version.status),
+            ('release_notes_uri', version.release_notes_uri or None),
+            ('note', version.note or None),
+            ('order', version._order),
+            ('links', OrderedDict((
+                ('browser', text_type(version.browser_id)),)))))
+        return version_content
+
+    def new_version(self, version_entry):
+        version_content = OrderedDict((
+            ('id', version_entry['id']),
+            ('version', version_entry['version'] or None),
+            ('release_day', None),
+            ('retirement_day', None),
+            ('status', 'unknown'),
+            ('release_notes_uri', None),
+            ('note', None),
+            ('links', OrderedDict((
+                ('browser', text_type(version_entry['browser'])),)))))
+        return version_content
+
+    def load_support(self, support_id):
+        support = Support.objects.get(id=support_id)
+        support_content = OrderedDict((
+            ('id', text_type(support.id)),
+            ('support', support.support),
+            ('prefix', support.prefix or None),
+            ('prefix_mandatory', support.prefix_mandatory),
+            ('alternate_name', support.alternate_name or None),
+            ('alternate_mandatory', support.alternate_mandatory),
+            ('requires_config', support.requires_config or None),
+            ('default_config', support.default_config or None),
+            ('protected', support.protected),
+            ('note', support.note or None),
+            ('links', OrderedDict((
+                ('version', text_type(support.version_id)),
+                ('feature', text_type(support.feature_id)))))))
+        return support_content
+
+    def new_support(self, support_entry):
+        support_content = OrderedDict((
+            ('id', support_entry['id']),
+            ('support', support_entry['support']),
+            ('prefix', support_entry.get('prefix')),
+            ('prefix_mandatory', bool(support_entry.get('prefix', False))),
+            ('alternate_name', support_entry.get('alternate_name')),
+            ('alternate_mandatory',
+                support_entry.get('alternate_mandatory', False)),
+            ('requires_config', support_entry.get('requires_config')),
+            ('default_config', support_entry.get('default_config')),
+            ('protected', support_entry.get('protected', False)),
+            ('note', None),
+            ('links', OrderedDict((
+                ('version', text_type(support_entry['version'])),
+                ('feature', text_type(support_entry['feature'])))))))
+        if support_entry.get('footnote'):
+            support_content['note'] = {'en': support_entry['footnote']}
+        return support_content
+
+
+def scrape_feature_page(feature_page):
+    """Scrape a FeaturePage object"""
+    en_content = feature_page.translatedcontent_set.get(locale='en-US')
+    scraped_data = scrape_page(en_content.raw, feature_page.feature)
+    view_feature = ScrapedViewFeature(feature_page, scraped_data)
+    feature_page.data = view_feature.generate_data()
 
     # Add issues
-    for err in chain(data['issues'], data['errors']):
+    for err in chain(scraped_data['issues'], scraped_data['errors']):
         if isinstance(err, tuple):
             html = range_error_to_html(en_content.raw, *err)
-            fp.add_error(html, True)
+            feature_page.add_error(html, True)
         else:
-            fp.add_error(err)
+            feature_page.add_error(err)
 
     # Update status, issues
-    fp.status = fp.STATUS_PARSED
-    fp.save()
+    feature_page.status = feature_page.STATUS_PARSED
+    feature_page.save()
 
 
 #
