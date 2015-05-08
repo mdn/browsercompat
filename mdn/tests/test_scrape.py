@@ -245,25 +245,8 @@ class ScrapeTestCase(TestCase):
 
     # Based on:
     # https://developer.mozilla.org/en-US/docs/Web/CSS/background-size?raw
-    # but with fixes (id of <h2>, remove &nbsp;).
-    simple_prefix = """\
-<div>
- {{CSSRef}}</div>
-"""
-    simple_other_section = """\
-<h2 id="Summary">Summary</h2>
-<p>The <code>background-size</code> <a href="/en-US/docs/CSS" title="CSS">CSS\
-</a> property specifies the size of the background images. The size of the\
- image can be fully constrained or only partially in order to preserve its\
- intrinsic ratio.</p>
-<div class="note">
- <strong>Note:</strong> If the value of this property is not set in a\
- {{cssxref("background")}} shorthand property that is applied to the element\
- after the <code>background-size</code> CSS property, the value of this\
- property is then reset to its initial value by the shorthand property.</div>
-<p>{{cssbox("background-size")}}</p>
-"""
-    simple_spec_row = """\
+    # but significantly reduced.
+    sample_spec_row = """\
 <tr>
    <td>{{SpecName('CSS3 Backgrounds', '#the-background-size',\
  'background-size')}}</td>
@@ -271,7 +254,7 @@ class ScrapeTestCase(TestCase):
    <td></td>
   </tr>"""
 
-    simple_spec_section = """\
+    sample_spec_section = """\
 <h2 id="Specifications" name="Specifications">Specifications</h2>
 <table class="standard-table">
  <thead>
@@ -285,195 +268,33 @@ class ScrapeTestCase(TestCase):
   %s
  </tbody>
 </table>
-""" % simple_spec_row
+""" % sample_spec_row
 
-    # From https://developer.mozilla.org/en-US/docs/Web/CSS/float?raw
-    simple_compat_section = """\
+    sample_page = """\
+<div>{{CSSREF}}</div>
+<h2 id="Summary">Summary</h2>
+<p>This represents all the other page content</p>
+<p>{{cssbox("background-size")}}</p>
+%s
 <h2 id="Browser_compatibility">Browser compatibility</h2>
-<div>
- {{CompatibilityTable}}</div>
+<div>{{CompatibilityTable}}</div>
 <div id="compat-desktop">
  <table class="compat-table">
   <tbody>
    <tr>
-    <th>Feature</th>
-    <th>Chrome</th>
-    <th>Firefox (Gecko)</th>
-    <th>Internet Explorer</th>
-    <th>Opera</th>
-    <th>Safari</th>
-   </tr>
+     <th>Feature</th><th>Chrome</th>
+     <th>Firefox (Gecko)</th></tr>
    <tr>
-    <td>Basic support</td>
-    <td>1.0</td>
-    <td>{{CompatGeckoDesktop("1")}}</td>
-    <td>4.0</td>
-    <td>7.0</td>
-    <td>1.0</td>
+     <td>Basic support</td><td>1.0</td>
+     <td>{{CompatGeckoDesktop("1")}}</td>
    </tr>
   </tbody>
  </table>
 </div>
-<div id="compat-mobile">
- <table class="compat-table">
-  <tbody>
-   <tr>
-    <th>Feature</th>
-    <th>Android</th>
-    <th>Firefox Mobile (Gecko)</th>
-    <th>IE Mobile</th>
-    <th>Opera Mobile</th>
-    <th>Safari Mobile</th>
-   </tr>
-   <tr>
-    <td>Basic support</td>
-    <td>1.0</td>
-    <td>{{CompatGeckoMobile("1")}}</td>
-    <td>6.0</td>
-    <td>6.0</td>
-    <td>1.0</td>
-   </tr>
-  </tbody>
- </table>
-</div>
-<p>&nbsp;</p>
-"""
-    # From Web/CSS/background-size?raw
-    # colspan="3" on the Safari column
-    # rowspan="2" on Basic Support row
-    # footnotes with a <pre> section
-    complex_compat_section = """\
-<h2 id="Browser_compatibility" name="Browser_compatibility">\
-Browser compatibility</h2>
-<div>
- {{CompatibilityTable}}</div>
-<div id="compat-desktop">
- <table class="compat-table">
-  <tbody>
-   <tr>
-    <th>Feature</th>
-    <th>Chrome</th>
-    <th>Firefox (Gecko)</th>
-    <th>Internet Explorer</th>
-    <th>Opera</th>
-    <th colspan="3">Safari (WebKit)</th>
-   </tr>
-   <tr>
-    <td rowspan="2">Basic support</td>
-    <td>1.0{{property_prefix("-webkit")}} [2]</td>
-    <td>{{CompatGeckoDesktop("1.9.2")}}{{property_prefix("-moz")}} [4]</td>
-    <td rowspan="2">9.0 [5]</td>
-    <td>9.5{{property_prefix("-o")}}<br>
-     with some bugs [1]</td>
-    <td>3.0 (522){{property_prefix("-webkit")}}<br>
-     but from an older CSS3 draft [2]</td>
-   </tr>
-   <tr>
-    <td>3.0</td>
-    <td>{{CompatGeckoDesktop("2.0")}}</td>
-    <td>10.0</td>
-    <td>4.1 (532)</td>
-   </tr>
-   <tr>
-    <td>Support for<br>
-     <code>contain</code> and <code>cover</code></td>
-    <td>3.0</td>
-    <td>{{CompatGeckoDesktop("1.9.2")}}</td>
-    <td>9.0 [5]</td>
-    <td>10.0</td>
-    <td colspan="3">4.1 (532)</td>
-   </tr>
-   <tr>
-    <td>Support for SVG backgrounds</td>
-    <td>{{CompatUnknown}}</td>
-    <td>{{CompatGeckoDesktop("8.0")}}</td>
-    <td>{{CompatUnknown}}</td>
-    <td>{{CompatUnknown}}</td>
-    <td colspan="3">{{CompatUnknown}}</td>
-   </tr>
-  </tbody>
- </table>
-</div>
-<div id="compat-mobile">
- <table class="compat-table">
-  <tbody>
-   <tr>
-    <th>Feature</th>
-    <th>Android</th>
-    <th>Firefox Mobile (Gecko)</th>
-    <th>Windows Phone</th>
-    <th>Opera Mobile</th>
-    <th>Safari Mobile</th>
-   </tr>
-   <tr>
-    <td>Basic support</td>
-    <td>{{CompatVersionUnknown}}{{property_prefix("-webkit")}}<br>
-     2.3</td>
-    <td>1.0{{property_prefix("-moz")}}<br>
-     4.0</td>
-    <td>{{CompatUnknown}}</td>
-    <td>{{CompatUnknown}}</td>
-    <td>5.1 (maybe earlier)</td>
-   </tr>
-   <tr>
-    <td>Support for SVG backgrounds</td>
-    <td>{{CompatUnknown}}</td>
-    <td>{{CompatGeckoMobile("8.0")}}</td>
-    <td>{{CompatUnknown}}</td>
-    <td>{{CompatUnknown}}</td>
-    <td>{{CompatUnknown}}</td>
-   </tr>
-  </tbody>
- </table>
-</div>
-"""
-    complex_compat_footnotes = """\
-<p>&nbsp;</p>
-<p>[1] Opera 9.5's computation of the background positioning area is incorrect\
- for fixed backgrounds.  Opera 9.5 also interprets the two-value form as a\
- horizontal scaling factor and, from appearances, a vertical <em>clipping</em>\
- dimension. This has been fixed in Opera 10.</p>
-<p>[2] WebKit-based browsers originally implemented an older draft of\
- CSS3<code> background-size </code>in which an omitted second value is treated\
- as <em>duplicating</em> the first value; this draft does not include\
- the<code> contain </code>or<code> cover </code>keywords.</p>
-<p>[3] Konqueror 3.5.4 supports<code> -khtml-background-size</code>.</p>
-<p>[4] While this property is new in Gecko 1.9.2 (Firefox 3.6), it is possible\
- to stretch a image fully over the background in Firefox 3.5 by using\
- {{cssxref("-moz-border-image")}}.</p>
-<pre class="brush:css">.foo {
-  background-image: url(bg-image.png);
-
-  -webkit-background-size: 100% 100%;           /* Safari 3.0 */
-     -moz-background-size: 100% 100%;           /* Gecko 1.9.2 (Firefox 3.6) */
-       -o-background-size: 100% 100%;           /* Opera 9.5 */
-          background-size: 100% 100%;           /* Gecko 2.0 (Firefox 4.0) and\
- other CSS3-compliant browsers */
-
-  -moz-border-image: url(bg-image.png) 0;    /* Gecko 1.9.1 (Firefox 3.5) */
-}</pre>
-<p>[5] Though Internet Explorer 8 doesn't support the\
- <code>background-size</code> property, it is possible to emulate some of its\
- functionality using the non-standard <code>-ms-filter</code> function:</p>
-<pre class="brush:css">-ms-filter:\
- "progid:DXImageTransform.Microsoft.AlphaImageLoader(\
-src='path_relative_to_the_HTML_file', sizingMethod='scale')";</pre>
-<p>This simulates the value <code>cover</code>.</p>
-"""
-
-    simple_see_also = """\
 <h2 id="See_also">See also</h2>
 <ul>
  <li>{{CSS_Reference:Position}}</li>
- <li><a href="/en-US/docs/Web/CSS/block_formatting_context">\
-Block formatting context</a></li>
-</ul>"""
-    simple_page = (
-        simple_prefix + simple_other_section + simple_spec_section +
-        simple_compat_section + simple_see_also)
-    complex_page = (
-        simple_prefix + simple_other_section + simple_spec_section +
-        complex_compat_section + complex_compat_footnotes + simple_see_also)
+</ul>""" % sample_spec_section
     _instance_specs = {
         (Maturity, 'CR'): {'name': '{"en": "Candidate Recommendation"}'},
         (Specification, 'css3_backgrounds'): {
@@ -496,39 +317,9 @@ Block formatting context</a></li>
             'name': '{"en": "Basic support"}'},
         (Browser, 'chrome'): {'name': '{"en": "Chrome"}'},
         (Browser, 'firefox'): {'name': '{"en": "Firefox"}'},
-        (Browser, 'ie'): {'name': '{"en": "Internet Explorer"}'},
-        (Browser, 'opera'): {'name': '{"en": "Opera"}'},
-        (Browser, 'safari'): {'name': '{"en": "Safari"}'},
-        (Browser, 'android'): {'name': '{"en": "Android"}'},
-        (Browser, 'firefox-mobile'): {'name': '{"en": "Firefox Mobile"}'},
-        (Browser, 'ie-mobile'): {'name': '{"en": "IE Mobile"}'},
-        (Browser, 'opera-mobile'): {'name': '{"en": "Opera Mobile"}'},
-        (Browser, 'safari-mobile'): {'name': '{"en": "Safari Mobile"}'},
-        (Version, ('android', '')): {},
-        (Version, ('android', '1.0')): {},
-        (Version, ('android', '2.3')): {},
         (Version, ('chrome', '1.0')): {},
-        (Version, ('chrome', '3.0')): {},
         (Version, ('firefox', '')): {},
         (Version, ('firefox', '1.0')): {},
-        (Version, ('firefox', '3.6')): {},
-        (Version, ('firefox', '4.0')): {},
-        (Version, ('firefox', '8.0')): {},
-        (Version, ('firefox-mobile', '1.0')): {},
-        (Version, ('firefox-mobile', '4.0')): {},
-        (Version, ('firefox-mobile', '8.0')): {},
-        (Version, ('ie', '4.0')): {},
-        (Version, ('ie', '9.0')): {},
-        (Version, ('ie-mobile', '6.0')): {},
-        (Version, ('opera', '10.0')): {},
-        (Version, ('opera', '7.0')): {},
-        (Version, ('opera', '9.5')): {},
-        (Version, ('opera-mobile', '6.0')): {},
-        (Version, ('safari', '1.0')): {},
-        (Version, ('safari', '3.0')): {},
-        (Version, ('safari', '4.1')): {},
-        (Version, ('safari-mobile', '1.0')): {},
-        (Version, ('safari-mobile', '5.1')): {},
     }
 
     def get_instance(self, model_cls, slug):
@@ -554,14 +345,20 @@ Block formatting context</a></li>
 
 
 class TestEndOfLine(ScrapeTestCase):
+    def setUp(self):
+        self.text = """\
+    This is some sample text.
+  Each line is 30 characters,
+  when you count the newline:
+12345678911234567892123456789"""
+
     def test_middle_of_text(self):
-        expected_eol = self.simple_page.index('\n', 30)
-        end = end_of_line(self.simple_page, expected_eol - 2)
-        self.assertEqual(expected_eol, end)
+        end = end_of_line(self.text, 50)
+        self.assertEqual(59, end)
 
     def test_end_of_text(self):
-        end = end_of_line(self.simple_page, len(self.simple_page) - 2)
-        self.assertEqual(len(self.simple_page), end)
+        end = end_of_line(self.text, len(self.text) - 2)
+        self.assertEqual(len(self.text), end)
 
 
 class TestPageVisitor(ScrapeTestCase):
@@ -625,7 +422,7 @@ class TestPageVisitor(ScrapeTestCase):
             (0, 65,
              "Section Specifications not parsed, probably due to earlier"
              " errors.")]
-        self.assert_last_section(self.simple_spec_section, errors)
+        self.assert_last_section(self.sample_spec_section, errors)
 
     def assert_spec_h2(self, spec_h2, expected_issues):
         parsed = page_grammar['spec_h2'].parse(spec_h2)
@@ -738,7 +535,7 @@ class TestPageVisitor(ScrapeTestCase):
             'specification.mdn_key': 'CSS3 Backgrounds',
             'section.id': None,
             'specification.id': spec.id}]
-        self.assert_spec_row(self.simple_spec_row, expected_specs, [])
+        self.assert_spec_row(self.sample_spec_row, expected_specs, [])
 
     def test_spec_row_known_spec_and_section(self):
         section = self.get_instance(Section, 'background-size')
@@ -750,7 +547,7 @@ class TestPageVisitor(ScrapeTestCase):
             'specification.mdn_key': 'CSS3 Backgrounds',
             'section.id': section.id,
             'specification.id': spec.id}]
-        self.assert_spec_row(self.simple_spec_row, expected_specs, [])
+        self.assert_spec_row(self.sample_spec_row, expected_specs, [])
 
     def assert_specname_td(self, specname_td, expected):
         parsed = page_grammar['specname_td'].parse(specname_td)
@@ -1768,7 +1565,7 @@ class TestScrape(ScrapeTestCase):
 
     def test_spec_only(self):
         """Test with a only a Specification section."""
-        page = self.simple_spec_section
+        page = self.sample_spec_section
         specs = [{
             'specification.mdn_key': 'CSS3 Backgrounds',
             'specification.id': None,
@@ -2252,39 +2049,50 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
 class TestRangeErrorToHtml(ScrapeTestCase):
     def test_no_rule(self):
         html = range_error_to_html(
-            self.simple_page, 902, 986,
+            self.sample_page, 902, 986,
             'Unknown Specification "CSS3 Backgrounds"')
         expected = """\
-<div><p>Unknown Specification &quot;CSS3 Backgrounds&quot;</p>\
-<p>Context:<pre>\
-16  &lt;tbody&gt;
-17   &lt;tr&gt;
-18    &lt;td&gt;{{SpecName(&#39;CSS3 Backgrounds&#39;, &#39;#the-background-\
-size&#39;, &#39;background-size&#39;)}}&lt;/td&gt;
-**    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
-^^^^^^^^^^^^^^
-19    &lt;td&gt;{{Spec2(&#39;CSS3 Backgrounds&#39;)}}&lt;/td&gt;
-20    &lt;td&gt;&lt;/td&gt;
+<div><p>Unknown Specification &quot;CSS3 Backgrounds&quot;</p><p>Context:\
+<pre>32      &lt;td&gt;{{CompatGeckoDesktop(&quot;1&quot;)}}&lt;/td&gt;
+33    &lt;/tr&gt;
+34   &lt;/tbody&gt;
+**        ^^^
+35  &lt;/table&gt;
+** ^^^^^^^^^
+36 &lt;/div&gt;
+** ^^^^^^
+37 &lt;h2 id=&quot;See_also&quot;&gt;See also&lt;/h2&gt;
+** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+38 &lt;ul&gt;
+** ^^^^
+39  &lt;li&gt;{{CSS_Reference:Position}}&lt;/li&gt;
+** ^^^^^^^^^^^^^^^^^^^^^^^^^^          \n\
 </pre></p></div>"""
         self.assertEqual(expected, html)
 
     def test_rule(self):
         html = range_error_to_html(
-            self.simple_page, 902, 986,
+            self.sample_page, 902, 986,
             'Unknown Specification "CSS3 Backgrounds"',
             'me = "awesome"')
         expected = """\
 <div><p>Unknown Specification &quot;CSS3 Backgrounds&quot;</p>\
 <p><code>me = &quot;awesome&quot;</code></p>\
-<p>Context:<pre>\
-16  &lt;tbody&gt;
-17   &lt;tr&gt;
-18    &lt;td&gt;{{SpecName(&#39;CSS3 Backgrounds&#39;, &#39;#the-background-\
-size&#39;, &#39;background-size&#39;)}}&lt;/td&gt;
-**    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\
-^^^^^^^^^^^^^^
-19    &lt;td&gt;{{Spec2(&#39;CSS3 Backgrounds&#39;)}}&lt;/td&gt;
-20    &lt;td&gt;&lt;/td&gt;
+<p>Context:<pre>32      &lt;td&gt;{{CompatGeckoDesktop(&quot;1&quot;)}}\
+&lt;/td&gt;
+33    &lt;/tr&gt;
+34   &lt;/tbody&gt;
+**        ^^^
+35  &lt;/table&gt;
+** ^^^^^^^^^
+36 &lt;/div&gt;
+** ^^^^^^
+37 &lt;h2 id=&quot;See_also&quot;&gt;See also&lt;/h2&gt;
+** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+38 &lt;ul&gt;
+** ^^^^
+39  &lt;li&gt;{{CSS_Reference:Position}}&lt;/li&gt;
+** ^^^^^^^^^^^^^^^^^^^^^^^^^^          \n\
 </pre></p></div>"""
         self.assertEqual(expected, html)
 
