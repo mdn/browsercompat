@@ -1422,7 +1422,13 @@ def scrape_page(mdn_page, feature, locale='en'):
 
 
 class ScrapedViewFeature(object):
-    """Combine a scraped MDN page with existing API data."""
+    """Combine a scraped MDN page with existing API data.
+
+    This code works with scraping of English feature pages that aren't
+    already in the API. Modifications may be needed to:
+    - Update API resources from updated MDN pages
+    - Scrape pages in non-English languages
+    """
 
     tab_name = {
         'desktop': 'Desktop Browsers',
@@ -1433,19 +1439,18 @@ class ScrapedViewFeature(object):
         self.feature_page = feature_page
         self.feature = feature_page.feature
         self.scraped_data = scraped_data
-        self.specifications = {}
-        self.maturities = {}
-        self.sections = {}
+        self.resources = OrderedDict()
+        for resource_type in (
+                'specifications', 'maturities', 'sections', 'browsers',
+                'versions', 'features', 'supports'):
+            self.resources[resource_type] = {}
         self.tabs = []
-        self.browsers = {}
-        self.versions = {}
-        self.features = {}
-        self.supports = {}
         self.compat_table_supports = OrderedDict(
             ((text_type(self.feature.id), {}),))
         self.notes = OrderedDict()
 
     def generate_data(self):
+        """Combine the page and scraped data into view_feature structure."""
         fp_data = self.feature_page.reset_data()
         fp_data['meta']['scrape']['raw'] = self.scraped_data
 
@@ -1453,16 +1458,11 @@ class ScrapedViewFeature(object):
             self.load_specification_row(spec_row)
         for table in self.scraped_data['compat']:
             self.load_compat_table(table)
-        for section in self.sections.values():
-            fp_data['features']['links']['sections'].append(
-                text_type(section['id']))
+        for section in self.resources['sections'].values():
+            fp_data['features']['links']['sections'].append(section['id'])
 
-        sections = (
-            'specifications', 'maturities', 'sections', 'browsers', 'versions',
-            'features', 'supports')
-        for section in sections:
-            fp_data['linked'][section] = self.sort_values(
-                getattr(self, section))
+        for resource_type, resources in self.resources.items():
+            fp_data['linked'][resource_type] = self.sort_values(resources)
         languages = fp_data['features']['mdn_uri'].keys()
         fp_data['meta']['compat_table']['languages'] = list(languages)
         fp_data['meta']['compat_table']['tabs'] = self.tabs
@@ -1474,30 +1474,23 @@ class ScrapedViewFeature(object):
     def load_specification_row(self, spec_row):
         """Load Specification, Maturity, and Section"""
         # Load Specification and Maturity
-        spec_id = spec_row['specification.id']
-        if spec_id:
-            spec_content, mat_content = self.load_specification(spec_id)
-            spec_id = int(spec_content['id'])
-            mat_id = int(mat_content['id'])
+        if spec_row['specification.id']:
+            spec_content, mat_content = self.load_specification(
+                spec_row['specification.id'])
         else:
             spec_content, mat_content = self.new_specification(spec_row)
-            spec_id = spec_content['id']
-            mat_id = mat_content['id']
-        self.specifications[spec_id] = spec_content
-        self.maturities[mat_id] = mat_content
+        self.add_resource('specifications', spec_content)
+        self.add_resource('maturities', mat_content)
 
         # Load Specification Section
-        section_id = spec_row['section.id']
-        if section_id:
-            section_content = self.load_section(section_id)
-            section_id = int(section_content['id'])
+        if spec_row['section.id']:
+            section_content = self.load_section(spec_row['section.id'])
             section_content['name']['en'] = spec_row['section.name']
             section_content['subpath']['en'] = spec_row['section.subpath']
             section_content['note']['en'] = spec_row['section.note']
         else:
-            section_content = self.new_section(spec_row, spec_id)
-            section_id = section_content['id']
-        self.sections[section_id] = section_content
+            section_content = self.new_section(spec_row, spec_content['id'])
+        self.add_resource('sections', section_content)
 
     def load_compat_table(self, table):
         """Load a compat table."""
@@ -1510,72 +1503,72 @@ class ScrapedViewFeature(object):
         for browser_entry in table['browsers']:
             if is_fake_id(browser_entry['id']):
                 browser_content = self.new_browser(browser_entry)
-                browser_id = browser_content['id']
             else:
-                browser_id = int(browser_entry['id'])
-                browser_content = self.load_browser(browser_id)
-            self.browsers[browser_id] = browser_content
-            tab['browsers'].append(str(browser_id))
+                browser_content = self.load_browser(browser_entry['id'])
+            self.add_resource('browsers', browser_content)
+            tab['browsers'].append(str(browser_content['id']))
 
         # Load Features (first column)
         for feature_entry in table['features']:
             if is_fake_id(feature_entry['id']):
                 feature_content = self.new_feature(feature_entry)
-                feature_id = feature_content['id']
             else:
-                feature_id = int(feature_entry['id'])
-                feature_content = self.load_feature(feature_id)
-            self.features.setdefault(feature_id, feature_content)
+                feature_content = self.load_feature(feature_entry['id'])
+            self.add_resource_if_new('features', feature_content)
             self.compat_table_supports.setdefault(
-                str(feature_id), OrderedDict())
+                str(feature_content['id']), OrderedDict())
 
         # Load Versions (explicit or implied in cells)
         for version_entry in table['versions']:
             if is_fake_id(version_entry['id']):
                 version_content = self.new_version(version_entry)
-                version_id = version_content['id']
             else:
-                version_id = int(version_entry['id'])
-                version_content = self.load_version(version_id)
-            self.versions.setdefault(version_id, version_content)
+                version_content = self.load_version(version_entry['id'])
+            self.add_resource_if_new('versions', version_content)
 
         # Load Supports (cells)
         for support_entry in table['supports']:
             if is_fake_id(support_entry['id']):
                 support_content = self.new_support(support_entry)
-                support_id = support_content['id']
-                version_id = support_content['links']['version']
-                if not is_fake_id(version_id):
-                    version_id = int(version_id)
-                feature_id = support_content['links']['feature']
-                if not is_fake_id(feature_id):
-                    feature_id = int(feature_id)
             else:
-                support_id = int(support_entry['id'])
-                support_content = self.load_support(support_id)
-                version_id = int(support_content['links']['version'])
-                feature_id = int(support_content['links']['feature'])
-            self.supports.setdefault(support_id, support_content)
+                support_content = self.load_support(support_entry['id'])
+            self.add_resource_if_new('supports', support_content)
             if support_content['note']:
                 note_id = len(self.notes) + 1
-                self.notes[text_type(support_id)] = note_id
+                self.notes[support_content['id']] = note_id
 
             # Set the meta lookup
-            version = self.versions[version_id]
+            version = self.get_resource(
+                'versions', support_content['links']['version'])
+            feature_id = support_content['links']['feature']
             browser_id = version['links']['browser']
-            self.compat_table_supports[str(feature_id)].setdefault(
-                browser_id, [])
-            self.compat_table_supports[str(feature_id)][browser_id].append(
-                text_type(support_id))
+            supports = self.compat_table_supports[feature_id]
+            supports.setdefault(browser_id, [])
+            supports[browser_id].append(support_entry['id'])
         self.tabs.append(tab)
+
+    def add_resource(self, resource_type, content):
+        """Add a linked resource, replacing any existing resource."""
+        resource_id = content['id']
+        self.resources[resource_type][resource_id] = content
+
+    def add_resource_if_new(self, resource_type, content):
+        """Add a linked resource only if there is no existing resource."""
+        resource_id = content['id']
+        return self.resources[resource_type].setdefault(resource_id, content)
+
+    def get_resource(self, resource_type, resource_id):
+        """Get an existing linked resource."""
+        return self.resources[resource_type][resource_id]
 
     def sort_values(self, d):
         """Return dictionary values, sorted by keys."""
-        int_keys = sorted([k for k in d.keys() if isinstance(k, int)])
-        nonint_keys = sorted([k for k in d.keys() if not isinstance(k, int)])
-        return list(d[k] for k in chain(int_keys, nonint_keys))
+        existing_keys = sorted([k for k in d.keys() if not is_fake_id(k)])
+        new_keys = sorted([k for k in d.keys() if is_fake_id(k)])
+        return list(d[k] for k in chain(existing_keys, new_keys))
 
     def load_specification(self, spec_id):
+        """Serialize an existing specification."""
         spec = Specification.objects.get(id=spec_id)
         section_ids = [
             text_type(s_id) for s_id in spec.sections.values_list(
@@ -1598,6 +1591,7 @@ class ScrapedViewFeature(object):
         return spec_content, mat_content
 
     def new_specification(self, spec_row):
+        """Serialize a new specification."""
         spec_id = '_' + spec_row['specification.mdn_key']
         mat_id = '_unknown'
         spec_content = OrderedDict((
@@ -1607,14 +1601,16 @@ class ScrapedViewFeature(object):
                 ('maturity', mat_id),
                 ('sections', [])
             )))))
-        mat_content = self.maturities.get(mat_id, OrderedDict((
-            ('id', mat_id),
-            ('slug', ''),
-            ('name', {'en': 'Unknown'}),
-            ('links', {'specifications': []}))))
+        mat_content = self.add_resource_if_new(
+            'maturities', OrderedDict((
+                ('id', mat_id),
+                ('slug', ''),
+                ('name', {'en': 'Unknown'}),
+                ('links', {'specifications': []}))))
         return spec_content, mat_content
 
     def load_section(self, section_id):
+        """Serialize an existing section."""
         section = Section.objects.get(id=section_id)
         section_content = OrderedDict((
             ('id', text_type(section_id)),
@@ -1627,6 +1623,7 @@ class ScrapedViewFeature(object):
         return section_content
 
     def new_section(self, spec_row, spec_id):
+        """Serialize a new section."""
         section_id = text_type(spec_id) + '_' + spec_row['section.subpath']
         section_content = OrderedDict((
             ('id', section_id),
@@ -1642,6 +1639,7 @@ class ScrapedViewFeature(object):
         return section_content
 
     def load_browser(self, browser_id):
+        """Serialize an existing browser."""
         browser = Browser.objects.get(id=browser_id)
         browser_content = OrderedDict((
             ('id', text_type(browser.id)),
@@ -1652,6 +1650,7 @@ class ScrapedViewFeature(object):
         return browser_content
 
     def new_browser(self, browser_entry):
+        """Serialize a new browser."""
         browser_content = OrderedDict((
             ('id', browser_entry['id']),
             ('slug', ''),
@@ -1661,6 +1660,7 @@ class ScrapedViewFeature(object):
         return browser_content
 
     def load_feature(self, feature_id):
+        """Serialize an existing feature."""
         feature = Feature.objects.get(id=feature_id)
         section_ids = [
             text_type(s_id) for s_id in
@@ -1691,6 +1691,7 @@ class ScrapedViewFeature(object):
         return feature_content
 
     def new_feature(self, feature_entry):
+        """Serialize a new feature."""
         if feature_entry.get('canonical'):
             fname = feature_entry['name']
         else:
@@ -1712,6 +1713,7 @@ class ScrapedViewFeature(object):
         return feature_content
 
     def load_version(self, version_id):
+        """Serialize an existing version."""
         version = Version.objects.get(id=version_id)
         version_content = OrderedDict((
             ('id', text_type(version.id)),
@@ -1727,6 +1729,7 @@ class ScrapedViewFeature(object):
         return version_content
 
     def new_version(self, version_entry):
+        """Serialize a new version."""
         version_content = OrderedDict((
             ('id', version_entry['id']),
             ('version', version_entry['version'] or None),
@@ -1740,6 +1743,7 @@ class ScrapedViewFeature(object):
         return version_content
 
     def load_support(self, support_id):
+        """Serialize an existing support."""
         support = Support.objects.get(id=support_id)
         support_content = OrderedDict((
             ('id', text_type(support.id)),
@@ -1758,6 +1762,7 @@ class ScrapedViewFeature(object):
         return support_content
 
     def new_support(self, support_entry):
+        """Serialize a new support."""
         support_content = OrderedDict((
             ('id', support_entry['id']),
             ('support', support_entry['support']),
