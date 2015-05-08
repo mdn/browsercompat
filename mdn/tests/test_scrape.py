@@ -4,10 +4,10 @@ from __future__ import unicode_literals
 from datetime import date
 from json import dumps
 
-from mdn.models import FeaturePage, TranslatedContent
+from mdn.models import FeaturePage
 from mdn.scrape import (
     date_to_iso, end_of_line, page_grammar, range_error_to_html, scrape_page,
-    scrape_feature_page, slugify, PageVisitor)
+    scrape_feature_page, slugify, PageVisitor, ScrapedViewFeature)
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 from webplatformcompat.tests.base import TestCase
@@ -551,60 +551,6 @@ Block formatting context</a></li>
                 attrs[req_name] = self.get_instance(req_type, req_slug)
             self._instances[instance_key] = self.create(model_cls, **attrs)
         return self._instances[instance_key]
-
-    def add_compat_models(self):
-        # TODO: refactor callers, remove
-        browsers = [
-            'chrome', 'firefox', 'ie', 'opera', 'safari', 'android',
-            'firefox-mobile', 'ie-mobile', 'opera-mobile', 'safari-mobile']
-        self.browsers = {}
-        for slug in browsers:
-            self.browsers[slug] = self.get_instance(Browser, slug)
-
-        versions = (
-            ('android', ''),
-            ('android', '1.0'),
-            ('android', '2.3'),
-            ('chrome', '1.0'),
-            ('chrome', '3.0'),
-            ('firefox', '1.0'),
-            ('firefox', '3.6'),
-            ('firefox', '4.0'),
-            ('firefox', '8.0'),
-            ('firefox-mobile', '1.0'),
-            ('firefox-mobile', '4.0'),
-            ('firefox-mobile', '8.0'),
-            ('ie', '4.0'),
-            ('ie', '9.0'),
-            ('ie-mobile', '6.0'),
-            ('opera', '10.0'),
-            ('opera', '7.0'),
-            ('opera', '9.5'),
-            ('opera-mobile', '6.0'),
-            ('safari', '1.0'),
-            ('safari', '3.0'),
-            ('safari', '4.1'),
-            ('safari-mobile', '1.0'),
-            ('safari-mobile', '5.1'),
-        )
-        self.versions = dict()
-        for vpair in versions:
-            self.versions[vpair] = self.get_instance(Version, vpair)
-
-        assert not hasattr(self, 'features')
-        self.add_compat_features()
-
-    def add_compat_features(self):
-        # TODO: refactor callers, remove
-        self.features = dict()
-        slugs = ['web', 'web-css', 'web-css-background-size']
-        for slug in slugs:
-            self.features[slug] = self.get_instance(Feature, slug)
-
-    def add_models(self):
-        # TODO: refactor callers, remove
-        self.get_instance(Section, 'background-size')
-        self.add_compat_models()
 
 
 class TestEndOfLine(ScrapeTestCase):
@@ -1835,253 +1781,472 @@ class TestScrape(ScrapeTestCase):
         self.assertScrape(page, specs=specs, errors=errors)
 
 
-class TestScrapeFeaturePage(ScrapeTestCase):
+class FeaturePageTestCase(ScrapeTestCase):
     def setUp(self):
-        self.add_models()
-        url = ("https://developer.mozilla.org/en-US/docs/Web/CSS/"
-               "background-size")
-        feature = self.get_instance(Feature, 'web-css-background-size')
+        path = "/en-US/docs/Web/CSS/background-size"
+        url = "https://developer.mozilla.org" + path
+        self.feature = self.get_instance(Feature, 'web-css-background-size')
         self.page = FeaturePage.objects.create(
-            url=url, feature=feature, status=FeaturePage.STATUS_PARSING)
+            url=url, feature=self.feature, status=FeaturePage.STATUS_PARSING)
         meta = self.page.meta()
         meta.raw = dumps({
             'locale': 'en-US',
-            'url': url,
+            'url': path,
             'translations': [{
                 'locale': 'fr',
-                'url': url.replace('en-US', 'fr')
+                'url': path.replace('en-US', 'fr')
             }]})
         meta.status = meta.STATUS_FETCHED
         meta.save()
 
+    def empty_scrape(self):
+        return {
+            'locale': 'en', 'specs': [], 'issues': [], 'errors': [],
+            'compat': [], 'footnotes': None}
+
+    def empty_view(self, scraped_data):
+        return {
+            'features': {
+                'experimental': False,
+                'id': str(self.feature.id),
+                'links': {
+                    'children': [],
+                    'parent': str(self.feature.parent.id),
+                    'sections': [],
+                    'supports': []},
+                'mdn_uri': {
+                    'en': ('https://developer.mozilla.org/en-US/docs/'
+                           'Web/CSS/background-size'),
+                    'fr': ('https://developer.mozilla.org/fr/docs/'
+                           'Web/CSS/background-size')},
+                'name': {'zxx': 'background-size'},
+                'obsolete': False,
+                'slug': 'web-css-background-size',
+                'stable': True,
+                'standardized': True,
+            },
+            'linked': {
+                'browsers': [],
+                'features': [],
+                'maturities': [],
+                'sections': [],
+                'specifications': [],
+                'supports': [],
+                'versions': [],
+            },
+            'meta': {
+                'compat_table': {
+                    'languages': ['en', 'fr'],
+                    'notes': {},
+                    'pagination': {},
+                    'supports': {str(self.feature.id): {}},
+                    'tabs': []
+                },
+                'scrape': {
+                    'errors': [],
+                    'phase': 'Starting Import',
+                    'raw': scraped_data}}}
+
+
+class TestScrapedViewFeature(FeaturePageTestCase):
+    def test_empty_scrape(self):
+        scraped_data = self.empty_scrape()
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        expected = self.empty_view(scraped_data)
+        self.assertDataEqual(expected, out)
+
+    def test_load_specification(self):
+        spec = self.get_instance(Specification, 'css3_backgrounds')
+        maturity = spec.maturity
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        spec_content, mat_content = view.load_specification(spec.id)
+        expected_spec = {
+            'id': str(spec.id), 'slug': spec.slug, 'mdn_key': spec.mdn_key,
+            'uri': spec.uri, 'name': spec.name,
+            'links': {'maturity': str(maturity.id), 'sections': []}}
+        self.assertDataEqual(expected_spec, spec_content)
+        expected_mat = {
+            'id': str(maturity.id), 'slug': maturity.slug,
+            'name': maturity.name}
+        self.assertDataEqual(expected_mat, mat_content)
+
+    def test_new_specification(self):
+        spec_row = {
+            'section.note': 'section note',
+            'section.subpath': '#section',
+            'section.name': 'section',
+            'specification.mdn_key': 'CSS3 UI',
+            'section.id': None,
+            'specification.id': None}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        spec_content, mat_content = view.new_specification(spec_row)
+        expected_spec = {
+            'id': '_CSS3 UI', 'mdn_key': 'CSS3 UI',
+            'links': {'maturity': '_unknown', 'sections': []}}
+        self.assertDataEqual(expected_spec, spec_content)
+        expected_mat = {
+            'id': '_unknown', 'slug': '', 'name': {'en': 'Unknown'},
+            'links': {'specifications': []}}
+        self.assertDataEqual(expected_mat, mat_content)
+
+    def test_load_section(self):
+        section = self.get_instance(Section, 'background-size')
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        section_content = view.load_section(section.id)
+        expected = {
+            'id': str(section.id),
+            'name': section.name, 'note': {},
+            'number': None, 'subpath': section.subpath,
+            'links': {'specification': str(section.specification.id)}}
+        self.assertDataEqual(expected, section_content)
+
+    def test_new_section(self):
+        spec_row = {
+            'section.note': 'section note',
+            'section.subpath': '#section',
+            'section.name': 'section',
+            'specification.mdn_key': 'CSS3 UI',
+            'section.id': None,
+            'specification.id': None}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        section_content = view.new_section(spec_row, '_CSS3_UI')
+        expected = {
+            'id': '_CSS3_UI_#section',
+            'name': {'en': 'section'}, 'note': {'en': 'section note'},
+            'number': None, 'subpath': {'en': '#section'},
+            'links': {'specification': '_CSS3_UI'}}
+        self.assertDataEqual(expected, section_content)
+
+    def test_load_browser(self):
+        browser = self.get_instance(Browser, 'firefox')
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        browser_content = view.load_browser(browser.id)
+        expected = {
+            'id': str(browser.id), 'name': {'en': 'Firefox'}, 'note': None,
+            'slug': browser.slug}
+        self.assertDataEqual(expected, browser_content)
+
+    def test_new_browser(self):
+        browser_entry = {
+            'id': '_Firefox (Gecko)', 'name': 'Firefox',
+            'slug': '_Firefox (Gecko)'}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        browser_content = view.new_browser(browser_entry)
+        expected = {
+            'id': '_Firefox (Gecko)', 'name': {'en': 'Firefox'}, 'note': None,
+            'slug': ''}
+        self.assertDataEqual(expected, browser_content)
+
+    def test_load_version(self):
+        version = self.get_instance(Version, ('firefox', '1.0'))
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        version_content = view.load_version(version.id)
+        expected = {
+            'id': str(version.id), 'version': '1.0', 'status': 'unknown',
+            'note': None, 'release_day': None, 'retirement_day': None,
+            'release_notes_uri': None, 'order': 0,
+            'links': {'browser': str(version.browser_id)}}
+        self.assertDataEqual(expected, version_content)
+
+    def test_new_version(self):
+        version_entry = {
+            'id': '_version', 'browser': '_browser', 'version': '1.0'}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        version_content = view.new_version(version_entry)
+        expected = {
+            'id': '_version', 'version': '1.0', 'status': 'unknown',
+            'note': None, 'release_day': None, 'retirement_day': None,
+            'release_notes_uri': None,
+            'links': {'browser': '_browser'}}
+        self.assertDataEqual(expected, version_content)
+
+    def test_load_feature(self):
+        feature = self.get_instance(
+            Feature, 'web-css-background-size-basic_support')
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        feature_content = view.load_feature(feature.id)
+        expected = {
+            'id': str(feature.id), 'name': {'en': 'Basic support'},
+            'slug': feature.slug, 'mdn_uri': None, 'obsolete': False,
+            'stable': True, 'standardized': True, 'experimental': False,
+            'links': {
+                'children': [], 'parent': str(self.feature.id),
+                'sections': [], 'supports': []}}
+        self.assertDataEqual(expected, feature_content)
+
+    def test_new_feature(self):
+        feature_entry = {
+            'id': '_feature', 'name': 'Basic support',
+            'slug': 'web-css-background-size_basic_support'}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        feature_content = view.new_feature(feature_entry)
+        expected = {
+            'id': '_feature', 'name': {'en': 'Basic support'},
+            'slug': 'web-css-background-size_basic_support',
+            'mdn_uri': None, 'obsolete': False, 'stable': True,
+            'standardized': True, 'experimental': False,
+            'links': {
+                'children': [], 'parent': str(self.feature.id),
+                'sections': [], 'supports': []}}
+        self.assertDataEqual(expected, feature_content)
+
+    def test_new_feature_canonical(self):
+        feature_entry = {
+            'id': '_feature', 'name': 'cover', 'canonical': True,
+            'slug': 'web-css-background-size_cover'}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        feature_content = view.new_feature(feature_entry)
+        expected = {
+            'id': '_feature', 'name': 'cover',
+            'slug': 'web-css-background-size_cover',
+            'mdn_uri': None, 'obsolete': False, 'stable': True,
+            'standardized': True, 'experimental': False,
+            'links': {
+                'children': [], 'parent': str(self.feature.id),
+                'sections': [], 'supports': []}}
+        self.assertDataEqual(expected, feature_content)
+
+    def test_load_support(self):
+        version = self.get_instance(Version, ('firefox', '1.0'))
+        feature = self.get_instance(
+            Feature, 'web-css-background-size-basic_support')
+        support = self.create(Support, version=version, feature=feature)
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        support_content = view.load_support(support.id)
+        expected = {
+            'id': str(support.id), 'support': 'yes', 'note': None,
+            'prefix': None, 'prefix_mandatory': False, 'protected': False,
+            'requires_config': None, 'default_config': None,
+            'alternate_name': None, 'alternate_mandatory': False,
+            'links': {'feature': str(feature.id), 'version': str(version.id)}}
+        self.assertDataEqual(expected, support_content)
+
+    def test_new_support(self):
+        support_entry = {
+            'id': '_support', 'feature': '_feature', 'version': '_version',
+            'support': 'yes'}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        support_content = view.new_support(support_entry)
+        expected = {
+            'id': '_support', 'support': 'yes', 'note': None,
+            'prefix': None, 'prefix_mandatory': False, 'protected': False,
+            'requires_config': None, 'default_config': None,
+            'alternate_name': None, 'alternate_mandatory': False,
+            'links': {'feature': '_feature', 'version': '_version'}}
+        self.assertDataEqual(expected, support_content)
+
+    def test_new_support_with_note(self):
+        support_entry = {
+            'id': '_support', 'feature': '_feature', 'version': '_version',
+            'support': 'yes', 'footnote': 'The Footnote'}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        support_content = view.new_support(support_entry)
+        expected = {
+            'id': '_support', 'support': 'yes', 'note': {'en': 'The Footnote'},
+            'prefix': None, 'prefix_mandatory': False, 'protected': False,
+            'requires_config': None, 'default_config': None,
+            'alternate_name': None, 'alternate_mandatory': False,
+            'links': {'feature': '_feature', 'version': '_version'}}
+        self.assertDataEqual(expected, support_content)
+
+    def test_load_specification_row_new_resources(self):
+        scraped_data = self.empty_scrape()
+        scraped_spec = {
+            'section.note': 'section note',
+            'section.subpath': '#section',
+            'section.name': 'section',
+            'specification.mdn_key': 'CSS3 UI',
+            'section.id': None,
+            'specification.id': None}
+        scraped_data['specs'].append(scraped_spec)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        spec_content, mat_content = view.new_specification(scraped_spec)
+        section_content = view.new_section(scraped_spec, spec_content['id'])
+        expected = self.empty_view(scraped_data)
+        expected['features']['links']['sections'] = [section_content['id']]
+        expected['linked']['maturities'] = [mat_content]
+        expected['linked']['specifications'] = [spec_content]
+        expected['linked']['sections'] = [section_content]
+        self.assertDataEqual(expected, out)
+
+    def test_load_specification_row_existing_resources(self):
+        section = self.get_instance(Section, 'background-size')
+        spec = section.specification
+        scraped_spec = {
+            'section.note': 'new note',
+            'section.subpath': section.subpath['en'],
+            'section.name': section.name['en'],
+            'specification.mdn_key': spec.mdn_key,
+            'section.id': section.id,
+            'specification.id': spec.id}
+        scraped_data = self.empty_scrape()
+        scraped_data['specs'].append(scraped_spec)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        expected = self.empty_view(scraped_data)
+        spec_content, mat_content = view.load_specification(spec.id)
+        section_content = view.load_section(section.id)
+        section_content['note'] = {'en': 'new note'}
+        expected['features']['links']['sections'] = [str(section.id)]
+        expected['linked']['maturities'] = [mat_content]
+        expected['linked']['specifications'] = [spec_content]
+        expected['linked']['sections'] = [section_content]
+        self.assertDataEqual(expected, out)
+
+    def test_load_compat_table_new_resources(self):
+        browser_id = '_Firefox (Gecko)'
+        version_id = '_Firefox-1.0'
+        feature_id = '_basic_support'
+        support_id = '_%s-%s' % (feature_id, version_id)
+        scraped_data = self.empty_scrape()
+        scraped_table = {
+            'name': 'desktop',
+            'browsers': [{
+                'id': browser_id, 'name': 'Firefox',
+                'slug': '_Firefox (Gecko)'}],
+            'versions': [{
+                'id': version_id, 'browser': browser_id, 'version': '1.0'}],
+            'features': [{
+                'id': feature_id, 'name': 'Basic support',
+                'slug': 'web-css-background-size_basic_support'}],
+            'supports': [{
+                'id': support_id, 'feature': feature_id, 'version': version_id,
+                'support': 'yes'}]}
+        scraped_data['compat'].append(scraped_table)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        browser_content = view.new_browser(scraped_table['browsers'][0])
+        version_content = view.new_version(scraped_table['versions'][0])
+        feature_content = view.new_feature(scraped_table['features'][0])
+        support_content = view.new_support(scraped_table['supports'][0])
+        expected = self.empty_view(scraped_data)
+        expected['linked']['browsers'].append(browser_content)
+        expected['linked']['versions'].append(version_content)
+        expected['linked']['features'].append(feature_content)
+        expected['linked']['supports'].append(support_content)
+        expected['meta']['compat_table']['supports'][feature_id] = {
+            browser_id: [support_id]}
+        expected['meta']['compat_table']['tabs'].append({
+            'name': {'en': 'Desktop Browsers'}, 'browsers': [browser_id]})
+        self.assertDataEqual(expected, out)
+
+    def test_load_compat_table_existing_resources(self):
+        version = self.get_instance(Version, ('firefox', '1.0'))
+        browser = version.browser
+        feature = self.get_instance(
+            Feature, 'web-css-background-size-basic_support')
+        support = self.create(Support, version=version, feature=feature)
+        browser_id = str(browser.id)
+        version_id = str(version.id)
+        feature_id = str(feature.id)
+        support_id = str(support.id)
+        scraped_data = self.empty_scrape()
+        scraped_table = {
+            'name': 'desktop',
+            'browsers': [{
+                'id': browser_id, 'name': browser.name['en'],
+                'slug': browser.slug}],
+            'versions': [{
+                'id': version_id, 'browser': browser_id, 'version': '1.0'}],
+            'features': [{
+                'id': feature_id, 'name': feature.name['en'],
+                'slug': feature.slug}],
+            'supports': [{
+                'id': support_id, 'feature': feature_id, 'version': version_id,
+                'support': 'yes'}]}
+        scraped_data['compat'].append(scraped_table)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        expected = self.empty_view(scraped_data)
+        expected['linked']['browsers'].append(view.load_browser(browser.id))
+        expected['linked']['versions'].append(view.load_version(version.id))
+        expected['linked']['features'].append(view.load_feature(feature.id))
+        expected['linked']['supports'].append(view.load_support(support.id))
+        expected['meta']['compat_table']['supports'][feature_id] = {
+            browser_id: [support_id]}
+        expected['meta']['compat_table']['tabs'].append({
+            'name': {'en': 'Desktop Browsers'},
+            'browsers': [browser_id]})
+        self.assertDataEqual(expected, out)
+
+    def test_load_compat_table_new_support_with_note(self):
+        version = self.get_instance(Version, ('firefox', '1.0'))
+        browser = version.browser
+        feature = self.get_instance(
+            Feature, 'web-css-background-size-basic_support')
+        browser_id = str(browser.id)
+        version_id = str(version.id)
+        feature_id = str(feature.id)
+        support_id = '_%s-%s' % (feature_id, version_id)
+        scraped_data = self.empty_scrape()
+        scraped_table = {
+            'name': 'desktop',
+            'browsers': [{
+                'id': browser_id, 'name': browser.name['en'],
+                'slug': browser.slug}],
+            'versions': [{
+                'id': version_id, 'browser': browser_id, 'version': '1.0'}],
+            'features': [{
+                'id': feature_id, 'name': feature.name['en'],
+                'slug': feature.slug}],
+            'supports': [{
+                'id': support_id, 'feature': feature_id, 'version': version_id,
+                'support': 'yes', 'footnote': 'Footnote'}]}
+        scraped_data['compat'].append(scraped_table)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        expected = self.empty_view(scraped_data)
+        support_content = view.new_support(scraped_table['supports'][0])
+        expected['linked']['browsers'].append(view.load_browser(browser.id))
+        expected['linked']['versions'].append(view.load_version(version.id))
+        expected['linked']['features'].append(view.load_feature(feature.id))
+        expected['linked']['supports'].append(support_content)
+        expected['meta']['compat_table']['supports'][feature_id] = {
+            browser_id: [support_id]}
+        expected['meta']['compat_table']['tabs'].append({
+            'name': {'en': 'Desktop Browsers'},
+            'browsers': [browser_id]})
+        expected['meta']['compat_table']['notes'][support_id] = 1
+        self.assertDataEqual(expected, out)
+
+
+class TestScrapeFeaturePage(FeaturePageTestCase):
+    def set_content(self, content):
         for translation in self.page.translations():
             translation.status = translation.STATUS_FETCHED
-            translation.raw = self.simple_page
+            translation.raw = content
             translation.save()
 
-    def test_success(self):
+    def test_empty_page(self):
+        self.set_content('')
         scrape_feature_page(self.page)
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertEqual([], fp.data['meta']['scrape']['errors'])
-        self.assertFalse(fp.has_issues)
-        section = self.get_instance(Section, 'background-size')
-        section_ids = [str(section.id)]
-        self.assertEqual(section_ids, fp.data['features']['links']['sections'])
-
-    def test_with_specification_mismatch(self):
-        spec = self.get_instance(Specification, 'css3_backgrounds')
-        spec.mdn_key = 'CSS3_Backgrounds'
-        spec.save()
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
+        expected_error = ['<pre>No &lt;h2&gt; found in page</pre>']
+        self.assertEqual(expected_error, fp.data['meta']['scrape']['errors'])
         self.assertTrue(fp.has_issues)
-        self.assertEqual(
-            ["_CSS3 Backgrounds_#the-background-size"],
-            fp.data['features']['links']['sections'])
 
-    def test_with_section_mismatch(self):
-        section = self.get_instance(Section, 'background-size')
-        section.subpath['en'] = '#the-other-background-size'
-        section.save()
+    def test_parse_issue(self):
+        bad_page = '''\
+<p>The page has a bad specification section.</p>
+<h2 id="Specifications">Specifications</h2>
+<p>No specs</p>
+'''
+        self.set_content(bad_page)
         scrape_feature_page(self.page)
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertFalse(fp.has_issues)
-        section_ids = ["%d_#the-background-size" % section.specification.id]
-        self.assertEqual(section_ids, fp.data['features']['links']['sections'])
-
-    def test_with_section_already_associated(self):
-        section = self.get_instance(Section, 'background-size')
-        self.page.feature.sections.add(section)
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertFalse(fp.has_issues)
-        section_ids = [str(section.id)]
-        self.assertEqual(section_ids, fp.data['features']['links']['sections'])
-
-    def test_with_browser_mismatch(self):
-        good_name = '<th>Chrome</th>'
-        bad_name = '<th>Chromium</th>'
-        en_content = TranslatedContent.objects.get(
-            page=self.page, locale='en-US')
-        self.assertEqual(1, en_content.raw.count(good_name))
-        en_content.raw = en_content.raw.replace(good_name, bad_name)
-        en_content.save()
-
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
+        expected_error = [range_error_to_html(
+            bad_page, 93, 108,
+            'Section <h2>Specifications</h2> was not parsed. The parser'
+            ' failed on rule "spec_table", but the real cause may be'
+            ' unexpected content after this position. Definition:',
+            'spec_table = "<table class="standard-table">" _ spec_head'
+            ' _ spec_body _ "</table>" _')]
+        self.assertEqual(expected_error, fp.data['meta']['scrape']['errors'])
         self.assertTrue(fp.has_issues)
-        self.assertEqual(1, len(fp.data['meta']['scrape']['errors']))
-        err = fp.data['meta']['scrape']['errors'][0]
-        expected = '<div><p>Unknown Browser &quot;Chromium&quot;</p>'
-        self.assertTrue(err.startswith(expected))
-        desktop_browsers = fp.data['meta']['compat_table']['tabs'][0]
-        self.assertEqual('Desktop Browsers', desktop_browsers['name']['en'])
-        self.assertEqual('_Chromium', desktop_browsers['browsers'][0])
-
-    def test_with_existing_feature(self):
-        basic = self.create(
-            Feature, slug=self.page.feature.slug + '-basic-support',
-            name={'en': 'Basic support'}, parent=self.page.feature)
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertFalse(fp.has_issues)
-        supports = fp.data['meta']['compat_table']['supports']
-        self.assertTrue(str(basic.id) in supports)
-
-    def test_with_existing_support(self):
-        basic = self.create(
-            Feature, slug=self.page.feature.slug + '-basic-support',
-            name={'en': 'Basic support'}, parent=self.page.feature)
-        browser = self.browsers['firefox']
-        version = self.versions[('firefox', '1.0')]
-        support = self.create(Support, version=version, feature=basic)
-
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertFalse(fp.has_issues)
-        supports = fp.data['meta']['compat_table']['supports']
-        basic_support = supports[str(basic.id)][str(browser.id)]
-        self.assertTrue(str(support.id) in basic_support)
-
-    def test_scrape_almost_empty_page(self):
-        en_content = TranslatedContent.objects.get(
-            page=self.page, locale='en-US')
-        en_content.raw = "<h1>nothing here</h1>"
-        en_content.save()
-
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertTrue(fp.has_issues)
-        self.assertEqual(
-            ["<pre>No &lt;h2&gt; found in page</pre>"],
-            fp.data['meta']['scrape']['errors'])
-
-    def test_scrape_canonical_feature(self):
-        en_content = TranslatedContent.objects.get(
-            page=self.page, locale='en-US')
-        old_name = '<td>Basic support</td>'
-        new_name = '<td><code>basic-support</code></td>'
-        self.assertTrue(old_name in en_content.raw)
-        en_content.raw = en_content.raw.replace(old_name, new_name)
-        en_content.save()
-
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertEqual([], fp.data['meta']['scrape']['errors'])
-        self.assertFalse(fp.has_issues)
-        expected = [{
-            'id': '_basic-support',
-            'slug': 'web-css-background-size_basic-support',
-            'mdn_uri': None,
-            'experimental': False,
-            'standardized': True,
-            'stable': True,
-            'obsolete': False,
-            'name': 'basic-support',
-            'links': {
-                'children': [],
-                'parent': str(self.page.feature.id),
-                'sections': [],
-                'supports': [],
-            }}]
-        self.assertDataEqual(expected, fp.data['linked']['features'])
-
-    def test_scrape_with_footnote(self):
-        orig = "<td>4.0</td>"
-        new = "<td>4.0 [1]</td>"
-        en_content = TranslatedContent.objects.get(
-            page=self.page, locale='en-US')
-        assert orig in self.simple_compat_section
-        en_content.raw = (
-            self.simple_spec_section +
-            self.simple_compat_section.replace(orig, new) +
-            "<p>[1] Footnote</p>")
-        en_content.save()
-
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertEqual([], fp.data['meta']['scrape']['errors'])
-        self.assertFalse(fp.has_issues)
-        version = self.versions[('ie', '4.0')]
-        expected = {'__basic support-%d' % version.id: 1}
-        self.assertDataEqual(
-            expected, fp.data['meta']['compat_table']['notes'])
-
-    def test_scrape_with_footnote_link(self):
-        orig = "<td>4.0</td>"
-        new = "<td>4.0 <a href=\"#note-1\">[1]</a></td>"
-        en_content = TranslatedContent.objects.get(
-            page=self.page, locale='en-US')
-        assert orig in self.simple_compat_section
-        en_content.raw = (
-            self.simple_spec_section +
-            self.simple_compat_section.replace(orig, new) +
-            "<p><a name=\"note-1\"></a>[1] Footnote</p>")
-        en_content.save()
-
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertEqual([], fp.data['meta']['scrape']['errors'])
-        self.assertFalse(fp.has_issues)
-        version = self.versions[('ie', '4.0')]
-        expected = {'__basic support-%d' % version.id: 1}
-        self.assertDataEqual(
-            expected, fp.data['meta']['compat_table']['notes'])
-
-    def test_scrape_with_footnote_link_sup(self):
-        orig = "<td>4.0</td>"
-        new = "<td>4.0 <sup><a href=\"#note-1\">[1]</a></sup></td>"
-        en_content = TranslatedContent.objects.get(
-            page=self.page, locale='en-US')
-        assert orig in self.simple_compat_section
-        en_content.raw = (
-            self.simple_spec_section +
-            self.simple_compat_section.replace(orig, new) +
-            "<p><a name=\"note-1\"></a>[1] Footnote</p>")
-        en_content.save()
-
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertEqual([], fp.data['meta']['scrape']['errors'])
-        self.assertFalse(fp.has_issues)
-        version = self.versions[('ie', '4.0')]
-        expected = {'__basic support-%d' % version.id: 1}
-        self.assertDataEqual(
-            expected, fp.data['meta']['compat_table']['notes'])
-
-    def test_scrape_with_footnote_star(self):
-        orig = "<td>4.0</td>"
-        new = "<td>4.0 [*]</td>"
-        en_content = TranslatedContent.objects.get(
-            page=self.page, locale='en-US')
-        assert orig in self.simple_compat_section
-        en_content.raw = (
-            self.simple_spec_section +
-            self.simple_compat_section.replace(orig, new) +
-            "<p><a name=\"note-1\"></a>[*] Footnote</p>")
-        en_content.save()
-
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
-        self.assertEqual([], fp.data['meta']['scrape']['errors'])
-        self.assertFalse(fp.has_issues)
-        version = self.versions[('ie', '4.0')]
-        expected = {'__basic support-%d' % version.id: 1}
-        self.assertDataEqual(
-            expected, fp.data['meta']['compat_table']['notes'])
 
 
 class TestRangeErrorToHtml(ScrapeTestCase):

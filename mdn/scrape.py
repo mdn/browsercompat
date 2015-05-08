@@ -1491,14 +1491,12 @@ class ScrapedViewFeature(object):
         if section_id:
             section_content = self.load_section(section_id)
             section_id = int(section_content['id'])
+            section_content['name']['en'] = spec_row['section.name']
+            section_content['subpath']['en'] = spec_row['section.subpath']
+            section_content['note']['en'] = spec_row['section.note']
         else:
             section_content = self.new_section(spec_row, spec_id)
             section_id = section_content['id']
-
-        # Update Specification Section with scraped data, save
-        section_content['name']['en'] = spec_row['section.name']
-        section_content['subpath']['en'] = spec_row['section.subpath']
-        section_content['note']['en'] = spec_row['section.note']
         self.sections[section_id] = section_content
 
     def load_compat_table(self, table):
@@ -1517,7 +1515,7 @@ class ScrapedViewFeature(object):
                 browser_id = int(browser_entry['id'])
                 browser_content = self.load_browser(browser_id)
             self.browsers[browser_id] = browser_content
-            tab['browsers'].append(browser_id)
+            tab['browsers'].append(str(browser_id))
 
         # Load Features (first column)
         for feature_entry in table['features']:
@@ -1528,7 +1526,8 @@ class ScrapedViewFeature(object):
                 feature_id = int(feature_entry['id'])
                 feature_content = self.load_feature(feature_id)
             self.features.setdefault(feature_id, feature_content)
-            self.compat_table_supports.setdefault(feature_id, OrderedDict())
+            self.compat_table_supports.setdefault(
+                str(feature_id), OrderedDict())
 
         # Load Versions (explicit or implied in cells)
         for version_entry in table['versions']:
@@ -1564,8 +1563,9 @@ class ScrapedViewFeature(object):
             # Set the meta lookup
             version = self.versions[version_id]
             browser_id = version['links']['browser']
-            self.compat_table_supports[feature_id].setdefault(browser_id, [])
-            self.compat_table_supports[feature_id][browser_id].append(
+            self.compat_table_supports[str(feature_id)].setdefault(
+                browser_id, [])
+            self.compat_table_supports[str(feature_id)][browser_id].append(
                 text_type(support_id))
         self.tabs.append(tab)
 
@@ -1636,6 +1636,9 @@ class ScrapedViewFeature(object):
             ('note', OrderedDict()),
             ('links', OrderedDict((
                 ('specification', text_type(spec_id)),)))))
+        section_content['name']['en'] = spec_row['section.name']
+        section_content['subpath']['en'] = spec_row['section.subpath']
+        section_content['note']['en'] = spec_row['section.note']
         return section_content
 
     def load_browser(self, browser_id):
