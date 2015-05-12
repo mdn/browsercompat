@@ -1,0 +1,439 @@
+{
+    "supports": [
+        {
+            "id": "1",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "2",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "2",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "8",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "3",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "15",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "4",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "20",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "5",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "27",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "6",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "29",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "7",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "34",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "8",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "42",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "9",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "44",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "10",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "46",
+                "feature": "6"
+            }
+        },
+        {
+            "id": "11",
+            "support": "yes",
+            "prefix": "--webkit",
+            "prefix_mandatory": true,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "7",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "12",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "18",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "13",
+            "support": "yes",
+            "prefix": "--moz",
+            "prefix_mandatory": true,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "16",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "14",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "32",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "15",
+            "support": "no",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "30",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "16",
+            "support": "yes",
+            "prefix": "--ms",
+            "prefix_mandatory": true,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "31",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "17",
+            "support": "yes",
+            "prefix": "--o",
+            "prefix_mandatory": true,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "35",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "18",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "36",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "19",
+            "support": "yes",
+            "prefix": "--webkit",
+            "prefix_mandatory": true,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "43",
+                "feature": "11"
+            }
+        },
+        {
+            "id": "20",
+            "support": "yes",
+            "prefix": "--webkit",
+            "prefix_mandatory": true,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "7",
+                "feature": "13"
+            }
+        },
+        {
+            "id": "21",
+            "support": "yes",
+            "prefix": "--moz",
+            "prefix_mandatory": true,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "17",
+                "feature": "13"
+            }
+        },
+        {
+            "id": "22",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "18",
+                "feature": "13"
+            }
+        },
+        {
+            "id": "23",
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "32",
+                "feature": "13"
+            }
+        },
+        {
+            "id": "24",
+            "support": "no",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "33",
+                "feature": "13"
+            }
+        },
+        {
+            "id": "25",
+            "support": "no",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "38",
+                "feature": "13"
+            }
+        },
+        {
+            "id": "26",
+            "support": "yes",
+            "prefix": "--webkit",
+            "prefix_mandatory": true,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null,
+            "links": {
+                "version": "41",
+                "feature": "13"
+            }
+        }
+    ],
+    "links": {
+        "supports.version": {
+            "type": "versions",
+            "href": "http://localhost:8000/api/v1/versions/{supports.version}"
+        },
+        "supports.feature": {
+            "type": "features",
+            "href": "http://localhost:8000/api/v1/features/{supports.feature}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "supports": {
+                "previous": null,
+                "next": null,
+                "count": 26
+            }
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "specifications": {
+        "id": "2",
+        "slug": "css2_1",
+        "mdn_key": "CSS2.1",
+        "name": {
+            "en": "CSS Level&nbsp;2 (Revision&nbsp;1)"
+        },
+        "uri": {
+            "en": "http://www.w3.org/TR/CSS2/"
+        },
+        "links": {
+            "maturity": "1",
+            "sections": [
+                "2"
+            ],
+            "history_current": "2",
+            "history": [
+                "2"
+            ]
+        }
+    },
+    "links": {
+        "specifications.maturity": {
+            "type": "maturities",
+            "href": "https://browsercompat.org/api/v1/maturities/{specifications.maturity}"
+        },
+        "specifications.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{specifications.sections}"
+        },
+        "specifications.history_current": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history_current}"
+        },
+        "specifications.history": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history}"
+        }
+    }
+}

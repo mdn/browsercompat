@@ -1,0 +1,61 @@
+{
+    "features": {
+        "id": "13",
+        "slug": "web-css-transform-three-value-syntax",
+        "mdn_uri": null,
+        "experimental": false,
+        "standardized": true,
+        "stable": false,
+        "obsolete": false,
+        "name": {
+            "en": "Three-value syntax",
+            "es": "Sintaxis con tres valores",
+            "ja": "3-値構文"
+        },
+        "links": {
+            "sections": [],
+            "supports": [
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25",
+                "26"
+            ],
+            "parent": "10",
+            "children": [],
+            "history_current": "16",
+            "history": [
+                "16",
+                "13"
+            ]
+        }
+    },
+    "links": {
+        "features.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
+        },
+        "features.parent": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.parent}"
+        },
+        "features.children": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.history_current": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history_current}"
+        },
+        "features.history": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history}"
+        }
+    }
+}

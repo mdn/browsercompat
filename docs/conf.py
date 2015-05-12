@@ -13,6 +13,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+from datetime import date
 import sys
 import os
 try:
@@ -49,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'web-platform-compat'
-copyright = u'2014, Mozilla'
+copyright = u'2014-%d, Mozilla' % date.today().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

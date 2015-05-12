@@ -1,0 +1,943 @@
+[
+    {
+        "name": "user-by-id",
+        "method": "GET",
+        "endpoint": "users/1",
+        "standardize": {
+            "created": "2015-04-20T18:06:48.567514Z"
+        }
+    }, {
+        "name": "user-by-username",
+        "method": "GET",
+        "endpoint": "users?username=user",
+        "standardize": {
+            "created": "2015-04-28T18:06:48.567514Z"
+        }
+    }, {
+        "name": "browser-list",
+        "method": "GET",
+        "endpoint": "browsers"
+    }, {
+        "name": "browser-by-id",
+        "method": "GET",
+        "endpoint": "browsers/6"
+    }, {
+        "name": "browser-by-slug",
+        "method": "GET",
+        "endpoint": "browsers?slug=firefox"
+    }, {
+        "name": "browser-create-minimal",
+        "method": "POST",
+        "endpoint": "browsers",
+        "data": {
+            "browsers": {
+                "slug": "amazon-silk-mobile",
+                "name" : {
+                    "en": "Amazon Silk Mobile"
+                }
+            }
+        }
+    }, {
+        "name": "browser-create-maximized",
+        "method": "POST",
+        "endpoint": "browsers",
+        "data": {
+            "browsers": {
+                "slug": "konqueror",
+                "name" : {
+                    "en": "Konqueror"
+                },
+                "note": {
+                    "en": "First comes the Navigator, then Explorer, and then the Konqueror."
+                }
+            }
+        }
+    }, {
+        "name": "browser-create-in-changeset-1",
+        "method": "POST",
+        "endpoint": "changesets",
+        "data": {
+            "changesets": {
+                "closed": false
+            }
+        },
+        "standardize": {
+            "created": "2015-04-16T21:02:15.464763Z",
+            "modified": "2015-04-16T21:02:15.469817Z"
+        }
+    }, {
+        "name": "browser-create-in-changeset-2",
+        "method": "POST",
+        "endpoint": "browsers?changeset=4",
+        "data": {
+            "browsers": {
+                "slug": "nintendo-ds",
+                "name": {
+                    "en": "Nintendo DS Browser",
+                    "ja": "ニンテンドーＤＳブラウザ"
+                }
+            }
+        }
+    }, {
+        "name": "browser-create-in-changeset-3",
+        "method": "PUT",
+        "endpoint": "changesets/4",
+        "data": {
+            "changesets": {
+                "closed": true
+            }
+        },
+        "standardize": {
+            "created": "2015-04-16T21:02:15.464763Z",
+            "modified": "2015-04-16T21:02:15.775404Z"
+        }
+    }, {
+        "name": "browser-update-full",
+        "method": "PUT",
+        "endpoint": "browsers/10",
+        "data": {
+            "browsers": {
+                "id": "10",
+                "slug": "internet_explorer",
+                "name": {
+                    "en": "Microsoft Internet Explorer"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "10"
+                    ],
+                    "history_current": "10",
+                    "versions": [
+                        "28",
+                        "29",
+                        "30",
+                        "31",
+                        "32"
+                    ]
+                }
+            },
+            "links": {
+                "browsers.history": {
+                    "type": "historical_browsers",
+                    "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+                },
+                "browsers.history_current": {
+                    "type": "historical_browsers",
+                    "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
+                },
+                "browsers.versions": {
+                    "type": "versions",
+                    "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
+                }
+            }
+        }
+    }, {
+        "name": "browser-update-partial",
+        "method": "PUT",
+        "endpoint": "browsers/10",
+        "data": {
+            "browsers": {
+                "name": {
+                    "en": "IE"
+                }
+            }
+        }
+    }, {
+        "name": "browser-update-versions-order",
+        "method": "PUT",
+        "endpoint": "browsers/10",
+        "data": {
+            "browsers": {
+                "links": {
+                    "versions": ["28", "29", "30", "32", "31"]
+                }
+            }
+        }
+    }, {
+        "name": "browser-revert",
+        "method": "PUT",
+        "endpoint": "browsers/10",
+        "data": {
+            "browsers": {
+                "links": {
+                    "history_current": "10"
+                }
+            }
+        }
+    }, {
+        "name": "browser-delete",
+        "method": "DELETE",
+        "endpoint": "browsers/16"
+    }, {
+        "name": "version-list",
+        "method": "GET",
+        "endpoint": "versions"
+    }, {
+        "name": "version-by-id",
+        "method": "GET",
+        "endpoint": "versions/18"
+    }, {
+        "name": "version-by-browser",
+        "method": "GET",
+        "endpoint": "versions?browser=6"
+    }, {
+        "name": "version-by-browser-slug",
+        "method": "GET",
+        "endpoint": "versions?browser__slug=firefox"
+    }, {
+        "name": "version-by-version-1.0",
+        "method": "GET",
+        "endpoint": "versions?version=1.0"
+    }, {
+        "name": "version-by-version-status",
+        "method": "GET",
+        "endpoint": "versions?status=retired"
+    }, {
+        "name": "version-create-minimal",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "versions": {
+                "version": "17.0",
+                "links": {
+                    "browser": "6"
+                }
+            }
+        }
+    }, {
+        "name": "version-create-maximized",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "versions": {
+                "version": "19.0",
+                "release_day": "2013-02-19",
+                "retirement_day": "2013-04-02",
+                "status": "retired",
+                "release_notes_uri": {
+                    "en": "https://developer.mozilla.org/en/Firefox/Releases/19",
+                    "de": "https://developer.mozilla.org/de/Firefox/Releases/19",
+                    "es": "https://developer.mozilla.org/es/docs/Firefox_19_para_desarrolladores",
+                    "fr": "https://developer.mozilla.org/fr/Firefox/Versions/19",
+                    "ja": "https://developer.mozilla.org/ja/Firefox/Releases/19",
+                    "ko": "https://developer.mozilla.org/ko/Firefox/Releases/19",
+                    "pl": "https://developer.mozilla.org/pl/Firefox/Releases/19",
+                    "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/19",
+                    "ru": "https://developer.mozilla.org/ru/Firefox/Releases/19",
+                    "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/19",
+                    "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/19"
+                },
+                "note": {
+                    "en": "Released to beta channel on January 10, 2013"
+                },
+                "links": {
+                    "browser": "6"
+                }
+            }
+        }
+    }, {
+        "name": "version-update",
+        "method": "PUT",
+        "endpoint": "versions/18",
+        "data": {
+            "versions": {
+                "status": "unknown"
+            }
+        }
+    }, {
+        "name": "version-revert",
+        "method": "PUT",
+        "endpoint": "versions/18",
+        "data": {
+            "versions": {
+                "links": {
+                    "history_current": "18"
+                }
+            }
+        }
+    }, {
+        "name": "version-delete",
+        "method": "DELETE",
+        "endpoint": "versions/49"
+    }, {
+        "name": "feature-by-id",
+        "method": "GET",
+        "endpoint": "features/13"
+    }, {
+        "name": "feature-by-id-canonical",
+        "method": "GET",
+        "endpoint": "features/10"
+    }, {
+        "name": "feature-by-slug",
+        "method": "GET",
+        "endpoint": "features?slug=web-css-transform-origin"
+    }, {
+        "name": "feature-by-parent",
+        "method": "GET",
+        "endpoint": "features?parent=10"
+    }, {
+        "name": "feature-by-no-parent",
+        "method": "GET",
+        "endpoint": "features?parent="
+    }, {
+        "name": "feature-create-minimal",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "features": {
+                "slug": "web-css-display",
+                "name": "display"
+            }
+        }
+    }, {
+        "name": "feature-create-maximized",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "features": {
+                "slug": "web-css-display_ruby_ruby-base_ruby-text_ruby-base",
+                "mdn_uri": null,
+                "experimental": true,
+                "standardized": true,
+                "stable": true,
+                "obsolete": false,
+                "name": {
+                    "en": "<code>ruby</code>, <code>ruby-base</code>, <code>ruby-text</code>, <code>ruby-base-container</code>, <code>ruby-text-container</code>"
+                },
+                "links": {
+                    "parent": "14"
+                }
+            }
+        }
+    }, {
+        "name": "feature-update",
+        "method": "PUT",
+        "endpoint": "features/13",
+        "data": {
+            "features": {
+                "stable": false
+            }
+        }
+    }, {
+        "name": "feature-revert",
+        "method": "PUT",
+        "endpoint": "features/13",
+        "skip": "Generates 500, 'sections' is an invalid keyword argument for this function",
+        "data": {
+            "features": {
+                "links": {
+                    "history_current": "13"
+                }
+            }
+        }
+    }, {
+        "name": "feature-delete",
+        "method": "DELETE",
+        "endpoint": "features/15"
+    }, {
+        "name": "support-by-id",
+        "method": "GET",
+        "endpoint": "supports/22"
+    }, {
+        "name": "support-by-feature",
+        "method": "GET",
+        "endpoint": "supports?feature=13"
+    }, {
+        "name": "support-by-version",
+        "method": "GET",
+        "endpoint": "supports?version=18"
+    }, {
+        "name": "support-create-minimal",
+        "method": "POST",
+        "endpoint": "supports",
+        "data": {
+            "supports": {
+                "links": {
+                    "version": "4",
+                    "feature": "6"
+                }
+            }
+        }
+    }, {
+        "name": "support-create-maximized",
+        "method": "POST",
+        "endpoint": "supports",
+        "data": {
+            "supports": {
+                "support": "partial",
+                "prefix": "-o",
+                "prefix_mandatory": true,
+                "alternate_name": "float",
+                "alternate_mandatory": true,
+                "requires_config": "future=true",
+                "default_config": "future=false",
+                "protected": true,
+                "note": {
+                    "en": "This is fake."
+                },
+                "links": {
+                    "version": "37",
+                    "feature": "6"
+                }
+            }
+        }
+    }, {
+        "name": "support-update",
+        "method": "PUT",
+        "endpoint": "supports/26",
+        "data": {
+            "supports": {
+                "support": "partial"
+            }
+        }
+    }, {
+        "name": "support-revert",
+        "method": "PUT",
+        "endpoint": "supports/26",
+        "data": {
+            "supports": {
+                "links": {
+                    "history_current": "26"
+                }
+            }
+        }
+    }, {
+        "name": "support-delete",
+        "method": "DELETE",
+        "endpoint": "supports/28"
+    }, {
+        "name": "specification-by-id",
+        "method": "GET",
+        "endpoint": "specifications/2"
+    }, {
+        "name": "specification-by-slug",
+        "method": "GET",
+        "endpoint": "specifications?slug=css2_1"
+    }, {
+        "name": "specification-by-mdn-key",
+        "method": "GET",
+        "endpoint": "specifications?mdn-key=CSS2.1"
+    }, {
+        "name": "specification-create",
+        "method": "POST",
+        "endpoint": "specifications",
+        "data": {
+            "specifications": {
+                "slug": "css3-ruby",
+                "mdn_key": "CSS3 Ruby",
+                "name": {
+                    "en": "CSS Ruby Layout Module Level 1"
+                },
+                "uri": {
+                    "en": "http://dev.w3.org/csswg/css-ruby/"
+                },
+                "links": {
+                    "maturity": "2"
+                }
+            }
+        }
+    }, {
+        "name": "specification-update",
+        "method": "PUT",
+        "endpoint": "specifications/5",
+        "data": {
+            "specifications": {
+                "maturity": "5"
+            }
+        }
+    }, {
+        "name": "specification-revert",
+        "method": "PUT",
+        "endpoint": "specifications/5",
+        "data": {
+            "specifications": {
+                "links": {
+                    "history_current": "5"
+                }
+            }
+        }
+    }, {
+        "name": "specification-delete",
+        "method": "DELETE",
+        "endpoint": "specifications/4",
+        "skip": "Generates 500, Changeset is closed"
+    }, {
+        "name": "section-by-id",
+        "method": "GET",
+        "endpoint": "sections/3"
+    }, {
+        "name": "section-create-minimal",
+        "method": "POST",
+        "endpoint": "sections",
+        "data": {
+            "sections": {
+                "name": {
+                    "en": "'font-family'"
+                },
+                "links": {
+                    "specification": "1"
+                }
+            }
+        }
+    }, {
+        "name": "section-create-maximized",
+        "method": "POST",
+        "endpoint": "sections",
+        "data": {
+            "sections": {
+                "number": {
+                    "en": "2.1"
+                },
+                "name": {
+                    "en": "Ruby-specific 'display' Values"
+                },
+                "subpath": {
+                    "en": "#ruby-display"
+                },
+                "note": null,
+                "links": {
+                    "specification": "5",
+                    "features": [
+                        "13"
+                    ]
+                }
+            }
+        }
+    }, {
+        "name": "section-update",
+        "method": "PUT",
+        "endpoint": "sections/6",
+        "data": {
+            "sections": {
+                "maturity": "6"
+            }
+        }
+    }, {
+        "name": "section-revert",
+        "method": "PUT",
+        "endpoint": "sections/6",
+        "data": {
+            "sections": {
+                "links": {
+                    "history_current": "6"
+                }
+            }
+        }
+    }, {
+        "name": "section-delete",
+        "method": "DELETE",
+        "endpoint": "sections/5"
+    }, {
+        "name": "maturity-by-id",
+        "method": "GET",
+        "endpoint": "maturities/1"
+    }, {
+        "name": "maturity-by-slug",
+        "method": "GET",
+        "endpoint": "maturities?slug=WD"
+    }, {
+        "name": "maturity-create",
+        "method": "POST",
+        "endpoint": "maturities",
+        "data": {
+            "maturities": {
+                "slug": "Idea",
+                "name": {
+                    "en": "Idea"
+                }
+            }
+        }
+    }, {
+        "name": "maturity-update",
+        "method": "PUT",
+        "endpoint": "maturities/9",
+        "data": {
+            "maturities": {
+                "name": {
+                    "en": "Standard",
+                    "de": "Standard",
+                    "ru": "\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442",
+                    "fr": "Critère"
+                }
+            }
+        }
+    }, {
+        "name": "maturity-revert",
+        "method": "PUT",
+        "endpoint": "maturities/9",
+        "data": {
+            "maturities": {
+                "links": {
+                    "history_current": "9"
+                }
+            }
+        }
+    }, {
+        "name": "maturity-delete",
+        "method": "DELETE",
+        "endpoint": "maturities/10"
+    }, {
+        "name": "changeset-by-id",
+        "method": "GET",
+        "endpoint": "changesets/2",
+        "standardize": {
+            "created": "2015-04-20T18:22:47.046692Z",
+            "modified": "2015-04-20T18:22:47.056433Z"
+        }
+    }, {
+        "name": "historical-browser-by-id",
+        "method": "GET",
+        "endpoint": "historical_browsers/6",
+        "standardize": {
+            "date": "2015-04-20T18:44:09.905824Z"
+        }
+    }, {
+        "name": "historical-browser-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_browsers?id=6",
+        "standardize": {
+            "date": "2015-04-20T18:44:09.905824Z"
+        }
+    }, {
+        "name": "historical-version-by-id",
+        "method": "GET",
+        "endpoint": "historical_versions/18",
+        "standardize": {
+            "date": "2015-04-20T18:57:09.476976Z"
+        }
+    }, {
+        "name": "historical-version-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_versions?id=18",
+        "standardize": {
+            "date": "2015-04-20T18:57:09.476976Z"
+        }
+    }, {
+        "name": "historical-feature-by-id",
+        "method": "GET",
+        "endpoint": "historical_features/13",
+        "standardize": {
+            "date": "2015-04-20T18:57:11.029709Z"
+        }
+    }, {
+        "name": "historical-feature-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_features?id=13",
+        "standardize": {
+            "date": "2015-04-20T18:57:11.029709Z"
+        }
+    }, {
+        "name": "historical-support-by-id",
+        "method": "GET",
+        "endpoint": "historical_supports/22",
+        "standardize": {
+            "date": "2015-04-20T18:57:11.724140Z"
+        }
+    }, {
+        "name": "historical-support-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_supports?id=22",
+        "standardize": {
+            "date": "2015-04-20T18:57:11.724140Z"
+        }
+    }, {
+        "name": "historical-specification-by-id",
+        "method": "GET",
+        "endpoint": "historical_specifications/2",
+        "standardize": {
+            "date": "2015-04-20T18:57:10.470658Z"
+        }
+    }, {
+        "name": "historical-specification-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_specifications?id=2",
+        "standardize": {
+            "date": "2015-04-20T18:57:10.470658Z"
+        }
+    }, {
+        "name": "historical-specification-filter-by-slug",
+        "method": "GET",
+        "endpoint": "historical_specifications?slug=css1",
+        "standardize": {
+            "date": "2015-04-20T18:57:10.470658Z"
+        }
+    }, {
+        "name": "historical-specification-filter-by-mdn-key",
+        "method": "GET",
+        "endpoint": "historical_specifications?mdn_key=CSS2.1",
+        "standardize": {
+            "date": "2015-04-20T18:57:10.470658Z"
+        }
+    }, {
+        "name": "historical-section-by-id",
+        "method": "GET",
+        "endpoint": "historical_sections/3",
+        "standardize": {
+            "date": "2015-04-20T18:57:10.558830Z"
+        }
+    }, {
+        "name": "historical-section-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_sections?id=3",
+        "standardize": {
+            "date": "2015-04-20T18:57:10.558830Z"
+        }
+    }, {
+        "name": "historical-maturity-by-id",
+        "method": "GET",
+        "endpoint": "historical_maturities/1",
+        "standardize": {
+            "date": "2015-04-20T18:57:10.394547Z"
+        }
+    }, {
+        "name": "historical-maturity-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_maturities?id=1",
+        "standardize": {
+            "date": "2015-04-20T18:57:10.394547Z"
+        }
+    }, {
+        "name": "view-features-list",
+        "method": "GET",
+        "endpoint": "view_features"
+    }, {
+        "name": "view-feature-by-id",
+        "method": "GET",
+        "endpoint": "view_features/5"
+    }, {
+        "name": "view-feature-update-parts-with-changeset-1",
+        "method": "POST",
+        "endpoint": "changesets",
+        "data": {
+            "changesets": {
+                "target_resource_type": "features",
+                "target_resource_id": "5"
+            }
+        },
+        "standardize": {
+            "created": "2015-04-20T20:36:06.794827Z",
+            "modified": "2015-04-20T20:36:06.795315Z"
+        }
+    }, {
+        "name": "view-feature-update-parts-with-changeset-2",
+        "method": "POST",
+        "endpoint": "versions?changeset=36",
+        "data": {
+            "versions": {
+                "version": "2.0",
+                "status": "retired",
+                "links": {
+                    "browser": "3"
+                }
+            }
+        }
+    }, {
+        "name": "view-feature-update-parts-with-changeset-3",
+        "method": "POST",
+        "endpoint": "supports?changeset=36",
+        "data": {
+            "supports": {
+                "links": {
+                    "version": "50",
+                    "feature": "6"
+                }
+            }
+        }
+    }, {
+        "name": "view-feature-update-parts-with-changeset-4",
+        "method": "PUT",
+        "endpoint": "changesets/36",
+        "data": {
+            "changesets": {
+                "closed": true
+            }
+        },
+        "standardize": {
+            "created": "2015-04-20T20:36:06.794827Z",
+            "modified": "2015-04-20T20:36:07.156562Z"
+        }
+    }, {
+        "name": "view-feature-update-parts-with-changeset-5",
+        "method": "GET",
+        "endpoint": "view_features/5"
+    }, {
+        "name": "view-feature-update-put-subfeature",
+        "method": "PUT",
+        "endpoint": "view_features/5",
+        "skip": "Returns 500, AssertionError: When looking up \"browser.slug\", could not find ID '14' in browsers.",
+        "data": {
+            "linked": {
+                "features": [
+                    {
+                        "id": "_New Subfeature",
+                        "slug": "web-css-float_new-subfeature",
+                        "name": {
+                            "en": "New Subfeature"
+                        },
+                        "links": {
+                            "parent": "5"
+                        }
+                    }
+                ]
+            }
+        }
+    }, {
+        "name": "feature-add-sections-01",
+        "method": "POST",
+        "endpoint": "specifications",
+        "data": {
+            "specifications": {
+                "slug": "html_whatwg",
+                "mdn_key": "HTML WHATWG",
+                "name": {
+                    "en": "WHATWG HTML Living Standard"
+                },
+                "uri": {
+                    "en": "https://html.spec.whatwg.org/multipage/"
+                },
+                "links": {
+                    "maturity": "6"
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-02",
+        "method": "POST",
+        "endpoint": "specifications",
+        "data": {
+            "specifications": {
+                "slug": "html5_w3c",
+                "mdn_key": "HTML5 W3C",
+                "name": {
+                    "en": "HTML5"
+                },
+                "uri": {
+                    "en": "http://www.w3.org/TR/html5/"
+                },
+                "links": {
+                    "maturity": "1"
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-03",
+        "method": "POST",
+        "endpoint": "sections",
+        "data": {
+            "sections": {
+                "number": {
+                    "en": "4.8.11"
+                },
+                "name": {
+                    "en": "The audio element"
+                },
+                "subpath": {
+                    "en": "embedded-content.html#the-audio-element"
+                },
+                "links": {
+                    "specification": "6"
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-04",
+        "method": "POST",
+        "endpoint": "sections",
+        "data": {
+            "sections": {
+                "number": {
+                    "en": "4.7.7"
+                },
+                "name": {
+                    "en": "The audio element"
+                },
+                "subpath": {
+                    "en": "embedded-content-0.html#the-audio-element"
+                },
+                "links": {
+                    "specification": "7"
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-05",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "features": {
+                "slug": "web-html",
+                "name": {
+                    "en": "HTML"
+                },
+                "links": {
+                    "parent": "1"
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-06",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "features": {
+                "slug": "web-html-element",
+                "name": {
+                    "en": "Element"
+                },
+                "links": {
+                    "parent": "16"
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-07",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "features": {
+                "slug": "web-html-element-audio",
+                "mdn_uri": {
+                    "en": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"
+                },
+                "name": "audio",
+                "links": {
+                    "parent": "17"
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-08",
+        "method": "PUT",
+        "endpoint": "features/18",
+        "data": {
+            "features": {
+                "links": {
+                    "sections": ["7"]
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-09",
+        "method": "PUT",
+        "endpoint": "features/18",
+        "data": {
+            "features": {
+                "links": {
+                    "sections": ["7", "6"]
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-10",
+        "method": "PUT",
+        "endpoint": "features/18",
+        "data": {
+            "features": {
+                "links": {
+                    "sections": ["6", "7"]
+                }
+            }
+        }
+    }
+]

@@ -81,6 +81,7 @@ class ViewFeatureListSerializer(ModelSerializer):
 class DjangoResourceClient(object):
     """Implement tools.client.Client using Django native functions"""
     def url(self, resource_type, resource_id=None):
+        """Use Django reverse to determine URL."""
         if resource_type == 'maturities':
             singular = 'maturity'
         else:
@@ -92,9 +93,11 @@ class DjangoResourceClient(object):
             return reverse(singular + '-list')
 
     def open_changeset(self):
+        """Skip opening changesets (opened at the request/view level)."""
         pass
 
     def close_changeset(self):
+        """Skip closing changesets (closed at the request/view level)."""
         pass
 
     def update(self, resource_type, resource_id, resource):
@@ -553,7 +556,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
                 last_b_id = b_id
 
             if last_support != support:
-                sig_feature = sig_features.setdefault(f_id, {})
+                sig_feature = sig_features.setdefault(f_id, OrderedDict())
                 sig_browser = sig_feature.setdefault(str(b_id), [])
                 sig_browser.append(str(s_id))
                 last_support = support
@@ -613,11 +616,11 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
     def pagination(self, obj):
         """Determine pagination for large feature trees."""
-        pagination = {
-            'previous': None,
-            'next': None,
-            'count': obj.descendant_count
-        }
+        pagination = OrderedDict((
+            ('previous', None),
+            ('next', None),
+            ('count', obj.descendant_count),
+        ))
         url_kwargs = {'pk': obj.id}
         if self.context['format']:
             url_kwargs['format'] = self.context['format']

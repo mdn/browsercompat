@@ -10,6 +10,7 @@ env:
         - TOXENV=docs
         - TOXENV=flake8
         - TOXENV=coverage
+        - TOXENV=integration
 
 install: pip install tox
 before_script: psql -c 'create database travis_ci_test;' -U postgres

@@ -1,0 +1,137 @@
+{
+    "maturities": [
+        {
+            "id": "1",
+            "slug": "REC",
+            "name": {
+                "en": "Recommendation",
+                "de": "Empfehlung",
+                "ja": "\u52e7\u544a",
+                "ru": "\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f"
+            },
+            "links": {
+                "specifications": [
+                    "1",
+                    "2"
+                ]
+            }
+        },
+        {
+            "id": "2",
+            "slug": "WD",
+            "name": {
+                "en": "Working Draft",
+                "de": "Arbeitsentwurf",
+                "ja": "\u8349\u6848",
+                "ru": "\u0420\u0430\u0431\u043e\u0447\u0438\u0439 \u0447\u0435\u0440\u043d\u043e\u0432\u0438\u043a"
+            },
+            "links": {
+                "specifications": [
+                    "3",
+                    "4"
+                ]
+            }
+        },
+        {
+            "id": "3",
+            "slug": "CR",
+            "name": {
+                "en": "Candidate Recommendation",
+                "de": "Anw\u00e4rter Empfehlung",
+                "ja": "\u52e7\u544a\u5019\u88dc",
+                "ru": "\u041a\u0430\u043d\u0434\u0438\u0434\u0430\u0442 \u0432 \u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u0438"
+            },
+            "links": {
+                "specifications": []
+            }
+        },
+        {
+            "id": "4",
+            "slug": "Draft",
+            "name": {
+                "en": "Draft",
+                "de": "Entwurf",
+                "ja": "\u30c9\u30e9\u30d5\u30c8",
+                "ru": "\u0427\u0435\u0440\u043d\u043e\u0432\u0438\u043a"
+            },
+            "links": {
+                "specifications": []
+            }
+        },
+        {
+            "id": "5",
+            "slug": "ED",
+            "name": {
+                "en": "Editor's Draft",
+                "de": "Bearbeiterentwurf",
+                "ja": "\u52e7\u544a\u6539\u8a02\u6848",
+                "ru": "\u0420\u0435\u0434\u0430\u043a\u0442\u043e\u0440\u0441\u043a\u0438\u0439 \u0447\u0435\u0440\u043d\u043e\u0432\u0438\u043a"
+            },
+            "links": {
+                "specifications": []
+            }
+        },
+        {
+            "id": "6",
+            "slug": "Living",
+            "name": {
+                "en": "Living Standard",
+                "de": "Lebender Standard",
+                "ru": "\u0416\u0438\u0432\u043e\u0439 \u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442"
+            },
+            "links": {
+                "specifications": []
+            }
+        },
+        {
+            "id": "7",
+            "slug": "PR",
+            "name": {
+                "en": "Proposed Recommendation",
+                "de": "Vorgeschlagene Empfehlung",
+                "ja": "\u52e7\u544a\u6848",
+                "ru": "\u041f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u043d\u0430\u044f \u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f"
+            },
+            "links": {
+                "specifications": []
+            }
+        },
+        {
+            "id": "8",
+            "slug": "RFC",
+            "name": {
+                "en": "IETF RFC"
+            },
+            "links": {
+                "specifications": []
+            }
+        },
+        {
+            "id": "9",
+            "slug": "Standard",
+            "name": {
+                "en": "Standard",
+                "de": "Standard",
+                "ru": "\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442"
+            },
+            "links": {
+                "specifications": []
+            }
+        }
+    ],
+    "links": {
+        "maturities.specifications": {
+            "type": "specifications",
+            "href": "http://localhost:8000/api/v1/specifications/{maturities.specifications}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "maturities": {
+                "previous": null,
+                "next": null,
+                "count": 9
+            }
+        }
+    }
+}

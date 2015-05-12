@@ -1,0 +1,45 @@
+{
+    "sections": {
+        "id": "6",
+        "number": {
+            "en": "2.1"
+        },
+        "name": {
+            "en": "Ruby-specific 'display' Values"
+        },
+        "subpath": {
+            "en": "#ruby-display"
+        },
+        "note": null,
+        "links": {
+            "specification": "5",
+            "features": [
+                "13"
+            ],
+            "history_current": "8",
+            "history": [
+                "8",
+                "7",
+                "6"
+            ]
+        }
+    },
+    "links": {
+        "sections.specification": {
+            "type": "specifications",
+            "href": "https://browsercompat.org/api/v1/specifications/{sections.specification}"
+        },
+        "sections.features": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{sections.features}"
+        },
+        "sections.history_current": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history_current}"
+        },
+        "sections.history": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history}"
+        }
+    }
+}

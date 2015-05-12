@@ -26,56 +26,16 @@ in time, and who is responsible for that state.  The representation includes:
 
 To get a single **historical_browsers** representation:
 
-.. code-block:: http
-
-    GET /api/v1/historical_browsers/1002 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/historical-browser-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/historical-browser-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "historical_browsers": {
-            "id": "1002",
-            "timestamp": "1404919464.559140",
-            "event": "created",
-            "browsers": {
-                "id": "2",
-                "slug": "firefox",
-                "icon": "https://cdn.browsersupports.org/media/img/browsers/firefox.png",
-                "name": {
-                    "en": "Firefox"
-                },
-                "note": {
-                    "en": "Uses Gecko for its web browser engine."
-                },
-                "links": {
-                    "history_current": "1002",
-                }
-            },
-            "links": {
-                "browser": "1",
-                "changeset": "1",
-            }
-        },
-        "links": {
-            "historical_browsers.browser": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{historical_browsers.browser}",
-                "type": "browsers"
-            },
-            "historical_browsers.changeset": {
-                "href": "https://browsersupports.org/api/v1/changesets/{historical_browsers.changeset}",
-                "type": "changeset"
-            }
-        }
-    }
+.. literalinclude:: /raw/historical-browser-by-id-response-body.json
+    :language: json
 
 Historical Versions
 -------------------

@@ -1,0 +1,40 @@
+{
+    "historical_features": {
+        "id": "13",
+        "date": "2015-04-20T18:57:11.029709Z",
+        "event": "created",
+        "features": {
+            "id": "13",
+            "slug": "web-css-transform-three-value-syntax",
+            "mdn_uri": null,
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": {
+                "en": "Three-value syntax",
+                "es": "Sintaxis con tres valores",
+                "ja": "3-ĺ¤ć§ć"
+            },
+            "links": {
+                "parent": "10",
+                "sections": [],
+                "history_current": "13"
+            }
+        },
+        "links": {
+            "changeset": "1",
+            "feature": "13"
+        }
+    },
+    "links": {
+        "historical_features.changeset": {
+            "type": "changesets",
+            "href": "https://browsercompat.org/api/v1/changesets/{historical_features.changeset}"
+        },
+        "historical_features.feature": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{historical_features.feature}"
+        }
+    }
+}

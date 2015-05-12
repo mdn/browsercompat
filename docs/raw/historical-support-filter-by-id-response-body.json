@@ -1,0 +1,49 @@
+{
+    "historical_supports": [
+        {
+            "id": "22",
+            "date": "2015-04-20T18:57:11.724140Z",
+            "event": "created",
+            "supports": {
+                "id": "22",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "18",
+                    "feature": "13",
+                    "history_current": "22"
+                }
+            },
+            "links": {
+                "changeset": "1",
+                "support": "22"
+            }
+        }
+    ],
+    "links": {
+        "historical_supports.changeset": {
+            "type": "changesets",
+            "href": "https://browsercompat.org/api/v1/changesets/{historical_supports.changeset}"
+        },
+        "historical_supports.support": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{historical_supports.support}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "historical_supports": {
+                "previous": null,
+                "next": null,
+                "count": 1
+            }
+        }
+    }
+}

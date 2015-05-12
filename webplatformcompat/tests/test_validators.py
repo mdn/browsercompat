@@ -15,6 +15,10 @@ class SharedLanguageDictValidatorTests(object):
     def test_success(self):
         self.validator({'en': 'English'})
 
+    def test_null_is_success(self):
+        """If DRF 3.x tries None, accept as default parameter."""
+        self.validator(None)
+
     def test_string_fails(self):
         self.assertRaises(ValidationError, self.validator, 'en')
 

@@ -1,0 +1,151 @@
+{
+    "features": [
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/1",
+            "id": "1",
+            "slug": "web",
+            "mdn_uri": null,
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": {
+                "en": "Web"
+            }
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/2",
+            "id": "2",
+            "slug": "web-css",
+            "mdn_uri": null,
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": {
+                "en": "CSS"
+            }
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/3",
+            "id": "3",
+            "slug": "web-css-flex-shrink",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-shrink"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": null
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/4",
+            "id": "4",
+            "slug": "web-css-flex-wrap",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": null
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/5",
+            "id": "5",
+            "slug": "web-css-float",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+                "de": "https://developer.mozilla.org/de/docs/Web/CSS/float",
+                "es": "https://developer.mozilla.org/es/docs/Web/CSS/float",
+                "ja": "https://developer.mozilla.org/ja/docs/Web/CSS/float",
+                "ru": "https://developer.mozilla.org/ru/docs/Web/CSS/float"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": null
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/6",
+            "id": "6",
+            "slug": "web-css-float_basic-support",
+            "mdn_uri": null,
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": {
+                "en": "Basic Support",
+                "ja": "基本サポート"
+            }
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/7",
+            "id": "7",
+            "slug": "web-css-font",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/font"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": null
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/8",
+            "id": "8",
+            "slug": "web-css-font-family",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/font-family"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": null
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/9",
+            "id": "9",
+            "slug": "web-css-font-feature-settings",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": null
+        },
+        {
+            "href": "https://browsercompat.org/api/v1/view_features/10",
+            "id": "10",
+            "slug": "web-css-transform-origin",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin",
+                "es": "https://developer.mozilla.org/es/docs/Web/CSS/transform-origin",
+                "fr": "https://developer.mozilla.org/fr/docs/Web/CSS/transform-origin",
+                "ja": "https://developer.mozilla.org/ja/docs/Web/CSS/transform-origin"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": null
+        }
+    ],
+    "meta": {
+        "pagination": {
+            "features": {
+                "previous": null,
+                "next": "https://browsercompat.org/api/v1/view_features?page=2",
+                "count": 14
+            }
+        }
+    }
+}

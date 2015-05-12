@@ -1,0 +1,105 @@
+{
+    "sections": [
+        {
+            "id": "1",
+            "number": {
+                "en": "5.5.25"
+            },
+            "name": {
+                "en": "'float'"
+            },
+            "subpath": {
+                "en": "#float"
+            },
+            "note": {
+                "en": "Initial definition."
+            },
+            "links": {
+                "specification": "1",
+                "features": [
+                    "5"
+                ]
+            }
+        },
+        {
+            "id": "2",
+            "number": {
+                "en": "9.5.1"
+            },
+            "name": {
+                "en": "Positioning the float: the 'float' property"
+            },
+            "subpath": {
+                "en": "visuren.html#float-position"
+            },
+            "note": {
+                "en": "No change."
+            },
+            "links": {
+                "specification": "2",
+                "features": [
+                    "5"
+                ]
+            }
+        },
+        {
+            "id": "3",
+            "number": {
+                "en": "16"
+            },
+            "name": {
+                "en": "The float property"
+            },
+            "subpath": {
+                "en": "#the-float-property"
+            },
+            "note": {
+                "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+            },
+            "links": {
+                "specification": "3",
+                "features": [
+                    "5"
+                ]
+            }
+        },
+        {
+            "id": "4",
+            "number": {
+                "en": "8"
+            },
+            "name": {
+                "en": "The 'transform-origin' Property"
+            },
+            "subpath": {
+                "en": "#transform-origin-property"
+            },
+            "note": null,
+            "links": {
+                "specification": "4",
+                "features": [
+                    "10"
+                ]
+            }
+        }
+    ],
+    "links": {
+        "sections.specification": {
+            "type": "specifications",
+            "href": "http://localhost:8000/api/v1/specifications/{sections.specification}"
+        },
+        "sections.features": {
+            "type": "features",
+            "href": "http://localhost:8000/api/v1/features/{sections.features}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "sections": {
+                "previous": null,
+                "next": null,
+                "count": 4
+            }
+        }
+    }
+}

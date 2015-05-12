@@ -107,14 +107,20 @@ if __name__ == '__main__':
         '-u', '--user',
         help='Username on API (default: prompt for username)')
     parser.add_argument(
+        '-p', '--password',
+        help='Password on API (default: prompt for password)')
+    parser.add_argument(
+        '-d', '--data', default='data',
+        help='Input data folder (default: data)')
+    parser.add_argument(
+        '--noinput', action="store_true",
+        help='Upload any changes without prompting the user for input')
+    parser.add_argument(
         '-v', '--verbose', action="store_true",
         help='Print extra debug information')
     parser.add_argument(
         '-q', '--quiet', action="store_true",
         help='Only print warnings')
-    parser.add_argument(
-        '-d', '--data', default='data',
-        help='Input data folder (default: data)')
     args = parser.parse_args()
 
     # Setup logging
@@ -149,15 +155,23 @@ if __name__ == '__main__':
     logger.info("Uploading data from %s to %s", data, api)
 
     # Get credentials
-    user = args.user or input("API username: ")
-    password = getpass.getpass("API password: ")
+    user = args.user
+    password = args.password
+    if args.noinput and not (user and password):
+        raise Exception("--noinput requires --user and --password")
+    else:
+        if not user:
+            user = input("API username: ")
+        if not password:
+            password = getpass.getpass("API password: ")
 
     # Initialize client
     client = Client(api)
     client.login(user, password)
 
     # Load data
-    counts = upload_data(client, data, confirm_changes)
+    confirm = None if args.noinput else confirm_changes
+    counts = upload_data(client, data, confirm)
 
     if counts:
         logger.info("Changes complete. Counts:")

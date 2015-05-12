@@ -79,8 +79,8 @@ class Client(object):
         response = rfunc(url, params=params, data=data_json, headers=headers)
         if response.status_code not in expected_statuses:
             raise APIException(
-                'Unexpected response', response.status_code,
-                response.content)
+                '%s %s: Unexpected response' % (method, url),
+                response.status_code, response.content)
 
         end = time()
         logger.debug('%s %s completed in %0.1fs', method, url, end - start)

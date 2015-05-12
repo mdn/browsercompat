@@ -1,0 +1,43 @@
+{
+    "historical_browsers": [
+        {
+            "id": "6",
+            "date": "2015-04-20T18:44:09.905824Z",
+            "event": "created",
+            "browsers": {
+                "id": "6",
+                "slug": "firefox",
+                "name": {
+                    "en": "Firefox"
+                },
+                "note": null,
+                "links": {
+                    "history_current": "6"
+                }
+            },
+            "links": {
+                "changeset": "1",
+                "browser": "6"
+            }
+        }
+    ],
+    "links": {
+        "historical_browsers.changeset": {
+            "type": "changesets",
+            "href": "https://browsercompat.org/api/v1/changesets/{historical_browsers.changeset}"
+        },
+        "historical_browsers.browser": {
+            "type": "browsers",
+            "href": "https://browsercompat.org/api/v1/browsers/{historical_browsers.browser}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "historical_browsers": {
+                "previous": null,
+                "next": null,
+                "count": 1
+            }
+        }
+    }
+}

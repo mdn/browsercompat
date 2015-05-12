@@ -54,279 +54,48 @@ List
 
 To request the paginated list of **browsers**:
 
-.. code-block:: http
-
-    GET /api/v1/browsers HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/browser-list-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-list-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": [{
-            "id": "1",
-            "slug": "chrome",
-            "name": {
-                "en": "Chrome"
-            },
-            "note": null,
-            "links": {
-                "versions": ["123", "758"],
-                "history_current": "1001",
-                "history": ["1001"]
-            }
-        },{
-            "id": "2",
-            "slug": "firefox",
-            "name": {
-                "en": "Firefox"
-            },
-            "note": {
-                "en": "Uses Gecko for its web browser engine."
-            },
-            "links": {
-                "versions": ["124", "759"],
-                "history_current": "1002",
-                "history": ["1002"]
-            }
-        },{
-            "id": "3",
-            "slug": "ie",
-            "name": {
-                "en": "Internet Explorer"
-            },
-            "note": null,
-            "links": {
-                "versions": ["125", "167", "178", "760"],
-                "history_current": "1003",
-                "history": ["1003"]
-            }
-        },{
-            "id": "4",
-            "slug": "opera",
-            "name": {
-                "en": "Opera"
-            },
-            "note": null,
-            "links": {
-                "versions": ["126", "761"],
-                "history_current": "1004",
-                "history": ["1004"]
-            }
-        },{
-            "id": "5",
-            "slug": "safari",
-            "name": {
-                "en": "Safari"
-            },
-            "note": {
-                "en": "Uses Webkit for its web browser engine."
-            },
-            "links": {
-                "versions": ["127", "762"],
-                "history_current": "1005",
-                "history": ["1005"]
-            }
-        },{
-            "id": "6",
-            "slug": "android",
-            "name": {
-                "en": "Android"
-            },
-            "note": null,
-            "links": {
-                "versions": ["128", "763"],
-                "history_current": "1006",
-                "history": ["1006"]
-            }
-        },{
-            "id": "7",
-            "slug": "firefox-mobile",
-            "name": {
-                "en": "Firefox Mobile"
-            },
-            "note": {
-                "en": "Uses Gecko for its web browser engine."
-            },
-            "links": {
-                "versions": ["129", "764"],
-                "history_current": "1007",
-                "history": ["1007"]
-            }
-        },{
-            "id": "8",
-            "slug": "ie-phone",
-            "name": {
-                "en": "IE Phone"
-            },
-            "note": null,
-            "links": {
-                "versions": ["130", "765"],
-                "history_current": "1008",
-                "history": ["1008"]
-            }
-        },{
-            "id": "9",
-            "slug": "opera-mobile",
-            "name": {
-                "en": "Opera Mobile"
-            },
-            "note": null,
-            "links": {
-                "versions": ["131", "767"],
-                "history_current": "1009",
-                "history": ["1009"]
-            }
-        },{
-            "id": "10",
-            "slug": "safari-mobile",
-            "name": {
-                "en": "Safari Mobile"
-            },
-            "note": null,
-            "links": {
-                "versions": ["132", "768"],
-                "history_current": "1010",
-                "history": ["1010"]
-            }
-        }],
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        },
-        "meta": {
-            "pagination": {
-                "browsers": {
-                    "prev": null,
-                    "next": "https://browsersupports.org/api/v1/browsers?page=2&per_page=10",
-                    "pages": 2,
-                    "per_page": 10,
-                    "total": 14,
-                }
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-list-response-body.json
+    :language: json
 
 Retrieve by ID
 **************
 
-To request a single **browser**:
+To request a single **browser** with a known ID:
 
-.. code-block:: http
-
-    GET /api/v1/browsers/2 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/browser-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": {
-            "id": "2",
-            "slug": "firefox",
-            "name": {
-                "en": "Firefox"
-            },
-            "note": {
-                "en": "Uses Gecko for its web browser engine."
-            },
-            "links": {
-                "versions": ["124"],
-                "history_current": "1002",
-                "history": ["1002"]
-            }
-        },
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-by-id-response-body.json
+    :language: json
 
 Retrieve by Slug
 ****************
 
 To request a **browser** by slug:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-by-slug-request-headers.txt
+    :language: http
 
-    GET /api/v1/browsers?slug=firefox HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+The response includes the desired browser, in list format:
 
-A sample response is:
+.. literalinclude:: /raw/browser-by-slug-response-headers.txt
+    :language: http
 
-.. code-block:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": [{
-            "id": "2",
-            "slug": "firefox",
-            "name": {
-                "en": "Firefox"
-            },
-            "note": {
-                "en": "Uses Gecko for its web browser engine."
-            },
-            "links": {
-                "versions": ["124"],
-                "history_current": "1002",
-                "history": ["1002"]
-            }
-        }],
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-by-slug-response-body.json
+    :language: json
 
 Create
 ******
@@ -339,87 +108,37 @@ included.
 
 Here's an example of creating a **browser** instance:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-create-minimal-request-headers.txt
+    :language: http
 
-    POST /api/v1/browsers HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": {
-            "slug": "amazon-silk-mobile",
-            "name": {
-                "en": "Amazon Silk Mobile"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-create-minimal-request-body.json
+    :language: json
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-create-minimal-response-headers.txt
+    :language: http
 
-    HTTP/1.1 201 Created
-    Content-Type: application/vnd.api+json
-    Location: https://browsersupports.org/browsers/15
-
-.. code-block:: json
-
-    {
-        "browsers": {
-            "id": "15",
-            "slug": "amazon-silk-mobile",
-            "name": {
-                "en": "Amazon Silk Mobile"
-            },
-            "note": null,
-            "links": {
-                "versions": [],
-                "history_current": "1027",
-                "history": ["1027"]
-            }
-        },
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-create-minimal-response-body.json
+    :language: json
 
 This, and other methods that change resources, will create a new changeset_,
 and associate the new historical_browsers_ with that changeset_.  To assign to an
 existing changeset, add it to the URI:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-create-in-changeset-2-request-headers.txt
+    :language: http
 
-    POST /api/v1/browsers?changeset=176 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
-    Content-Type: application/vnd.api+json
+.. literalinclude:: /raw/browser-create-in-changeset-2-request-body.json
+    :language: json
 
-.. code-block:: json
+A sample response is:
 
-    {
-        "browsers": {
-            "slug": "amazon-silk-mobile",
-            "name": {
-                "en": "Amazon Silk Mobile"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-create-in-changeset-2-response-headers.txt
+    :language: http
+
+.. literalinclude:: /raw/browser-create-in-changeset-2-response-body.json
+    :language: json
 
 Update
 ******
@@ -430,184 +149,65 @@ changed, and will be ignored if included.  A successful update will return a
 ``200 OK``, add a new ID to the ``history`` links list, and update the
 ``history_current`` link.
 
-To update a **browser**:
+This update changes the English name from "Internet Explorer" to "Microsoft Internet Explorer":
 
-.. code-block:: http
 
-    PUT /api/v1/browsers/3 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+.. literalinclude:: /raw/browser-update-full-request-headers.txt
+    :language: http
 
-.. code-block:: json
+.. literalinclude:: /raw/browser-update-full-request-body.json
+    :language: json
 
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "name": {
-                "en": "IE"
-            },
-        }
-    }
+With this response:
 
-A sample response is:
+.. literalinclude:: /raw/browser-update-full-response-headers.txt
+    :language: http
 
-.. code-block:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "name": {
-                "en": "IE"
-            },
-            "note": null,
-            "links": {
-                "versions": ["125", "167", "178"],
-                "history_current": "1033",
-                "history": ["1033", "1003"]
-            }
-        },
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-update-full-response-body.json
+    :language: json
 
 Partial Update
 **************
 
-An update can just update some fields:
+An update can just update the target fields.  This is a further request to
+change the English name for the Internet Explorer browser.
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-update-partial-request-headers.txt
+    :language: http
 
-    PUT /api/v1/browsers/3 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+.. literalinclude:: /raw/browser-update-partial-request-body.json
+    :language: json
 
-.. code-block:: json
+With this response:
 
-    {
-        "browsers": {
-            "name": {
-                "en": "M$ Internet Exploder 💩"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-update-partial-response-headers.txt
+    :language: http
 
-A sample response is:
+.. literalinclude:: /raw/browser-update-partial-response-body.json
+    :language: json
 
-.. code-block:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "name": {
-                "en": "M$ Internet Exploder 💩"
-            },
-            "note": null,
-            "links": {
-                "versions": ["125", "167", "178"],
-                "history_current": "1034",
-                "history": ["1034", "1033", "1003"]
-            }
-        },
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        }
-    }
+Update order of related resources
+*********************************
+In many cases, related resources (which appear in the "links" attribute")
+are sorted by ID.  In some cases, the order is significant, and is set on
+a related field.  For example, **versions** for a **browser** are ordered
+by updating the order on the **browser** object:
 
 To change just the versions_ order:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-update-versions-order-request-headers.txt
+    :language: http
 
-    PUT /api/v1/browsers/3 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+.. literalinclude:: /raw/browser-update-versions-order-request-body.json
+    :language: json
 
-.. code-block:: json
+With this response:
 
-    {
-        "browsers": {
-            "links": {
-                "versions": ["178", "167", "125"]
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-update-versions-order-response-headers.txt
+    :language: http
 
-A sample response is:
-
-.. code-block:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "name": {
-                "en": "M$ Internet Exploder 💩"
-            },
-            "note": null,
-            "links": {
-                "versions": ["178", "167", "125"],
-                "history_current": "1035",
-                "history": ["1035", "1034", "1033", "1003"]
-            }
-        },
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-update-versions-order-response-body.json
+    :language: json
 
 Reverting to a previous instance
 ********************************
@@ -616,131 +216,36 @@ To revert to an earlier instance, set the ``history_current`` link to a
 previous value.  This resets the content and creates a new
 historical_browsers_ object:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-revert-request-headers.txt
+    :language: http
 
-    PUT /api/v1/browsers/3 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+.. literalinclude:: /raw/browser-revert-request-body.json
+    :language: json
 
-.. code-block:: json
+With this response:
 
-    {
-        "browsers": {
-            "links": {
-                "history_current": "1003"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-revert-response-headers.txt
+    :language: http
 
-A sample response is:
-
-.. code-block:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": {
-            "id": "3",
-            "slug": "ie",
-            "name": {
-                "en": "Internet Explorer"
-            },
-            "note": none,
-            "links": {
-                "versions": ["125", "167", "178"],
-                "history_current": "1036",
-                "history": ["1036", "1035", "1034", "1033", "1003"]
-            }
-        },
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        }
-    }
+.. literalinclude:: /raw/browser-revert-response-body.json
+    :language: json
 
 Deletion
 ********
 
 To delete a **browser**:
 
-.. code-block:: http
+.. literalinclude:: /raw/browser-delete-request-headers.txt
+    :language: http
 
-    DELETE /api/v1/browsers/2 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+The response has no body:
 
-A successful response has no body:
-
-.. code-block:: http
-
-    HTTP/1.1 204 No Content
+.. literalinclude:: /raw/browser-delete-response-headers.txt
+    :language: http
 
 Reverting a deletion
 ********************
-
-To revert a deletion:
-
-.. code-block:: http
-
-    PUT /api/v1/browsers/2 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
-
-A sample response is:
-
-.. code-block:: http
-
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "browsers": {
-            "id": "2",
-            "slug": "firefox",
-            "name": {
-                "en": "Firefox"
-            },
-            "note": null,
-            "links": {
-                "versions": ["124"],
-                "history_current": "1104",
-                "history": ["1104", "1103", "1002"]
-            }
-        },
-        "links": {
-            "browsers.versions": {
-                "href": "https://browsersupports.org/api/v1/versions/{browsers.versions}",
-                "type": "versions"
-            },
-            "browsers.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history_current}",
-                "type": "historical_browsers"
-            },
-            "browsers.history": {
-                "href": "https://browsersupports.org/api/v1/historical_browsers/{browsers.history}",
-                "type": "historical_browsers"
-            }
-        }
-    }
-
+Reverting deletions is not currently possible.
 
 Versions
 --------
@@ -769,6 +274,8 @@ The **versions** representation includes:
     - **release_notes_uri** *(localized)* - URI of release notes for this
       version, or null if none.
     - **note** *(localized)* - Engine, OS, etc. information, or null
+    - **order** *(read-only)* - The relative order amoung versions for this
+      browser. The order can be changed on the **browser** resource.
 * **links**
     - **browser** - The related **browser**
     - **supports** *(many)* - Associated **supports**, in ID order.  Changes
@@ -780,56 +287,16 @@ The **versions** representation includes:
 
 To get a single **version**:
 
-.. code-block:: http
-
-    GET /api/v1/versions/123 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/version-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/version-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "versions": {
-            "id": "123",
-            "version": "1.0.154",
-            "release_day": "2008-12-11",
-            "retirement_day": "2009-05-24",
-            "status": "retired",
-            "release_notes_uri": null,
-            "note": null,
-            "links": {
-                "browser": "1",
-                "supports": ["1125", "1126", "1127", "1128", "1129"],
-                "history_current": "567",
-                "history": ["567"]
-            }
-        },
-        "links": {
-            "versions.browser": {
-                "href": "https://browsersupports.org/api/v1/browsers/{versions.browser}",
-                "type": "browsers"
-            },
-            "versions.supports": {
-                "href": "https://browsersupports.org/api/v1/supports/{versions.supports}",
-                "type": "supports"
-            },
-            "versions.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_versions/{versions.history_current}",
-                "type": "historical_versions"
-            },
-            "versions.history": {
-                "href": "https://browsersupports.org/api/v1/historical_versions/{versions.history}",
-                "type": "historical_versions"
-            }
-        }
-    }
+.. literalinclude:: /raw/version-by-id-response-body.json
+    :language: json
 
 Features
 --------
@@ -882,130 +349,33 @@ The **features** representation includes:
       (most recent first).  Changes are ignored.
 
 
-To get a specific **feature** (in this case, a leaf feature with a canonical name):
+To get a specific **feature** (in this case, a leaf feature with a translated
+name):
 
-.. code-block:: http
-
-    GET /api/v1/features/276 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/feature-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/feature-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
+.. literalinclude:: /raw/feature-by-id-response-body.json
+    :language: json
 
-.. code-block:: json
-
-    {
-        "features": {
-            "id": "276",
-            "slug": "css-property-background-size-value-contain",
-            "mdn_uri": null,
-            "experimental": false,
-            "standardized": true,
-            "stable": true,
-            "obsolete": false,
-            "name": "background-size: contain",
-            "links": {
-                "sections": ["485"],
-                "supports": ["1125", "1212", "1536"],
-                "parent": "173",
-                "children": [],
-                "history_current": "456",
-                "history": ["456"]
-            }
-        },
-        "links": {
-            "features.sections": {
-                "href": "https://browsersupports.org/api/v1/sections/{features.sections}",
-                "type": "sections"
-            },
-            "feature.parent": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.parent}",
-                "type": "features"
-            },
-            "features.children": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.children}",
-                "type": "features"
-            },
-            "features.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_features/{features.history_current}",
-                "type": "historical_features"
-            },
-            "features.history": {
-                "href": "https://browsersupports.org/api/v1/historical_features/{features.history}",
-                "type": "historical_features"
-            }
-        }
-    }
-
-Here's an example of a branch feature with a translated name (the parent of the
+Here's an example of a branch feature with a canonical name (the parent of the
 previous example):
 
-.. code-block:: http
-
-    GET /api/v1/features/173 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/feature-by-id-canonical-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/feature-by-id-canonical-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "features": {
-            "id": "173",
-            "slug": "css-property-background",
-            "mdn_uri": {
-                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/background"
-            },
-            "experimental": false,
-            "standardized": true,
-            "stable": true,
-            "obsolete": false,
-            "name": {
-                "en": "CSS <code>background</code> property"
-            },
-            "links": {
-                "sections": [],
-                "supports": [],
-                "parent": ["12"],
-                "children": ["275", "276", "277"],
-                "history_current": "395",
-                "history": ["395"]
-            }
-        },
-        "links": {
-            "features.sections": {
-                "href": "https://browsersupports.org/api/v1/sections/{features.sections}",
-                "type": "sections"
-            },
-            "feature.parent": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.parent}",
-                "type": "features"
-            },
-            "features.children": {
-                "href": "https://browsersupports.org/api/v1/features/{feature.children}",
-                "type": "features"
-            },
-            "features.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_features/{features.history_current}",
-                "type": "historical_features"
-            },
-            "features.history": {
-                "href": "https://browsersupports.org/api/v1/historical_features/{features.history}",
-                "type": "historical_features"
-            }
-        }
-    }
+.. literalinclude:: /raw/feature-by-id-canonical-response-body.json
+    :language: json
 
 Supports
 --------
@@ -1049,59 +419,16 @@ The **support** representation includes:
 
 To get a single **support**:
 
-.. code-block:: http
-
-    GET /api/v1/supports/1123 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vnd.api+json
+.. literalinclude:: /raw/support-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/support-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "supports": {
-            "id": "1123",
-            "support": "yes",
-            "prefix": null,
-            "prefix_mandatory": false,
-            "alternate_name": null,
-            "alternate_name_mandatory": false,
-            "requires_config": null,
-            "default_config": null,
-            "protected": false,
-            "note": null,
-            "links": {
-                "version": "123",
-                "feature": "276",
-                "history_current": "2567",
-                "history": ["2567"]
-            }
-        },
-        "links": {
-            "supports.version": {
-                "href": "https://browsersupports.org/api/v1/versions/{supports.version}",
-                "type": "versions"
-            },
-            "supports.feature": {
-                "href": "https://browsersupports.org/api/v1/browsers/{supports.feature}",
-                "type": "features"
-            },
-            "supports.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_supports/{supports.history_current}",
-                "type": "historical_supports"
-            },
-            "supports.history": {
-                "href": "https://browsersupports.org/api/v1/historical_supports/{supports.history}",
-                "type": "historical_supports"
-            }
-        }
-    }
+.. literalinclude:: /raw/support-by-id-response-body.json
+    :language: json
 
 Specifications
 --------------
@@ -1129,60 +456,16 @@ The **specification** representation includes:
 
 To get a single **specification**:
 
-.. code-block:: http
-
-    GET /api/v1/specifications/273 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vn.api+json
+.. literalinclude:: /raw/specification-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/specification-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "specifications": {
-            "id": "273",
-            "slug": "CSS1",
-            "mdn_key": "CSS1",
-            "name": {
-                "en": "Cascading Style Sheets, level 1",
-                "fr": "Les feuilles de style en cascade, niveau 1"
-            },
-            "uri": {
-                "en": "http://www.w3.org/TR/CSS1/",
-                "fr": "http://www.yoyodesign.org/doc/w3c/css1/index.html"
-            },
-            "links": {
-                "maturity": "23",
-                "sections": ["792", "793"],
-                "history_current": "743",
-                "history": ["743"]
-            }
-        },
-        "links": {
-            "specifications.maturity": {
-                "href": "https://browsersupports.org/api/v1/maturities/{specifications.maturity}",
-                "type": "maturities"
-            },
-            "specifications.sections": {
-                "href": "https://browsersupports.org/api/v1/sections/{specifications.sections}",
-                "type": "sections"
-            },
-            "specifications.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_specifications/{specifications.history_current}",
-                "type": "historical_specifications"
-            },
-            "specifications.history": {
-                "href": "https://browsersupports.org/api/v1/historical_specifications/{specifications.history}",
-                "type": "historical_specifications"
-            }
-        }
-    }
+.. literalinclude:: /raw/specification-by-id-response-body.json
+    :language: json
 
 Sections
 --------
@@ -1211,62 +494,16 @@ The **section** representation includes:
 
 To get a single **section**:
 
-.. code-block:: http
-
-    GET /api/v1/sections/792 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vn.api+json
+.. literalinclude:: /raw/section-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/section-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "sections": {
-            "id": "792",
-            "number": {
-                "en": "9.2.4",
-            },
-            "name": {
-                "en": "'display'"
-            },
-            "subpath": {
-                "en": "#display"
-            },
-            "note": {
-                "en": "Basic values: <code>none<\/code>, <code>block<\/code>, <code>inline<\/code>, and <code>list-item<\/code>."
-            },
-            "links": {
-                "specification": "273",
-                "features": ["275", "276", "277"],
-                "history_current": "2743",
-                "history": ["2743"]
-            }
-        },
-        "links": {
-            "sections.specification": {
-                "href": "https://browsersupports.org/api/v1/specifications/{sections.specification}",
-                "type": "specifications"
-            },
-            "sections.features": {
-                "href": "https://browsersupports.org/api/v1/sections/{sections.features}",
-                "type": "features"
-            },
-            "sections.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_sections/{sections.history_current}",
-                "type": "historical_sections"
-            },
-            "sections.history": {
-                "href": "https://browsersupports.org/api/v1/historical_sections/{sections.history}",
-                "type": "historical_sections"
-            }
-        }
-    }
+.. literalinclude:: /raw/section-by-id-response-body.json
+    :language: json
 
 Maturities
 ----------
@@ -1291,50 +528,16 @@ The **maturity** representation includes:
 
 To get a single **maturity**:
 
-.. code-block:: http
-
-    GET /api/v1/maturities/49 HTTP/1.1
-    Host: browsersupports.org
-    Accept: application/vn.api+json
+.. literalinclude:: /raw/maturity-by-id-request-headers.txt
+    :language: http
 
 A sample response is:
 
-.. code-block:: http
+.. literalinclude:: /raw/maturity-by-id-response-headers.txt
+    :language: http
 
-    HTTP/1.1 200 OK
-    Content-Type: application/vnd.api+json
-
-.. code-block:: json
-
-    {
-        "maturities": {
-            "id": "49",
-            "slug": "REC",
-            "name": {
-                "en": "Recommendation",
-                "jp": "勧告"
-            },
-            "links": {
-                "specifications": ["84", "85", "272", "273", "274", "576"],
-                "history_current": "149",
-                "history": ["149"]
-            }
-        },
-        "links": {
-            "maturities.specifications": {
-                "href": "https://browsersupports.org/api/v1/specifications/{maturities.specifications}",
-                "type": "specifications"
-            },
-            "maturities.history_current": {
-                "href": "https://browsersupports.org/api/v1/historical_maturities/{maturities.history_current}",
-                "type": "historical_maturities"
-            },
-            "maturities.history": {
-                "href": "https://browsersupports.org/api/v1/historical_maturities/{maturities.history}",
-                "type": "historical_maturities"
-            }
-        }
-    }
+.. literalinclude:: /raw/maturity-by-id-response-body.json
+    :language: json
 
 .. _feature: Features_
 .. _specification: Specifications_

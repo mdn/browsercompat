@@ -26,7 +26,7 @@ Import features from MDN, or reparse imported features. Usage::
     $ tools/import_mdn.py [--api API] [--user USER] [-vq]
 
 * ``--api <API>`` `(optional)`: Set the base URL of the API
-  (default: `http://localhost:8000`)
+  (default: ``http://localhost:8000``)
 * ``--user <USER>`` `(optional)`: Set the username to use on the API
   (default: prompt for username)
 * ``-v`` `(optional)`: Print debug information
@@ -36,10 +36,11 @@ load_spec_data.py
 -----------------
 Import specification data from MDN's SpecName_ and Spec2_.  Usage::
 
-    $ tools/load_spec_data.py [--api <API>] [--user <USER>] [-vq] [--all-data]
+    $ tools/load_spec_data.py [--api <API>] [--user <USER>]
+                              [-vq] [--all-data]
 
 * ``--api <API>`` `(optional)`: Set the base URL of the API
-  (default: `http://localhost:8000`)
+  (default: ``http://localhost:8000``)
 * ``--user <USER>`` `(optional)`: Set the username to use on the API
   (default: prompt for username)
 * ``-v`` `(optional)`: Print debug information
@@ -49,15 +50,69 @@ load_webcompat_data.py
 ----------------------
 Initialize with compatibility data from the WebPlatform_ project. Usage::
 
-    $ tools/load_webcompat_data.py [--api <API>] [--user <USER>] [-vq] [--all-data]
+    $ tools/load_webcompat_data.py [--api <API>] [--user <USER>]
+                                   [-vq] [--all-data]
 
 * ``--api <API>`` `(optional)`: Set the base URL of the API
-  (default: `http://localhost:8000`)
+  (default: ``http://localhost:8000``)
 * ``--user <USER>`` `(optional)`: Set the username to use on the API
   (default: prompt for username)
 * ``-v`` `(optional)`: Print debug information
 * ``-q`` `(optional)`: Only print warnings
 * ``--all-data`` `(optional)`: Import all data, rather than a subset
+
+make_doc_requests.py
+--------------------
+Make documentation/integration requests against an API. Used by
+tools/run_integration_tests.sh. Usage::
+
+    $ tools/integration_requests.py [--mode {display,generate,verify}]
+                                    [--api API]
+                                    [--raw RAW] [--cases CASES]
+                                    [--user USER] [--password PASSWORD]
+                                    [--include-mod] [-vq]
+                                    [case name [case name ...]]
+
+* ``--mode {display,generate,verify}`` `(optional)`: Set the mode. Values are:
+    * ``display`` (default): Run GET requests against an API, printing the
+      actual requests and responses.
+    * ``generate``: Run all requests against an API.  Throw away some headers,
+      such as ``Allow`` and ``Server``.  Modify other headers, such as
+      ``Cookies``, to make them consistant from run to run.  Standardize some
+      response data, such as creation and modification times.  Store the
+      cleaned-up requests and responses in the docs folder, for documentation
+      and integration testing.
+    * ``verify``: Run all requests against an API, standardizing the requests
+      and responses and comparing them to those in the docs folder.
+* ``--api API`` `(optional)`: Set the base URL of the API
+  (default: ``http://localhost:8000``)
+* ``--raw RAW`` `(optional)`: Set the path to the folder containing raw
+  requests and responses (default: ``docs/raw``)
+* ``--cases CASES`` `(optional)`: Set the path to the documentation cases
+  JSON file (default ``docs/doc_cases.json``)
+* ``--user USER``: Set the username to use for requests (default anonymous
+  requests)
+* ``--password PASSWORD``: Set the password to use for requests (default is
+  prompt if ``--user`` set, otherwise use anonymous requests)
+* ``--include-mod``: If ``--mode display``, then include requests that would
+  modify the data, such as ``POST``, ``PUT``, and ``DELETE``.
+* ``-v``: Be more verbose
+* ``-q``: Be quieter
+* ``case name``: Run the listed cases, not the full suite of cases
+
+run_integration_tests.sh
+------------------------
+Run a local API server with known data, make requests against it, and look for
+issues in the response. Usage::
+
+    $ tools/run_integration_tests.sh [-ghqv]
+
+* ``-g``: Generate documentation / integration test samples. If omitted, then
+  responses are checked against the documentation samples. Useful for adding
+  new documentation cases, or updating when the API changes.
+* ``-h``: Show a usage statement
+* ``-q``: Show less output
+* ``-v``: Show more output
 
 sample_mdn.py
 -------------
@@ -69,10 +124,11 @@ upload_data.py
 --------------
 Upload data to the API.  Usage::
 
-    $ tools/upload_data.py [--api API] [--user USER] [-vq] [--data DATA]
+    $ tools/upload_data.py [--api API] [--user USER]
+                           [-vq] [--data DATA]
 
 * ``--api <API>`` `(optional)`: Set the base URL of the API
-  (default: `http://localhost:8000`)
+  (default: ``http://localhost:8000``)
 * ``--user <USER>`` `(optional)`: Set the username to use on the API
   (default: prompt for username)
 * ``-v`` `(optional)`: Print debug information

@@ -1,0 +1,37 @@
+{
+    "sections": {
+        "id": "5",
+        "number": null,
+        "name": {
+            "en": "'font-family'"
+        },
+        "subpath": null,
+        "note": null,
+        "links": {
+            "specification": "1",
+            "features": [],
+            "history_current": "5",
+            "history": [
+                "5"
+            ]
+        }
+    },
+    "links": {
+        "sections.specification": {
+            "type": "specifications",
+            "href": "https://browsercompat.org/api/v1/specifications/{sections.specification}"
+        },
+        "sections.features": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{sections.features}"
+        },
+        "sections.history_current": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history_current}"
+        },
+        "sections.history": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history}"
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "specifications": {
+        "id": "6",
+        "slug": "html_whatwg",
+        "mdn_key": "HTML WHATWG",
+        "name": {
+            "en": "WHATWG HTML Living Standard"
+        },
+        "uri": {
+            "en": "https://html.spec.whatwg.org/multipage/"
+        },
+        "links": {
+            "maturity": "6",
+            "sections": [],
+            "history_current": "8",
+            "history": [
+                "8"
+            ]
+        }
+    },
+    "links": {
+        "specifications.maturity": {
+            "type": "maturities",
+            "href": "https://browsercompat.org/api/v1/maturities/{specifications.maturity}"
+        },
+        "specifications.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{specifications.sections}"
+        },
+        "specifications.history_current": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history_current}"
+        },
+        "specifications.history": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history}"
+        }
+    }
+}

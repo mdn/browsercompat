@@ -1,0 +1,63 @@
+{
+    "features": [
+        {
+            "id": "1",
+            "slug": "web",
+            "mdn_uri": null,
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": {
+                "en": "Web"
+            },
+            "links": {
+                "sections": [],
+                "supports": [],
+                "parent": null,
+                "children": [
+                    "2"
+                ],
+                "history_current": "1",
+                "history": [
+                    "1"
+                ]
+            }
+        }
+    ],
+    "links": {
+        "features.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
+        },
+        "features.parent": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.parent}"
+        },
+        "features.children": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.history_current": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history_current}"
+        },
+        "features.history": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "features": {
+                "previous": null,
+                "next": null,
+                "count": 1
+            }
+        }
+    }
+}

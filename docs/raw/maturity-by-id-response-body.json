@@ -1,0 +1,36 @@
+{
+    "maturities": {
+        "id": "1",
+        "slug": "REC",
+        "name": {
+            "en": "Recommendation",
+            "de": "Empfehlung",
+            "ja": "勧告",
+            "ru": "Рекомендация"
+        },
+        "links": {
+            "specifications": [
+                "1",
+                "2"
+            ],
+            "history_current": "1",
+            "history": [
+                "1"
+            ]
+        }
+    },
+    "links": {
+        "maturities.specifications": {
+            "type": "specifications",
+            "href": "https://browsercompat.org/api/v1/specifications/{maturities.specifications}"
+        },
+        "maturities.history_current": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{maturities.history_current}"
+        },
+        "maturities.history": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{maturities.history}"
+        }
+    }
+}
