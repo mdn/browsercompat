@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<form class="form-inline" action="{{url("feature_page_search")}}" method="GET">
+<form class="form-inline" action="{{ url("feature_page_search") }}" method="GET">
   <div class="form-group">
     <label class="sr-only" for="id-url">MDN URL</label>
     <input type="url" class="form-control" id="id-url" name="url"
@@ -25,25 +25,30 @@
       <th>Feature ID</th>
       <th>MDN Slug</th>
       <th>Status</th>
-      <th>Has Issues?</th>
+      <th>Warnings /<br/>Errors /<br/>Critical Errors</th>
     </tr>
   </thead>
   <tbody>
     {% for page in page_obj.object_list %}
     <tr>
-      <td><a href="{{ url('feature_page_detail', pk=page.id) }}">{{page.id}}</a></td>
-      <td>{{page.feature_id}}</td>
-      <td>{{page.slug()}}</td>
-      <td><a href="{{ url('feature_page_detail', pk=page.id) }}">{{page.get_status_display()}}</a></td>
+      <td><a href="{{ url('feature_page_detail', pk=page.id) }}">{{ page.id }}</a></td>
+      <td>{{ page.feature_id }}</td>
+      <td>{{ page.slug() }}</td>
+      <td><a href="{{ url('feature_page_detail', pk=page.id) }}">{{ page.get_status_display() }}</a></td>
       <td>
         <a href="{{ url('feature_page_detail', pk=page.id) }}">
         {%- if page.status == page.STATUS_PARSED -%}
-          {%- if page.has_issues %}<strong>Yes</strong>{% else %}No{%endif -%}
+          {%- if page.has_issues %}
+            {{ page.warnings }} / {{ page.errors }} / {{ page.critical }}
+          {% else %}
+            No Issues
+          {% endif %}
         {%- elif page.status == page.STATUS_ERROR %}
           Scraping Failed
         {%- else %}
           <em>Still Processing</em>
         {%- endif -%}
+        </a>
       </td>
     </tr>
     {% endfor %}
@@ -55,7 +60,7 @@
 {% endif %}
 
 {% if can_create_mdn_import(request.user) %}
-<a class="btn btn-primary" href="{{url('feature_page_create')}}">Import a new page</a>
+<a class="btn btn-primary" href="{{ url('feature_page_create') }}">Import a new page</a>
 {% endif %}
 
 {% endblock content %}

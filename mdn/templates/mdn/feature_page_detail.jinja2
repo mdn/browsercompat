@@ -1,7 +1,7 @@
 {% extends "webplatformcompat/base.jinja2" %}
 
-{% block head_title %}Parse results for {{object.slug()}}{% endblock %}
-{% block body_title %}Parse results for {{object.slug()}}{% endblock %}
+{% block head_title %}Parse results for {{ object.slug() }}{% endblock %}
+{% block body_title %}Parse results for {{ object.slug() }}{% endblock %}
 
 {% block quick_nav %}
 <p><em>back to <a href="{{ url('feature_page_list') }}">page list</a></em></p>
@@ -10,29 +10,40 @@
 {% block content %}
 <dl>
   <dt>ID</dt>
-    <dd>{{object.id}}</dd>
+    <dd>{{ object.id }}</dd>
   <dt>MDN URL</dt>
     <dd>
-      <a id="mdn_link" href="{{object.url}}">{{object.url}}</a>
+      <a id="mdn_link" href="{{ object.url }}">{{ object.url }}</a>
       <br/>
-      (<a id="mdn_link_spec" href="{{object.url}}#Specifications">Specifications</a>,
-      <a id="mdn_link_compat" href="{{object.url}}#Browser_compatibility">Browser Compatibility</a>)
+      (<a id="mdn_link_spec" href="{{ object.url }}#Specifications">Specifications</a>,
+      <a id="mdn_link_compat" href="{{ object.url }}#Browser_compatibility">Browser Compatibility</a>)
     </dd>
   <dt>Feature ID</dt>
-    <dd><a href="/view_feature/{{object.feature_id}}">{{object.feature_id}}</a></td>
+    <dd><a href="/view_feature/{{ object.feature_id }}">{{ object.feature_id }}</a></td>
   <dt>Status</dt>
-    <dd>{{object.get_status_display()}}</dd>
+    <dd>{{ object.get_status_display() }}</dd>
   <dt>Last Modified</dt>
     <dd>{{ object.same_since() }}</dd>
   <dt>Issues</dt>
     <dd>{% if object.has_issues %}
-      <ul>
-        {% for error in object.data['meta']['scrape']['errors'] %}
-        <li>{{ error | safe }}</li>
-        {% else %}
-        <li><em><code>.has_errors</code> is set, but no errors recorded</em></li>
+      <ol>
+        {% for issue in object.issues.order_by("start") %}
+        <li><div>
+            <p>
+                <strong>{{ issue.get_severity_display() }}: {{ issue.brief_description }}</strong><br/>
+                {{ issue.long_description }}<br>
+                <a href="https://wiki.mozilla.org/MDN/Development/CompatibilityTables/Importer#{{ issue.slug }}">More information about issue "{{ issue.slug }}"</a>
+            </p>
+            {% if issue.params.rule %}
+            <p><em>Parser rule:</em></p>
+            <p><code>{{ issue.params.rule }}</code></p>
+            {% endif %}
+            {% if issue.content %}
+            <p><em>Context:</em><pre>{{ issue.context }}</pre></p>
+            {% endif %}
+        </div></li>
         {% endfor %}
-      </ul>{% else %}
+      </ol>{% else %}
       <em>None detected</em>
       {% endif %}
     </dd>
@@ -40,7 +51,7 @@
 <h3>Actions</h3>
 <div>
 {% if can_refresh_mdn_import(request.user) %}
-<form action="{{url('feature_page_reset', pk=object.pk)}}" method="post">
+<form action="{{ url('feature_page_reset', pk=object.pk) }}" method="post">
 {{ csrf() }}
 <input id="submit-reset" class="btn btn-primary" type="submit" value="Reset">
 <label for="submit-reset">Download MDN pages and reparse</label>
@@ -48,7 +59,7 @@
 <br/>
 {% endif %}
 {% if can_reparse_mdn_import(request.user) %}
-<form id="form-reparse" action="{{url('feature_page_reparse', pk=object.pk)}}" method="post">
+<form id="form-reparse" action="{{ url('feature_page_reparse', pk=object.pk) }}" method="post">
 {{ csrf() }}
 <input id="submit-reparse" class="btn btn-primary" type="submit" value="Reparse">
 <label for="submit-reparse">Re-parse the cached MDN pages</label>
@@ -57,7 +68,7 @@
 {% endif %}
 {% if can_commit_mdn_import(request.user) %}
 <form id="form-commit" class="hide"
- action="{{url('viewfeatures-detail', pk=object.feature_id)}}" method="put">
+ action="{{ url('viewfeatures-detail', pk=object.feature_id) }}" method="put">
 {{ csrf() }}
 <input id="submit-commit" class="btn btn-primary" type="submit" value="Commit">
 <label for="submit-commit">Commit data to the API</label>
@@ -71,7 +82,7 @@
 </div>
 
 {% if object.status == object.STATUS_PARSED %}
-<h1>Sample Presentation of {{object.slug()}}</h1>
+<h1>Sample Presentation of {{ object.slug() }}</h1>
 <h2>Specifications</h2>
 <div id="wpc_specifications">
   <p><i>Loading...</i></p>
@@ -95,11 +106,11 @@
 <h2>Raw Data</h2>
 <p>
   This
-  <a href="{{url('feature_page_json', pk=object.pk)}}">raw JSON-API data</a>
+  <a href="{{ url('feature_page_json', pk=object.pk) }}">raw JSON-API data</a>
   resembles that returned from
   <code>
-    <a id="wpc_uri" href="/api/v1/view_features/{{feature_id}}">
-      /api/v1/view_features/{{object.feature.id}}
+    <a id="wpc_uri" href="/api/v1/view_features/{{ feature_id }}">
+      /api/v1/view_features/{{ object.feature.id }}
     </a>
   </code>
 </p>
