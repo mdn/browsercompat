@@ -7,7 +7,7 @@ web-platform-compat has not been released to production yet.  The blocking
 issues for version 1 are tracked on Bugzilla_.
 
 In-progess versions are periodically deployed to Heroku at
-http://doesitwork-dev.allizom.org and https://browsercompat.herokuapp.com.
+https://browsercompat.herokuapp.com.
 
 Here are some of the development deployments:
 
