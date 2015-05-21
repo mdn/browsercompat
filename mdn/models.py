@@ -279,6 +279,11 @@ ISSUES = OrderedDict((
         'Unknown Gecko version "{version}"',
         'The importer does not recognize this version for CompatGeckoFxOS.'
         ' Change the MDN page or update the importer.')),
+    ('doc_parse_error', (
+        CRITICAL,
+        'No imported data due to unexpected page structure.',
+        'The importer was unable to handle the page structure enough to'
+        ' determine if there was compatibility data.')),
     ('exception', (CRITICAL, 'Unhandled exception', '{traceback}')),
     ('extra_cell', (
         ERROR,
