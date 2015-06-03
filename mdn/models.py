@@ -377,6 +377,16 @@ ISSUES = OrderedDict((
         ERROR,
         'Nested <p> tags are not supported.',
         'Edit the MDN page to remove the nested <p> tag')),
+    ('missing_attribute', (
+        ERROR,
+        'The tag <{node_type}> is missing the expected attribute {ident}',
+        'Add the missing attribute or convert the tag to plain text.')),
+    ('second_footnote', (
+        ERROR,
+        'An additional footnote was detected in content',
+        'The footnote [{original}] is being used, and the footnote [{new}]'
+        ' discarded.  If footnotes are in the same <p> and split by <br>'
+        ' tags, then split into paragraphs to fix.')),
     ('section_skipped', (
         CRITICAL,
         'Section <h2>{title}</h2> has unexpected content.',
@@ -391,6 +401,12 @@ ISSUES = OrderedDict((
         'The import of section {title} failed, but no parse error was'
         ' detected. This is usually because of a previous critical error,'
         ' which must be cleared before any parsing can be attempted.')),
+    ('skipped_h3', (
+        WARNING,
+        '<h3>{h3}</h3> was not imported.',
+        '<h3> subsections are usually prose compatibility information, and'
+        ' anything after an <h3> is not parsed or imported. Convert to'
+        ' footnotes or move to a different <h2> section.')),
     ('spec_h2_id', (
         WARNING,
         'Expected <h2 id="Specifications">, actual id={h2_id}',
@@ -437,6 +453,12 @@ ISSUES = OrderedDict((
         ERROR,
         '{kumascript} is invalid in the spec description',
         'Handled as if {{{{SpecName(...)}}}} was used. Update the MDN page.')),
+    ('tag_dropped', (
+        WARNING,
+        'HTML element {tag} (but not wrapped content) was removed.',
+        'The element {tag} is not allowed in the {scope} scope, and was'
+        ' removed. You can remove the tag from the MDN page to remove the'
+        ' warning.')),
     ('unexpected_attribute', (
         WARNING,
         'Unexpected attribute <{node_type} {ident}="{value}">',
