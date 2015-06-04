@@ -49,6 +49,37 @@ class TestKnownKumaScript(TestCase):
         self.assertTrue(ks.known)
 
 
+class TestSpecName(TestCase):
+    def test_3args(self):
+        raw = ("{{SpecName('CSS3 Backgrounds', '#the-background-size',"
+               "'background-size')}}")
+        ks = SpecName(
+            raw, 0, 'SpecName',
+            ['CSS3 Backgrounds', '#the-background-size', 'background-size'])
+        self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
+        self.assertEqual(ks.subpath, '#the-background-size')
+        self.assertEqual(ks.section_name, 'background-size')
+        self.assertFalse(ks.issues)
+
+    def test_1arg(self):
+        raw = "{{SpecName('CSS3 Backgrounds')}}"
+        ks = SpecName(raw, 0, 'SpecName', ['CSS3 Backgrounds'], 'test')
+        self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
+        self.assertEqual(ks.subpath, None)
+        self.assertEqual(ks.section_name, None)
+        self.assertFalse(ks.issues)
+
+    def test_blank_mdn_key(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
+        raw = "{{SpecName('', '#midiconnection')}}"
+        ks = SpecName(raw, 0, 'SpecName', ['', '#midiconnection'], 'test')
+        self.assertEqual(ks.mdn_key, '')
+        self.assertEqual(ks.subpath, '#midiconnection')
+        self.assertIsNone(ks.section_name, None)
+        issue = ks._make_issue('specname_blank_key')
+        self.assertEqual(ks.issues, [issue])
+
+
 class TestGrammar(TestHTMLGrammar):
     def test_no_arg_kumascript(self):
         text = '<p>{{CompatNo}}</p>'
@@ -59,14 +90,16 @@ class TestGrammar(TestHTMLGrammar):
 class TestVisitor(TestHTMLVisitor):
     def setUp(self):
         self.visitor = KumaVisitor()
+        self.visitor.scope = 'test'
 
-    def assert_kumascript(self, text, name, args, known=True):
+    def assert_kumascript(self, text, name, args, known=True, issues=None):
         parsed = grammar['kumascript'].parse(text)
         ks = self.visitor.visit(parsed)
         self.assertIsInstance(ks, KumaScript)
         self.assertEqual(ks.name, name)
         self.assertEqual(ks.args, args)
         self.assertEqual(ks.known, known)
+        self.assertEqual(ks.issues, issues or [])
 
     def test_kumascript_no_args(self):
         self.assert_kumascript('{{CompatNo}}', 'CompatNo', [])
@@ -96,12 +129,21 @@ class TestVisitor(TestHTMLVisitor):
 
     def test_kumascript_empty_string(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
-        self.assert_kumascript(
-            "{{SpecName('', '#midiconnection')}}", "SpecName",
-            ['', '#midiconnection'])
+        raw = "{{SpecName('', '#midiconnection')}}"
+        name = "SpecName"
+        args = ['', '#midiconnection']
+        issue = (
+            'specname_blank_key', 0, 35,
+            {'name': name, 'args': args, 'scope': 'test',
+             'kumascript': '{{SpecName("", "#midiconnection")}}'})
+        self.assert_kumascript(raw, name, args, issues=[issue])
 
     def test_kumascript_unknown(self):
-        self.assert_kumascript("{{CSSRef}}", "CSSRef", [], False)
+        issue = (
+            'unknown_kumascript', 0, 10,
+            {'name': 'CSSRef', 'args': [], 'scope': 'test',
+             'kumascript': '{{CSSRef}}'})
+        self.assert_kumascript("{{CSSRef}}", "CSSRef", [], False, [issue])
 
     def test_kumascript_in_html(self):
         html = """\

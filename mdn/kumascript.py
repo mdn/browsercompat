@@ -29,7 +29,7 @@ from django.utils.six import text_type
 
 from parsimonious.nodes import Node
 
-from .html import html_grammar, HTMLText, HTMLVisitor
+from .html import html_grammar, HTMLInterval, HTMLText, HTMLVisitor
 
 kumascript_grammar = html_grammar + r"""
 #
@@ -59,10 +59,11 @@ text_item = ~r"(?P<content>[^{<]+)"s
 class KumaScript(HTMLText):
     """A KumaScript macro."""
 
-    def __init__(self, raw_content, start, name, args):
+    def __init__(self, raw_content, start, name, args, scope=None):
         super(KumaScript, self).__init__(raw_content, start)
         self.name = name
         self.args = args
+        self.scope = scope
 
     def __str__(self):
         args = []
@@ -86,11 +87,27 @@ class KumaScript(HTMLText):
     def known(self):
         return False
 
+    def _make_issue(self, issue_slug):
+        assert self.scope
+        return (
+            issue_slug, self.start, self.end,
+            {'name': self.name, 'args': self.args, 'scope': self.scope,
+             'kumascript': str(self)})
+
+    @property
+    def issues(self):
+        return super(KumaScript, self).issues + [
+            self._make_issue('unknown_kumascript')]
+
 
 class KnownKumaScript(KumaScript):
     @property
     def known(self):
         return True
+
+    @property
+    def issues(self):
+        return super(KumaScript, self).issues
 
 
 class CompatAndroid(KnownKumaScript):
@@ -145,7 +162,30 @@ class Spec2(KnownKumaScript):
 
 class SpecName(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:SpecName
-    pass
+    @property
+    def mdn_key(self):
+        return self.args[0]
+
+    @property
+    def subpath(self):
+        try:
+            return self.args[1]
+        except IndexError:
+            return None
+
+    @property
+    def section_name(self):
+        try:
+            return self.args[2]
+        except IndexError:
+            return None
+
+    @property
+    def issues(self):
+        issues = super(SpecName, self).issues
+        if not self.mdn_key:
+            issues.append(self._make_issue('specname_blank_key'))
+        return issues
 
 
 class CSSBox(KnownKumaScript):
@@ -202,6 +242,36 @@ class KumaVisitor(HTMLVisitor):
     def __init__(self, *args, **kwargs):
         super(KumaVisitor, self).__init__(*args, **kwargs)
         self._kumascript_proper_names = None
+        self.scope = None
+
+    def _visit_multi_block(self, node, tokens):
+        """Visit a 1-or-more block of tokens."""
+        assert isinstance(tokens, list)
+        assert tokens
+        if isinstance(tokens[0], list):
+            # Unroll doubled list
+            assert len(tokens) == 1
+            tokens = tokens[0]
+        for token in tokens:
+            assert isinstance(token, HTMLInterval)
+        return tokens
+
+    def _visit_multi_token(self, node, children):
+        """Visit a single HTMLInterval or list of HTMLIntervals."""
+        assert len(children) == 1
+        item = children[0]
+        if isinstance(item, HTMLInterval):
+            return item
+        else:
+            for subitem in item:
+                assert isinstance(subitem, HTMLInterval), subitem
+            if len(item) == 1:
+                return item[0]
+            else:
+                return item
+
+    visit_html_block = _visit_multi_block
+    visit_html_tag = _visit_multi_token
 
     known_kumascript = {
         'CompatAndroid': CompatAndroid,
@@ -258,7 +328,7 @@ class KumaVisitor(HTMLVisitor):
             args = []
 
         proper_name, ks_cls = self._kumascript_lookup(name)
-        return self._to_cls(ks_cls, node, proper_name, args)
+        return self.process(ks_cls, node, proper_name, args, self.scope)
 
     visit_ks_name = HTMLVisitor._visit_content
 

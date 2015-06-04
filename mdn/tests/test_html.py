@@ -253,3 +253,13 @@ class TestVisitor(TestCase):
         self.assertEqual(len(td.children), 1)
         text = td.children[0]
         self.assertEqual(text_type(text), "A very dumb table")
+
+    def test_add_issue(self):
+        text = '<p>A paragraph</p>'
+        parsed = grammar['html'].parse(text)
+        out = self.visitor.visit(parsed)
+        self.assertFalse(self.visitor.issues)
+        self.assertEqual(len(out), 1)
+        p_elem = out[0]
+        self.visitor.add_issue('halt_import', p_elem)
+        self.assertEqual(self.visitor.issues, [('halt_import', 0, 18, {})])

@@ -19,6 +19,8 @@ from django.utils.six import text_type, string_types
 
 from parsimonious.nodes import Node, NodeVisitor
 
+from mdn.issues import ISSUES
+
 # Parsimonious grammar for HTML fragments
 html_grammar = r"""
 #
@@ -142,6 +144,10 @@ class HTMLInterval(object):
 
     def to_html(self):
         return text_type(self)
+
+    @property
+    def issues(self):
+        return []
 
 
 @python_2_unicode_compatible
@@ -275,6 +281,7 @@ class HTMLVisitor(NodeVisitor):
     def __init__(self, offset=0):
         super(HTMLVisitor, self).__init__()
         self.offset = offset
+        self.issues = []
 
     def generic_visit(self, node, visited_children):
         """Visitor when none is specified."""
@@ -292,6 +299,7 @@ class HTMLVisitor(NodeVisitor):
         return tokens
 
     def _visit_token(self, node, children):
+        """Visit a single (possibly list-wrapped) token."""
         assert len(children) == 1
         item = children[0]
         if isinstance(item, HTMLInterval):
@@ -301,9 +309,29 @@ class HTMLVisitor(NodeVisitor):
             assert isinstance(item[0], HTMLInterval), item[0]
             return item[0]
 
-    def _to_cls(self, cls, node, *args, **kwargs):
+    def process(self, cls, node, *args, **kwargs):
         """Convert a node to an HTML* instance"""
-        return cls(node.text, node.start + self.offset, *args, **kwargs)
+        processed = cls(node.text, node.start + self.offset, *args, **kwargs)
+        for issue in processed.issues:
+            self.add_raw_issue(issue)
+        return processed
+
+    def add_issue(self, issue_slug, processed, **issue_args):
+        """Add an issue for a given processed node."""
+        assert issue_slug in ISSUES
+        assert isinstance(processed, HTMLInterval)
+        self.issues.append(
+            (issue_slug, processed.start, processed.end, issue_args))
+
+    def add_raw_issue(self, issue):
+        """Add an issue in tuple (slug, start, end, args) format."""
+        issue_slug, start, end, issue_args = issue
+        assert issue_slug in ISSUES
+        assert isinstance(start, int)
+        assert isinstance(end, int)
+        assert end >= start
+        assert hasattr(issue_args, 'keys')
+        self.issues.append(issue)
 
     #
     # HTML tokens
@@ -320,7 +348,7 @@ class HTMLVisitor(NodeVisitor):
         assert open_tag.startswith('<')
         tag = open_tag[1:]
         assert isinstance(attrs, HTMLAttributes), type(attrs)
-        return self._to_cls(HTMLOpenTag, node, tag, attrs)
+        return self.process(HTMLOpenTag, node, tag, attrs)
 
     visit_a_open = _visit_open
     visit_td_open = _visit_open
@@ -344,7 +372,7 @@ class HTMLVisitor(NodeVisitor):
         assert close_tag.startswith('</')
         assert close_tag.endswith('>')
         tag = close_tag[2:-1]
-        return self._to_cls(HTMLCloseTag, node, tag)
+        return self.process(HTMLCloseTag, node, tag)
 
     visit_a_close = _visit_close
     visit_td_close = _visit_close
@@ -365,7 +393,7 @@ class HTMLVisitor(NodeVisitor):
 
     def visit_br(self, node, parts):
         """Parse a <br> tag"""
-        return self._to_cls(HTMLSimpleTag, node, 'br')
+        return self.process(HTMLSimpleTag, node, 'br')
 
     def _visit_tag(self, node, children):
         """Parse a <tag>content</tag> block."""
@@ -375,7 +403,7 @@ class HTMLVisitor(NodeVisitor):
         for child in content:
             assert isinstance(child, HTMLInterval), child
         assert isinstance(tag_close, HTMLCloseTag), tag_close
-        return self._to_cls(HTMLStructure, node, tag_open, tag_close, content)
+        return self.process(HTMLStructure, node, tag_open, tag_close, content)
 
     visit_a_tag = _visit_tag
     visit_td_tag = _visit_tag
@@ -400,7 +428,7 @@ class HTMLVisitor(NodeVisitor):
         assert isinstance(tag_open, HTMLOpenTag), tag_open
         assert isinstance(content, HTMLText)
         assert isinstance(tag_close, HTMLCloseTag), tag_close
-        return self._to_cls(
+        return self.process(
             HTMLStructure, node, tag_open, tag_close, [content])
 
     visit_code_tag = _visit_text_tag
@@ -411,14 +439,14 @@ class HTMLVisitor(NodeVisitor):
     #
     def visit_attrs(self, node, attrs):
         """Parse an attribute list."""
-        return self._to_cls(HTMLAttributes, node, attrs)
+        return self.process(HTMLAttributes, node, attrs)
 
     def visit_attr(self, node, children):
         """Parse a single ident=value attribute."""
         ws1, ident, ws2, eq, ws3, value, ws4 = children
         assert isinstance(ident, text_type), type(ident)
         assert isinstance(value, (text_type, int)), type(value)
-        return self._to_cls(HTMLAttribute, node, ident, value)
+        return self.process(HTMLAttribute, node, ident, value)
 
     visit_ident = _visit_content
 
@@ -445,7 +473,7 @@ class HTMLVisitor(NodeVisitor):
 
     def visit_text_item(self, node, empty):
         assert empty == []
-        return self._to_cls(HTMLText, node)
+        return self.process(HTMLText, node)
 
     visit_code_content = visit_text_item
     visit_pre_content = visit_text_item
