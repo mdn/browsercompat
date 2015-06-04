@@ -9,8 +9,8 @@ from mdn.scrape import (
     date_to_iso, end_of_line, page_grammar, scrape_page, scrape_feature_page,
     slugify, PageVisitor, ScrapedViewFeature)
 from webplatformcompat.models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
-from webplatformcompat.tests.base import TestCase
+    Browser, Feature, Section, Specification, Support, Version)
+from .base import TestCase
 
 
 class TestGrammar(TestCase):
@@ -329,14 +329,7 @@ Not part of any current spec, but it was in early drafts of
         self.assert_cell_partial('(partial)')
 
 
-class ScrapeTestCase(TestCase):
-    """Fixtures for scraping tests."""
-    longMessage = True
-
-    # Based on:
-    # https://developer.mozilla.org/en-US/docs/Web/CSS/background-size?raw
-    # but significantly reduced.
-    sample_spec_row = """\
+sample_spec_row = """\
 <tr>
    <td>{{SpecName('CSS3 Backgrounds', '#the-background-size',\
  'background-size')}}</td>
@@ -344,7 +337,7 @@ class ScrapeTestCase(TestCase):
    <td></td>
   </tr>"""
 
-    sample_spec_section = """\
+sample_spec_section = """\
 <h2 id="Specifications" name="Specifications">Specifications</h2>
 <table class="standard-table">
  <thead>
@@ -360,7 +353,7 @@ class ScrapeTestCase(TestCase):
 </table>
 """ % sample_spec_row
 
-    sample_compat_section = """\
+sample_compat_section = """\
 <h2 id="Browser_compatibility">Browser compatibility</h2>
 <div>{{CompatibilityTable}}</div>
 <div id="compat-desktop">
@@ -373,75 +366,8 @@ class ScrapeTestCase(TestCase):
 </div>
 """
 
-    _instance_specs = {
-        (Maturity, 'CR'): {'name': '{"en": "Candidate Recommendation"}'},
-        (Maturity, 'WD'): {'name': '{"en": "Working Draft"}'},
-        (Maturity, 'Standard'): {'name': '{"en": "Standard"}'},
-        (Specification, 'css3_backgrounds'): {
-            '_req': {'maturity': (Maturity, 'CR')},
-            'mdn_key': 'CSS3 Backgrounds',
-            'name': (
-                '{"en": "CSS Backgrounds and Borders Module Level&nbsp;3"}'),
-            'uri': '{"en": "http://dev.w3.org/csswg/css3-background/"}'},
-        (Specification, 'css3_ui'): {
-            '_req': {'maturity': (Maturity, 'WD')},
-            'mdn_key': 'CSS3 UI',
-            'name': '{"en": "CSS Basic User Interface Module Level&nbsp;3"}',
-            'uri': '{"en": "http://dev.w3.org/csswg/css3-ui/"}'},
-        (Specification, 'web_audio_api'): {
-            '_req': {'maturity': (Maturity, 'WD')},
-            'mdn_key': 'Web Audio API',
-            'name': '{"en": "Web Audio API"}',
-            'uri': '{"en": "http://webaudio.github.io/web-audio-api/"}'},
-        (Specification, 'es1'): {
-            '_req': {'maturity': (Maturity, 'Standard')},
-            'mdn_key': 'ES1',
-            'name': '{"en": "ECMAScript 1st Edition (ECMA-262)"}',
-            'uri': ('{"en": "http://www.ecma-international.org/publications/'
-                    'files/ECMA-ST-ARCH/ECMA-262,%201st%20edition,'
-                    '%20June%201997.pdf"}')},
-        (Section, 'background-size'): {
-            '_req': {'specification': (Specification, 'css3_backgrounds')},
-            'subpath': '{"en": "#the-background-size"}'},
-        (Feature, 'web'): {'name': '{"en": "Web"}'},
-        (Feature, 'web-css'): {
-            '_req': {'parent': (Feature, 'web')}, 'name': '{"en": "CSS"}'},
-        (Feature, 'web-css-background-size'): {
-            '_req': {'parent': (Feature, 'web-css')},
-            'name': '{"zxx": "background-size"}'},
-        (Feature, 'web-css-background-size-basic_support'): {
-            '_req': {'parent': (Feature, 'web-css-background-size')},
-            'name': '{"en": "Basic support"}'},
-        (Browser, 'chrome'): {'name': '{"en": "Chrome"}'},
-        (Browser, 'firefox'): {'name': '{"en": "Firefox"}'},
-        (Version, ('chrome', '1.0')): {},
-        (Version, ('firefox', 'current')): {'status': 'current'},
-        (Version, ('firefox', '1.0')): {},
-    }
 
-    def get_instance(self, model_cls, slug):
-        """Get a test fixture instance, creating on first access."""
-        instance_key = (model_cls, slug)
-        if not hasattr(self, '_instances'):
-            self._instances = {}
-        if instance_key not in self._instances:
-            attrs = self._instance_specs[instance_key].copy()
-            req = attrs.pop('_req', {})
-            if model_cls == Version:
-                browser_slug, version = slug
-                attrs['browser'] = self.get_instance(Browser, browser_slug)
-                attrs['version'] = version
-            elif model_cls == Section:
-                attrs['name'] = '{"en": "%s"}' % slug
-            else:
-                attrs['slug'] = slug
-            for req_name, (req_type, req_slug) in req.items():
-                attrs[req_name] = self.get_instance(req_type, req_slug)
-            self._instances[instance_key] = self.create(model_cls, **attrs)
-        return self._instances[instance_key]
-
-
-class TestEndOfLine(ScrapeTestCase):
+class TestEndOfLine(TestCase):
     def setUp(self):
         self.text = """\
     This is some sample text.
@@ -458,7 +384,7 @@ class TestEndOfLine(ScrapeTestCase):
         self.assertEqual(len(self.text), end)
 
 
-class TestPageVisitor(ScrapeTestCase):
+class TestPageVisitor(TestCase):
     def setUp(self):
         feature = self.get_instance(Feature, 'web-css-background-size')
         self.visitor = PageVisitor(feature)
@@ -497,7 +423,7 @@ class TestPageVisitor(ScrapeTestCase):
 
     def test_last_section_valid_specifications(self):
         issues = [('section_missed', 0, 65, {'title': 'Specifications'})]
-        self.assert_last_section(self.sample_spec_section, issues)
+        self.assert_last_section(sample_spec_section, issues)
 
     def assert_spec_section(self, spec_section, specs):
         parsed = page_grammar['spec_section'].parse(spec_section)
@@ -512,7 +438,7 @@ class TestPageVisitor(ScrapeTestCase):
             'specification.mdn_key': 'CSS3 Backgrounds',
             'section.id': None, 'section.name': 'background-size',
             'section.note': '', 'section.subpath': '#the-background-size'}]
-        self.assert_spec_section(self.sample_spec_section, parsed_specs)
+        self.assert_spec_section(sample_spec_section, parsed_specs)
 
     def test_spec_section_why_no_spec(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/AnimationEvent/initAnimationEvent
@@ -632,7 +558,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
             'specification.mdn_key': 'CSS3 Backgrounds',
             'section.id': None,
             'specification.id': spec.id}]
-        self.assert_spec_row(self.sample_spec_row, expected_specs, [])
+        self.assert_spec_row(sample_spec_row, expected_specs, [])
 
     def test_spec_row_known_spec_and_section(self):
         section = self.get_instance(Section, 'background-size')
@@ -644,7 +570,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
             'specification.mdn_key': 'CSS3 Backgrounds',
             'section.id': section.id,
             'specification.id': spec.id}]
-        self.assert_spec_row(self.sample_spec_row, expected_specs, [])
+        self.assert_spec_row(sample_spec_row, expected_specs, [])
 
     def test_spec_row_es1(self):
         # en-US/docs/Web/JavaScript/Reference/Operators/this
@@ -833,7 +759,6 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         self.assertEqual(issues, self.visitor.issues)
 
     def test_compat_section_minimal(self):
-        compat_section = self.sample_compat_section
         expected_compat = [{
             'name': u'desktop',
             'browsers': [{
@@ -850,7 +775,8 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
                 'id': '__basic support-_Firefox-1.0',
                 'support': 'yes', 'version': '_Firefox-1.0'}]}]
         issues = [('unknown_browser', 185, 200, {'name': 'Firefox (Gecko)'})]
-        self.assert_compat_section(compat_section, expected_compat, {}, issues)
+        self.assert_compat_section(
+            sample_compat_section, expected_compat, {}, issues)
 
     def test_compat_section_footnote(self):
         compat_section = """\
@@ -2086,7 +2012,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
             'web-css-background-size_basic_support1')
 
 
-class TestScrape(ScrapeTestCase):
+class TestScrape(TestCase):
     def setUp(self):
         self.feature = self.get_instance(Feature, 'web-css-background-size')
 
@@ -2113,7 +2039,7 @@ class TestScrape(ScrapeTestCase):
     def test_spec_only(self):
         """Test with a only a Specification section."""
         spec = self.get_instance(Specification, 'css3_backgrounds')
-        page = self.sample_spec_section
+        page = sample_spec_section
         specs = [{
             'specification.mdn_key': 'CSS3 Backgrounds',
             'specification.id': spec.id,
@@ -2126,11 +2052,11 @@ class TestScrape(ScrapeTestCase):
 
     def test_doc_parse_error(self):
         # https://developer.mozilla.org/en-US/docs/Navigation_timing
-        page = self.sample_compat_section.replace('h2', 'h3')
+        page = sample_compat_section.replace('h2', 'h3')
         self.assertScrape(page, [], [('doc_parse_error', 0, 57, {})])
 
 
-class FeaturePageTestCase(ScrapeTestCase):
+class FeaturePageTestCase(TestCase):
     def setUp(self):
         path = "/en-US/docs/Web/CSS/background-size"
         url = "https://developer.mozilla.org" + path
