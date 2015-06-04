@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Parser for SpecName section of MDN raw page."""
+"""Parser for Specification section of an MDN raw page."""
 
 from .html import HTMLText
 from .kumascript import KumaVisitor, SpecName

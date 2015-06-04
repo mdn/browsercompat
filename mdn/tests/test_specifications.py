@@ -1,12 +1,12 @@
 # coding: utf-8
-"""Test mdn.specname."""
+"""Test mdn.specifications"""
 from __future__ import unicode_literals
 
 from parsimonious.grammar import Grammar
 
 from mdn.html import HTMLText
 from mdn.kumascript import kumascript_grammar, SpecName
-from mdn.specname import SpecNameVisitor
+from mdn.specifications import SpecNameVisitor
 from webplatformcompat.models import Specification
 from .base import TestCase
 

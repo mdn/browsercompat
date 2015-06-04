@@ -35,7 +35,7 @@ from parsimonious.grammar import Grammar
 from parsimonious.nodes import Node, NodeVisitor
 
 from mdn.kumascript import kumascript_grammar
-from mdn.specname import SpecNameVisitor
+from mdn.specifications import SpecNameVisitor
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
 
