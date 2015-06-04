@@ -34,6 +34,8 @@ from parsimonious import IncompleteParseError, ParseError
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import Node, NodeVisitor
 
+from mdn.kumascript import kumascript_grammar
+from mdn.specname import SpecNameVisitor
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
 
@@ -287,6 +289,11 @@ class PageVisitor(NodeVisitor):
         """Visitor when none is specified."""
         return visited_children or node
 
+    def kumascript_grammar(self):
+        if not hasattr(self, '_kumascript_grammar'):  # pragma: no branch
+            self._kumascript_grammar = Grammar(kumascript_grammar)
+        return self._kumascript_grammar
+
     def _visit_content(self, node, children):
         """Visitor for re nodes with a named (?P<content>) section."""
         return node.match.group('content')
@@ -418,53 +425,20 @@ class PageVisitor(NodeVisitor):
             'section.id': section_id})
 
     def visit_specname_td(self, node, children):
-        specname_text = children[2]
-        assert isinstance(specname_text, list)
-        assert len(specname_text) == 1, specname_text
-        assert isinstance(specname_text[0], dict)
-        item = specname_text[0]
-        if item['type'] == 'kumascript':
-            assert item['name'].lower() == 'specname'
-            key = self.unquote(item["args"][0])
-            subpath = ""
-            name = ""
-            try:
-                subpath = self.unquote(item["args"][1])
-                name = self.unquote(item["args"][2])
-            except IndexError:
-                pass  # subpath and name can be empty
-        else:
-            assert item['type'] == 'text', item
-            legacy_specs = {
-                'ECMAScript 1st Edition.': 'ES1',
-                'ECMAScript 3rd Edition.': 'ES3'}
-            key = legacy_specs.get(item['content'], '')
-            subpath = ''
-            name = ''
-            if key:
-                self.issues.append((
-                    'specname_converted', item['start'], item['end'],
-                    {'original': item['content'], 'key': key}))
-            else:
-                self.issues.append((
-                    'specname_not_kumascript', item['start'], item['end'],
-                    {'original': item['content']}))
+        raw_text = node.text
+        reparsed = self.kumascript_grammar().parse(raw_text)
+        visitor = SpecNameVisitor(offset=node.start)
+        visitor.visit(reparsed)
+        for issue in visitor.issues:
+            self.issues.append(issue)
 
-        if key:
-            try:
-                spec = Specification.objects.get(mdn_key=key)
-            except Specification.DoesNotExist:
-                spec_id = None
-                self.issues.append((
-                    'unknown_spec', item['start'], item['end'], {'key': key}))
-            else:
-                spec_id = spec.id
+        key = visitor.mdn_key or ""
+        if visitor.spec:
+            spec_id = visitor.spec.id
         else:
-            if item['type'] == 'kumascript':
-                self.issues.append((
-                    'specname_blank_key', item['start'], item['end'], {}))
             spec_id = None
-
+        subpath = visitor.subpath or ""
+        name = visitor.section_name or ""
         return (key, spec_id, subpath, name)
 
     def visit_spec2_td(self, node, children):

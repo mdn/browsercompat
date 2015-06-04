@@ -621,7 +621,11 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
         specname_td = "<td>{{SpecName('', '#midiconnection')}}</td>"
         expected = ('', None, '#midiconnection', '')
-        issues = [('specname_blank_key', 4, 39, {})]
+        issues = [(
+            'specname_blank_key', 4, 39,
+            {'name': 'SpecName', 'args': ['', '#midiconnection'],
+             'scope': 'specification name',
+             'kumascript': '{{SpecName("", "#midiconnection")}}'})]
         self.assert_specname_td(specname_td, expected, issues)
 
     def test_specname_td_ES1_legacy(self):
@@ -639,16 +643,16 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         specname_td = "<td> ECMAScript 3rd Edition. </td>"
         expected = ('ES3', None, '', '')
         issues = [
-            ('specname_converted', 5, 29,
+            ('specname_converted', 4, 29,
              {'original': 'ECMAScript 3rd Edition.', 'key': 'ES3'}),
-            ('unknown_spec', 5, 29, {'key': 'ES3'})]
+            ('unknown_spec', 4, 29, {'key': 'ES3'})]
         self.assert_specname_td(specname_td, expected, issues)
 
     def test_specname_td_other(self):
         specname_td = "<td> Another Spec.</td>"
         expected = ('', None, '', '')
         issues = [
-            ('specname_not_kumascript', 5, 18, {'original': 'Another Spec.'})]
+            ('specname_not_kumascript', 4, 18, {'original': 'Another Spec.'})]
         self.assert_specname_td(specname_td, expected, issues)
 
     def assert_spec2_td(self, spec2_td, expected, issues):
