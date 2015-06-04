@@ -8,7 +8,7 @@ from parsimonious.grammar import Grammar
 from mdn.html import (
     html_grammar, HTMLAttribute, HTMLAttributes, HTMLCloseTag, HTMLInterval,
     HTMLOpenTag, HTMLSimpleTag, HTMLStructure, HTMLText, HTMLVisitor)
-from webplatformcompat.tests.base import TestCase
+from .base import TestCase
 
 grammar = Grammar(html_grammar)
 

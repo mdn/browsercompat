@@ -29,6 +29,7 @@ from django.utils.six import text_type
 
 from parsimonious.nodes import Node
 
+from webplatformcompat.models import Specification
 from .html import html_grammar, HTMLInterval, HTMLText, HTMLVisitor
 
 kumascript_grammar = html_grammar + r"""
@@ -162,6 +163,21 @@ class Spec2(KnownKumaScript):
 
 class SpecName(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:SpecName
+
+    def __init__(self, *args, **kwargs):
+        super(SpecName, self).__init__(*args, **kwargs)
+        self.specname_issues = []
+        self.spec = None
+        key = self.mdn_key
+        if key:
+            try:
+                self.spec = Specification.objects.get(mdn_key=key)
+            except Specification.DoesNotExist:
+                self.specname_issues.append(
+                    ('unknown_spec', self.start, self.end, {'key': key}))
+        else:
+            self.specname_issues.append(self._make_issue('specname_blank_key'))
+
     @property
     def mdn_key(self):
         return self.args[0]
@@ -182,10 +198,7 @@ class SpecName(KnownKumaScript):
 
     @property
     def issues(self):
-        issues = super(SpecName, self).issues
-        if not self.mdn_key:
-            issues.append(self._make_issue('specname_blank_key'))
-        return issues
+        return super(SpecName, self).issues + self.specname_issues
 
 
 class CSSBox(KnownKumaScript):

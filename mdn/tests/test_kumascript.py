@@ -9,7 +9,8 @@ from mdn.html import HTMLText
 from mdn.kumascript import (
     kumascript_grammar, KumaScript, KnownKumaScript, KumaVisitor, SpecName,
     Spec2)
-from webplatformcompat.tests.base import TestCase
+from webplatformcompat.models import Specification
+from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
 
@@ -23,6 +24,7 @@ class TestKumaScript(TestCase):
         self.assertEqual('{{CompatGeckoDesktop("1.9")}}', text_type(ks))
 
     def test_str_args_double_quote(self):
+        self.get_instance(Specification, 'css3_display')
         ks = KumaScript(
             "{{SpecName('CSS3 Display', '#display', '\"display\"')}}", 0,
             "SpecName", ['CSS3 Display', '#display', '"display"'])
@@ -51,6 +53,7 @@ class TestKnownKumaScript(TestCase):
 
 class TestSpecName(TestCase):
     def test_3args(self):
+        self.get_instance(Specification, 'css3_backgrounds')
         raw = ("{{SpecName('CSS3 Backgrounds', '#the-background-size',"
                "'background-size')}}")
         ks = SpecName(
@@ -62,6 +65,7 @@ class TestSpecName(TestCase):
         self.assertFalse(ks.issues)
 
     def test_1arg(self):
+        self.get_instance(Specification, 'css3_backgrounds')
         raw = "{{SpecName('CSS3 Backgrounds')}}"
         ks = SpecName(raw, 0, 'SpecName', ['CSS3 Backgrounds'], 'test')
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
@@ -120,6 +124,7 @@ class TestVisitor(TestHTMLVisitor):
             '{{CompatGeckoDesktop(27)}}', 'CompatGeckoDesktop', ['27'])
 
     def test_kumascript_three_args(self):
+        self.get_instance(Specification, 'css3_backgrounds')
         self.assert_kumascript(
             ("{{SpecName('CSS3 Backgrounds', '#the-background-size',"
              " 'background-size')}}"),

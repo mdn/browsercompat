@@ -12,12 +12,18 @@ class TestCase(BaseTestCase):
         (Maturity, 'CR'): {'name': '{"en": "Candidate Recommendation"}'},
         (Maturity, 'WD'): {'name': '{"en": "Working Draft"}'},
         (Maturity, 'Standard'): {'name': '{"en": "Standard"}'},
+        (Maturity, 'Living Standard'): {'name': '{"en": "Living Standard"}'},
         (Specification, 'css3_backgrounds'): {
             '_req': {'maturity': (Maturity, 'CR')},
             'mdn_key': 'CSS3 Backgrounds',
             'name': (
                 '{"en": "CSS Backgrounds and Borders Module Level&nbsp;3"}'),
             'uri': '{"en": "http://dev.w3.org/csswg/css3-background/"}'},
+        (Specification, 'css3_display'): {
+            '_req': {'maturity': (Maturity, 'WD')},
+            'mdn_key': 'CSS3 Display',
+            'name': '{"en" : "CSS Display Module Level 3"}',
+            'uri': '{"en" : "http://dev.w3.org/csswg/css-display/"}'},
         (Specification, 'css3_ui'): {
             '_req': {'maturity': (Maturity, 'WD')},
             'mdn_key': 'CSS3 UI',
@@ -35,6 +41,11 @@ class TestCase(BaseTestCase):
             'uri': ('{"en": "http://www.ecma-international.org/publications/'
                     'files/ECMA-ST-ARCH/ECMA-262,%201st%20edition,'
                     '%20June%201997.pdf"}')},
+        (Specification, 'html_whatwg'): {
+            '_req': {'maturity': (Maturity, 'Living Standard')},
+            'mdn_key': 'HTML WHATWG',
+            'name': '{"en": "WHATWG HTML Living Standard"}',
+            'uri': '{"en": "https://html.spec.whatwg.org/multipage/"}'},
         (Section, 'background-size'): {
             '_req': {'specification': (Specification, 'css3_backgrounds')},
             'subpath': '{"en": "#the-background-size"}'},
