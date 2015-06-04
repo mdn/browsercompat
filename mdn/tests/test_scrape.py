@@ -601,51 +601,12 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         self.assertEqual(expected, specname)
         self.assertEqual(issues, self.visitor.issues)
 
-    def test_specname_td_3_arg(self):
-        # Common usage of SpecName
+    def test_specname_td_success(self):
         spec = self.get_instance(Specification, 'css3_backgrounds')
         specname_td = (
             '<td>{{SpecName("CSS3 Backgrounds", "#subpath", "Name")}}</td>')
         expected = ('CSS3 Backgrounds', spec.id, "#subpath", "Name")
         issues = []
-        self.assert_specname_td(specname_td, expected, issues)
-
-    def test_specname_td_1_arg(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
-        specname_td = '<td>{{SpecName("Device Orientation")}}</td>'
-        expected = ("Device Orientation", None, '', '')
-        issues = [('unknown_spec', 4, 38, {'key': 'Device Orientation'})]
-        self.assert_specname_td(specname_td, expected, issues)
-
-    def test_specname_td_empty_key(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
-        specname_td = "<td>{{SpecName('', '#midiconnection')}}</td>"
-        expected = ('', None, '#midiconnection', '')
-        issues = [(
-            'specname_blank_key', 4, 39,
-            {'name': 'SpecName', 'args': ['', '#midiconnection'],
-             'scope': 'specification name',
-             'kumascript': '{{SpecName("", "#midiconnection")}}'})]
-        self.assert_specname_td(specname_td, expected, issues)
-
-    def test_specname_td_ES1_legacy(self):
-        # /en-US/docs/Web/JavaScript/Reference/Operators/this
-        specname_td = "<td>ECMAScript 1st Edition.</td>"
-        expected = ('ES1', None, '', '')
-        issues = [
-            ('specname_converted', 4, 27,
-             {'original': 'ECMAScript 1st Edition.', 'key': 'ES1'}),
-            ('unknown_spec', 4, 27, {'key': 'ES1'})]
-        self.assert_specname_td(specname_td, expected, issues)
-
-    def test_specname_td_ES3_legacy(self):
-        # /en-US/docs/Web/JavaScript/Reference/Operators/function
-        specname_td = "<td> ECMAScript 3rd Edition. </td>"
-        expected = ('ES3', None, '', '')
-        issues = [
-            ('specname_converted', 4, 29,
-             {'original': 'ECMAScript 3rd Edition.', 'key': 'ES3'}),
-            ('unknown_spec', 4, 29, {'key': 'ES3'})]
         self.assert_specname_td(specname_td, expected, issues)
 
     def test_specname_td_other(self):
