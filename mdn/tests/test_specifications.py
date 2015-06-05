@@ -6,7 +6,7 @@ from parsimonious.grammar import Grammar
 
 from mdn.html import HTMLText
 from mdn.kumascript import kumascript_grammar, SpecName
-from mdn.specifications import SpecNameVisitor
+from mdn.specifications import SpecNameVisitor, Spec2Visitor
 from webplatformcompat.models import Specification
 from .base import TestCase
 
@@ -88,3 +88,49 @@ class TestSpecNameVisitor(TestCase):
         issue2 = ('unknown_spec', 4, 29, {'key': 'ES3'})
         self.assert_specname(html, 'ES3', None, None, [issue1, issue2])
         self.assertIsInstance(self.visitor.spec_item, HTMLText)
+
+
+class TestSpec2Visitor(TestCase):
+    def setUp(self):
+        self.visitor = Spec2Visitor()
+
+    def assert_spec2(self, html, mdn_key, issues):
+        parsed = grammar.parse(html)
+        out = self.visitor.visit(parsed)
+        self.assertTrue(out)
+        self.assertEqual(self.visitor.mdn_key, mdn_key)
+        self.assertEqual(self.visitor.issues, issues)
+
+    def test_standard(self):
+        spec = self.get_instance(Specification, 'css3_ui')
+        html = '<td>{{Spec2("CSS3 UI")}}</td>'
+        self.assert_spec2(html, 'CSS3 UI', [])
+        self.assertEqual(self.visitor.spec, spec)
+        self.assertEqual(self.visitor.maturity, spec.maturity)
+
+    def test_empty(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/MIDIInput
+        html = '<td>{{Spec2()}}</td>'
+        issues = [(
+            'spec2_arg_count', 4, 15,
+            {'name': 'Spec2', 'args': [], 'scope': 'specification maturity',
+             'kumascript': '{{Spec2}}'})]
+        self.assert_spec2(html, None, issues)
+
+    def test_specname(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/tabIndex
+        spec = self.get_instance(Specification, 'html_whatwg')
+        html = "<td>{{SpecName('HTML WHATWG')}}</td>"
+        issues = [(
+            'spec2_wrong_kumascript', 4, 31,
+            {'name': 'SpecName', 'args': ["HTML WHATWG"],
+             'scope': 'specification maturity',
+             'kumascript': '{{SpecName("HTML WHATWG")}}'})]
+        self.assert_spec2(html, 'HTML WHATWG', issues)
+        self.assertEqual(self.visitor.spec, spec)
+        self.assertEqual(self.visitor.maturity, spec.maturity)
+
+    def test_text_name(self):
+        # /en-US/docs/Web/JavaScript/Reference/Operators/this
+        html = "<td>Standard</td>"
+        self.assert_spec2(html, None, [])

@@ -500,6 +500,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
             'section.id': None,
             'specification.id': spec.id}]
         issues = [
+            ('unknown_spec', 69, 97, {'key': u'CSS3 Basic UI'}),
             ('spec_mismatch', 0, 199,
              {'spec2_key': 'CSS3 Basic UI', 'specname_key': 'CSS3 UI'})]
         self.assert_spec_row(spec_row, expected_specs, issues)
@@ -507,6 +508,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
     def test_spec_row_specname_commas_in_link(self):
         # https://developer.mozilla.org/en-US/docs/Web/HTML/Element
         #  /Heading_Elements
+        spec = self.get_instance(Specification, 'html_whatwg')
         spec_row = '''\
 <tr>
   <td>{{SpecName('HTML WHATWG',\
@@ -525,9 +527,8 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
                 ' and &lt;h6&gt;'),
             'specification.mdn_key': 'HTML WHATWG',
             'section.id': None,
-            'specification.id': None}]
-        issues = [('unknown_spec', 11, 174, {'key': 'HTML WHATWG'})]
-        self.assert_spec_row(spec_row, expected_specs, issues)
+            'specification.id': spec.id}]
+        self.assert_spec_row(spec_row, expected_specs, [])
 
     def test_spec_row_no_thead(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/AudioContext
@@ -595,6 +596,29 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
              {'key': 'ES1', 'original': 'Standard'})]
         self.assert_spec_row(spec_row, expected_specs, issues)
 
+    def test_spec_row_nonstandard(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Promise (fixed)
+        spec_row = """\
+<tr>
+   <td><a href="https://github.com/domenic/promises-unwrapping">\
+domenic/promises-unwrapping</a></td>
+   <td>Draft</td>
+   <td>Standardization work is taking place here.</td>
+</tr>"""
+        expected_specs = [{
+            'section.note': 'Standardization work is taking place here.',
+            'section.subpath': '',
+            'section.name': '',
+            'specification.mdn_key': '',
+            'section.id': None,
+            'specification.id': None}]
+        issues = [
+            ('specname_not_kumascript', 69, 96,
+             {'original': 'domenic/promises-unwrapping'}),
+            ('spec2_converted', 113, 118,
+             {'key': '', 'original': 'Draft'})]
+        self.assert_spec_row(spec_row, expected_specs, issues)
+
     def assert_specname_td(self, specname_td, expected, issues):
         parsed = page_grammar['specname_td'].parse(specname_td)
         specname = self.visitor.visit(parsed)
@@ -623,8 +647,9 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         self.assertEqual(self.visitor.issues, issues)
 
     def test_spec2_td_standard(self):
-        spec2_td = '<td>{{Spec2("File API")}}</td>'
-        expected = 'File API'
+        self.get_instance(Specification, 'html_whatwg')
+        spec2_td = '<td>{{Spec2("HTML WHATWG")}}</td>'
+        expected = 'HTML WHATWG'
         self.assert_spec2_td(spec2_td, expected, [])
 
     def test_spec2_td_empty(self):
@@ -633,25 +658,30 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         expected = ''
         issues = [(
             'spec2_arg_count', 4, 15,
-            {'name': 'Spec2', 'args': [], 'scope': 'spec2',
+            {'name': 'Spec2', 'args': [],
+             'scope': 'specification maturity',
              'kumascript': '{{Spec2}}'})]
         self.assert_spec2_td(spec2_td, expected, issues)
 
     def test_spec2_td_specname(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/tabIndex
+        self.get_instance(Specification, 'html_whatwg')
         spec2_td = "<td>{{SpecName('HTML WHATWG')}}</td>"
         expected = 'HTML WHATWG'
         issues = [(
             'spec2_wrong_kumascript', 4, 31,
-            {'name': 'SpecName', 'args': ["HTML WHATWG"], 'scope': 'spec2',
-             'kumascript': '{{SpecName(HTML WHATWG)}}'})]
+            {'name': 'SpecName', 'args': ["HTML WHATWG"],
+             'scope': 'specification maturity',
+             'kumascript': '{{SpecName("HTML WHATWG")}}'})]
         self.assert_spec2_td(spec2_td, expected, issues)
 
     def test_spec2_td_text_name(self):
         # /en-US/docs/Web/JavaScript/Reference/Operators/this
         spec2_td = "<td>Standard</td>"
-        item = {'type': 'text', 'content': 'Standard', 'start': 4, 'end': 12}
-        self.assert_spec2_td(spec2_td, item, [])
+        parsed = page_grammar['spec2_td'].parse(spec2_td)
+        spec2 = self.visitor.visit(parsed)
+        self.assertEqual(spec2.cleaned, 'Standard')
+        self.assertEqual(self.visitor.issues, [])
 
     def assert_specdec_td(self, specdesc_td, expected, issues):
         parsed = page_grammar['specdesc_td'].parse(specdesc_td)

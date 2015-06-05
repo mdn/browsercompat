@@ -2,7 +2,7 @@
 """Parser for Specification section of an MDN raw page."""
 
 from .html import HTMLText
-from .kumascript import KumaVisitor, SpecName
+from .kumascript import KumaVisitor, SpecName, Spec2
 
 from webplatformcompat.models import Specification
 
@@ -21,7 +21,6 @@ class SpecNameVisitor(KumaVisitor):
         self.section_name = None
         self.spec_item = None
         self.spec = None
-        self.issues = []
 
     def process(self, cls, node, *args, **kwargs):
         """Look for SpecName nodes."""
@@ -37,7 +36,7 @@ class SpecNameVisitor(KumaVisitor):
             self.subpath = processed.subpath
             self.section_name = processed.section_name
             self.spec = processed.spec
-        elif isinstance(processed, HTMLText) and processed.cleaned:
+        elif (isinstance(processed, HTMLText) and processed.cleaned):
             text = processed.cleaned
             legacy_specs = {
                 'ECMAScript 1st Edition.': 'ES1',
@@ -55,4 +54,42 @@ class SpecNameVisitor(KumaVisitor):
             else:
                 self.add_issue(
                     'specname_not_kumascript', processed, original=text)
+        return processed
+
+
+class Spec2Visitor(KumaVisitor):
+    """
+    Visitor for a Spec2 HTML fragment.
+
+    This is the second column of the Specifications table.
+    """
+    def __init__(self, *args, **kwargs):
+        super(Spec2Visitor, self).__init__(*args, **kwargs)
+        self.scope = 'specification maturity'
+        self.mdn_key = None
+        self.spec2_item = None
+        self.spec = None
+        self.maturity = None
+
+    def process(self, cls, node, *args, **kwargs):
+        """Look for Spec2 nodes."""
+        processed = super(Spec2Visitor, self).process(
+            cls, node, *args, **kwargs)
+        if isinstance(processed, Spec2):
+            assert not self.spec2_item
+            assert not self.mdn_key
+            self.spec2_item = processed
+            self.mdn_key = processed.mdn_key
+            self.spec = processed.spec
+            if self.spec:
+                self.maturity = self.spec.maturity
+        elif isinstance(processed, SpecName):
+            self.spec2_item = processed
+            self.mdn_key = processed.mdn_key
+            self.spec = processed.spec
+            self.maturity = self.spec.maturity if self.spec else None
+            self.add_raw_issue(processed._make_issue('spec2_wrong_kumascript'))
+        elif (isinstance(processed, HTMLText) and processed.cleaned and
+                not self.mdn_key and not self.spec2_item):
+            self.spec2_item = processed
         return processed

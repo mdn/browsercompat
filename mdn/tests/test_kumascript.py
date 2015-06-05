@@ -73,6 +73,15 @@ class TestSpecName(TestCase):
         self.assertEqual(ks.section_name, None)
         self.assertFalse(ks.issues)
 
+    def test_unknown_spec(self):
+        raw = "{{SpecName('CSS3 Backgrounds')}}"
+        ks = SpecName(raw, 0, 'SpecName', ['CSS3 Backgrounds'], 'test')
+        self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
+        self.assertEqual(ks.subpath, None)
+        self.assertEqual(ks.section_name, None)
+        expected = [('unknown_spec', 0, 32, {'key': u'CSS3 Backgrounds'})]
+        self.assertEqual(ks.issues, expected)
+
     def test_blank_mdn_key(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
         raw = "{{SpecName('', '#midiconnection')}}"
@@ -82,6 +91,34 @@ class TestSpecName(TestCase):
         self.assertIsNone(ks.section_name, None)
         issue = ks._make_issue('specname_blank_key')
         self.assertEqual(ks.issues, [issue])
+
+
+class TestSpec2(TestCase):
+    def test_standard(self):
+        spec = self.get_instance(Specification, 'css3_backgrounds')
+        raw = "{{Spec2('CSS3 Backgrounds')}}"
+        ks = Spec2(raw, 0, 'Spec2', ['CSS3 Backgrounds'], 'test')
+        self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
+        self.assertEqual(ks.spec, spec)
+        self.assertEqual(ks.maturity, spec.maturity)
+        self.assertFalse(ks.issues)
+
+    def test_unknown_mdn_key(self):
+        raw = "{{Spec2('CSS3 Backgrounds')}}"
+        ks = Spec2(raw, 0, 'Spec2', ['CSS3 Backgrounds'], 'test')
+        self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
+        self.assertIsNone(ks.spec)
+        self.assertIsNone(ks.maturity)
+        issues = [('unknown_spec', 0, 29, {'key': ks.mdn_key})]
+        self.assertEqual(ks.issues, issues)
+
+    def test_empty_key(self):
+        raw = "{{Spec2()}}"
+        ks = Spec2(raw, 0, 'Spec2', [], 'test')
+        self.assertIsNone(ks.mdn_key)
+        self.assertIsNone(ks.spec)
+        self.assertIsNone(ks.maturity)
+        self.assertEqual(ks.issues, [ks._make_issue('spec2_arg_count')])
 
 
 class TestGrammar(TestHTMLGrammar):

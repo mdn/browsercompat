@@ -158,7 +158,34 @@ class HTMLElement(KnownKumaScript):
 
 class Spec2(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:Spec2
-    pass
+
+    def __init__(self, *args, **kwargs):
+        super(Spec2, self).__init__(*args, **kwargs)
+        self.spec2_issues = []
+        self.spec = None
+        self.maturity = None
+        key = self.mdn_key
+        if key:
+            try:
+                self.spec = Specification.objects.get(mdn_key=key)
+            except Specification.DoesNotExist:
+                self.spec2_issues.append(
+                    ('unknown_spec', self.start, self.end, {'key': key}))
+            else:
+                self.maturity = self.spec.maturity
+        else:
+            self.spec2_issues.append(self._make_issue('spec2_arg_count'))
+
+    @property
+    def mdn_key(self):
+        try:
+            return self.args[0]
+        except IndexError:
+            return None
+
+    @property
+    def issues(self):
+        return super(Spec2, self).issues + self.spec2_issues
 
 
 class SpecName(KnownKumaScript):

@@ -34,8 +34,9 @@ from parsimonious import IncompleteParseError, ParseError
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import Node, NodeVisitor
 
-from mdn.kumascript import kumascript_grammar
-from mdn.specifications import SpecNameVisitor
+from mdn.html import HTMLText
+from mdn.kumascript import kumascript_grammar, KumaScript
+from mdn.specifications import Spec2Visitor, SpecNameVisitor
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
 
@@ -76,10 +77,8 @@ spec_tbody = "<tbody>"
 spec_body = spec_rows "</tbody>"
 spec_rows = spec_row+
 spec_row = tr_open _ specname_td _ spec2_td _ specdesc_td _ "</tr>" _
-specname_td = td_open _ specname_text "</td>"
-specname_text = kumascript / inner_td
-spec2_td = td_open _ spec2_text "</td>"
-spec2_text = kumascript / inner_td
+specname_td = td_open _ inner_td "</td>"
+spec2_td = td_open _ inner_td "</td>"
 specdesc_td = td_open _ specdesc_text _ "</td>"
 specdesc_text = specdesc_token*
 specdesc_token = kumascript / code_tag / spec_other
@@ -401,11 +400,10 @@ class PageVisitor(NodeVisitor):
                     {'spec2_key': spec2, 'specname_key': key}))
         else:
             # Text like 'Standard'
-            assert isinstance(spec2, dict), spec2
-            assert spec2['type'] == 'text', spec2
+            assert isinstance(spec2, HTMLText), spec2
             self.issues.append((
-                'spec2_converted', spec2['start'], spec2['end'],
-                {'key': key, 'original': spec2['content']}))
+                'spec2_converted', spec2.start, spec2.end,
+                {'key': key, 'original': spec2.cleaned}))
 
         desc = children[6]
         assert isinstance(desc, text_type)
@@ -442,26 +440,21 @@ class PageVisitor(NodeVisitor):
         return (key, spec_id, subpath, name)
 
     def visit_spec2_td(self, node, children):
-        spec2_text = children[2]
-        assert isinstance(spec2_text, list), type(spec2_text)
-        assert len(spec2_text) == 1, spec2_text
-        assert isinstance(spec2_text[0], dict)
-        item = spec2_text[0]
-        if item['type'] == 'kumascript':
-            if item['name'].lower() != 'spec2':
-                self.issues.append(
-                    self.kumascript_issue(
-                        'spec2_wrong_kumascript', item, 'spec2'))
-            if len(item['args']) != 1:
-                self.issues.append(
-                    self.kumascript_issue('spec2_arg_count', item, 'spec2'))
-                return ''
-            key = self.unquote(item["args"][0])
+        raw_text = node.text
+        reparsed = self.kumascript_grammar().parse(raw_text)
+        visitor = Spec2Visitor(offset=node.start)
+        visitor.visit(reparsed)
+        for issue in visitor.issues:
+            self.issues.append(issue)
+        if visitor.mdn_key:
+            return visitor.mdn_key
         else:
-            assert item['type'] == 'text', item
-            return item  # Handle errors at row level
-        assert isinstance(key, text_type), type(key)
-        return key
+            item = visitor.spec2_item
+            assert item
+            if isinstance(item, HTMLText) and not isinstance(item, KumaScript):
+                # Handle spec2 = text at row level
+                return item
+        return ""
 
     def visit_specdesc_td(self, node, children):
         specdesc = children[2]
