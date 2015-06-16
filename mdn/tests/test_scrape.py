@@ -296,6 +296,26 @@ Not part of any current spec, but it was in early drafts of
         self.assert_cell_version(
             "5.0 (532.5)", version="5.0", eng_version="532.5")
 
+    def assert_cell_no_prefix(self, text):
+        node = page_grammar['cell_noprefix'].parse(text)
+        self.assertEqual(text, node.text)
+
+    def test_unprefixed(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/AudioContext.createBufferSource
+        self.assert_cell_no_prefix(' (unprefixed) ')
+
+    def test_noprefix(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Navigator.vibrate
+        self.assert_cell_no_prefix(' (no prefix) ')
+
+    def test_without_prefix_naked(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-line
+        self.assert_cell_no_prefix('without prefix')
+
+    def test_without_prefix(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/BatteryManager
+        self.assert_cell_no_prefix('(without prefix)')
+
 
 class ScrapeTestCase(TestCase):
     """Fixtures for scraping tests."""
@@ -1462,11 +1482,17 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
             'Removed in 32',
             [{'version': '32.0'}], [{'support': 'no'}])
 
-    def test_cell_to_support_unmatched_free_text(self):
+    def test_cell_to_support_unprefixed(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/AudioContext.createBufferSource
         self.assert_cell_to_support(
             '32 (unprefixed)',
+            [{'version': '32.0'}], [{'support': 'yes'}])
+
+    def test_cell_to_support_unmatched_free_text(self):
+        self.assert_cell_to_support(
+            '32 (or earlier)',
             [{'version': '32.0'}], [{'support': 'yes'}],
-            issues=[('inline_text', 7, 19, {'text': '(unprefixed)'})])
+            issues=[('inline_text', 7, 19, {'text': '(or earlier)'})])
 
     def test_cell_to_support_code_block(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/order
