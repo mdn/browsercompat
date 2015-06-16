@@ -316,6 +316,18 @@ Not part of any current spec, but it was in early drafts of
         # https://developer.mozilla.org/en-US/docs/Web/API/BatteryManager
         self.assert_cell_no_prefix('(without prefix)')
 
+    def assert_cell_partial(self, text):
+        node = page_grammar['cell_partial'].parse(text)
+        self.assertEqual(text, node.text)
+
+    def test_comma_partial(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor
+        self.assert_cell_partial(', partial')
+
+    def test_parens_partal(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration
+        self.assert_cell_partial('(partial)')
+
 
 class ScrapeTestCase(TestCase):
     """Fixtures for scraping tests."""
@@ -1487,6 +1499,12 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         self.assert_cell_to_support(
             '32 (unprefixed)',
             [{'version': '32.0'}], [{'support': 'yes'}])
+
+    def test_cell_to_support_partial(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor
+        self.assert_cell_to_support(
+            '10, partial',
+            [{'version': '10.0'}], [{'support': 'partial'}])
 
     def test_cell_to_support_unmatched_free_text(self):
         self.assert_cell_to_support(
