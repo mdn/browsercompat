@@ -52,6 +52,31 @@ class TestGrammar(TestCase):
         expected_title = "Specifications"
         self.assert_spec_h2(spec_h2, expected_attrs, expected_title)
 
+    def assert_whynospec(self, text):
+        parsed = page_grammar['whynospec'].parse(text)
+        assert parsed
+
+    def test_whynospec_plain(self):
+        text = "<p>{{WhyNoSpecStart}}There is no spec{{WhyNoSpecEnd}}</p>"
+        self.assert_whynospec(text)
+
+    def test_whynospec_spaces(self):
+        text = """\
+<p>
+   {{ WhyNoSpecStart }} There is no spec {{ WhyNoSpecEnd }}
+</p>"""
+        self.assert_whynospec(text)
+
+    def test_whynospec_inner_kuma(self):
+        text = """\
+<p>
+{{WhyNoSpecStart}}
+Not part of any current spec, but it was in early drafts of
+{{SpecName("CSS3 Animations")}}.
+{{WhyNoSpecEnd}}
+</p>"""
+        self.assert_whynospec(text)
+
     def assert_spec_headers(self, spec_headers, expected_tag, expected_title):
         parsed = page_grammar['spec_headers'].parse(spec_headers)
         th_elems = parsed.children[2]
@@ -432,15 +457,42 @@ class TestPageVisitor(ScrapeTestCase):
             "<h2 id=\"specifications\">Specifications</h2>\n"
             "<p><em>TODO:</em> Specs go here</p>")
         issues = [(
-            'section_skipped', 44, 79,
-            {'title': 'Specifications', 'rule_name': 'spec_table',
-             'rule': ('spec_table = "<table class="standard-table">" _'
-                      ' spec_head _ spec_body _ "</table>" _')})]
+            'section_skipped', 47, 79,
+            {'title': 'Specifications', 'rule_name': 'whynospec_start',
+             'rule': ('whynospec_start = ks_esc_start "WhyNoSpecStart" _'
+                      ' ks_esc_end _')})]
         self.assert_last_section(last_section, issues)
 
     def test_last_section_valid_specifications(self):
         issues = [('section_missed', 0, 65, {'title': 'Specifications'})]
         self.assert_last_section(self.sample_spec_section, issues)
+
+    def assert_spec_section(self, spec_section, specs):
+        parsed = page_grammar['spec_section'].parse(spec_section)
+        self.visitor.visit(parsed)
+        self.assertEqual(specs, self.visitor.specs)
+        self.assertEqual([], self.visitor.issues)
+
+    def test_spec_section_expected(self):
+        spec = self.get_instance(Specification, 'css3_backgrounds')
+        parsed_specs = [{
+            'specification.id': spec.id,
+            'specification.mdn_key': 'CSS3 Backgrounds',
+            'section.id': None, 'section.name': 'background-size',
+            'section.note': '', 'section.subpath': '#the-background-size'}]
+        self.assert_spec_section(self.sample_spec_section, parsed_specs)
+
+    def test_spec_section_why_no_spec(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/AnimationEvent/initAnimationEvent
+        spec = """\
+<h2 id="Specifications" name="Specifications">Specifications</h2>
+<p>
+{{WhyNoSpecStart}}
+This method is non-standard and not part of any specification, though it was
+present in early drafts of {{SpecName("CSS3 Animations")}}.
+{{WhyNoSpecEnd}}
+</p>"""
+        self.assert_spec_section(spec, [])
 
     def assert_spec_h2(self, spec_h2, expected_issues):
         parsed = page_grammar['spec_h2'].parse(spec_h2)
@@ -2502,10 +2554,10 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_PARSED, fp.status)
         expected_issues = [[
-            'section_skipped', 93, 108,
-            {'rule_name': 'spec_table', 'title': 'Specifications',
-             'rule': ('spec_table = "<table class="standard-table">"'
-                      ' _ spec_head _ spec_body _ "</table>" _')}]]
+            'section_skipped', 96, 108,
+            {'title': 'Specifications', 'rule_name': 'whynospec_start',
+             'rule': ('whynospec_start = ks_esc_start "WhyNoSpecStart" _'
+                      ' ks_esc_end _')}]]
         self.assertEqual(
             expected_issues,
             fp.data['meta']['scrape']['raw']['issues'])
