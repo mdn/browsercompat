@@ -38,8 +38,13 @@ class FeaturePageListView(ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageListView, self).get_context_data(**kwargs)
+        topic = self.request.GET.get('topic')
+        base_url = reverse('feature_page_list')
+        if topic:
+            base_url += '?topic=' + topic
+        ctx['base_url'] = base_url
         ctx['request'] = self.request
-        ctx['topic'] = self.request.GET.get('topic')
+        ctx['topic'] = topic
         ctx['topics'] = sorted((
             'Web/API',
             'Web/Accessibility',

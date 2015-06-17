@@ -46,7 +46,7 @@
     ({{ page_obj.paginator.count }}
     import{% if page_obj.paginator.count > 1 %}s{% endif %})
 </h3>
-{{ pagination_control(page_obj, url('feature_page_list')) }}
+{{ pagination_control(page_obj, base_url) }}
 <table class="table table-condensed">
   <thead>
     <tr>
@@ -87,7 +87,7 @@
     {% endfor %}
   </tbody>
 </table>
-{{ pagination_control(page_obj, url('feature_page_list')) }}
+{{ pagination_control(page_obj, base_url) }}
 {% else %}
 <p><i>No pages imported yet.</i></p>
 {% endif %}
