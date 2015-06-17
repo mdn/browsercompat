@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.models import User
+from django.http import Http404
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.renderers import BrowsableAPIRenderer
@@ -203,3 +204,17 @@ class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
             return ViewFeatureListSerializer
         else:
             return super(ViewFeaturesViewSet, self).get_serializer_class()
+
+    def get_object_or_404(self, queryset, *filter_args, **filter_kwargs):
+        """The feature can be accessed by primary key or by feature slug."""
+        pk_or_slug = filter_kwargs['pk']
+        try:
+            pk = int(pk_or_slug)
+        except ValueError:
+            try:
+                pk = Feature.objects.only('pk').get(slug=pk_or_slug).pk
+            except queryset.model.DoesNotExist:
+                raise Http404(
+                    'No %s matches the given query.' % queryset.model)
+        return super(ViewFeaturesViewSet, self).get_object_or_404(
+            queryset, pk=pk)
