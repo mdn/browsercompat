@@ -228,7 +228,7 @@ class Version(models.Model):
     browser = models.ForeignKey('Browser', related_name='versions')
     version = models.CharField(
         help_text="Version string.",
-        blank=True, max_length=20)
+        max_length=20)
     release_day = models.DateField(
         help_text="Day of release to public, ISO 8601 format.",
         blank=True, null=True)
