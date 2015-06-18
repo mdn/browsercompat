@@ -170,7 +170,6 @@ class Support(models.Model):
         'no',
         'partial',
         'unknown',
-        'never'
     )]
 
     version = models.ForeignKey('Version', related_name='supports')

@@ -389,8 +389,7 @@ The **support** representation includes:
 * **attributes**
     - **id** *(server selected)* - Database ID
     - **support** - Assertion of support of the version_ for the
-      feature_, one of ``"yes"``, ``"no"``, ``"partial"``,
-      ``"unknown"``, or ``"never"``
+      feature_, one of ``"yes"``, ``"no"``, ``"partial"``, or ``"unknown"``
     - **prefix** - Prefix used to enable support, such as `"moz"`
     - **prefix_mandatory** - True if the prefix is required
     - **alternate_name** - An alternate name associated with this feature,
