@@ -243,6 +243,7 @@ class VersionSerializer(HistoricalModelSerializer):
             }
         }
         read_only_fields = ('supports',)
+        write_once_fields = ('version',)
         validators = [VersionAndStatusValidator()]
 
 

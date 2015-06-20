@@ -950,7 +950,7 @@
         },
         "status": 400
     }, {
-        "name": "version-update-error-status-beta-version-text",
+        "name": "version-update-version-change-ignored",
         "method": "PUT",
         "endpoint": "versions/18",
         "data": {
@@ -959,7 +959,7 @@
                 "status": "beta"
             }
         },
-        "status": 400
+        "status": 200
     }, {
         "name": "version-create-error-blank-version",
         "method": "POST",
