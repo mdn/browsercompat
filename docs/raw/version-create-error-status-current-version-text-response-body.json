@@ -1,0 +1,9 @@
+{
+    "errors": [
+        {
+            "status": "400",
+            "detail": "With status \"current\", version must be numeric or \"current\".",
+            "path": "/version"
+        }
+    ]
+}

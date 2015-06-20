@@ -1,0 +1,9 @@
+{
+    "errors": [
+        {
+            "status": "400",
+            "detail": "With status \"beta\", version must be numeric.",
+            "path": "/version"
+        }
+    ]
+}

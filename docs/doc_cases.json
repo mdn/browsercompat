@@ -939,5 +939,96 @@
                 }
             }
         }
+    }, {
+        "name": "version-update-error-status-future-version-numeric",
+        "method": "PUT",
+        "endpoint": "versions/18",
+        "data": {
+            "versions": {
+                "status": "future"
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-update-error-status-beta-version-text",
+        "method": "PUT",
+        "endpoint": "versions/18",
+        "data": {
+            "versions": {
+                "version": "Nightly",
+                "status": "beta"
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-blank-version",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "versions": {
+                "version": "",
+                "status": "unknown",
+                "links": {
+                    "browser": "6"
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-status-beta-text-version",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "versions": {
+                "version": "Nightly",
+                "status": "beta",
+                "links": {
+                    "browser": "6"
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-status-future-version-numeric",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "versions": {
+                "version": "42.0",
+                "status": "future",
+                "links": {
+                    "browser": "6"
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-status-current-version-text",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "versions": {
+                "version": "Developer Edition",
+                "status": "current",
+                "links": {
+                    "browser": "6"
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-status-unknown-version-current",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "versions": {
+                "version": "current",
+                "status": "unknown",
+                "links": {
+                    "browser": "6"
+                }
+            }
+        },
+        "status": 400
     }
 ]
