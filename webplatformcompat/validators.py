@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
+from django.db.models import Model
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six import string_types
+from rest_framework.exceptions import ValidationError as DRFValidationError
 
 
 @deconstructible
@@ -46,3 +48,70 @@ class LanguageDictValidator(object):
     def __ne__(self, other):
         """Check non-equivalency to another LanguageDictValidator."""
         return not self.__eq__(other)
+
+
+class VersionAndStatusValidator(object):
+    """For Version resource, restrict version/status combinations."""
+
+    def __init__(self):
+        """Initialize for Django model validation."""
+        self.instance = None
+        self.Error = ValidationError
+
+    def set_context(self, serializer_field):
+        """
+        Switch to Django Rest Framework (DRF) Serializer validation.
+
+        DRF 3.1.3 treats Django's ValidationError as non-field errors, ignoring
+        the message dictionary calling out the particular fields. When
+        DRF calls set_context(), switch to the DRF ValidationError class, so
+        that errors will be targetted to the field that needs to be changed.
+        """
+        self.instance = serializer_field.instance
+        self.Error = DRFValidationError
+
+    def __call__(self, value):
+        """Validate version/status combinations."""
+        if isinstance(value, Model):
+            # Called from Django model validation, value is Version instance
+            version = value.version
+            status = value.status
+        else:
+            # Called from DRF serializer validation, value is dict
+            if self.instance:
+                # Called from update
+                version = value.get('version', self.instance.version)
+                status = value.get('status', self.instance.status)
+            else:
+                # Called from create
+                version = value['version']
+                status = value.get('status', 'unknown')
+
+        if not version:
+            # DRF will catch in field validation
+            raise self.Error({"version": ["This field may not be blank."]})
+        try:
+            float(version)
+        except ValueError:
+            is_numeric = False
+        else:
+            is_numeric = True
+
+        numeric_only = ['beta', 'retired beta', 'retired', 'unknown']
+        if status in numeric_only and not is_numeric:
+            msg = 'With status "{0}", version must be numeric.'.format(status)
+            raise self.Error({"version": [msg]})
+
+        if status == 'future' and is_numeric:
+            msg = ('With status "future", version must be non-numeric.'
+                   ' Use status "beta" for future numbered versions.')
+            raise self.Error({"version": [msg]})
+
+        if status == 'current' and not (is_numeric or version == 'current'):
+            msg = ('With status "current", version must be numeric or'
+                   ' "current".')
+            raise self.Error({"version": [msg]})
+
+        if version == 'current' and status != 'current':
+            msg = 'With version "current", status must be "current".'
+            raise self.Error({"status": [msg]})

@@ -3,8 +3,11 @@
 """Tests for `web-platform-compat` validators module."""
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from rest_framework.exceptions import ValidationError as DRFValidationError
+import mock
 
-from webplatformcompat.validators import LanguageDictValidator
+from webplatformcompat.validators import (
+    LanguageDictValidator, VersionAndStatusValidator)
 
 
 class SharedLanguageDictValidatorTests(object):
@@ -63,3 +66,55 @@ class TestCanonicalDictValidator(SharedLanguageDictValidatorTests, TestCase):
 
     def test_zxx_success(self):
         self.validator({'zxx': 'display'})
+
+
+class SharedVersionAndStatusTests(object):
+    def assertFailsValidation(self, version, status):
+        attrs = {'version': version, 'status': status}
+        self.assertRaises(self.Error, self.validator, attrs)
+
+    def assertPasses(self, version, status):
+        attrs = {'version': version, 'status': status}
+        self.validator(attrs)
+
+    def test_empty_fails(self):
+        self.assertFailsValidation("", "unknown")
+
+    def test_float_unknown_ok(self):
+        self.assertPasses("1.0", "unknown")
+
+    def test_double_dotted_failed(self):
+        self.assertFailsValidation("1.0.5556", "unknown")
+
+    def test_current_current_ok(self):
+        self.assertPasses("current", "current")
+
+    def test_current_nightly_fails(self):
+        self.assertFailsValidation("nightly", "current")
+
+    def test_current_future_fails(self):
+        self.assertFailsValidation("current", "future")
+
+    def test_text_future_ok(self):
+        self.assertPasses("nightly", "future")
+
+    def test_number_future_fails(self):
+        self.assertFailsValidation("1.0", "future")
+
+
+class TestVersionAndStatusDjango(SharedVersionAndStatusTests, TestCase):
+    Error = ValidationError
+
+    def setUp(self):
+        self.validator = VersionAndStatusValidator()
+
+
+class TestVersionAndStatusDRF(SharedVersionAndStatusTests, TestCase):
+    Error = DRFValidationError
+
+    def setUp(self):
+        self.validator = VersionAndStatusValidator()
+        self.instance = mock.Mock()
+        self.instance.version = None
+        self.instance.status = None
+        self.validator.set_context(self.instance)

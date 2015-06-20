@@ -256,21 +256,22 @@ The **versions** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **version** *(write-once)* - Version of browser, or null
-      if unknown (for example, to document support for features in early HTML)
+    - **version** *(write-once)* - Version of browser. Numeric or text string,
+      depending on the status (see table below).
     - **release_day** - Day that browser was released in `ISO 8601`_ format, or
       null if unknown.
     - **retirement_day** - Approximate day the browser was "retired" (stopped
       being a current browser), in `ISO 8601`_ format, or null if unknown.
-    - **status** - One of
-      ``retired`` (old version, no longer the preferred download for any
-      platform),
-      ``retired-beta`` (old beta version, replaced
-      by a new beta or release),
+    - **status** - One of:
+      ``beta`` (a numbered release candidate suggested for early adopters or
+      testers),
       ``current`` (current version, the preferred download or update for
       users),
-      ``beta`` (a release candidate suggested for early adopters or testers),
-      ``future`` (a planned future release).
+      ``future`` (a named but unnumbered planned future release),
+      ``retired-beta`` (old beta version, replaced by a new beta or release),
+      ``retired`` (old version, no longer the preferred download for any
+      platform), or
+      ``unknown`` (status of this version is unknown)
     - **release_notes_uri** *(localized)* - URI of release notes for this
       version, or null if none.
     - **note** *(localized)* - Engine, OS, etc. information, or null
@@ -284,6 +285,20 @@ The **versions** representation includes:
       Set to a value from **history** to revert to that version.
     - **history** *(many)* - Associated **historical_versions**, in time
       order (most recent first).  Changes are ignored.
+
+The version is either a numeric value, such as ``"11.0"``, or text, such as
+``"Nightly"``.  The version format depends on the chosen status:
+
+================ =========
+      Status      Version
+================ =========
+``beta``         numeric
+``current``      numeric or the text ``"current"``
+``future``       text
+``retired-beta`` numeric
+``retired``      numeric
+``unknown``      numeric
+================ =========
 
 To get a single **version**:
 
