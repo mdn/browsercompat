@@ -264,21 +264,24 @@ class Tool(object):
             slugged = slugged[:45] + md5[:5]
         return slugged[slice(50 - len(suffix))] + suffix
 
-    def sync_changes(self, api_collection, local_collection):
+    def sync_changes(
+            self, api_collection, local_collection, skip_deletes=False):
         """Sync changes to a remote collection from a local collection
 
         Returns a dictionary counting the new, changed, and deleted items,
         or an empty dictionary if no changes.
         """
         self.logger.info('Looking for changes...')
-        changeset = CollectionChangeset(api_collection, local_collection)
+        changeset = CollectionChangeset(
+            api_collection, local_collection, skip_deletes)
         delta = changeset.changes
 
         if delta['new'] or delta['changed'] or delta['deleted']:
+            delete_skipped = " (but skipped)" if skip_deletes else ""
             self.logger.info(
-                'Changes detected: %d new, %d changed, %d deleted, %d same.',
+                'Changes detected: %d new, %d changed, %d deleted%s, %d same.',
                 len(delta['new']), len(delta['changed']),
-                len(delta['deleted']), len(delta['same']))
+                len(delta['deleted']), delete_skipped, len(delta['same']))
             confirmed = self.confirm_changes(changeset)
             if not confirmed:
                 return {}
