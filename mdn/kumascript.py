@@ -23,6 +23,7 @@ The MDN importer needs to recognize KumaScript templates in the raw page, and:
 
 The Compat API will not support KumaScript.
 """
+from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
@@ -59,14 +60,61 @@ text_item = ~r"(?P<content>[^{<]+)"s
 @python_2_unicode_compatible
 class KumaScript(HTMLText):
     """A KumaScript macro."""
+    min_args = 0
+    max_args = 0
+    arg_names = []
 
     def __init__(self, raw_content, start, name, args, scope=None):
+        """Initialize components of a KumaScript macro."""
         super(KumaScript, self).__init__(raw_content, start)
         self.name = name
         self.args = args
         self.scope = scope
+        assert self.max_args >= self.min_args
+        assert len(self.arg_names) == self.max_args
+
+    def arg(self, pos):
+        """Return argument, or None if not enough arguments."""
+        try:
+            return self.args[pos]
+        except IndexError:
+            return None
+
+    def _validate(self):
+        """Return validation issues or empty list."""
+        issues = []
+        count = len(self.args)
+        if count < self.min_args or count > self.max_args:
+            extra = {
+                'max': self.max_args, 'min': self.min_args, 'count': count,
+                'arg_names': self.arg_names}
+            if self.max_args == 0:
+                arg_spec = "no arguments"
+            else:
+                if self.max_args == self.min_args:
+                    arg_range = "exactly {0} argument{1}".format(
+                        self.max_args, '' if self.max_args == 1 else 's')
+                else:
+                    arg_range = "between {0} and {1} arguments".format(
+                        self.min_args, self.max_args)
+                names = []
+                for pos, name in enumerate(self.arg_names):
+                    if pos > self.min_args:
+                        names.append("[{}]".format(name))
+                    else:
+                        names.append(name)
+                arg_spec = "{} ({})".format(arg_range, ', '.join(names))
+            extra['arg_spec'] = arg_spec
+            if count == 1:
+                extra['arg_count'] = '1 argument'
+            else:
+                extra['arg_count'] = '{0} arguments'.format(count)
+
+            issues.append(self._make_issue('kumascript_wrong_args', extra))
+        return issues
 
     def __str__(self):
+        """Create the programmer debug string."""
         args = []
         for arg in self.args:
             if '"' in arg:
@@ -86,49 +134,177 @@ class KumaScript(HTMLText):
 
     @property
     def known(self):
+        """Return True if this a known KumaScript macro?"""
         return False
 
-    def _make_issue(self, issue_slug):
+    def _make_issue(self, issue_slug, extra_kwargs=None):
+        """Create an importer issue with standard KumaScript parameters."""
         assert self.scope
-        return (
-            issue_slug, self.start, self.end,
-            {'name': self.name, 'args': self.args, 'scope': self.scope,
-             'kumascript': str(self)})
+        kwargs = {'name': self.name, 'args': self.args, 'scope': self.scope,
+                  'kumascript': str(self)}
+        kwargs.update(extra_kwargs or {})
+        return (issue_slug, self.start, self.end, kwargs)
 
     @property
     def issues(self):
-        return super(KumaScript, self).issues + [
+        """Return the list of issues with this KumaScript in this scope."""
+        return super(KumaScript, self).issues + self._validate() + [
             self._make_issue('unknown_kumascript')]
 
 
 class KnownKumaScript(KumaScript):
+    """Base class for known KumaScript macros."""
     @property
     def known(self):
         return True
 
     @property
     def issues(self):
-        return super(KumaScript, self).issues
+        return super(KumaScript, self).issues + self._validate()
 
 
-class CompatAndroid(KnownKumaScript):
+class CompatKumaScript(KnownKumaScript):
+    """Base class for KumaScript specifying a browser version."""
+    min_args = max_args = 1
+
+    def to_html(self):
+        return self.version
+
+
+class CompatAndroid(CompatKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatAndroid
-    pass
+    arg_names = ['AndroidVersion']
+
+    def __init__(self, *args, **kwargs):
+        super(CompatAndroid, self).__init__(*args, **kwargs)
+        self.version = self.arg(0)
 
 
-class CompatGeckoDesktop(KnownKumaScript):
+class CompatGeckoDesktop(CompatKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop
-    pass
+    arg_names = ['GeckoVersion']
+    geckoversion_to_version = {
+        '1': '1.0',
+        '1.0': '1.0',
+        '1.7 or earlier': '1.0',
+        '1.7': '1.0',
+        '1.8': '1.5',
+        '1.8.1': '2.0',
+        '1.9': '3.0',
+        '1.9.1': '3.5',
+        '1.9.1.4': '3.5.4',
+        '1.9.2': '3.6',
+        '1.9.2.4': '3.6.4',
+        '1.9.2.5': '3.6.5',
+        '1.9.2.9': '3.6.9',
+        '2': '4.0',
+        '2.0': '4.0',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(CompatGeckoDesktop, self).__init__(*args, **kwargs)
+        self.gecko_version = self.arg(0)
+
+    @property
+    def version(self):
+        try:
+            return self.geckoversion_to_version[self.gecko_version]
+        except KeyError:
+            try:
+                nversion = float(self.gecko_version)
+            except ValueError:
+                return None
+
+            if nversion >= 5:
+                return "{:1.1f}".format(nversion)
+            else:
+                return None
+
+    @property
+    def issues(self):
+        issues = super(CompatGeckoDesktop, self).issues
+        if self.version is None:
+            issues.append(
+                ('compatgeckodesktop_unknown', self.start, self.end,
+                 {'version': self.gecko_version}))
+        return issues
 
 
-class CompatGeckoFxOS(KnownKumaScript):
+class CompatGeckoFxOS(CompatKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatGeckoFxOS
-    pass
+    max_args = 2
+    arg_names = ['GeckoVersion', 'VersionOverride']
+
+    def __init__(self, *args, **kwargs):
+        super(CompatGeckoFxOS, self).__init__(*args, **kwargs)
+        self.gecko_version = self.arg(0)
+        over = self.arg(1)
+        self.override = self.arg(1)
+
+        # TODO: Replace with KumaScript logic
+        try:
+            nversion = float(self.gecko_version)
+        except ValueError:
+            nversion = -1
+        over = self.override
+        self.bad_version = False
+        self.bad_override = False
+
+        if (0 <= nversion < 19) and over in (None, '1.0'):
+            self.version = '1.0'
+        elif (0 <= nversion < 21) and over == '1.0.1':
+            self.version = '1.0.1'
+        elif (0 <= nversion < 24) and over in ('1.1', '1.1.0', '1.1.1'):
+            self.version = '1.1'
+        elif (19 <= nversion < 27) and over in (None, '1.2'):
+            self.version = '1.2'
+        elif (27 <= nversion < 29) and over in (None, '1.3'):
+            self.version = '1.3'
+        elif (29 <= nversion < 31) and over in (None, '1.4'):
+            self.version = '1.4'
+        elif (31 <= nversion < 33) and over in (None, '2.0'):
+            self.version = '2.0'
+        elif (33 <= nversion < 35) and over in (None, '2.1'):
+            self.version = '2.1'
+        elif (35 <= nversion < 38) and over in (None, '2.2'):
+            self.version = '2.2'
+        elif (nversion < 0 or nversion >= 38):
+            self.version = over
+            self.bad_version = True
+        else:
+            self.version = over
+            self.bad_override = True
+            self.version = over
+
+    @property
+    def issues(self):
+        issues = super(CompatGeckoFxOS, self).issues
+        if self.bad_version:
+            issues.append(
+                ('compatgeckofxos_unknown', self.start, self.end,
+                 {'version': self.gecko_version}))
+        if self.bad_override:
+            issues.append(
+                ('compatgeckofxos_override', self.start, self.end,
+                 {'override': self.override, 'version': self.gecko_version}))
+        return issues
 
 
-class CompatGeckoMobile(KnownKumaScript):
+class CompatGeckoMobile(CompatKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatGeckoMobile
-    pass
+    arg_names = ['GeckoVersion']
+
+    def __init__(self, *args, **kwargs):
+        super(CompatGeckoMobile, self).__init__(*args, **kwargs)
+        self.gecko_version = self.arg(0)
+
+    @property
+    def version(self):
+        nversion = self.gecko_version.split('.', 1)[0]
+        if nversion == '2':
+            return '4.0'
+        else:
+            return "{}.0".format(nversion)
 
 
 class CompatNo(KnownKumaScript):
@@ -153,15 +329,28 @@ class CompatibilityTable(KnownKumaScript):
 
 class HTMLElement(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:HTMLElement
-    pass
+    min_args = max_args = 1
+    arg_names = ['ElementName']
+
+    def __init__(self, *args, **kwargs):
+        super(HTMLElement, self).__init__(*args, **kwargs)
+        self.element_name = self.arg(0)
+
+    def to_html(self):
+        if ' ' in self.element_name:
+            fmt = '<code>{}</code>'
+        else:
+            fmt = '<code>&lt;{}&gt;</code>'
+        return fmt.format(self.element_name)
 
 
 class Spec2(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:Spec2
+    min_args = max_args = 1
+    arg_names = ['SpecKey']
 
     def __init__(self, *args, **kwargs):
         super(Spec2, self).__init__(*args, **kwargs)
-        self.spec2_issues = []
         self.spec = None
         self.maturity = None
         key = self.mdn_key
@@ -169,73 +358,70 @@ class Spec2(KnownKumaScript):
             try:
                 self.spec = Specification.objects.get(mdn_key=key)
             except Specification.DoesNotExist:
-                self.spec2_issues.append(
-                    ('unknown_spec', self.start, self.end, {'key': key}))
+                pass
             else:
                 self.maturity = self.spec.maturity
-        else:
-            self.spec2_issues.append(self._make_issue('spec2_arg_count'))
 
     @property
     def mdn_key(self):
-        try:
-            return self.args[0]
-        except IndexError:
-            return None
+        return self.arg(0)
 
-    @property
-    def issues(self):
-        return super(Spec2, self).issues + self.spec2_issues
+    def _validate(self):
+        issues = super(Spec2, self)._validate()
+        if self.mdn_key and not self.spec:
+            issues.append(
+                ('unknown_spec', self.start, self.end, {'key': self.mdn_key}))
+        return issues
 
 
 class SpecName(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:SpecName
+    min_args = 1
+    max_args = 3
+    arg_names = ['SpecKey', 'Anchor', 'AnchorName']
 
     def __init__(self, *args, **kwargs):
         super(SpecName, self).__init__(*args, **kwargs)
-        self.specname_issues = []
         self.spec = None
+        self.mdn_key = self.arg(0)
+        self.subpath = self.arg(1)
+        self.section_name = self.arg(2)
         key = self.mdn_key
         if key:
             try:
                 self.spec = Specification.objects.get(mdn_key=key)
             except Specification.DoesNotExist:
-                self.specname_issues.append(
-                    ('unknown_spec', self.start, self.end, {'key': key}))
-        else:
-            self.specname_issues.append(self._make_issue('specname_blank_key'))
+                pass
 
-    @property
-    def mdn_key(self):
-        return self.args[0]
-
-    @property
-    def subpath(self):
-        try:
-            return self.args[1]
-        except IndexError:
-            return None
-
-    @property
-    def section_name(self):
-        try:
-            return self.args[2]
-        except IndexError:
-            return None
-
-    @property
-    def issues(self):
-        return super(SpecName, self).issues + self.specname_issues
+    def _validate(self):
+        issues = super(SpecName, self)._validate()
+        if self.mdn_key and not self.spec:
+            issues.append(
+                ('unknown_spec', self.start, self.end, {'key': self.mdn_key}))
+        if not self.mdn_key and len(self.args):
+            issues.append(self._make_issue('specname_blank_key'))
+        return issues
 
 
 class CSSBox(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:cssbox
-    pass
+    min_args = max_args = 1
+    arg_names = ['PropertyName']
 
 
 class CSSxRef(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:cssxref
-    pass
+    min_args = 1
+    max_args = 3
+    arg_names = ['APIName', 'DisplayName', 'Anchor']
+
+    def __init__(self, *args, **kwargs):
+        super(CSSxRef, self).__init__(*args, **kwargs)
+        self.api_name = self.arg(0)
+        self.display_name = self.arg(1)
+
+    def to_html(self):
+        return '<code>{}</code>'.format(self.display_name or self.api_name)
 
 
 class DeprecatedInline(KnownKumaScript):
@@ -245,7 +431,17 @@ class DeprecatedInline(KnownKumaScript):
 
 class DOMxRef(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:domxref
-    pass
+    min_args = 1
+    max_args = 2
+    arg_names = ['DOMPath', 'DOMText']
+
+    def __init__(self, *args, **kwargs):
+        super(DOMxRef, self).__init__(*args, **kwargs)
+        self.dom_path = self.arg(0)
+        self.dom_text = self.arg(1)
+
+    def to_html(self):
+        return '<code>{}</code>'.format(self.dom_text or self.dom_path)
 
 
 class ExperimentalInline(KnownKumaScript):
@@ -265,12 +461,18 @@ class NotStandardInline(KnownKumaScript):
 
 class PropertyPrefix(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:property_prefix
-    pass
+    min_args = max_args = 1
+    arg_names = ['Prefix']
+
+    def __init__(self, *args, **kwargs):
+        super(PropertyPrefix, self).__init__(*args, **kwargs)
+        self.prefix = self.arg(0)
 
 
 class XrefCSSLength(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
-    pass
+    def to_html(self):
+        return '<code>&lt;length&gt;</code>'
 
 
 class KumaVisitor(HTMLVisitor):
@@ -284,17 +486,23 @@ class KumaVisitor(HTMLVisitor):
         self._kumascript_proper_names = None
         self.scope = None
 
-    def _visit_multi_block(self, node, tokens):
+    def _visit_multi_block(self, node, children):
         """Visit a 1-or-more block of tokens."""
-        assert isinstance(tokens, list)
+        assert children
+        tokens = self.flatten(children)
         assert tokens
-        if isinstance(tokens[0], list):
-            # Unroll doubled list
-            assert len(tokens) == 1
-            tokens = tokens[0]
         for token in tokens:
             assert isinstance(token, HTMLInterval)
         return tokens
+
+    def flatten(self, nested_list):
+        result = []
+        for item in nested_list:
+            if isinstance(item, list):
+                result.extend(self.flatten(item))
+            else:
+                result.append(item)
+        return result
 
     def _visit_multi_token(self, node, children):
         """Visit a single HTMLInterval or list of HTMLIntervals."""
@@ -312,6 +520,8 @@ class KumaVisitor(HTMLVisitor):
 
     visit_html_block = _visit_multi_block
     visit_html_tag = _visit_multi_token
+    visit_text_block = _visit_multi_block
+    visit_text_token = _visit_multi_token
 
     known_kumascript = {
         'CompatAndroid': CompatAndroid,

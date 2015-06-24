@@ -657,10 +657,11 @@ domenic/promises-unwrapping</a></td>
         spec2_td = '<td>{{Spec2()}}</td>'
         expected = ''
         issues = [(
-            'spec2_arg_count', 4, 15,
-            {'name': 'Spec2', 'args': [],
-             'scope': 'specification maturity',
-             'kumascript': '{{Spec2}}'})]
+            'kumascript_wrong_args', 4, 15,
+            {'name': 'Spec2', 'args': [], 'scope': 'specification maturity',
+             'kumascript': '{{Spec2}}', 'min': 1, 'max': 1, 'count': 0,
+             'arg_names': ['SpecKey'], 'arg_count': '0 arguments',
+             'arg_spec': 'exactly 1 argument (SpecKey)'})]
         self.assert_spec2_td(spec2_td, expected, issues)
 
     def test_spec2_td_specname(self):

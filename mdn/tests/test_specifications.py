@@ -112,9 +112,11 @@ class TestSpec2Visitor(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIInput
         html = '<td>{{Spec2()}}</td>'
         issues = [(
-            'spec2_arg_count', 4, 15,
+            'kumascript_wrong_args', 4, 15,
             {'name': 'Spec2', 'args': [], 'scope': 'specification maturity',
-             'kumascript': '{{Spec2}}'})]
+             'kumascript': '{{Spec2}}', 'min': 1, 'max': 1, 'count': 0,
+             'arg_names': ['SpecKey'], 'arg_count': '0 arguments',
+             'arg_spec': 'exactly 1 argument (SpecKey)'})]
         self.assert_spec2(html, None, issues)
 
     def test_specname(self):

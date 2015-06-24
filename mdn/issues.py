@@ -103,6 +103,11 @@ ISSUES = OrderedDict((
         'The API schema does not include inline notes. This text needs to be'
         ' converted to a footnote, converted to a support attribute (which'
         ' may require an importer update), or removed.')),
+    ('kumascript_wrong_args', (
+        ERROR,
+        'Bad argument count in KumaScript {kumascript} in {scope}.',
+        'The importer expected {name} to have {arg_spec}, but it had'
+        ' {arg_count}')),
     ('nested_p', (
         ERROR,
         'Nested <p> tags are not supported.',
@@ -170,10 +175,6 @@ ISSUES = OrderedDict((
         'Expected KumaScript Spec2(), got {kumascript}',
         'Change to Spec2(mdn_key), using the mdn_key from the SpecName()'
         ' KumaScript.')),
-    ('spec2_arg_count', (
-        ERROR,
-        'KumaScript {kumascript} should have 1 non-blank argument',
-        'Argument should be the MDN key that will return a maturity')),
     ('spec2_converted', (
         WARNING,
         'Specification status should be converted to KumaScript',
