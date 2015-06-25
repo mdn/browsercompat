@@ -505,50 +505,6 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
              {'spec2_key': 'CSS3 Basic UI', 'specname_key': 'CSS3 UI'})]
         self.assert_spec_row(spec_row, expected_specs, issues)
 
-    def test_spec_row_specname_commas_in_link(self):
-        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element
-        #  /Heading_Elements
-        spec = self.get_instance(Specification, 'html_whatwg')
-        spec_row = '''\
-<tr>
-  <td>{{SpecName('HTML WHATWG',\
- 'sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements',\
- '&lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, and &lt;h6&gt;'\
- )}}</td>
-  <td>{{Spec2('HTML WHATWG')}}</td>
-  <td>&nbsp;</td>
-</tr>'''
-        expected_specs = [{
-            'section.note': '',
-            'section.subpath': (
-                'sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements'),
-            'section.name': (
-                '&lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;,'
-                ' and &lt;h6&gt;'),
-            'specification.mdn_key': 'HTML WHATWG',
-            'section.id': None,
-            'specification.id': spec.id}]
-        self.assert_spec_row(spec_row, expected_specs, [])
-
-    def test_spec_row_no_thead(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/AudioContext
-        spec = self.get_instance(Specification, 'web_audio_api')
-        spec_row = '''\
-<tr>
-  <td>{{SpecName('Web Audio API', '#the-audiocontext-interface',\
- 'AudioContext')}}</td>
-  <td>{{Spec2('Web Audio API')}}</td>
-  <td>&nbsp;</td>
-</tr>'''
-        expected_specs = [{
-            'section.note': '',
-            'section.subpath': '#the-audiocontext-interface',
-            'section.name': 'AudioContext',
-            'specification.mdn_key': 'Web Audio API',
-            'section.id': None,
-            'specification.id': spec.id}]
-        self.assert_spec_row(spec_row, expected_specs, [])
-
     def test_spec_row_known_spec(self):
         spec = self.get_instance(Specification, 'css3_backgrounds')
         self.create(Section, specification=spec)
@@ -619,124 +575,33 @@ domenic/promises-unwrapping</a></td>
              {'key': '', 'original': 'Draft'})]
         self.assert_spec_row(spec_row, expected_specs, issues)
 
-    def assert_specname_td(self, specname_td, expected, issues):
-        parsed = page_grammar['specname_td'].parse(specname_td)
-        specname = self.visitor.visit(parsed)
-        self.assertEqual(expected, specname)
-        self.assertEqual(issues, self.visitor.issues)
-
-    def test_specname_td_success(self):
-        spec = self.get_instance(Specification, 'css3_backgrounds')
-        specname_td = (
-            '<td>{{SpecName("CSS3 Backgrounds", "#subpath", "Name")}}</td>')
-        expected = ('CSS3 Backgrounds', spec.id, "#subpath", "Name")
-        issues = []
-        self.assert_specname_td(specname_td, expected, issues)
-
-    def test_specname_td_other(self):
-        specname_td = "<td> Another Spec.</td>"
-        expected = ('', None, '', '')
-        issues = [
-            ('specname_not_kumascript', 4, 18, {'original': 'Another Spec.'})]
-        self.assert_specname_td(specname_td, expected, issues)
-
-    def assert_spec2_td(self, spec2_td, expected, issues):
-        parsed = page_grammar['spec2_td'].parse(spec2_td)
-        spec2 = self.visitor.visit(parsed)
-        self.assertEqual(expected, spec2)
-        self.assertEqual(self.visitor.issues, issues)
-
-    def test_spec2_td_standard(self):
-        self.get_instance(Specification, 'html_whatwg')
-        spec2_td = '<td>{{Spec2("HTML WHATWG")}}</td>'
-        expected = 'HTML WHATWG'
-        self.assert_spec2_td(spec2_td, expected, [])
-
-    def test_spec2_td_empty(self):
+    def test_spec2_td_no_spec(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIInput
         spec2_td = '<td>{{Spec2()}}</td>'
-        expected = ''
+        parsed = page_grammar['spec2_td'].parse(spec2_td)
+        spec2 = self.visitor.visit(parsed)
+        self.assertEqual('', spec2)
         issues = [(
             'kumascript_wrong_args', 4, 15,
             {'name': 'Spec2', 'args': [], 'scope': 'specification maturity',
              'kumascript': '{{Spec2}}', 'min': 1, 'max': 1, 'count': 0,
              'arg_names': ['SpecKey'], 'arg_count': '0 arguments',
              'arg_spec': 'exactly 1 argument (SpecKey)'})]
-        self.assert_spec2_td(spec2_td, expected, issues)
-
-    def test_spec2_td_specname(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/tabIndex
-        self.get_instance(Specification, 'html_whatwg')
-        spec2_td = "<td>{{SpecName('HTML WHATWG')}}</td>"
-        expected = 'HTML WHATWG'
-        issues = [(
-            'spec2_wrong_kumascript', 4, 31,
-            {'name': 'SpecName', 'args': ["HTML WHATWG"],
-             'scope': 'specification maturity',
-             'kumascript': '{{SpecName("HTML WHATWG")}}'})]
-        self.assert_spec2_td(spec2_td, expected, issues)
-
-    def test_spec2_td_text_name(self):
-        # /en-US/docs/Web/JavaScript/Reference/Operators/this
-        spec2_td = "<td>Standard</td>"
-        parsed = page_grammar['spec2_td'].parse(spec2_td)
-        spec2 = self.visitor.visit(parsed)
-        self.assertEqual(spec2.cleaned, 'Standard')
-        self.assertEqual(self.visitor.issues, [])
-
-    def assert_specdec_td(self, specdesc_td, expected, issues):
-        parsed = page_grammar['specdesc_td'].parse(specdesc_td)
-        specdesc = self.visitor.visit(parsed)
-        self.assertEqual(expected, specdesc)
         self.assertEqual(self.visitor.issues, issues)
 
-    def test_specdesc_td_text(self):
-        specdesc_td = "<td>This is text.</td>"
-        expected = "This is text."
-        self.assert_specdec_td(specdesc_td, expected, [])
-
-    def test_specdesc_td_code(self):
-        # https://developer.mozilla.org/en-US/docs/Web/CSS/display
-        specdesc_td = (
-            "<td>Added the table model values and"
-            " <code>inline-block</code>.</td>")
-        expected = (
-            "Added the table model values and <code>inline-block</code>.")
-        self.assert_specdec_td(specdesc_td, expected, [])
-
-    def test_specdesc_td_kumascript(self):
-        # https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align
-        specdesc_td = (
-            '<td>Add the {{ xref_csslength() }} value and allows it to be'
-            ' applied to element with a {{ cssxref("display") }} type of'
-            ' <code>table-cell</code>.</td>')
-        expected = (
-            'Add the <code>&lt;length&gt;</code> value and allows it to be'
-            ' applied to element with a <code>display</code> type of'
-            ' <code>table-cell</code>.')
-        self.assert_specdec_td(specdesc_td, expected, [])
-
-    def test_specdesc_td_kumascript_spec2(self):
+    def test_specdesc_td_with_issue(self):
         # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data
         specdesc_td = "<td>No change from {{Spec2('HTML5 W3C')}}</td>"
+        parsed = page_grammar['specdesc_td'].parse(specdesc_td)
+        specdesc = self.visitor.visit(parsed)
         expected = "No change from specification HTML5 W3C"
+        self.assertEqual(expected, specdesc)
         issues = [
             ('specdesc_spec2_invalid', 19, 41,
              {'name': 'Spec2', 'args': ['HTML5 W3C'],
               'scope': 'specification description',
               'kumascript': '{{Spec2("HTML5 W3C")}}'})]
-        self.assert_specdec_td(specdesc_td, expected, issues)
-
-    def test_specdesc_td_kumascript_experimental_inline(self):
-        # https://developer.mozilla.org/en-US/docs/Web/CSS/position_value
-        specdesc_td = (
-            '<td>Defines <code>&lt;position&gt;</code> explicitly and extends'
-            ' it to support offsets from any edge. {{ experimental_inline() }}'
-            '</td>')
-        expected = (
-            'Defines <code>&lt;position&gt;</code> explicitly and extends'
-            ' it to support offsets from any edge.')
-        self.assert_specdec_td(specdesc_td, expected, [])
+        self.assertEqual(self.visitor.issues, issues)
 
     def assert_compat_section(self, compat_section, compat, footnotes, issues):
         parsed = page_grammar['compat_section'].parse(compat_section)
