@@ -722,8 +722,9 @@ domenic/promises-unwrapping</a></td>
         expected = "No change from specification HTML5 W3C"
         issues = [
             ('specdesc_spec2_invalid', 19, 41,
-             {'name': 'Spec2', 'args': ['HTML5 W3C'], 'scope': 'specdesc',
-              'kumascript': '{{Spec2(HTML5 W3C)}}'})]
+             {'name': 'Spec2', 'args': ['HTML5 W3C'],
+              'scope': 'specification description',
+              'kumascript': '{{Spec2("HTML5 W3C")}}'})]
         self.assert_specdec_td(specdesc_td, expected, issues)
 
     def test_specdesc_td_kumascript_experimental_inline(self):
@@ -736,16 +737,6 @@ domenic/promises-unwrapping</a></td>
             'Defines <code>&lt;position&gt;</code> explicitly and extends'
             ' it to support offsets from any edge.')
         self.assert_specdec_td(specdesc_td, expected, [])
-
-    def test_specdesc_td_spec2(self):
-        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data
-        specdesc_td = "<td>No change from {{Spec2('HTML5 W3C')}}</td>"
-        expected = "No change from specification HTML5 W3C"
-        issues = [
-            ('specdesc_spec2_invalid', 19, 41,
-             {'name': 'Spec2', 'args': ['HTML5 W3C'], 'scope': 'specdesc',
-              'kumascript': '{{Spec2(HTML5 W3C)}}'})]
-        self.assert_specdec_td(specdesc_td, expected, issues)
 
     def assert_compat_section(self, compat_section, compat, footnotes, issues):
         parsed = page_grammar['compat_section'].parse(compat_section)

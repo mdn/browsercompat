@@ -237,30 +237,32 @@ class TestSpec2(TestCase):
         ks = Spec2(raw, 0, 'Spec2', ['CSS3 Backgrounds'], 'test')
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
         self.assertEqual(ks.spec, spec)
-        self.assertEqual(ks.maturity, spec.maturity)
         self.assertFalse(ks.issues)
+        self.assertEqual(
+            ks.to_html(),
+            'specification CSS Backgrounds and Borders Module Level&nbsp;3')
 
     def test_unknown_mdn_key(self):
         raw = "{{Spec2('CSS3 Backgrounds')}}"
         ks = Spec2(raw, 0, 'Spec2', ['CSS3 Backgrounds'], 'test')
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
         self.assertIsNone(ks.spec)
-        self.assertIsNone(ks.maturity)
         issues = [('unknown_spec', 0, 29, {'key': ks.mdn_key})]
         self.assertEqual(ks.issues, issues)
+        self.assertEqual(ks.to_html(), 'specification CSS3 Backgrounds')
 
     def test_empty_key(self):
         raw = "{{Spec2()}}"
         ks = Spec2(raw, 0, 'Spec2', [], 'test')
         self.assertIsNone(ks.mdn_key)
         self.assertIsNone(ks.spec)
-        self.assertIsNone(ks.maturity)
         expected = ks._make_issue(
             'kumascript_wrong_args',
             {'min': 1, 'max': 1, 'arg_names': ['SpecKey'], 'count': 0,
              'arg_count': '0 arguments',
              'arg_spec': 'exactly 1 argument (SpecKey)'})
         self.assertEqual(ks.issues, [expected])
+        self.assertEqual(ks.to_html(), 'specification (None)')
 
 
 class TestSpecName(TestCase):

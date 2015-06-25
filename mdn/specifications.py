@@ -1,7 +1,7 @@
 # coding: utf-8
 """Parser for Specification section of an MDN raw page."""
 
-from .html import HTMLText
+from .html import HTMLStructure, HTMLText
 from .kumascript import KumaVisitor, SpecName, Spec2
 
 from webplatformcompat.models import Specification
@@ -92,4 +92,25 @@ class Spec2Visitor(KumaVisitor):
         elif (isinstance(processed, HTMLText) and processed.cleaned and
                 not self.mdn_key and not self.spec2_item):
             self.spec2_item = processed
+        return processed
+
+
+class SpecDescVisitor(KumaVisitor):
+    """
+    Visitor for a Specification description fragment.
+
+    This is the third column of the Specifications table.
+    """
+    def __init__(self, *args, **kwargs):
+        super(SpecDescVisitor, self).__init__(*args, **kwargs)
+        self.scope = 'specification description'
+        self.desc_items = None
+
+    def process(self, cls, node, *args, **kwargs):
+        """Look for description nodes."""
+        processed = super(SpecDescVisitor, self).process(
+            cls, node, *args, **kwargs)
+        if isinstance(processed, HTMLStructure) and processed.tag == 'td':
+            assert self.desc_items is None
+            self.desc_items = processed.children
         return processed

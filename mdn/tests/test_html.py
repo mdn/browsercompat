@@ -114,6 +114,11 @@ class TestGrammar(TestCase):
         parsed = grammar['html'].parse(text)
         assert parsed
 
+    def test_empty_tag(self):
+        text = '<td></td>'
+        parsed = grammar['html'].parse(text)
+        assert parsed
+
 
 class TestVisitor(TestCase):
     def setUp(self):
@@ -253,6 +258,17 @@ class TestVisitor(TestCase):
         self.assertEqual(len(td.children), 1)
         text = td.children[0]
         self.assertEqual(text_type(text), "A very dumb table")
+
+    def test_html_empty_tag(self):
+        text = "<td></td>"
+        parsed = grammar['html'].parse(text)
+        out = self.visitor.visit(parsed)
+        self.assertEqual(len(out), 1)
+        td = out[0]
+        self.assertEqual(td.tag, "td")
+        self.assertEqual(len(td.children), 1)
+        text = td.children[0]
+        self.assertEqual(text_type(text), "")
 
     def test_add_issue(self):
         text = '<p>A paragraph</p>'

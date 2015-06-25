@@ -36,7 +36,7 @@ from parsimonious.nodes import Node, NodeVisitor
 
 from mdn.html import HTMLText
 from mdn.kumascript import kumascript_grammar, KumaScript
-from mdn.specifications import Spec2Visitor, SpecNameVisitor
+from mdn.specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
 
@@ -79,10 +79,7 @@ spec_rows = spec_row+
 spec_row = tr_open _ specname_td _ spec2_td _ specdesc_td _ "</tr>" _
 specname_td = td_open _ inner_td "</td>"
 spec2_td = td_open _ inner_td "</td>"
-specdesc_td = td_open _ specdesc_text _ "</td>"
-specdesc_text = specdesc_token*
-specdesc_token = kumascript / code_tag / spec_other
-spec_other = ~r"(?P<content>[^{<]+)\s*"s
+specdesc_td = td_open _ inner_td "</td>"
 inner_td = ~r"(?P<content>.*?(?=</td>))"s
 
 #
@@ -457,17 +454,14 @@ class PageVisitor(NodeVisitor):
         return ""
 
     def visit_specdesc_td(self, node, children):
-        specdesc = children[2]
-        bits = []
-        if isinstance(specdesc, Node):
-            assert specdesc.start == specdesc.end
-        else:
-            assert isinstance(specdesc, list), type(specdesc)
-            for item in specdesc:
-                bits.append(self.item_to_html(item, 'specdesc'))
-        return self.join_content(bits)
-
-    visit_specdesc_token = _visit_token
+        raw_text = node.text
+        reparsed = self.kumascript_grammar().parse(raw_text)
+        visitor = SpecDescVisitor(offset=node.start)
+        visitor.visit(reparsed)
+        for issue in visitor.issues:
+            self.issues.append(issue)
+        html = [item.to_html() for item in visitor.desc_items]
+        return self.join_content(html)
 
     def visit_inner_td(self, node, children):
         text = self.cleanup_whitespace(node.text)
@@ -475,8 +469,6 @@ class PageVisitor(NodeVisitor):
         return {
             'type': 'text', 'content': text,
             'start': node.start, 'end': node.end}
-
-    visit_spec_other = visit_inner_td
 
     #
     # Browser Compatibility section
@@ -1149,7 +1141,10 @@ class PageVisitor(NodeVisitor):
              'kumascript': "{{%s%s}}" % (item['name'], args)})
 
     def kumascript_to_html(self, item, scope):
-        """Convert kumascript to plain HTML."""
+        """Convert kumascript to plain HTML.
+
+        TODO: remove code when HTML conversion moved to kumascript.py
+        """
         assert item['type'] == 'kumascript'
         name = item['name']
         args = item['args']
@@ -1181,14 +1176,6 @@ class PageVisitor(NodeVisitor):
         elif name.lower() == 'specname':
             assert len(args) >= 1
             return 'specification ' + args[0]
-        elif name.lower() == 'spec2' and scope == 'specdesc':
-            assert len(args) >= 1
-            self.issues.append(self.kumascript_issue(
-                'specdesc_spec2_invalid', item, scope))
-            return 'specification ' + args[0]
-        elif name == 'experimental_inline':
-            # Don't include beaker in output
-            assert not args
         else:
             self.issues.append(
                 self.kumascript_issue('unknown_kumascript', item, scope))

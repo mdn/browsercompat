@@ -344,37 +344,43 @@ class HTMLElement(KnownKumaScript):
         return fmt.format(self.element_name)
 
 
-class Spec2(KnownKumaScript):
+class SpecKumaScript(KnownKumaScript):
+    """Base class for Spec2 and SpecName."""
+
+    def __init__(self, *args, **kwargs):
+        super(SpecKumaScript, self).__init__(*args, **kwargs)
+        self.mdn_key = self.arg(0)
+        self.spec = None
+        if self.mdn_key:
+            try:
+                self.spec = Specification.objects.get(mdn_key=self.mdn_key)
+            except Specification.DoesNotExist:
+                pass
+
+    def to_html(self):
+        if self.spec:
+            name = self.spec.name['en']
+        else:
+            name = self.mdn_key or "(None)"
+        return "specification {}".format(name)
+
+
+class Spec2(SpecKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:Spec2
     min_args = max_args = 1
     arg_names = ['SpecKey']
 
-    def __init__(self, *args, **kwargs):
-        super(Spec2, self).__init__(*args, **kwargs)
-        self.spec = None
-        self.maturity = None
-        key = self.mdn_key
-        if key:
-            try:
-                self.spec = Specification.objects.get(mdn_key=key)
-            except Specification.DoesNotExist:
-                pass
-            else:
-                self.maturity = self.spec.maturity
-
-    @property
-    def mdn_key(self):
-        return self.arg(0)
-
     def _validate(self):
         issues = super(Spec2, self)._validate()
-        if self.mdn_key and not self.spec:
+        if self.scope == 'specification description':
+            issues.append(self._make_issue('specdesc_spec2_invalid'))
+        elif self.mdn_key and not self.spec:
             issues.append(
                 ('unknown_spec', self.start, self.end, {'key': self.mdn_key}))
         return issues
 
 
-class SpecName(KnownKumaScript):
+class SpecName(SpecKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:SpecName
     min_args = 1
     max_args = 3
@@ -382,16 +388,8 @@ class SpecName(KnownKumaScript):
 
     def __init__(self, *args, **kwargs):
         super(SpecName, self).__init__(*args, **kwargs)
-        self.spec = None
-        self.mdn_key = self.arg(0)
         self.subpath = self.arg(1)
         self.section_name = self.arg(2)
-        key = self.mdn_key
-        if key:
-            try:
-                self.spec = Specification.objects.get(mdn_key=key)
-            except Specification.DoesNotExist:
-                pass
 
     def _validate(self):
         issues = super(SpecName, self)._validate()

@@ -26,7 +26,7 @@ html_grammar = r"""
 #
 # HTML tokens (only those used in compat tables)
 #
-html = html_block
+html = html_block / empty_text
 html_block = html_tag+
 html_tag = a_tag / br / code_tag / p_tag / pre_tag / span_tag / strong_tag /
     sup_tag / table_tag / tbody_tag / td_tag / th_tag / thead_tag / tr_tag /
@@ -124,6 +124,7 @@ _ = ~r"[ \t\r\n]*"s
 text_block = text_token+
 text_token = text_item
 text_item = ~r"(?P<content>[^<]+)"s
+empty_text = ""
 """
 
 
@@ -174,6 +175,18 @@ class HTMLText(HTMLInterval):
         normal = self.re_whitespace.sub(' ', text)
         assert '  ' not in normal
         return normal.strip()
+
+
+@python_2_unicode_compatible
+class HTMLEmptyText(HTMLText):
+    """An empty text section of HTML"""
+
+    def __init__(self, raw_content, start):
+        assert raw_content == ''
+        super(HTMLEmptyText, self).__init__(raw_content, start)
+
+    def __str__(self):
+        return ''
 
 
 @python_2_unicode_compatible
@@ -266,7 +279,8 @@ class HTMLStructure(HTMLInterval):
             self.children.append(child)
 
     def __str__(self):
-        content = ''.join(str(child) for child in self.children)
+        content = ' '.join(str(child) for child in self.children)
+        content.replace('> <', '><')
         return "{}{}{}".format(self.open_tag, content, self.close_tag)
 
 
@@ -336,6 +350,10 @@ class HTMLVisitor(NodeVisitor):
     #
     # HTML tokens
     #
+    def visit_html(self, node, children):
+        assert isinstance(children, list)
+        assert len(children) == 1
+        return children[0]
 
     visit_html_block = _visit_block
     visit_html_tag = _visit_token
@@ -397,11 +415,15 @@ class HTMLVisitor(NodeVisitor):
 
     def _visit_tag(self, node, children):
         """Parse a <tag>content</tag> block."""
-        tag_open, content, tag_close = children
+        tag_open, raw_content, tag_close = children
         assert isinstance(tag_open, HTMLOpenTag), tag_open
-        assert isinstance(content, list)
-        for child in content:
-            assert isinstance(child, HTMLInterval), child
+        if isinstance(raw_content, HTMLEmptyText):
+            content = [raw_content]
+        else:
+            assert isinstance(raw_content, list)
+            for child in raw_content:
+                assert isinstance(child, HTMLInterval), child
+            content = raw_content
         assert isinstance(tag_close, HTMLCloseTag), tag_close
         return self.process(HTMLStructure, node, tag_open, tag_close, content)
 
@@ -477,3 +499,7 @@ class HTMLVisitor(NodeVisitor):
 
     visit_code_content = visit_text_item
     visit_pre_content = visit_text_item
+
+    def visit_empty_text(self, node, empty):
+        assert empty == []
+        return self.process(HTMLEmptyText, node)

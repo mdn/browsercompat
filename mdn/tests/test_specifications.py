@@ -6,7 +6,7 @@ from parsimonious.grammar import Grammar
 
 from mdn.html import HTMLText
 from mdn.kumascript import kumascript_grammar, SpecName
-from mdn.specifications import SpecNameVisitor, Spec2Visitor
+from mdn.specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
 from webplatformcompat.models import Specification
 from .base import TestCase
 
@@ -136,3 +136,68 @@ class TestSpec2Visitor(TestCase):
         # /en-US/docs/Web/JavaScript/Reference/Operators/this
         html = "<td>Standard</td>"
         self.assert_spec2(html, None, [])
+
+
+class TestSpecDescVisitor(TestCase):
+    def setUp(self):
+        self.visitor = SpecDescVisitor()
+
+    def assert_specdesc(self, html, items, issues):
+        parsed = grammar.parse(html)
+        self.visitor.visit(parsed)
+        actual = [item.to_html() for item in self.visitor.desc_items]
+        self.assertEqual(items, actual)
+        self.assertEqual(self.visitor.issues, issues)
+
+    def test_empty(self):
+        self.assert_specdesc('<td></td>', [''], [])
+
+    def test_plain_text(self):
+        self.assert_specdesc('<td> Plain text </td>', ['Plain text'], [])
+
+    def test_html(self):
+        html = "<td>Defines <code>right</code> as animatable.</td>"
+        expected = ["Defines", "<code>right</code>", "as animatable."]
+        self.assert_specdesc(html, expected, [])
+
+    def test_styled(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/inherit
+        html = """<td style=\"vertical-align: top;\">
+            Initial definition.
+        </td>"""
+        expected = ["Initial definition."]
+        self.assert_specdesc(html, expected, [])
+
+    def test_kumascript(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align
+        html = (
+            '<td>Add the {{ xref_csslength() }} value and allows it to be'
+            ' applied to element with a {{ cssxref("display") }} type of'
+            ' <code>table-cell</code>.</td>')
+        expected = [
+            'Add the', '<code>&lt;length&gt;</code>',
+            'value and allows it to be applied to element with a',
+            '<code>display</code>', 'type of', '<code>table-cell</code>', '.']
+        self.assert_specdesc(html, expected, [])
+
+    def test_kumascript_spec2(self):
+        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data
+        html = "<td>No change from {{Spec2('HTML5 W3C')}}</td>"
+        expected = ["No change from", "specification HTML5 W3C"]
+        issues = [
+            ('specdesc_spec2_invalid', 19, 41,
+             {'name': 'Spec2', 'args': ['HTML5 W3C'],
+              'scope': 'specification description',
+              'kumascript': '{{Spec2("HTML5 W3C")}}'})]
+        self.assert_specdesc(html, expected, issues)
+
+    def test_kumascript_experimental_inline(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/position_value
+        html = (
+            '<td>Defines <code>&lt;position&gt;</code> explicitly and extends'
+            ' it to support offsets from any edge. {{ experimental_inline() }}'
+            '</td>')
+        expected = [
+            'Defines', '<code>&lt;position&gt;</code>',
+            'explicitly and extends it to support offsets from any edge.', '']
+        self.assert_specdesc(html, expected, [])
