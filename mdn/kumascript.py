@@ -30,7 +30,7 @@ from django.utils.six import text_type
 
 from parsimonious.nodes import Node
 
-from webplatformcompat.models import Specification
+from .data import Data
 from .html import html_grammar, HTMLInterval, HTMLText, HTMLVisitor
 
 kumascript_grammar = html_grammar + r"""
@@ -365,15 +365,13 @@ class HTMLElement(KnownKumaScript):
 class SpecKumaScript(KnownKumaScript):
     """Base class for Spec2 and SpecName."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, data=None, **kwargs):
         super(SpecKumaScript, self).__init__(**kwargs)
         self.mdn_key = self.arg(0)
         self.spec = None
+        self.data = data or Data()
         if self.mdn_key:
-            try:
-                self.spec = Specification.objects.get(mdn_key=self.mdn_key)
-            except Specification.DoesNotExist:
-                pass
+            self.spec = self.data.specification_by_key(self.mdn_key)
 
     def to_html(self):
         if self.spec:
@@ -503,8 +501,9 @@ class KumaVisitor(HTMLVisitor):
     Extracts KumaScript, with special handling if it is known.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, data=None, **kwargs):
         super(KumaVisitor, self).__init__(**kwargs)
+        self.data = data or Data()
         self._kumascript_proper_names = None
         self.scope = None
 
@@ -597,12 +596,13 @@ class KumaVisitor(HTMLVisitor):
             args = []
 
         ks_cls = self._kumascript_lookup(name)
-        if ks_cls:
-            return self.process(ks_cls, node, args=args, scope=self.scope)
-        else:
-            return self.process(
-                UnknownKumaScript, node, name=name, args=args,
-                scope=self.scope)
+        init_args = {'args': args, 'scope': self.scope}
+        if ks_cls is None:
+            ks_cls = UnknownKumaScript
+            init_args['name'] = name
+        if issubclass(ks_cls, SpecKumaScript):
+            init_args['data'] = self.data
+        return self.process(ks_cls, node, **init_args)
 
     visit_ks_name = HTMLVisitor._visit_content
 

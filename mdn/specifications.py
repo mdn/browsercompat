@@ -4,8 +4,6 @@
 from .html import HTMLStructure, HTMLText
 from .kumascript import KumaVisitor, SpecName, Spec2
 
-from webplatformcompat.models import Specification
-
 
 class SpecNameVisitor(KumaVisitor):
     """
@@ -13,8 +11,8 @@ class SpecNameVisitor(KumaVisitor):
 
     This is the first column of the Specifications table.
     """
-    def __init__(self, *args, **kwargs):
-        super(SpecNameVisitor, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(SpecNameVisitor, self).__init__(**kwargs)
         self.scope = 'specification name'
         self.mdn_key = None
         self.subpath = None
@@ -47,9 +45,8 @@ class SpecNameVisitor(KumaVisitor):
                 self.spec_item = processed
                 self.add_issue(
                     'specname_converted', processed, original=text, key=key)
-                try:
-                    self.spec = Specification.objects.get(mdn_key=key)
-                except Specification.DoesNotExist:
+                self.spec = self.data.specification_by_key(key)
+                if not self.spec:
                     self.add_issue('unknown_spec', self.spec_item, key=key)
             else:
                 self.add_issue(
@@ -63,18 +60,18 @@ class Spec2Visitor(KumaVisitor):
 
     This is the second column of the Specifications table.
     """
-    def __init__(self, *args, **kwargs):
-        super(Spec2Visitor, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(Spec2Visitor, self).__init__(**kwargs)
         self.scope = 'specification maturity'
         self.mdn_key = None
         self.spec2_item = None
         self.spec = None
         self.maturity = None
 
-    def process(self, cls, node, *args, **kwargs):
+    def process(self, cls, node, **kwargs):
         """Look for Spec2 nodes."""
         processed = super(Spec2Visitor, self).process(
-            cls, node, *args, **kwargs)
+            cls, node, **kwargs)
         if isinstance(processed, Spec2):
             assert not self.spec2_item
             assert not self.mdn_key
@@ -101,15 +98,15 @@ class SpecDescVisitor(KumaVisitor):
 
     This is the third column of the Specifications table.
     """
-    def __init__(self, *args, **kwargs):
-        super(SpecDescVisitor, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(SpecDescVisitor, self).__init__(**kwargs)
         self.scope = 'specification description'
         self.desc_items = None
 
-    def process(self, cls, node, *args, **kwargs):
+    def process(self, cls, node, **kwargs):
         """Look for description nodes."""
         processed = super(SpecDescVisitor, self).process(
-            cls, node, *args, **kwargs)
+            cls, node, **kwargs)
         if isinstance(processed, HTMLStructure) and processed.tag == 'td':
             assert self.desc_items is None
             self.desc_items = processed.children
