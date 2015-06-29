@@ -26,7 +26,6 @@ from collections import OrderedDict
 from copy import deepcopy
 from itertools import chain
 import re
-import string
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
@@ -34,11 +33,12 @@ from parsimonious import IncompleteParseError, ParseError
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import Node, NodeVisitor
 
-from mdn.html import HTMLText
-from mdn.kumascript import kumascript_grammar, KumaScript
-from mdn.specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
+from .html import HTMLText
+from .kumascript import kumascript_grammar, KumaScript
+from .specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
+from .utils import slugify
 
 
 # Parsimonious grammar for a raw MDN page
@@ -2174,21 +2174,3 @@ def end_of_line(text, pos):
 def is_fake_id(_id):
     # Detect if an ID is a real ID
     return isinstance(_id, text_type) and _id[0] == '_'
-
-
-def slugify(word, length=50, suffix=""):
-    """Create a slugged version of a word or phrase"""
-    raw = word.lower()
-    out = []
-    acceptable = string.ascii_lowercase + string.digits + '_-'
-    for c in raw:
-        if c in acceptable:
-            out.append(c)
-        else:
-            out.append('_')
-    slugged = ''.join(out)
-    while '__' in slugged:
-        slugged = slugged.replace('__', '_')
-    suffix = text_type(suffix) if suffix else ""
-    with_suffix = slugged[slice(length - len(suffix))] + suffix
-    return with_suffix

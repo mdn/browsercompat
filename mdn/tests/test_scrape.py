@@ -7,7 +7,7 @@ from json import dumps
 from mdn.models import FeaturePage
 from mdn.scrape import (
     date_to_iso, end_of_line, page_grammar, scrape_page, scrape_feature_page,
-    slugify, PageVisitor, ScrapedViewFeature)
+    PageVisitor, ScrapedViewFeature)
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
 from .base import TestCase
@@ -2413,26 +2413,6 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
             expected_issues,
             fp.data['meta']['scrape']['raw']['issues'])
         self.assertTrue(fp.has_issues)
-
-
-class TestSlugify(TestCase):
-    def test_already_slugged(self):
-        self.assertEqual('foo', slugify('foo'))
-
-    def test_long_string(self):
-        self.assertEqual(
-            'abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvw',
-            slugify('ABCDEFGHIJKLMNOPQRSTUVWXYZ-abcdefghijklmnopqrstuvwxyz'))
-
-    def test_non_ascii(self):
-        self.assertEqual('_', slugify("Рекомендация"))
-
-    def test_limit(self):
-        self.assertEqual(
-            'abcdefghij', slugify('ABCDEFGHIJKLMNOPQRSTUVWXYZ', length=10))
-
-    def test_num_suffix(self):
-        self.assertEqual('slug13', slugify('slug', suffix=13))
 
 
 class TestDateToIso(TestCase):
