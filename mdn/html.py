@@ -20,7 +20,8 @@ from django.utils.six import text_type, string_types
 
 from parsimonious.nodes import Node, NodeVisitor
 
-from mdn.issues import ISSUES
+from .issues import ISSUES
+from .utils import join_content
 
 # Parsimonious grammar for HTML fragments
 html_grammar = r"""
@@ -280,8 +281,7 @@ class HTMLStructure(HTMLInterval):
             self.children.append(child)
 
     def __str__(self):
-        content = ' '.join(text_type(child) for child in self.children)
-        content.replace('> <', '><')
+        content = join_content(text_type(child) for child in self.children)
         return "{}{}{}".format(self.open_tag, content, self.close_tag)
 
 
