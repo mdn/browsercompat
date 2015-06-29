@@ -10,6 +10,7 @@ http://trevorjim.com/a-grammar-for-html5/
 
 So, this code is incomplete and impossible and possibly unreviewable.
 """
+from __future__ import unicode_literals
 
 from collections import OrderedDict
 import re
@@ -132,16 +133,16 @@ empty_text = ""
 class HTMLInterval(object):
     """A span of HTML content, from a tag to text."""
 
-    def __init__(self, raw_content, start):
-        self.raw_content = raw_content
+    def __init__(self, raw='', start=0):
+        self.raw = raw
         self.start = start
 
     @property
     def end(self):
-        return self.start + len(self.raw_content)
+        return self.start + len(self.raw)
 
     def __str__(self):
-        return self.raw_content
+        return self.raw
 
     def to_html(self):
         return text_type(self)
@@ -155,9 +156,9 @@ class HTMLInterval(object):
 class HTMLText(HTMLInterval):
     """A plain text section of HTML"""
 
-    def __init__(self, raw_content, start):
-        super(HTMLText, self).__init__(raw_content, start)
-        self.cleaned = self.cleanup_whitespace(raw_content)
+    def __init__(self, **kwargs):
+        super(HTMLText, self).__init__(**kwargs)
+        self.cleaned = self.cleanup_whitespace(self.raw)
 
     def __str__(self):
         return self.cleaned
@@ -181,9 +182,9 @@ class HTMLText(HTMLInterval):
 class HTMLEmptyText(HTMLText):
     """An empty text section of HTML"""
 
-    def __init__(self, raw_content, start):
-        assert raw_content == ''
-        super(HTMLEmptyText, self).__init__(raw_content, start)
+    def __init__(self, **kwargs):
+        super(HTMLEmptyText, self).__init__(**kwargs)
+        assert self.raw == ''
 
     def __str__(self):
         return ''
@@ -193,9 +194,9 @@ class HTMLEmptyText(HTMLText):
 class HTMLSimpleTag(HTMLInterval):
     """An HTML tag, such as <li>"""
 
-    def __init__(self, raw_content, start, tag):
-        assert tag in raw_content
-        super(HTMLSimpleTag, self).__init__(raw_content, start)
+    def __init__(self, tag, **kwargs):
+        super(HTMLSimpleTag, self).__init__(**kwargs)
+        assert tag in self.raw
         self.tag = tag
 
     def __str__(self):
@@ -206,10 +207,10 @@ class HTMLSimpleTag(HTMLInterval):
 class HTMLAttribute(HTMLInterval):
     """An attribute of an HTML tag."""
 
-    def __init__(self, raw_content, start, ident, value):
-        assert ident in raw_content
-        assert text_type(value) in raw_content
-        super(HTMLAttribute, self).__init__(raw_content, start)
+    def __init__(self, ident, value, **kwargs):
+        super(HTMLAttribute, self).__init__(**kwargs)
+        assert ident in self.raw
+        assert text_type(value) in self.raw
         self.ident = ident
         self.value = value
 
@@ -225,8 +226,8 @@ class HTMLAttribute(HTMLInterval):
 class HTMLAttributes(HTMLInterval):
     """A collection of attributes."""
 
-    def __init__(self, raw_content, start, attributes=None):
-        super(HTMLAttributes, self).__init__(raw_content, start)
+    def __init__(self, attributes=None, **kwargs):
+        super(HTMLAttributes, self).__init__(**kwargs)
         self.attrs = OrderedDict()
         for attr in attributes or []:
             self.attrs[attr.ident] = attr
@@ -242,12 +243,12 @@ class HTMLAttributes(HTMLInterval):
 class HTMLOpenTag(HTMLSimpleTag):
     """An HTML tag, such as <a href="#foo">"""
 
-    def __init__(self, raw_content, start, tag, attrs):
-        super(HTMLOpenTag, self).__init__(raw_content, start, tag)
-        self.attrs = attrs
+    def __init__(self, attributes, **kwargs):
+        super(HTMLOpenTag, self).__init__(**kwargs)
+        self.attributes = attributes
 
     def __str__(self):
-        attrs = str(self.attrs)
+        attrs = str(self.attributes)
         if attrs:
             return '<{} {}>'.format(self.tag, attrs)
         else:
@@ -268,8 +269,8 @@ class HTMLStructure(HTMLInterval):
     """An HTML element that contains child elements"""
 
     def __init__(
-            self, raw_content, start, open_tag, close_tag=None, children=None):
-        super(HTMLStructure, self).__init__(raw_content, start)
+            self, open_tag, close_tag=None, children=None, **kwargs):
+        super(HTMLStructure, self).__init__(**kwargs)
         self.open_tag = open_tag
         self.close_tag = close_tag
         assert self.open_tag.tag == self.close_tag.tag
@@ -279,7 +280,7 @@ class HTMLStructure(HTMLInterval):
             self.children.append(child)
 
     def __str__(self):
-        content = ' '.join(str(child) for child in self.children)
+        content = ' '.join(text_type(child) for child in self.children)
         content.replace('> <', '><')
         return "{}{}{}".format(self.open_tag, content, self.close_tag)
 
@@ -297,6 +298,34 @@ class HTMLVisitor(NodeVisitor):
         self.offset = offset
         self.issues = []
 
+    def process(self, cls, node, **kwargs):
+        """Convert a node to an HTML* instance"""
+        processed = cls(
+            raw=node.text, start=node.start + self.offset, **kwargs)
+        for issue in processed.issues:
+            self.add_raw_issue(issue)
+        return processed
+
+    def add_issue(self, issue_slug, processed, **issue_args):
+        """Add an issue for a given processed node."""
+        assert issue_slug in ISSUES
+        assert isinstance(processed, HTMLInterval)
+        self.issues.append(
+            (issue_slug, processed.start, processed.end, issue_args))
+
+    def add_raw_issue(self, issue):
+        """Add an issue in tuple (slug, start, end, args) format."""
+        issue_slug, start, end, issue_args = issue
+        assert issue_slug in ISSUES
+        assert isinstance(start, int)
+        assert isinstance(end, int)
+        assert end >= start
+        assert hasattr(issue_args, 'keys')
+        self.issues.append(issue)
+
+    #
+    # Basic visitors
+    #
     def generic_visit(self, node, visited_children):
         """Visitor when none is specified."""
         return visited_children or node
@@ -323,30 +352,6 @@ class HTMLVisitor(NodeVisitor):
             assert isinstance(item[0], HTMLInterval), item[0]
             return item[0]
 
-    def process(self, cls, node, *args, **kwargs):
-        """Convert a node to an HTML* instance"""
-        processed = cls(node.text, node.start + self.offset, *args, **kwargs)
-        for issue in processed.issues:
-            self.add_raw_issue(issue)
-        return processed
-
-    def add_issue(self, issue_slug, processed, **issue_args):
-        """Add an issue for a given processed node."""
-        assert issue_slug in ISSUES
-        assert isinstance(processed, HTMLInterval)
-        self.issues.append(
-            (issue_slug, processed.start, processed.end, issue_args))
-
-    def add_raw_issue(self, issue):
-        """Add an issue in tuple (slug, start, end, args) format."""
-        issue_slug, start, end, issue_args = issue
-        assert issue_slug in ISSUES
-        assert isinstance(start, int)
-        assert isinstance(end, int)
-        assert end >= start
-        assert hasattr(issue_args, 'keys')
-        self.issues.append(issue)
-
     #
     # HTML tokens
     #
@@ -366,7 +371,7 @@ class HTMLVisitor(NodeVisitor):
         assert open_tag.startswith('<')
         tag = open_tag[1:]
         assert isinstance(attrs, HTMLAttributes), type(attrs)
-        return self.process(HTMLOpenTag, node, tag, attrs)
+        return self.process(HTMLOpenTag, node, tag=tag, attributes=attrs)
 
     visit_a_open = _visit_open
     visit_td_open = _visit_open
@@ -390,7 +395,7 @@ class HTMLVisitor(NodeVisitor):
         assert close_tag.startswith('</')
         assert close_tag.endswith('>')
         tag = close_tag[2:-1]
-        return self.process(HTMLCloseTag, node, tag)
+        return self.process(HTMLCloseTag, node, tag=tag)
 
     visit_a_close = _visit_close
     visit_td_close = _visit_close
@@ -411,21 +416,23 @@ class HTMLVisitor(NodeVisitor):
 
     def visit_br(self, node, parts):
         """Parse a <br> tag"""
-        return self.process(HTMLSimpleTag, node, 'br')
+        return self.process(HTMLSimpleTag, node, tag='br')
 
     def _visit_tag(self, node, children):
         """Parse a <tag>content</tag> block."""
-        tag_open, raw_content, tag_close = children
-        assert isinstance(tag_open, HTMLOpenTag), tag_open
-        if isinstance(raw_content, HTMLEmptyText):
-            content = [raw_content]
+        open_tag, content, close_tag = children
+        assert isinstance(open_tag, HTMLOpenTag), open_tag
+        if isinstance(content, HTMLEmptyText):
+            children = [content]
         else:
-            assert isinstance(raw_content, list)
-            for child in raw_content:
+            assert isinstance(content, list)
+            for child in content:
                 assert isinstance(child, HTMLInterval), child
-            content = raw_content
-        assert isinstance(tag_close, HTMLCloseTag), tag_close
-        return self.process(HTMLStructure, node, tag_open, tag_close, content)
+            children = content
+        assert isinstance(close_tag, HTMLCloseTag), close_tag
+        return self.process(
+            HTMLStructure, node, open_tag=open_tag, close_tag=close_tag,
+            children=children)
 
     visit_a_tag = _visit_tag
     visit_td_tag = _visit_tag
@@ -446,12 +453,13 @@ class HTMLVisitor(NodeVisitor):
 
     def _visit_text_tag(self, node, children):
         """Parse a <tag>unparsed text</tag> block."""
-        tag_open, content, tag_close = children
-        assert isinstance(tag_open, HTMLOpenTag), tag_open
+        open_tag, content, close_tag = children
+        assert isinstance(open_tag, HTMLOpenTag), open_tag
         assert isinstance(content, HTMLText)
-        assert isinstance(tag_close, HTMLCloseTag), tag_close
+        assert isinstance(close_tag, HTMLCloseTag), close_tag
         return self.process(
-            HTMLStructure, node, tag_open, tag_close, [content])
+            HTMLStructure, node, open_tag=open_tag, close_tag=close_tag,
+            children=[content])
 
     visit_code_tag = _visit_text_tag
     visit_pre_tag = _visit_text_tag
@@ -461,14 +469,14 @@ class HTMLVisitor(NodeVisitor):
     #
     def visit_attrs(self, node, attrs):
         """Parse an attribute list."""
-        return self.process(HTMLAttributes, node, attrs)
+        return self.process(HTMLAttributes, node, attributes=attrs)
 
     def visit_attr(self, node, children):
         """Parse a single ident=value attribute."""
         ws1, ident, ws2, eq, ws3, value, ws4 = children
         assert isinstance(ident, text_type), type(ident)
         assert isinstance(value, (text_type, int)), type(value)
-        return self.process(HTMLAttribute, node, ident, value)
+        return self.process(HTMLAttribute, node, ident=ident, value=value)
 
     visit_ident = _visit_content
 

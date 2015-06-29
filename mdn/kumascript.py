@@ -60,18 +60,11 @@ text_item = ~r"(?P<content>[^{<]+)"s
 @python_2_unicode_compatible
 class KumaScript(HTMLText):
     """A KumaScript macro."""
-    min_args = 0
-    max_args = 0
-    arg_names = []
-
-    def __init__(self, raw_content, start, name, args, scope=None):
+    def __init__(self, args=None, scope=None, **kwargs):
         """Initialize components of a KumaScript macro."""
-        super(KumaScript, self).__init__(raw_content, start)
-        self.name = name
-        self.args = args
-        self.scope = scope
-        assert self.max_args >= self.min_args
-        assert len(self.arg_names) == self.max_args
+        super(KumaScript, self).__init__(**kwargs)
+        self.args = args or []
+        self.scope = scope or '(unknown scope)'
 
     def arg(self, pos):
         """Return argument, or None if not enough arguments."""
@@ -79,6 +72,76 @@ class KumaScript(HTMLText):
             return self.args[pos]
         except IndexError:
             return None
+
+    def __str__(self):
+        """Create the programmer debug string."""
+        args = []
+        for arg in self.args:
+            if '"' in arg:
+                quote = "'"
+            else:
+                quote = '"'
+            args.append("{0}{1}{0}".format(quote, arg))
+        if args:
+            argtext = '(' + ', '.join(args) + ')'
+        else:
+            argtext = ''
+        name = getattr(self, 'name', 'KumaScript')
+        return "{{{{{}{}}}}}".format(name, argtext)
+
+    def to_html(self):
+        """Convert to HTML.  Default is an empty string."""
+        return ''
+
+    def _make_issue(self, issue_slug, extra_kwargs=None):
+        """Create an importer issue with standard KumaScript parameters."""
+        assert self.scope
+        kwargs = {'name': self.name, 'args': self.args, 'scope': self.scope,
+                  'kumascript': str(self)}
+        kwargs.update(extra_kwargs or {})
+        return (issue_slug, self.start, self.end, kwargs)
+
+
+class UnknownKumaScript(KumaScript):
+    """An unknown KumaScript macro."""
+
+    def __init__(self, name, **kwargs):
+        """Initialize name of an unknown KumaScript macro."""
+        super(UnknownKumaScript, self).__init__(**kwargs)
+        self.name = name
+
+    @property
+    def known(self):
+        return False
+
+    @property
+    def issues(self):
+        """Return the list of issues with this KumaScript in this scope."""
+        return super(UnknownKumaScript, self).issues + [
+            self._make_issue('unknown_kumascript')]
+
+
+class KnownKumaScript(KumaScript):
+    """Base class for known KumaScript macros."""
+    min_args = 0
+    max_args = 0
+    arg_names = []
+
+    def __init__(self, args=None, scope=None, **kwargs):
+        """Validate arg count of a known KumaScript macro."""
+        super(KnownKumaScript, self).__init__(**kwargs)
+        self.args = args or []
+        self.scope = scope or '(unknown scope)'
+        assert self.max_args >= self.min_args
+        assert len(self.arg_names) == self.max_args
+
+    @property
+    def known(self):
+        return True
+
+    @property
+    def name(self):
+        return getattr(self, 'canonical_name', self.__class__.__name__)
 
     def _validate(self):
         """Return validation issues or empty list."""
@@ -113,51 +176,6 @@ class KumaScript(HTMLText):
             issues.append(self._make_issue('kumascript_wrong_args', extra))
         return issues
 
-    def __str__(self):
-        """Create the programmer debug string."""
-        args = []
-        for arg in self.args:
-            if '"' in arg:
-                quote = "'"
-            else:
-                quote = '"'
-            args.append("{0}{1}{0}".format(quote, arg))
-        if args:
-            argtext = '(' + ', '.join(args) + ')'
-        else:
-            argtext = ''
-        return "{{{{{}{}}}}}".format(self.name, argtext)
-
-    def to_html(self):
-        """Convert to HTML.  Default is an empty string."""
-        return ''
-
-    @property
-    def known(self):
-        """Return True if this a known KumaScript macro?"""
-        return False
-
-    def _make_issue(self, issue_slug, extra_kwargs=None):
-        """Create an importer issue with standard KumaScript parameters."""
-        assert self.scope
-        kwargs = {'name': self.name, 'args': self.args, 'scope': self.scope,
-                  'kumascript': str(self)}
-        kwargs.update(extra_kwargs or {})
-        return (issue_slug, self.start, self.end, kwargs)
-
-    @property
-    def issues(self):
-        """Return the list of issues with this KumaScript in this scope."""
-        return super(KumaScript, self).issues + self._validate() + [
-            self._make_issue('unknown_kumascript')]
-
-
-class KnownKumaScript(KumaScript):
-    """Base class for known KumaScript macros."""
-    @property
-    def known(self):
-        return True
-
     @property
     def issues(self):
         return super(KumaScript, self).issues + self._validate()
@@ -175,8 +193,8 @@ class CompatAndroid(CompatKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatAndroid
     arg_names = ['AndroidVersion']
 
-    def __init__(self, *args, **kwargs):
-        super(CompatAndroid, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(CompatAndroid, self).__init__(**kwargs)
         self.version = self.arg(0)
 
 
@@ -201,8 +219,8 @@ class CompatGeckoDesktop(CompatKumaScript):
         '2.0': '4.0',
     }
 
-    def __init__(self, *args, **kwargs):
-        super(CompatGeckoDesktop, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(CompatGeckoDesktop, self).__init__(**kwargs)
         self.gecko_version = self.arg(0)
 
     @property
@@ -235,8 +253,8 @@ class CompatGeckoFxOS(CompatKumaScript):
     max_args = 2
     arg_names = ['GeckoVersion', 'VersionOverride']
 
-    def __init__(self, *args, **kwargs):
-        super(CompatGeckoFxOS, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(CompatGeckoFxOS, self).__init__(**kwargs)
         self.gecko_version = self.arg(0)
         over = self.arg(1)
         self.override = self.arg(1)
@@ -294,8 +312,8 @@ class CompatGeckoMobile(CompatKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatGeckoMobile
     arg_names = ['GeckoVersion']
 
-    def __init__(self, *args, **kwargs):
-        super(CompatGeckoMobile, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(CompatGeckoMobile, self).__init__(**kwargs)
         self.gecko_version = self.arg(0)
 
     @property
@@ -332,8 +350,8 @@ class HTMLElement(KnownKumaScript):
     min_args = max_args = 1
     arg_names = ['ElementName']
 
-    def __init__(self, *args, **kwargs):
-        super(HTMLElement, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(HTMLElement, self).__init__(**kwargs)
         self.element_name = self.arg(0)
 
     def to_html(self):
@@ -347,8 +365,8 @@ class HTMLElement(KnownKumaScript):
 class SpecKumaScript(KnownKumaScript):
     """Base class for Spec2 and SpecName."""
 
-    def __init__(self, *args, **kwargs):
-        super(SpecKumaScript, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(SpecKumaScript, self).__init__(**kwargs)
         self.mdn_key = self.arg(0)
         self.spec = None
         if self.mdn_key:
@@ -386,8 +404,8 @@ class SpecName(SpecKumaScript):
     max_args = 3
     arg_names = ['SpecKey', 'Anchor', 'AnchorName']
 
-    def __init__(self, *args, **kwargs):
-        super(SpecName, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(SpecName, self).__init__(**kwargs)
         self.subpath = self.arg(1)
         self.section_name = self.arg(2)
 
@@ -405,6 +423,7 @@ class CSSBox(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:cssbox
     min_args = max_args = 1
     arg_names = ['PropertyName']
+    canonical_name = 'cssbox'
 
 
 class CSSxRef(KnownKumaScript):
@@ -412,9 +431,10 @@ class CSSxRef(KnownKumaScript):
     min_args = 1
     max_args = 3
     arg_names = ['APIName', 'DisplayName', 'Anchor']
+    canonical_name = 'cssxref'
 
-    def __init__(self, *args, **kwargs):
-        super(CSSxRef, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(CSSxRef, self).__init__(**kwargs)
         self.api_name = self.arg(0)
         self.display_name = self.arg(1)
 
@@ -424,7 +444,7 @@ class CSSxRef(KnownKumaScript):
 
 class DeprecatedInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:deprecated_inline
-    pass
+    canonical_name = 'deprecated_inline'
 
 
 class DOMxRef(KnownKumaScript):
@@ -432,9 +452,10 @@ class DOMxRef(KnownKumaScript):
     min_args = 1
     max_args = 2
     arg_names = ['DOMPath', 'DOMText']
+    canonical_name = 'domxref'
 
-    def __init__(self, *args, **kwargs):
-        super(DOMxRef, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(DOMxRef, self).__init__(**kwargs)
         self.dom_path = self.arg(0)
         self.dom_text = self.arg(1)
 
@@ -444,31 +465,34 @@ class DOMxRef(KnownKumaScript):
 
 class ExperimentalInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:experimental_inline
-    pass
+    canonical_name = 'experimental_inline'
 
 
 class NonStandardInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:non-standard_inline
-    pass
+    canonical_name = 'non-standard_inline'
 
 
 class NotStandardInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:not_standard_inline
-    pass
+    canonical_name = 'not_standard_inline'
 
 
 class PropertyPrefix(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:property_prefix
     min_args = max_args = 1
     arg_names = ['Prefix']
+    canonical_name = 'property_prefix'
 
-    def __init__(self, *args, **kwargs):
-        super(PropertyPrefix, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(PropertyPrefix, self).__init__(**kwargs)
         self.prefix = self.arg(0)
 
 
 class XrefCSSLength(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
+    canonical_name = 'xref_csslength'
+
     def to_html(self):
         return '<code>&lt;length&gt;</code>'
 
@@ -479,8 +503,8 @@ class KumaVisitor(HTMLVisitor):
     Extracts KumaScript, with special handling if it is known.
     """
 
-    def __init__(self, *args, **kwargs):
-        super(KumaVisitor, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(KumaVisitor, self).__init__(**kwargs)
         self._kumascript_proper_names = None
         self.scope = None
 
@@ -555,10 +579,7 @@ class KumaVisitor(HTMLVisitor):
             for k in self.known_kumascript.keys():
                 self._kumascript_proper_names[k.lower()] = k
         proper_name = self._kumascript_proper_names.get(name.lower())
-        if proper_name:
-            return proper_name, self.known_kumascript[proper_name]
-        else:
-            return name, KumaScript
+        return self.known_kumascript.get(proper_name)
 
     def visit_kumascript(self, node, children):
         """Process a KumaScript macro."""
@@ -575,8 +596,13 @@ class KumaVisitor(HTMLVisitor):
         if args == ['']:
             args = []
 
-        proper_name, ks_cls = self._kumascript_lookup(name)
-        return self.process(ks_cls, node, proper_name, args, self.scope)
+        ks_cls = self._kumascript_lookup(name)
+        if ks_cls:
+            return self.process(ks_cls, node, args=args, scope=self.scope)
+        else:
+            return self.process(
+                UnknownKumaScript, node, name=name, args=args,
+                scope=self.scope)
 
     visit_ks_name = HTMLVisitor._visit_content
 

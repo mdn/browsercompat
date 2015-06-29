@@ -15,91 +15,100 @@ grammar = Grammar(html_grammar)
 
 class TestHTMLInterval(TestCase):
     def test_str(self):
-        interval = HTMLInterval('Interval', 0)
+        interval = HTMLInterval(raw='Interval')
         self.assertEqual('Interval', text_type(interval))
 
     def test_to_html(self):
-        interval = HTMLInterval('Interval', 0)
+        interval = HTMLInterval(raw='Interval')
         self.assertEqual('Interval', interval.to_html())
 
 
 class TestHTMLText(TestCase):
     def test_str(self):
-        text = HTMLText('\nSome Text\n', 0)
+        text = HTMLText(raw='\nSome Text\n')
         self.assertEqual('Some Text', text_type(text))
 
 
 class TestHTMLSimpleTag(TestCase):
     def test_str(self):
-        tag = HTMLSimpleTag('<br/>', 10, 'br')
+        tag = HTMLSimpleTag(raw='<br/>', tag='br')
         self.assertEqual('<br>', text_type(tag))
 
 
 class TestHTMLAttribute(TestCase):
     def test_str_string_value(self):
-        attr = HTMLAttribute('foo="bar"', 0, 'foo', 'bar')
+        attr = HTMLAttribute(
+            raw='foo="bar"', ident='foo', value='bar')
         self.assertEqual('foo="bar"', text_type(attr))
 
     def test_str_int_value(self):
-        attr = HTMLAttribute('selected=1', 0, 'selected', 1)
+        attr = HTMLAttribute(raw='selected=1', ident='selected', value=1)
         self.assertEqual('selected=1', text_type(attr))
 
 
 class TestHTMLAttributes(TestCase):
     def test_str_empty(self):
-        attrs = HTMLAttributes(' ', 0)
+        attrs = HTMLAttributes(raw=' ')
         self.assertEqual('', text_type(attrs))
 
     def test_str_attrs(self):
         attr_text = 'href="http://example.com" title="W3C Example"'
         attr1 = HTMLAttribute(
-            'href="http://example.com"', 0, 'href', 'http://example.com')
+            raw='href="http://example.com"', ident='href',
+            value='http://example.com')
         attr2 = HTMLAttribute(
-            'title="W3C Example"', 17, 'title', 'W3C Example')
-        attrs = HTMLAttributes(attr_text, 0, [attr1, attr2])
+            raw='title="W3C Example"', start=17,
+            ident='title', value='W3C Example')
+        attrs = HTMLAttributes(raw=attr_text, attributes=[attr1, attr2])
         self.assertEqual(attr_text, text_type(attrs))
 
     def test_as_dict_empty(self):
-        attrs = HTMLAttributes(' ', 0)
+        attrs = HTMLAttributes(raw=' ')
         self.assertEqual(attrs.as_dict(), {})
 
     def test_as_dict_attrs(self):
-        attr = HTMLAttribute('foo=bar', 0, 'foo', 'bar')
-        attrs = HTMLAttributes('foo=bar', 0, [attr])
+        attr = HTMLAttribute(raw='foo=bar', ident='foo', value='bar')
+        attrs = HTMLAttributes(raw='foo=bar', attributes=[attr])
         self.assertEqual(attrs.as_dict(), {'foo': 'bar'})
 
 
 class TestHTMLOpenTag(TestCase):
     def test_str_with_attrs(self):
         raw = '<p class="headline">'
-        attr = HTMLAttribute('class="headline"', 3, 'class', 'headline')
-        attrs = HTMLAttributes('class="headline"', 3, [attr])
-        tag = HTMLOpenTag('<a href="http://example.com">', 0, 'p', attrs)
+        attr = HTMLAttribute(
+            raw='class="headline"', start=3, ident='class', value='headline')
+        attrs = HTMLAttributes(
+            raw='class="headline"', start=3, attributes=[attr])
+        tag = HTMLOpenTag(
+            raw='<a href="http://example.com">', tag='p', attributes=attrs)
         self.assertEqual(raw, text_type(tag))
 
     def test_str_without_attrs(self):
         raw = '<strong>'
-        attrs = HTMLAttributes('', 3, [])
-        tag = HTMLOpenTag('<strong>', 0, 'strong', attrs)
+        attrs = HTMLAttributes(start=3)
+        tag = HTMLOpenTag(raw='<strong>', tag='strong', attributes=attrs)
         self.assertEqual(raw, text_type(tag))
 
 
 class TestHTMLCloseTag(TestCase):
     def test_str(self):
-        raw = "</p>"
-        tag = HTMLCloseTag(raw, 0, 'p')
+        raw = '</p>'
+        tag = HTMLCloseTag(raw=raw, tag='p')
         self.assertEqual(raw, text_type(tag))
 
 
 class TestHTMLStructure(TestCase):
     def test_str(self):
         raw = '<p class="first">A Text Element</p>'
-        attr = HTMLAttribute('class="first"', 3, 'class', 'first')
-        attrs = HTMLAttributes('class="first"', 3, [attr])
-        open_tag = HTMLOpenTag('<p class="first">', 0, 'p', attrs)
-        close_tag = HTMLCloseTag('</p>', 31, 'p')
-        content = [HTMLInterval('A Text Element', 17)]
-        structure = HTMLStructure(raw, 0, open_tag, close_tag, content)
+        attr = HTMLAttribute(
+            raw='class="first"', start=3, ident='class', value='first')
+        attrs = HTMLAttributes(raw='class="first"', start=3, attributes=[attr])
+        open_tag = HTMLOpenTag(
+            raw='<p class="first">', tag='p', attributes=attrs)
+        close_tag = HTMLCloseTag(raw='</p>', start=31, tag='p')
+        children = [HTMLInterval(raw='A Text Element', start=17)]
+        structure = HTMLStructure(
+            raw=raw, open_tag=open_tag, close_tag=close_tag, children=children)
         self.assertEqual(raw, str(structure))
 
 
@@ -144,7 +153,8 @@ class TestVisitor(TestCase):
         self.assertEqual(out.start, 0)
         self.assertEqual(out.end, len(text))
         self.assertEqual(out.tag, 'a')
-        self.assertEqual(out.attrs.as_dict(), {'href': 'http://example.com'})
+        self.assertEqual(
+            out.attributes.as_dict(), {'href': 'http://example.com'})
 
     def test_br(self):
         text = '<br>'
@@ -169,7 +179,7 @@ class TestVisitor(TestCase):
         self.assertEqual(out.tag, 'p')
         self.assertEqual(len(out.children), 1)
         self.assertEqual(
-            out.children[0].raw_content, 'This is a simple paragraph.')
+            out.children[0].raw, 'This is a simple paragraph.')
 
     def test_text_block(self):
         text = 'This is a simple paragraph.'
@@ -178,7 +188,7 @@ class TestVisitor(TestCase):
         self.assertEqual(len(out), 1)
         self.assertEqual(out[0].start, 0)
         self.assertEqual(out[0].end, len(text))
-        self.assertEqual(out[0].raw_content, 'This is a simple paragraph.')
+        self.assertEqual(out[0].raw, 'This is a simple paragraph.')
 
     def test_html_simple_tag(self):
         text = '<p>Simple Paragraph</p>'
@@ -194,7 +204,7 @@ class TestVisitor(TestCase):
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         self.assertIsInstance(out[0], HTMLInterval)
-        self.assertEqual(out[0].raw_content, 'Simple Text')
+        self.assertEqual(out[0].raw, 'Simple Text')
         self.assertEqual(out[0].start, 0)
 
     def test_html_simple_text_with_offset(self):
@@ -203,7 +213,7 @@ class TestVisitor(TestCase):
         self.visitor.offset = 100
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
-        self.assertEqual(out[0].raw_content, 'Simple Text')
+        self.assertEqual(out[0].raw, 'Simple Text')
         self.assertEqual(out[0].start, 100)
 
     def test_html_complex(self):

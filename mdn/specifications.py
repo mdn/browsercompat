@@ -22,10 +22,10 @@ class SpecNameVisitor(KumaVisitor):
         self.spec_item = None
         self.spec = None
 
-    def process(self, cls, node, *args, **kwargs):
+    def process(self, cls, node, **kwargs):
         """Look for SpecName nodes."""
         processed = super(SpecNameVisitor, self).process(
-            cls, node, *args, **kwargs)
+            cls, node, **kwargs)
         if isinstance(processed, SpecName):
             assert not self.spec_item
             assert not self.mdn_key
