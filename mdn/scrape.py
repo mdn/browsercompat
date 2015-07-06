@@ -35,6 +35,7 @@ from parsimonious.nodes import Node, NodeVisitor
 
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
+from .compatibility import compat_feature_grammar, CompatFeatureVisitor
 from .html import HTMLText
 from .kumascript import kumascript_grammar, KumaScript
 from .specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
@@ -289,6 +290,11 @@ class PageVisitor(NodeVisitor):
         if not hasattr(self, '_kumascript_grammar'):  # pragma: no branch
             self._kumascript_grammar = Grammar(kumascript_grammar)
         return self._kumascript_grammar
+
+    def compat_feature_grammar(self):
+        if not hasattr(self, '_compat_feature_grammar'):  # pragma: no branch
+            self._compat_feature_grammar = Grammar(compat_feature_grammar)
+        return self._compat_feature_grammar
 
     def _visit_content(self, node, children):
         """Visitor for re nodes with a named (?P<content>) section."""
@@ -679,6 +685,7 @@ class PageVisitor(NodeVisitor):
         assert td_tag['type'] == 'td'
         compat_row = (
             self._consume_attributes(td_tag, ('rowspan', 'colspan')))
+        compat_row['raw'] = node.text
         return compat_row
 
     #
@@ -1189,48 +1196,23 @@ class PageVisitor(NodeVisitor):
 
     def item_to_html(self, item, context):
         """Convert a item and subitems into HTML."""
-        # Handle content lists - doesn't happend in current MDN code
-        """
-        if isinstance(item, list):
-            bits = []
-            for subitem in item:
-                bits.append(self.item_to_html(subitem, context))
-            return self.join_content(bits)
-        """
-
         # Handle items
         assert isinstance(item, dict), type(item)
         item_type = item['type']
-        if item_type == 'kumascript':
-            html = self.kumascript_to_html(item, context)
-        elif ((item_type, context) in self.drop_tags or
-                (item_type, '*') in self.drop_tags):
-            self.issues.append((
-                'tag_dropped', item['start'], item['end'],
-                {'tag': item_type, 'scope': context}))
-            return self.item_to_html(item['content'], context)
+        attrs = self.format_attributes(item, context)
+        if item_type in ('code', 'pre'):
+            """
+            assert len(item['content']) == 1
+            subcontent = item['content'][0]
+            """
+            subcontent = item['content']
+            assert isinstance(item, dict)
+            assert subcontent['type'] == 'text'
+            subtext = subcontent['content']
+            html = "<{0}{1}>{2}</{0}>".format(item_type, attrs, subtext)
         else:
-            attrs = self.format_attributes(item, context)
-            if item_type in ('code', 'pre'):
-                """
-                assert len(item['content']) == 1
-                subcontent = item['content'][0]
-                """
-                subcontent = item['content']
-                assert isinstance(item, dict)
-                assert subcontent['type'] == 'text'
-                subtext = subcontent['content']
-                html = "<{0}{1}>{2}</{0}>".format(item_type, attrs, subtext)
-            else:
-                assert item_type == 'text'
-                html = self.cleanup_whitespace(item['content'])
-            # No other cases in current MDN pages
-            """
-            else:
-                raise Exception('Testcase')
-                shtml = self.item_to_html(item['content'], context)
-                html = "<{0}{1}>{2}</{0}>".format(item_type, attrs, shtml)
-            """
+            assert item_type == 'text'
+            html = self.cleanup_whitespace(item['content'])
         return html or ""
 
     expected_attrs = {}
@@ -1292,9 +1274,7 @@ class PageVisitor(NodeVisitor):
         nospace_after = ' '
         strip_next = False
         for bit in content_bits:
-            if isinstance(bit, self.StripNextSpace):
-                strip_next = True
-            elif bit:
+            if bit:
                 if (out and out[-1] not in nospace_after and
                         bit[0] not in nospace_before and not strip_next):
                     out += " "
@@ -1349,10 +1329,8 @@ class PageVisitor(NodeVisitor):
         if self._feature_data is None:
             self._feature_data = {}
             for feature in Feature.objects.filter(parent=self.feature):
-                if 'zxx' in feature.name:
-                    fname = feature.name['zxx']
-                else:
-                    fname = feature.name.get(self.locale, feature.name['en'])
+                assert 'zxx' not in feature.name
+                fname = feature.name.get(self.locale, feature.name['en'])
                 fname = normalized(fname)
                 self._feature_data[fname] = (feature.id, feature.slug)
 
@@ -1427,71 +1405,26 @@ class PageVisitor(NodeVisitor):
 
     def cell_to_feature(self, cell):
         """Parse cell items as a feature (first column)"""
-        name_bits = []
-        feature = {'name_bits': []}
-        assert cell['type'] == 'td'
-        assert isinstance(cell['content'], dict)
-        # if isinstance(cell['content'], dict):
-        self.cell_to_feature_inner(cell['content'], feature, [])
-        """
-        else:
-            for item in cell['content']:
-                self.cell_to_feature_inner(item, feature, [])
-        """
-        name_bits = feature.pop('name_bits')
-        assert name_bits
-        name = self.join_content(name_bits)
-        if (name.startswith('<code>') and name.endswith('</code>') and
-                name.count('<code>') == 1):
+        raw_text = cell['raw']
+        reparsed = self.compat_feature_grammar().parse(raw_text)
+        visitor = CompatFeatureVisitor(
+            parent_feature=self.feature, offset=cell['start'])
+        visitor.visit(reparsed)
+        for issue in visitor.issues:
+            self.issues.append(issue)
+        feature = {
+            'id': visitor.feature_id,
+            'slug': visitor.slug,
+            'name': visitor.name}
+        if visitor.canonical:
             feature['canonical'] = True
-            name = name[len('<code>'):-len('</code>')]
-        f_id, slug = self.feature_id_and_slug(name)
-        feature['name'] = name
-        feature['id'] = f_id
-        feature['slug'] = slug
+        if visitor.experimental:
+            feature['experimental'] = True
+        if visitor.obsolete:
+            feature['obsolete'] = True
+        if not visitor.standardized:
+            feature['standardized'] = False
         return feature
-
-    class StripNextSpace(object):
-        """Don't insert a space when joining."""
-
-    def cell_to_feature_inner(self, item, feature, depth):
-        item_type = item['type']
-        scope = 'feature'
-        if item_type == 'footnote_id':
-            self.issues.append((
-                'footnote_feature', item['start'], item['end'], {}))
-        elif item_type == 'break':
-            pass  # Discard breaks in feature names
-        elif item_type == 'version':
-            feature['name_bits'].extend((
-                item['version'], self.StripNextSpace()))
-        elif item_type == 'code':
-            feature['name_bits'].append(self.item_to_html(item, scope))
-        elif item_type == 'kumascript':
-            kname = item['name'].lower()
-            if kname == 'experimental_inline':
-                assert 'experimental' not in feature
-                feature['experimental'] = True
-            elif kname == 'non-standard_inline':
-                assert 'standardized' not in feature
-                feature['standardized'] = False
-            elif kname == 'not_standard_inline':
-                assert 'standardized' not in feature
-                feature['standardized'] = False
-            elif kname == 'deprecated_inline':
-                assert 'obsolete' not in feature
-                feature['obsolete'] = True
-            else:
-                feature['name_bits'].append(self.item_to_html(item, scope))
-        elif 'content' in item:
-            if isinstance(item['content'], list):
-                idepth = depth + [item_type]
-                for inner_item in item['content']:
-                    self.cell_to_feature_inner(inner_item, feature, idepth)
-            else:
-                feature['name_bits'].append(self.item_to_html(item, scope))
-        else:
-            raise ValueError("Unknown item!", item)
 
     # From https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop
     geckodesktop_to_firefox = {

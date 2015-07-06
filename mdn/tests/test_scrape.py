@@ -767,6 +767,7 @@ domenic/promises-unwrapping</a></td>
     def assert_compat_row_cell(self, row_cell, expected_cell, issues):
         parsed = page_grammar['compat_row_cell'].parse(row_cell)
         cell = self.visitor.visit(parsed)
+        expected_cell['raw'] = row_cell
         self.assertEqual(expected_cell, cell)
         self.assertEqual(issues, self.visitor.issues)
 
@@ -927,7 +928,7 @@ domenic/promises-unwrapping</a></td>
         issues = [
             ('unknown_kumascript', 16, 23,
              {'name': 'bar', 'args': [], 'kumascript': '{{bar}}',
-              'scope': 'feature'})]
+              'scope': 'compatibility feature'})]
         self.assert_cell_to_feature(cell, expected_feature, issues)
 
     def test_cell_to_feature_unknown_kumascript_with_args(self):
@@ -936,8 +937,8 @@ domenic/promises-unwrapping</a></td>
             'id': '_foo', 'name': 'foo', 'slug': 'web-css-background-size_foo'}
         issues = [
             ('unknown_kumascript', 8, 22,
-             {'name': 'bar', 'args': ['baz'], 'kumascript': '{{bar(baz)}}',
-              'scope': 'feature'})]
+             {'name': 'bar', 'args': ['baz'], 'kumascript': '{{bar("baz")}}',
+              'scope': 'compatibility feature'})]
         self.assert_cell_to_feature(cell, expected_feature, issues)
 
     def test_cell_to_feature_nonascii_name(self):
@@ -977,8 +978,9 @@ domenic/promises-unwrapping</a></td>
             'name': 'Cross-Origin Resource Sharing',
             'slug': 'web-css-background-size_cross-origin_resource_shar'
         }
-        issues = [('tag_dropped', 4, 71, {'tag': 'a', 'scope': 'feature'})]
-        self.assert_cell_to_feature(cell, expected_feature, issues)
+        issue = ('tag_dropped', 4, 71,
+                 {'tag': 'a', 'scope': 'compatibility feature'})
+        self.assert_cell_to_feature(cell, expected_feature, issues=[issue])
 
     def test_cell_to_feature_p(self):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const
@@ -988,12 +990,10 @@ domenic/promises-unwrapping</a></td>
             'name': 'Reassignment fails',
             'slug': 'web-css-background-size_reassignment_fails'
         }
-        issues = [('tag_dropped', 4, 29, {'tag': 'p', 'scope': 'feature'})]
-        self.assert_cell_to_feature(cell, expected_feature, issues)
-
-    def test_cell_to_feature_unknown_item(self):
-        bad_cell = {'type': 'td', 'content': {'type': 'other'}}
-        self.assertRaises(ValueError, self.visitor.cell_to_feature, bad_cell)
+        issue = (
+            'tag_dropped', 4, 29,
+            {'tag': 'p', 'scope': 'compatibility feature'})
+        self.assert_cell_to_feature(cell, expected_feature, issues=[issue])
 
     def assert_cell_to_support_full(
             self, row_cell, feature_rep, browser_rep, expected_versions,
