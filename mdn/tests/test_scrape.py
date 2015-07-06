@@ -835,47 +835,12 @@ domenic/promises-unwrapping</a></td>
         self.assertEqual(expected_feature, feature)
         self.assertEqual(issues, self.visitor.issues)
 
-    def test_cell_to_feature_remove_whitespace(self):
-        cell = (
-            ' Support for<br>\n     <code>contain</code> and'
-            ' <code>cover</code> ')
-        expected_feature = {
-            'id': '_support for contain and cover',
-            'name': 'Support for <code>contain</code> and <code>cover</code>',
-            'slug': 'web-css-background-size_support_for_contain_and_co',
-        }
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
-    def test_cell_to_feature_code_sequence(self):
-        # https://developer.mozilla.org/en-US/docs/Web/CSS/display
-        cell = (
-            '<code>none</code>, <code>inline</code> and'
-            ' <code>block</code>')
-        expected_feature = {
-            'id': '_none, inline and block',
-            'name': (
-                '<code>none</code>, <code>inline</code> and'
-                ' <code>block</code>'),
-            'slug': 'web-css-background-size_none_inline_and_block'}
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
     def test_cell_to_feature_canonical(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/display
         cell = '<code>list-item</code>'
         expected_feature = {
             'id': '_list-item', 'name': 'list-item', 'canonical': True,
             'slug': 'web-css-background-size_list-item'}
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
-    def test_cell_to_feature_canonical_match(self):
-        feature = self.create(
-            Feature, parent=self.visitor.feature,
-            name={'zxx': 'list-item'}, slug='slug-list-item')
-        cell = '<code>list-item</code>'
-        expected_feature = {
-            'id': feature.id, 'name': 'list-item', 'slug': 'slug-list-item',
-            'canonical': True,
-        }
         self.assert_cell_to_feature(cell, expected_feature, [])
 
     def test_cell_to_feature_ks_experimental(self):
@@ -902,54 +867,6 @@ domenic/promises-unwrapping</a></td>
             'slug': 'web-css-background-size_initanimationevent_'}
         self.assert_cell_to_feature(cell, expected_feature, [])
 
-    def test_cell_to_feature_ks_htmlelement(self):
-        cell = '{{ HTMLElement("progress") }}'
-        expected_feature = {
-            'id': '_progress', 'name': '&lt;progress&gt;',
-            'canonical': True,
-            'slug': 'web-css-background-size_progress',
-        }
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
-    def test_cell_to_feature_ks_domxref(self):
-        cell = '{{domxref("DeviceProximityEvent")}}'
-        expected_feature = {
-            'id': '_deviceproximityevent', 'name': 'DeviceProximityEvent',
-            'slug': 'web-css-background-size_deviceproximityevent',
-            'canonical': True
-        }
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
-    def test_cell_to_feature_unknown_kumascript(self):
-        cell = 'feature foo {{bar}}'
-        expected_feature = {
-            'id': '_feature foo', 'name': 'feature foo',
-            'slug': 'web-css-background-size_feature_foo'}
-        issues = [
-            ('unknown_kumascript', 16, 23,
-             {'name': 'bar', 'args': [], 'kumascript': '{{bar}}',
-              'scope': 'compatibility feature'})]
-        self.assert_cell_to_feature(cell, expected_feature, issues)
-
-    def test_cell_to_feature_unknown_kumascript_with_args(self):
-        cell = 'foo {{bar("baz")}}'
-        expected_feature = {
-            'id': '_foo', 'name': 'foo', 'slug': 'web-css-background-size_foo'}
-        issues = [
-            ('unknown_kumascript', 8, 22,
-             {'name': 'bar', 'args': ['baz'], 'kumascript': '{{bar("baz")}}',
-              'scope': 'compatibility feature'})]
-        self.assert_cell_to_feature(cell, expected_feature, issues)
-
-    def test_cell_to_feature_nonascii_name(self):
-        # https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant
-        cell = '<code>ß</code> → <code>SS</code>'
-        expected_feature = {
-            'id': '_\xdf \u2192 ss',
-            'name': '<code>\xdf</code> \u2192 <code>SS</code>',
-            'slug': 'web-css-background-size_ss'}
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
     def test_cell_to_feature_footnote(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/text-align
         cell = 'Block alignment values [1] {{not_standard_inline}}'
@@ -959,41 +876,6 @@ domenic/promises-unwrapping</a></td>
             'slug': 'web-css-background-size_block_alignment_values'}
         issues = [('footnote_feature', 27, 30, {})]
         self.assert_cell_to_feature(cell, expected_feature, issues)
-
-    def test_cell_to_feature_digit(self):
-        # https://developer.mozilla.org/en-US/docs/Web/CSS/transform
-        cell = '3D Support'
-        expected_feature = {
-            'id': '_3d support', 'name': '3D Support',
-            'slug': 'web-css-background-size_3d_support'
-        }
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
-    def test_cell_to_feature_link(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/EventSource
-        cell = ('<a href="/En/HTTP_access_control">'
-                'Cross-Origin Resource Sharing</a><br>')
-        expected_feature = {
-            'id': '_cross-origin resource sharing',
-            'name': 'Cross-Origin Resource Sharing',
-            'slug': 'web-css-background-size_cross-origin_resource_shar'
-        }
-        issue = ('tag_dropped', 4, 71,
-                 {'tag': 'a', 'scope': 'compatibility feature'})
-        self.assert_cell_to_feature(cell, expected_feature, issues=[issue])
-
-    def test_cell_to_feature_p(self):
-        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const
-        cell = ('<p>Reassignment fails</p>')
-        expected_feature = {
-            'id': '_reassignment fails',
-            'name': 'Reassignment fails',
-            'slug': 'web-css-background-size_reassignment_fails'
-        }
-        issue = (
-            'tag_dropped', 4, 29,
-            {'tag': 'p', 'scope': 'compatibility feature'})
-        self.assert_cell_to_feature(cell, expected_feature, issues=[issue])
 
     def assert_cell_to_support_full(
             self, row_cell, feature_rep, browser_rep, expected_versions,
