@@ -38,7 +38,7 @@ test:
 	./manage.py test
 
 jslint:
-	if type jslint >/dev/null 2>&1 ; then jslint webplatformcompat/static/js/*; else echo "jslint not installed. To install node and jshint, use 'make install_jslint"; fi
+	if type jslint >/dev/null 2>&1 ; then jslint webplatformcompat/static/js/*; else echo "jslint not installed. To install node and jshint, use 'make install-jslint"; fi
 
 install-jslint:
 	if [ -z "$$VIRTUAL_ENV" ]; then echo "Run inside a virtualenv"; exit 1; fi
