@@ -1412,18 +1412,7 @@ class PageVisitor(NodeVisitor):
         visitor.visit(reparsed)
         for issue in visitor.issues:
             self.issues.append(issue)
-        feature = {
-            'id': visitor.feature_id,
-            'slug': visitor.slug,
-            'name': visitor.name}
-        if visitor.canonical:
-            feature['canonical'] = True
-        if visitor.experimental:
-            feature['experimental'] = True
-        if visitor.obsolete:
-            feature['obsolete'] = True
-        if not visitor.standardized:
-            feature['standardized'] = False
+        feature = visitor.to_feature_dict()
         return feature
 
     # From https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop

@@ -116,3 +116,19 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         feature_params = self.data.feature_params_by_name(
             self.parent_feature, self.name)
         self.feature, self.feature_id, self.slug = feature_params
+
+    def to_feature_dict(self):
+        """Convert to a dictionary of feature parameters, as used by parser."""
+        feature = {
+            'id': self.feature_id,
+            'slug': self.slug,
+            'name': self.name}
+        if self.canonical:
+            feature['canonical'] = True
+        if self.experimental:
+            feature['experimental'] = True
+        if self.obsolete:
+            feature['obsolete'] = True
+        if not self.standardized:
+            feature['standardized'] = False
+        return feature

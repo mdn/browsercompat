@@ -835,7 +835,7 @@ domenic/promises-unwrapping</a></td>
         self.assertEqual(expected_feature, feature)
         self.assertEqual(issues, self.visitor.issues)
 
-    def test_cell_to_feature_canonical(self):
+    def test_cell_to_feature_no_issues(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/display
         cell = '<code>list-item</code>'
         expected_feature = {
@@ -843,31 +843,7 @@ domenic/promises-unwrapping</a></td>
             'slug': 'web-css-background-size_list-item'}
         self.assert_cell_to_feature(cell, expected_feature, [])
 
-    def test_cell_to_feature_ks_experimental(self):
-        cell = '<code>grid</code> {{experimental_inline}}'
-        expected_feature = {
-            'id': '_grid', 'name': 'grid', 'canonical': True,
-            'experimental': True, 'slug': 'web-css-background-size_grid'}
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
-    def test_cell_to_feature_ks_non_standard_inline(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/AnimationEvent
-        cell = '<code>initAnimationEvent()</code> {{non-standard_inline}}'
-        expected_feature = {
-            'id': '_initanimationevent()', 'name': 'initAnimationEvent()',
-            'canonical': True, 'standardized': False,
-            'slug': 'web-css-background-size_initanimationevent_'}
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
-    def test_cell_to_feature_ks_deprecated_inline(self):
-        cell = '<code>initAnimationEvent()</code> {{deprecated_inline}}'
-        expected_feature = {
-            'id': '_initanimationevent()', 'name': 'initAnimationEvent()',
-            'canonical': True, 'obsolete': True,
-            'slug': 'web-css-background-size_initanimationevent_'}
-        self.assert_cell_to_feature(cell, expected_feature, [])
-
-    def test_cell_to_feature_footnote(self):
+    def test_cell_to_feature_has_issues(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/text-align
         cell = 'Block alignment values [1] {{not_standard_inline}}'
         expected_feature = {

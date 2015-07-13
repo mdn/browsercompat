@@ -59,6 +59,26 @@ class TestFeatureVisitor(TestCase):
         self.assertEqual(self.visitor.standardized, standardized)
         self.assertEqual(self.visitor.obsolete, obsolete)
         self.assertEqual(issues or [], self.visitor.issues)
+        feature_dict = self.visitor.to_feature_dict()
+        self.assertEqual(self.visitor.feature_id, feature_dict['id'])
+        self.assertEqual(self.visitor.slug, feature_dict['slug'])
+        self.assertEqual(self.visitor.name, feature_dict['name'])
+        if self.visitor.canonical:
+            self.assertTrue(feature_dict['canonical'])
+        else:
+            self.assertFalse('canonical' in feature_dict)
+        if self.visitor.experimental:
+            self.assertTrue(feature_dict['experimental'])
+        else:
+            self.assertFalse('experimental' in feature_dict)
+        if self.visitor.obsolete:
+            self.assertTrue(feature_dict['obsolete'])
+        else:
+            self.assertFalse('obsolete' in feature_dict)
+        if self.visitor.standardized:
+            self.assertFalse('standardized' in feature_dict)
+        else:
+            self.assertFalse(feature_dict['standardized'])
 
     def test_remove_whitespace(self):
         cell = (
