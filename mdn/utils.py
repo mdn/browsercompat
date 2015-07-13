@@ -6,6 +6,14 @@ from django.utils.six import text_type
 import string
 
 
+def is_new_id(_id):
+    """Detect if an ID signifies a new resource.
+
+    New resource IDs are text strings prefixed with an underscore.
+    """
+    return isinstance(_id, text_type) and _id[0] == '_'
+
+
 def join_content(content_bits):
     """Construct a string with just the right whitespace."""
     out = ""

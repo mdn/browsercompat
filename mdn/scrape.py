@@ -39,7 +39,7 @@ from .compatibility import compat_feature_grammar, CompatFeatureVisitor
 from .html import HTMLText
 from .kumascript import kumascript_grammar, KumaScript
 from .specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
-from .utils import slugify
+from .utils import is_new_id, slugify
 
 
 # Parsimonious grammar for a raw MDN page
@@ -644,7 +644,7 @@ class PageVisitor(NodeVisitor):
             name = content['text']
             assert isinstance(name, text_type), type(name)
             b_id, b_name, b_slug = self.browser_id_name_and_slug(name)
-            if is_fake_id(b_id):
+            if is_new_id(b_id):
                 self.issues.append((
                     'unknown_browser', content['start'], content['end'],
                     {'name': name}))
@@ -1362,7 +1362,7 @@ class PageVisitor(NodeVisitor):
             assert int(raw_version)
             clean_version = raw_version + '.0'
 
-        if not is_fake_id(browser['id']):
+        if not is_new_id(browser['id']):
             # Might be known version
             try:
                 version = Version.objects.get(
@@ -1382,8 +1382,8 @@ class PageVisitor(NodeVisitor):
 
     def support_id(self, version_id, feature_id):
         support = None
-        real_version = not is_fake_id(version_id)
-        real_feature = not is_fake_id(feature_id)
+        real_version = not is_new_id(version_id)
+        real_feature = not is_new_id(feature_id)
         if real_version and real_feature:
             # Might be known version
             try:
@@ -1613,8 +1613,8 @@ class PageVisitor(NodeVisitor):
         if version_found is not None:
             version_id, version_name = self.version_id_and_name(
                 version_found, data['browser'])
-            new_version = is_fake_id(version_id)
-            new_browser = is_fake_id(data['browser']['id'])
+            new_version = is_new_id(version_id)
+            new_browser = is_new_id(data['browser']['id'])
             if new_version and not new_browser:
                 self.issues.append((
                     'unknown_version', item['start'], item['end'],
@@ -1758,7 +1758,7 @@ class ScrapedViewFeature(object):
         ))
         # Load Browsers (first row)
         for browser_entry in table['browsers']:
-            if is_fake_id(browser_entry['id']):
+            if is_new_id(browser_entry['id']):
                 browser_content = self.new_browser(browser_entry)
             else:
                 browser_content = self.load_browser(browser_entry['id'])
@@ -1767,7 +1767,7 @@ class ScrapedViewFeature(object):
 
         # Load Features (first column)
         for feature_entry in table['features']:
-            if is_fake_id(feature_entry['id']):
+            if is_new_id(feature_entry['id']):
                 feature_content = self.new_feature(feature_entry)
             else:
                 feature_content = self.load_feature(feature_entry['id'])
@@ -1777,7 +1777,7 @@ class ScrapedViewFeature(object):
 
         # Load Versions (explicit or implied in cells)
         for version_entry in table['versions']:
-            if is_fake_id(version_entry['id']):
+            if is_new_id(version_entry['id']):
                 version_content = self.new_version(version_entry)
             else:
                 version_content = self.load_version(version_entry['id'])
@@ -1785,7 +1785,7 @@ class ScrapedViewFeature(object):
 
         # Load Supports (cells)
         for support_entry in table['supports']:
-            if is_fake_id(support_entry['id']):
+            if is_new_id(support_entry['id']):
                 support_content = self.new_support(support_entry)
             else:
                 support_content = self.load_support(support_entry['id'])
@@ -1820,8 +1820,8 @@ class ScrapedViewFeature(object):
 
     def sort_values(self, d):
         """Return dictionary values, sorted by keys."""
-        existing_keys = sorted([k for k in d.keys() if not is_fake_id(k)])
-        new_keys = sorted([k for k in d.keys() if is_fake_id(k)])
+        existing_keys = sorted([k for k in d.keys() if not is_new_id(k)])
+        new_keys = sorted([k for k in d.keys() if is_new_id(k)])
         return list(d[k] for k in chain(existing_keys, new_keys))
 
     def load_specification(self, spec_id):
@@ -2091,8 +2091,3 @@ def end_of_line(text, pos):
         return text.index('\n', pos)
     except ValueError:
         return len(text)
-
-
-def is_fake_id(_id):
-    # Detect if an ID is a real ID
-    return isinstance(_id, text_type) and _id[0] == '_'

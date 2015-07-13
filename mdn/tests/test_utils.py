@@ -2,8 +2,19 @@
 """Test mdn.utils."""
 from __future__ import unicode_literals
 
-from mdn.utils import join_content, slugify
+from mdn.utils import is_new_id, join_content, slugify
 from .base import TestCase
+
+
+class TestIsNewID(TestCase):
+    def test_new_id(self):
+        self.assertTrue(is_new_id('_new'))
+
+    def test_string_id(self):
+        self.assertFalse(is_new_id('6'))
+
+    def test_int_id(self):
+        self.assertFalse(is_new_id(6))
 
 
 class TestJoinContent(TestCase):
