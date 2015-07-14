@@ -325,6 +325,11 @@ class CompatGeckoMobile(CompatKumaScript):
             return "{}.0".format(nversion)
 
 
+class CompatNightly(KnownKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatNightly
+    pass
+
+
 class CompatNo(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNo
     pass
@@ -549,6 +554,7 @@ class KumaVisitor(HTMLVisitor):
         'CompatGeckoDesktop': CompatGeckoDesktop,
         'CompatGeckoFxOS': CompatGeckoFxOS,
         'CompatGeckoMobile': CompatGeckoMobile,
+        'CompatNightly': CompatNightly,
         'CompatNo': CompatNo,
         'CompatUnknown': CompatUnknown,
         'CompatVersionUnknown': CompatVersionUnknown,

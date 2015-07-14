@@ -1,13 +1,17 @@
 # coding: utf-8
 """Parser for Compatibility section of an MDN raw page."""
 from __future__ import unicode_literals
+import re
 
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.six import text_type
 
 from .html import HTMLText, HTMLStructure
 from .kumascript import (
-    kumascript_grammar, DeprecatedInline, ExperimentalInline,
-    NonStandardInline, NotStandardInline, KumaVisitor)
+    CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS, CompatGeckoMobile,
+    CompatNightly, CompatNo, CompatUnknown, CompatVersionUnknown,
+    DeprecatedInline, ExperimentalInline, KumaScript, KumaVisitor,
+    NonStandardInline, NotStandardInline, PropertyPrefix, kumascript_grammar)
 from .utils import is_new_id, join_content
 
 compat_shared_grammar = r"""
@@ -44,7 +48,12 @@ class Footnote(HTMLText):
 
     def __init__(self, footnote_id, **kwargs):
         super(Footnote, self).__init__(**kwargs)
-        self.footnote_id = footnote_id.strip()
+        self.raw_footnote = footnote_id.strip()
+        if self.raw_footnote.isnumeric():
+            self.footnote_id = self.raw_footnote
+        else:
+            # TODO: use raw footnote instead
+            self.footnote_id = text_type(len(self.raw_footnote))
 
     def __str__(self):
         return "[{}]".format(self.footnote_id)
@@ -172,6 +181,18 @@ class CellVersion(HTMLText):
             return "{} ({})".format(self.version, self.engine_version)
 
 
+class CellRemoved(HTMLText):
+    """The prefix text "Removed in"."""
+
+
+class CellNoPrefix(HTMLText):
+    """The suffix text (unprefixed) or (no prefix)."""
+
+
+class CellPartial(HTMLText):
+    """The suffix text (partial)."""
+
+
 class CompatSupportVisitor(CompatBaseVisitor):
     def __init__(
             self, feature_id, browser_id, browser_name, browser_slug=None,
@@ -192,29 +213,104 @@ class CompatSupportVisitor(CompatBaseVisitor):
         self.scope = 'compatibility support'
         self.versions = []
         self.supports = []
+        self.inline_texts = []
         self.init_version_and_support()
 
     def init_version_and_support(self):
         self.version = {'browser': self.browser_id}
         self.support = {'feature': self.feature_id}
 
-    def commit_support_and_version(self, td):
+    def commit_support_and_version(self):
         """Commit new or updated support and version, and prepare for next."""
-        self.versions.append(self.version)
-        self.supports.append(self.support)
-        self.init_version_and_support()
+        if self.version.get('version'):
+            if (self.support.get('support') == 'yes' and
+                    self.support.get('prefix') and
+                    self.support.get('footnote_id')):
+                # Footnote + prefix => support=partial
+                self.support['support'] = 'partial'
+            self.versions.append(self.version)
+            self.supports.append(self.support)
+            self.init_version_and_support()
+
+    def add_inline_text_issues(self):
+        """Add the 'widest' inline text issues."""
+        # Sort by start and end positions of inline text
+        spans = []
+        for node, text in self.inline_texts:
+            spans.append((node.start, node.end, node, text))
+        spans.sort()
+
+        # Add issues for non-empty text that hasn't already been added
+        last_position = -1
+        for start, end, node, text in spans:
+            if text and start >= last_position:
+                self.add_issue('inline_text', node, text=text)
+                last_position = node.end
 
     def process(self, cls, node, **kwargs):
         processed = super(CompatSupportVisitor, self).process(
             cls, node, **kwargs)
-        if isinstance(processed, HTMLStructure) and processed.tag == 'td':
-            self.commit_support_and_version(processed)
+        if isinstance(processed, HTMLStructure):
+            tag = processed.tag
+            if tag == 'td':
+                self.add_inline_text_issues()
+                self.commit_support_and_version()
+            elif tag == 'code':
+                self.inline_texts.append((processed, processed.to_html()))
         elif isinstance(processed, CellVersion):
             self.set_version(processed.version, processed)
+        elif isinstance(processed, CompatVersionUnknown):
+            self.set_version('current', processed)
+        elif isinstance(processed, CompatNightly):
+            self.set_version('nightly', processed)
+        elif isinstance(processed, CompatNo):
+            self.set_version('current', processed)
+            self.support['support'] = 'no'
+        elif isinstance(processed, CompatUnknown):
+            pass  # Don't record unknown support in API
+        elif isinstance(processed, (
+                CompatGeckoDesktop, CompatGeckoMobile, CompatAndroid)):
+            version_name = str(processed.version)
+            if self.is_valid_version(version_name):
+                self.set_version(version_name, processed)
+        elif isinstance(processed, CompatGeckoFxOS):
+            if not (processed.bad_version or processed.bad_override):
+                self.set_version(str(processed.version), processed)
+        elif isinstance(processed, PropertyPrefix):
+            self.support['prefix'] = processed.prefix
+        elif isinstance(processed, Footnote):
+            if self.support.get('footnote_id'):
+                self.add_issue(
+                    'footnote_multiple', processed,
+                    prev_footnote_id=self.support['footnote_id'][0],
+                    footnote_id=processed.footnote_id)
+            else:
+                self.support['footnote_id'] = (
+                    processed.footnote_id, processed.start, processed.end)
+        elif isinstance(processed, CellRemoved):
+            self.commit_support_and_version()
+            self.support['support'] = 'no'
+        elif isinstance(processed, CellPartial):
+            self.support['support'] = 'partial'
+        elif isinstance(processed, CellNoPrefix):
+            self.support['support'] = 'yes'
+        elif isinstance(processed, KumaScript):
+            if processed.known:
+                self.add_raw_issue(processed._make_issue('unknown_kumascript'))
+        elif isinstance(processed, HTMLText):
+            self.inline_texts.append((processed, processed.cleaned))
         return processed
+
+    version_re = re.compile(r"((\d+(\.\d+)*)|current|nightly)$")
+
+    def is_valid_version(self, version_name):
+        return bool(self.version_re.match(version_name))
 
     def set_version(self, version_name, element):
         """Set the version number, and determine if it is new or existing."""
+        assert self.is_valid_version(version_name), 'Invalid version name'
+        if self.version.get('version'):
+            self.commit_support_and_version()
         version, version_id = self.data.version_params_by_version(
             self.browser_id, self.browser_name, version_name)
         new_version = is_new_id(version_id)
@@ -238,3 +334,12 @@ class CompatSupportVisitor(CompatBaseVisitor):
         engine_version = node.match.group('eng_version')
         return self.process(
             CellVersion, node, version=version, engine_version=engine_version)
+
+    def visit_cell_removed(self, node, children):
+        return self.process(CellRemoved, node)
+
+    def visit_cell_noprefix(self, node, children):
+        return self.process(CellNoPrefix, node)
+
+    def visit_cell_partial(self, node, children):
+        return self.process(CellPartial, node)

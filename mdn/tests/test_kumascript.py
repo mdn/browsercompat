@@ -8,11 +8,11 @@ from parsimonious.grammar import Grammar
 from mdn.html import HTMLText
 from mdn.kumascript import (
     CSSBox, CSSxRef, CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS,
-    CompatGeckoMobile, CompatNo, CompatUnknown, CompatVersionUnknown,
-    CompatibilityTable, DOMxRef, DeprecatedInline, ExperimentalInline,
-    HTMLElement, KnownKumaScript, KumaScript, KumaVisitor, NonStandardInline,
-    NotStandardInline, PropertyPrefix, Spec2, SpecName, UnknownKumaScript,
-    XrefCSSLength, kumascript_grammar)
+    CompatGeckoMobile, CompatNightly, CompatNo, CompatUnknown,
+    CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
+    ExperimentalInline, HTMLElement, KnownKumaScript, KumaScript, KumaVisitor,
+    NonStandardInline, NotStandardInline, PropertyPrefix, Spec2, SpecName,
+    UnknownKumaScript, XrefCSSLength, kumascript_grammar)
 from webplatformcompat.models import Specification
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
@@ -152,6 +152,16 @@ class TestCompatGeckoMobile(TestCase):
 
     def test_v2(self):
         self.assert_value("2", "4.0")
+
+
+class TestCompatNightly(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatNightly
+    def test_standard(self):
+        raw = '{{CompatNightly}}'
+        ks = CompatNightly(raw=raw)
+        self.assertEqual(ks.to_html(), '')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
 
 
 class TestCompatNo(TestCase):

@@ -16,9 +16,18 @@ support_grammar = Grammar(compat_support_grammar)
 
 
 class TestFootnote(TestCase):
-    def test_str(self):
+    def test_numeric(self):
         footnote = Footnote(raw='[1]', footnote_id='1')
         self.assertEqual('[1]', text_type(footnote))
+        self.assertEqual('1', footnote.footnote_id)
+        self.assertEqual('1', footnote.raw_footnote)
+
+    def test_stars(self):
+        # TODO: replace "convert to '3'" with raw '***'
+        footnote = Footnote(raw='[***]', footnote_id='***')
+        self.assertEqual('[3]', text_type(footnote))
+        self.assertEqual('3', footnote.footnote_id)
+        self.assertEqual('***', footnote.raw_footnote)
 
 
 class TestFeatureGrammar(TestCase):
@@ -312,6 +321,8 @@ class TestSupportVisitor(TestCase):
             self.feature_id, self.browser_id, self.browser_name,
             self.browser_slug)
         self.visitor.visit(parsed)
+        expected_versions = expected_versions or []
+        expected_supports = expected_supports or []
         self.assertEqual(len(expected_versions), len(expected_supports))
         for version, support in zip(expected_versions, expected_supports):
             if 'id' not in version:
@@ -358,3 +369,174 @@ class TestSupportVisitor(TestCase):
             '1.0',
             [{'version': '1.0', 'id': version.id}],
             [{'support': 'yes', 'id': support.id}])
+
+    def test_compatno(self):
+        self.assert_support(
+            '{{CompatNo}}',
+            [{'version': 'current'}], [{'support': 'no'}])
+
+    def test_compatversionunknown(self):
+        self.assert_support(
+            '{{CompatVersionUnknown}}',
+            [{'version': 'current'}], [{'support': 'yes'}])
+
+    def test_compatunknown(self):
+        self.assert_support('{{CompatUnknown}}', [], [])
+
+    def test_compatgeckodesktop(self):
+        self.assert_support(
+            '{{CompatGeckoDesktop("1")}}',
+            [{'version': '1.0'}], [{'support': 'yes'}])
+
+    def test_compatgeckodesktop_bad_num(self):
+        self.assert_support(
+            '{{CompatGeckoDesktop("1.1")}}',
+            issues=[('compatgeckodesktop_unknown', 4, 33, {'version': '1.1'})])
+
+    def test_compatgeckofxos(self):
+        self.assert_support(
+            '{{CompatGeckoFxOS("7")}}',
+            [{'version': '1.0'}], [{'support': 'yes'}])
+
+    def test_compatgeckofxos_bad_version(self):
+        self.assert_support(
+            '{{CompatGeckoFxOS("999999")}}',
+            issues=[('compatgeckofxos_unknown', 4, 33, {'version': '999999'})])
+
+    def test_compatgeckofxos_bad_override(self):
+        self.assert_support(
+            '{{CompatGeckoFxOS("18","5.0")}}',
+            issues=[('compatgeckofxos_override', 4, 35,
+                     {'override': '5.0', 'version': '18'})])
+
+    def test_compatgeckomobile(self):
+        self.assert_support(
+            '{{CompatGeckoMobile("1")}}',
+            [{'version': '1.0'}], [{'support': 'yes'}])
+
+    def test_compatandroid(self):
+        self.assert_support(
+            '{{CompatAndroid("3.0")}}',
+            [{'version': '3.0'}], [{'support': 'yes'}])
+
+    def test_compatnightly(self):
+        self.assert_support(
+            '{{CompatNightly}}',
+            [{'version': 'nightly'}], [{'support': 'yes'}])
+
+    def test_unknown_kumascript(self):
+        issues = [(
+            'unknown_kumascript', 4, 19,
+            {'name': 'UnknownKuma', 'args': [],
+             'scope': 'compatibility support',
+             'kumascript': "{{UnknownKuma}}"})]
+        self.assert_support('{{UnknownKuma}}', issues=issues)
+
+    def test_with_prefix_and_break(self):
+        self.assert_support(
+            ('{{CompatVersionUnknown}}{{property_prefix("-webkit")}}<br>\n'
+             '   2.3'),
+            [{'version': 'current'}, {'version': '2.3'}],
+            [{'support': 'yes', 'prefix': '-webkit'}, {'support': 'yes'}])
+
+    def test_p_tags(self):
+        self.assert_support(
+            '<p>4.0</p><p>32</p>',
+            [{'version': '4.0'}, {'version': '32.0'}],
+            [{'support': 'yes'}, {'support': 'yes'}])
+
+    def test_two_line_note(self):
+        self.assert_support(
+            '18<br>\n(behind a pref) [1]',
+            [{'version': '18.0'}],
+            [{'support': 'yes', 'footnote_id': ('1', 27, 30)}],
+            issues=[('inline_text', 11, 27, {'text': '(behind a pref)'})])
+
+    def test_removed_in_gecko(self):
+        self.assert_support(
+            ('{{ CompatGeckoMobile("6.0") }}<br>'
+             'Removed in {{ CompatGeckoMobile("23.0") }}'),
+            [{'version': '6.0'}, {'version': '23.0'}],
+            [{'support': 'yes'}, {'support': 'no'}])
+
+    def test_removed_in_version(self):
+        self.assert_support(
+            'Removed in 32',
+            [{'version': '32.0'}], [{'support': 'no'}])
+
+    def test_unprefixed(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/AudioContext.createBufferSource
+        self.assert_support(
+            '32 (unprefixed)',
+            [{'version': '32.0'}], [{'support': 'yes'}])
+
+    def test_partial(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor
+        self.assert_support(
+            '10, partial',
+            [{'version': '10.0'}], [{'support': 'partial'}])
+
+    def test_unmatched_free_text(self):
+        self.assert_support(
+            '32 (or earlier)',
+            [{'version': '32.0'}], [{'support': 'yes'}],
+            issues=[('inline_text', 7, 19, {'text': '(or earlier)'})])
+
+    def test_code_block(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/order
+        self.assert_support(
+            '32 with alt name <code>foobar</code>',
+            [{'version': '32.0'}], [{'support': 'yes'}],
+            issues=[
+                ('inline_text', 7, 21, {'text': 'with alt name'}),
+                ('inline_text', 21, 40, {'text': '<code>foobar</code>'})])
+
+    def test_spaces(self):
+        self.assert_support('  ')
+
+    def test_prefix_plus_footnote(self):
+        self.assert_support(
+            '18{{property_prefix("-webkit")}} [1]',
+            [{'version': '18.0'}],
+            [{'support': 'partial', 'prefix': '-webkit',
+              'footnote_id': ('1', 37, 40)}])
+
+    def test_prefix_double_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/CSSSupportsRule
+        self.assert_support(
+            '{{ CompatGeckoDesktop("17") }} [1][2]',
+            [{'version': '17.0'}],
+            [{'support': 'yes', 'footnote_id': ('1', 35, 38)}],
+            issues=[('footnote_multiple', 38, 41,
+                     {'prev_footnote_id': '1', 'footnote_id': '2'})])
+
+    def test_double_footnote_link_sup(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/flex
+        self.assert_support(
+            '{{CompatGeckoDesktop("20.0")}} '
+            '<sup><a href="#bc2">[2]</a><a href="#bc3">[3]</a></sup>',
+            [{'version': '20.0'}],
+            [{'support': 'yes', 'footnote_id': ('2', 55, 58)}],
+            issues=[('footnote_multiple', 77, 80,
+                    {'prev_footnote_id': '2', 'footnote_id': '3'})])
+
+    def test_star_footnote(self):
+        # TODO: use raw footnote once footnote section is converted
+        self.assert_support(
+            '{{CompatGeckoDesktop("20.0")}} [***]',
+            [{'version': '20.0'}],
+            [{'support': 'yes', 'footnote_id': ('3', 35, 40)}])
+
+    def test_nbsp(self):
+        self.assert_support(
+            '15&nbsp;{{property_prefix("webkit")}}',
+            [{'version': '15.0'}], [{'support': 'yes', 'prefix': 'webkit'}])
+
+    def test_other_kumascript(self):
+        issue = (
+            'unknown_kumascript', 7, 30,
+            {'kumascript': '{{experimental_inline}}',
+             'name': 'experimental_inline', 'args': [], 'scope': self.scope})
+        self.assert_support(
+            '22 {{experimental_inline}}',
+            [{'version': '22.0'}], [{'support': 'yes'}], issues=[issue])
