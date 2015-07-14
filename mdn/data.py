@@ -3,8 +3,8 @@
 
 from collections import namedtuple
 
-from webplatformcompat.models import Feature, Specification
-from .utils import normalize_name, slugify
+from webplatformcompat.models import Feature, Specification, Support, Version
+from .utils import is_new_id, normalize_name, slugify
 
 
 class Data(object):
@@ -71,3 +71,57 @@ class Data(object):
                 spec = None
             self.specifications[mdn_key] = spec
         return self.specifications[mdn_key]
+
+    def support_id_by_relations(self, version_id, feature_id):
+        """Lookup or create a support ID for a version and feature."""
+        support = None
+        real_version = not is_new_id(version_id)
+        real_feature = not is_new_id(feature_id)
+        if real_version and real_feature:
+            # Might be known version
+            try:
+                support = Support.objects.get(
+                    version=version_id, feature=feature_id)
+            except Support.DoesNotExist:
+                pass
+        if support:
+            # Known support
+            support_id = support.id
+        else:
+            # New support
+            support_id = "_%s-%s" % (feature_id, version_id)
+        return support_id
+
+    VersionParams = namedtuple("VersionParams", ["version", "version_id"])
+
+    def version_params_by_version(
+            self, browser_id, browser_name, version_name):
+        """Get or create the version ID and normalized name by version string.
+
+        Keyword Arguments:
+        * browser_id - The ID of an existing browser, or a underscore-prefixed
+            string for a new browser.
+        * browser_name - The name of the browser
+        * version_name - The version string, such as 1.0, 'current', or
+            'nightly'
+
+        Return is a named tuple:
+        * version - A Version if found, None if no existing version
+        * version_id - The version ID, prefixed with an underscore if new
+        """
+        version = None
+        if not is_new_id(browser_id):
+            # Might be known version
+            try:
+                version = Version.objects.get(
+                    browser=browser_id, version=version_name)
+            except Version.DoesNotExist:
+                pass
+        if version:
+            # Known version
+            version_id = version.id
+        else:
+            # New version
+            version_id = "_%s-%s" % (browser_name, version_name)
+
+        return self.VersionParams(version, version_id)

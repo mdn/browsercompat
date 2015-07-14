@@ -6,11 +6,13 @@ from django.utils.six import text_type
 from parsimonious.grammar import Grammar
 
 from mdn.compatibility import (
-    compat_feature_grammar, CompatFeatureVisitor, Footnote)
-from webplatformcompat.models import Feature
+    compat_feature_grammar, compat_support_grammar, CellVersion,
+    CompatFeatureVisitor, CompatSupportVisitor, Footnote)
+from webplatformcompat.models import Browser, Feature, Support, Version
 from .base import TestCase
 
 feature_grammar = Grammar(compat_feature_grammar)
+support_grammar = Grammar(compat_support_grammar)
 
 
 class TestFootnote(TestCase):
@@ -208,3 +210,151 @@ class TestFeatureVisitor(TestCase):
         slug = 'web-css-background-size_reassignment_fails'
         issue = ('tag_dropped', 4, 29, {'tag': 'p', 'scope': self.scope})
         self.assert_feature(cell, feature_id, name, slug, issues=[issue])
+
+
+class TestSupportGrammar(TestCase):
+    def setUp(self):
+        self.grammar = Grammar(compat_support_grammar)
+
+    def assert_version(self, text, version, eng_version=None):
+        match = self.grammar["cell_version"].parse(text).match.groupdict()
+        expected = {"version": version, "eng_version": eng_version}
+        self.assertEqual(expected, match)
+
+    def test_version_number(self):
+        self.assert_version("1", version="1")
+
+    def test_cell_version_number_dotted(self):
+        self.assert_version("1.0", version="1.0")
+
+    def test_cell_version_number_spaces(self):
+        self.assert_version("1 ", version="1")
+
+    def test_cell_version_number_dotted_spaces(self):
+        self.assert_version("1.0\n\t", version="1.0")
+
+    def test_cell_version_number_with_engine(self):
+        self.assert_version("1.0 (85)", version="1.0", eng_version="85")
+
+    def test_cell_version_number_with_dotted_engine(self):
+        self.assert_version("5.0 (532.5)", version="5.0", eng_version="532.5")
+
+    def assert_no_prefix(self, text):
+        node = self.grammar["cell_noprefix"].parse(text)
+        self.assertEqual(text, node.text)
+
+    def test_unprefixed(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/AudioContext.createBufferSource
+        self.assert_no_prefix(" (unprefixed) ")
+
+    def test_noprefix(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Navigator.vibrate
+        self.assert_no_prefix(" (no prefix) ")
+
+    def test_without_prefix_naked(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-line
+        self.assert_no_prefix("without prefix")
+
+    def test_without_prefix(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/BatteryManager
+        self.assert_no_prefix(" (without prefix) ")
+
+    def assert_partial(self, text):
+        node = self.grammar['cell_partial'].parse(text)
+        self.assertEqual(text, node.text)
+
+    def test_comma_partial(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor
+        self.assert_partial(", partial")
+
+    def test_parens_partal(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration
+        self.assert_partial("(partial)")
+
+
+class TestCompatVersion(TestCase):
+    def test_dotted(self):
+        version = CellVersion(raw='1.0', version='1.0')
+        self.assertEqual('1.0', version.version)
+        self.assertEqual('1.0', text_type(version))
+
+    def test_plain(self):
+        version = CellVersion(raw='1', version='1')
+        self.assertEqual('1.0', version.version)
+        self.assertEqual('1.0', text_type(version))
+
+    def test_with_engine(self):
+        version = CellVersion(
+            raw='1.0 (85)', version='1.0', engine_version='85')
+        self.assertEqual('1.0', version.version)
+        self.assertEqual('1.0 (85)', text_type(version))
+
+
+class TestSupportVisitor(TestCase):
+    def setUp(self):
+        self.feature_id = '_feature'
+        self.browser_id = '_browser'
+        self.browser_name = 'Browser'
+        self.browser_slug = 'browser'
+        self.scope = 'compatibility support'
+
+    def set_browser(self, browser):
+        self.browser_id = browser.id
+        self.browser_name = browser.name
+        self.browser_slug = browser.slug
+
+    def assert_support(
+            self, contents, expected_versions=None, expected_supports=None,
+            issues=None):
+        row_cell = "<td>%s</td>" % contents
+        parsed = support_grammar['html'].parse(row_cell)
+        self.visitor = CompatSupportVisitor(
+            self.feature_id, self.browser_id, self.browser_name,
+            self.browser_slug)
+        self.visitor.visit(parsed)
+        self.assertEqual(len(expected_versions), len(expected_supports))
+        for version, support in zip(expected_versions, expected_supports):
+            if 'id' not in version:
+                version['id'] = '_{}-{}'.format(
+                    self.browser_name, version['version'])
+            version['browser'] = self.browser_id
+
+            if 'id' not in support:
+                support['id'] = '_{}-{}'.format(self.feature_id, version['id'])
+            support['version'] = version['id']
+            support['feature'] = self.feature_id
+        self.assertEqual(expected_versions, self.visitor.versions)
+        self.assertEqual(expected_supports, self.visitor.supports)
+        self.assertEqual(issues or [], self.visitor.issues)
+
+    def test_version(self):
+        self.assert_support('1.0', [{'version': '1.0'}], [{'support': 'yes'}])
+
+    def test_version_matches(self):
+        version = self.get_instance(Version, ('firefox', '1.0'))
+        self.set_browser(version.browser)
+        self.assert_support(
+            '1.0', [{'version': '1.0', 'id': version.id}],
+            [{'support': 'yes'}])
+
+    def test_new_version_existing_browser(self):
+        browser = self.get_instance(Browser, 'firefox')
+        self.set_browser(browser)
+        issue = (
+            'unknown_version', 4, 7,
+            {'browser_id': 1, 'browser_name': {"en": "Firefox"},
+             'browser_slug': 'firefox', 'version': '2.0'})
+        self.assert_support(
+            '2.0', [{'version': '2.0'}], [{'support': 'yes'}], issues=[issue])
+
+    def test_support_matches(self):
+        version = self.get_instance(Version, ('firefox', '1.0'))
+        self.set_browser(version.browser)
+        feature = self.get_instance(
+            Feature, 'web-css-background-size-basic_support')
+        self.feature_id = feature.id
+        support = self.create(Support, version=version, feature=feature)
+        self.assert_support(
+            '1.0',
+            [{'version': '1.0', 'id': version.id}],
+            [{'support': 'yes', 'id': support.id}])

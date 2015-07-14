@@ -3,7 +3,8 @@
 from __future__ import unicode_literals
 
 from mdn.data import Data
-from webplatformcompat.models import Feature, Specification
+from webplatformcompat.models import (
+    Browser, Feature, Specification, Support, Version)
 from .base import TestCase
 
 
@@ -63,3 +64,60 @@ class TestDataFeatureParamsByName(TestDataBase):
         self.create(Feature, slug='web-css-background-size_slug')
         self.assert_feature_params_by_name(
             'slug', None, '_slug', 'web-css-background-size_slug1')
+
+
+class TestDataSupportIdByRelations(TestDataBase):
+    def setUp(self):
+        super(TestDataSupportIdByRelations, self).setUp()
+        self.version = self.get_instance(Version, ('firefox', 'current'))
+        self.feature = self.get_instance(
+            Feature, 'web-css-background-size-basic_support')
+
+    def assert_new_support_id(self, version_id, feature_id):
+        support_id = self.data.support_id_by_relations(version_id, feature_id)
+        expected_support_id = '_{}-{}'.format(feature_id, version_id)
+        self.assertEqual(expected_support_id, support_id)
+
+    def test_all_new(self):
+        self.assert_new_support_id('_version', '_feature')
+
+    def test_real_version(self):
+        self.assert_new_support_id(self.version.id, '_feature')
+
+    def test_real_feature(self):
+        self.assert_new_support_id('_version', self.feature.id)
+
+    def test_not_found(self):
+        self.assert_new_support_id(self.version.id, self.feature.id)
+
+    def test_found(self):
+        support = self.create(
+            Support, version=self.version, feature=self.feature)
+        support_id = self.data.support_id_by_relations(
+            self.version.id, self.feature.id)
+        self.assertEqual(support.id, support_id)
+
+
+class TestDataVersionParamsByVersion(TestDataBase):
+    def setUp(self):
+        super(TestDataVersionParamsByVersion, self).setUp()
+        self.browser = self.get_instance(Browser, 'firefox')
+
+    def test_new_browser(self):
+        params = self.data.version_params_by_version(
+            '_browser', 'Browser', '1.0')
+        self.assertIsNone(params.version)
+        self.assertEqual('_Browser-1.0', params.version_id)
+
+    def test_new_version(self):
+        params = self.data.version_params_by_version(
+            self.browser.id, self.browser.name['en'], '1.0')
+        self.assertIsNone(params.version)
+        self.assertEqual('_Firefox-1.0', params.version_id)
+
+    def test_existing_version(self):
+        version = self.get_instance(Version, ('firefox', 'current'))
+        params = self.data.version_params_by_version(
+            self.browser.id, self.browser.name['en'], 'current')
+        self.assertEqual(version, params.version)
+        self.assertEqual(version.id, params.version_id)

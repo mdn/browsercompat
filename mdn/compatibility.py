@@ -8,17 +8,34 @@ from .html import HTMLText, HTMLStructure
 from .kumascript import (
     kumascript_grammar, DeprecatedInline, ExperimentalInline,
     NonStandardInline, NotStandardInline, KumaVisitor)
-from .utils import join_content
+from .utils import is_new_id, join_content
 
+compat_shared_grammar = r"""
+footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
+text_item = ~r"(?P<content>[^{<[]+)"s
+"""
 
 compat_feature_grammar = kumascript_grammar + r"""
 #
 # Add compat feature strings to text_token
 #
 text_token = kumascript / footnote_id / text_item
-footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
-text_item = ~r"(?P<content>[^{<[]+)"s
-"""
+""" + compat_shared_grammar
+
+compat_support_grammar = kumascript_grammar + (
+    r"""
+#
+# Add compat support strings to text_token
+#
+text_token = kumascript / cell_version / footnote_id / cell_removed /
+    cell_noprefix / cell_partial / text_item
+cell_version = ~r"(?P<version>\d+(\.\d+)*)"""
+    r"""(\s+\((?P<eng_version>\d+(\.\d+)*)\))?\s*"s
+cell_removed = ~r"[Rr]emoved\s+[Ii]n\s*"s
+cell_noprefix = _ ("(unprefixed)" / "(no prefix)" / "without prefix" /
+    "(without prefix)") _
+cell_partial =  _ (", partial" / "(partial)") _
+""") + compat_shared_grammar
 
 
 @python_2_unicode_compatible
@@ -132,3 +149,92 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         if not self.standardized:
             feature['standardized'] = False
         return feature
+
+
+@python_2_unicode_compatible
+class CellVersion(HTMLText):
+    """A version string, like '1.0', '1', or '1.0 (85.0)'"""
+
+    def __init__(self, version, engine_version=None, **kwargs):
+        super(CellVersion, self).__init__(**kwargs)
+        if '.' in version:
+            self.version = version
+        else:
+            assert version
+            assert int(version)
+            self.version = version + '.0'
+        self.engine_version = engine_version or None
+
+    def __str__(self):
+        if self.engine_version is None:
+            return self.version
+        else:
+            return "{} ({})".format(self.version, self.engine_version)
+
+
+class CompatSupportVisitor(CompatBaseVisitor):
+    def __init__(
+            self, feature_id, browser_id, browser_name, browser_slug=None,
+            *args, **kwargs):
+        """Initialize a CompatSupportVisitor.
+
+        Keyword Arguments:
+        feature_id - The feature ID for this row
+        browser_id - The browser ID for this column
+        browser_name - The browser name for this column
+        browser_slug - The browser slug for this column
+        """
+        super(CompatSupportVisitor, self).__init__(*args, **kwargs)
+        self.feature_id = feature_id
+        self.browser_id = browser_id
+        self.browser_name = browser_name
+        self.browser_slug = browser_slug or '<no slug>'
+        self.scope = 'compatibility support'
+        self.versions = []
+        self.supports = []
+        self.init_version_and_support()
+
+    def init_version_and_support(self):
+        self.version = {'browser': self.browser_id}
+        self.support = {'feature': self.feature_id}
+
+    def commit_support_and_version(self, td):
+        """Commit new or updated support and version, and prepare for next."""
+        self.versions.append(self.version)
+        self.supports.append(self.support)
+        self.init_version_and_support()
+
+    def process(self, cls, node, **kwargs):
+        processed = super(CompatSupportVisitor, self).process(
+            cls, node, **kwargs)
+        if isinstance(processed, HTMLStructure) and processed.tag == 'td':
+            self.commit_support_and_version(processed)
+        elif isinstance(processed, CellVersion):
+            self.set_version(processed.version, processed)
+        return processed
+
+    def set_version(self, version_name, element):
+        """Set the version number, and determine if it is new or existing."""
+        version, version_id = self.data.version_params_by_version(
+            self.browser_id, self.browser_name, version_name)
+        new_version = is_new_id(version_id)
+        new_browser = is_new_id(self.browser_id)
+        if new_version and not new_browser:
+            self.add_issue(
+                'unknown_version', element, browser_id=self.browser_id,
+                browser_name=self.browser_name, version=version_name,
+                browser_slug=self.browser_slug)
+        self.version['id'] = version_id
+        self.version['version'] = version_name
+
+        support_id = self.data.support_id_by_relations(
+            version_id, self.feature_id)
+        self.support['id'] = support_id
+        self.support.setdefault('support', 'yes')
+        self.support['version'] = version_id
+
+    def visit_cell_version(self, node, children):
+        version = node.match.group('version')
+        engine_version = node.match.group('eng_version')
+        return self.process(
+            CellVersion, node, version=version, engine_version=engine_version)
