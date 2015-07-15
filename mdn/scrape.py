@@ -224,15 +224,10 @@ tr_tags = tr_tag*
 # Text segments
 #
 text_block = text_token+
-text_token = kumascript / cell_version / footnote_id / cell_removed /
-    cell_noprefix / cell_partial / text_item
+text_token = kumascript / footnote_id / text_item
 cell_version = ~r"(?P<version>\d+(\.\d+)*)"""
     r"""(\s+\((?P<eng_version>\d+(\.\d+)*)\))?\s*"s
 footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
-cell_removed = ~r"[Rr]emoved\s+[Ii]n\s*"s
-cell_noprefix = _ ("(unprefixed)" / "(no prefix)" / "without prefix" /
-    "(without prefix)") _
-cell_partial =  _ (", partial" / "(partial)") _
 text_item = ~r"(?P<content>[^{<[]+)\s*"s
 
 text = (double_quoted_text / single_quoted_text / bare_text)
@@ -695,31 +690,7 @@ class PageVisitor(NodeVisitor):
         compat_row['raw'] = node.text
         return compat_row
 
-    #
-    # Browser Compatibility table cells
-    #  Due to rowspan and colspan usage, we won't know if a cell is a feature
-    #  or a support until visit_compat_body
     visit_compat_cell_token = _visit_token
-
-    def visit_cell_version(self, node, children):
-        return {
-            'type': 'version',
-            'content': node.text,
-            'version': node.match.group('version'),
-            'eng_version': node.match.group('eng_version'),
-            'start': node.start, 'end': node.end}
-
-    def visit_cell_removed(self, node, children):
-        return {'type': 'removed', 'content': node.text, 'start': node.start,
-                'end': node.end}
-
-    def visit_cell_noprefix(self, node, children):
-        return {'type': 'noprefix', 'content': node.text, 'start': node.start,
-                'end': node.end}
-
-    def visit_cell_partial(self, node, children):
-        return {'type': 'partial', 'content': node.text, 'start': node.start,
-                'end': node.end}
 
     #
     # Optional footnotes after the Browser Compatibility Tables
