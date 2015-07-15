@@ -35,7 +35,9 @@ from parsimonious.nodes import Node, NodeVisitor
 
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
-from .compatibility import compat_feature_grammar, CompatFeatureVisitor
+from .compatibility import (
+    CompatFeatureVisitor, CompatSupportVisitor, compat_feature_grammar,
+    compat_support_grammar)
 from .html import HTMLText
 from .kumascript import kumascript_grammar, KumaScript
 from .specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
@@ -295,6 +297,11 @@ class PageVisitor(NodeVisitor):
         if not hasattr(self, '_compat_feature_grammar'):  # pragma: no branch
             self._compat_feature_grammar = Grammar(compat_feature_grammar)
         return self._compat_feature_grammar
+
+    def compat_support_grammar(self):
+        if not hasattr(self, '_compat_support_grammar'):  # pragma: no branch
+            self._compat_support_grammar = Grammar(compat_support_grammar)
+        return self._compat_support_grammar
 
     def _visit_content(self, node, children):
         """Visitor for re nodes with a named (?P<content>) section."""
@@ -1187,34 +1194,6 @@ class PageVisitor(NodeVisitor):
             self.issues.append(
                 self.kumascript_issue('unknown_kumascript', item, scope))
 
-    drop_tags = {
-        ('a', 'feature'),
-        ('p', 'feature'),
-        ('span', '*'),
-        ('strong', '*'),
-        ('em', '*')}
-
-    def item_to_html(self, item, context):
-        """Convert a item and subitems into HTML."""
-        # Handle items
-        assert isinstance(item, dict), type(item)
-        item_type = item['type']
-        attrs = self.format_attributes(item, context)
-        if item_type in ('code', 'pre'):
-            """
-            assert len(item['content']) == 1
-            subcontent = item['content'][0]
-            """
-            subcontent = item['content']
-            assert isinstance(item, dict)
-            assert subcontent['type'] == 'text'
-            subtext = subcontent['content']
-            html = "<{0}{1}>{2}</{0}>".format(item_type, attrs, subtext)
-        else:
-            assert item_type == 'text'
-            html = self.cleanup_whitespace(item['content'])
-        return html or ""
-
     expected_attrs = {}
     must_attrs = {
         ('a', 'footnote'): {'href': '*'},
@@ -1349,56 +1328,6 @@ class PageVisitor(NodeVisitor):
 
         return self._feature_data[nname]
 
-    def version_id_and_name(self, raw_version, browser):
-        version = None
-
-        # Version is format 'x.0', 'x.y', 'current', or 'nightly'
-        if '.' in raw_version:
-            clean_version = raw_version
-        elif raw_version in ('nightly', 'current'):
-            clean_version = raw_version
-        else:
-            assert raw_version
-            assert int(raw_version)
-            clean_version = raw_version + '.0'
-
-        if not is_new_id(browser['id']):
-            # Might be known version
-            try:
-                version = Version.objects.get(
-                    browser=browser['id'], version=clean_version)
-            except Version.DoesNotExist:
-                pass
-        if version:
-            # Known version
-            version_id = version.id
-            version_name = version.version
-        else:
-            # New version
-            version_id = "_%s-%s" % (browser['name'], clean_version)
-            version_name = clean_version or ''
-
-        return version_id, version_name
-
-    def support_id(self, version_id, feature_id):
-        support = None
-        real_version = not is_new_id(version_id)
-        real_feature = not is_new_id(feature_id)
-        if real_version and real_feature:
-            # Might be known version
-            try:
-                support = Support.objects.get(
-                    version=version_id, feature=feature_id)
-            except Support.DoesNotExist:
-                pass
-        if support:
-            # Known support
-            support_id = support.id
-        else:
-            # New support
-            support_id = "_%s-%s" % (feature_id, version_id)
-        return support_id
-
     #
     # Cell parsing
     #
@@ -1415,227 +1344,18 @@ class PageVisitor(NodeVisitor):
         feature = visitor.to_feature_dict()
         return feature
 
-    # From https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop
-    geckodesktop_to_firefox = {
-        '1': '1.0',
-        '1.0': '1.0',
-        '1.7 or earlier': '1.0',
-        '1.7': '1.0',
-        '1.8': '1.5',
-        '1.8.1': '2.0',
-        '1.9': '3.0',
-        '1.9.1': '3.5',
-        '1.9.1.4': '3.5.4',
-        '1.9.2': '3.6',
-        '1.9.2.4': '3.6.4',
-        '1.9.2.5': '3.6.5',
-        '1.9.2.9': '3.6.9',
-        '2': '4.0',
-        '2.0': '4.0',
-    }
-
     def cell_to_support(self, cell, feature, browser):
         """Parse a cell as a support (middle cell)."""
-        assert feature
-        assert browser
-
-        data = {
-            'versions': [],
-            'supports': [],
-            'version': {'browser': browser['id']},
-            'support': {},
-            'p_depth': 0,
-            'feature': feature,
-            'browser': browser
-        }
-
-        assert cell['type'] == 'td'
-        assert isinstance(cell['content'], dict)
-        self.cell_to_support_inner(cell['content'], data, [])
-
-        if data['version'].get('id') and data['support'].get('id'):
-            data['versions'].append(data['version'])
-            data['supports'].append(data['support'])
-        else:
-            assert not data['version'].get('id')
-            assert not data['support'].get('id')
-            if data['versions'] and data['supports']:
-                data['versions'][-1].update(data['version'])
-                data['supports'][-1].update(data['support'])
-        return data['versions'], data['supports']
-
-    def cell_to_support_inner(self, item, data, depth):
-        kumascript_compat_versions = [
-            'compat' + b for b in ('android', 'chrome', 'ie', 'opera',
-                                   'operamobile', 'safari')]
-        version_found = None
-        version_name = data['version'].get('name')
-        if item['type'] == 'version':
-            version_found = item['version']
-        elif item['type'] == 'footnote_id':
-            if 'footnote_id' in data['support']:
-                self.issues.append((
-                    'footnote_multiple', item['start'], item['end'],
-                    {'prev_footnote_id': data['support']['footnote_id'][0],
-                        'footnote_id': item['footnote_id']}))
-            else:
-                data['support']['footnote_id'] = (
-                    item['footnote_id'], item['start'], item['end'])
-        elif item['type'] == 'kumascript':
-            kname = item['name'].lower()
-            # See https://developer.mozilla.org/en-US/docs/Template:<name>
-            if kname == 'compatversionunknown':
-                version_found = 'current'
-            elif kname == 'compatunknown':
-                # Could use support = unknown, but don't bother
-                pass
-            elif kname == 'compatno':
-                version_found = 'current'
-                data['support']['support'] = 'no'
-            elif kname == 'property_prefix':
-                data['support']['prefix'] = self.unquote(item['args'][0])
-            elif kname == 'compatgeckodesktop':
-                gversion = self.unquote(item['args'][0])
-                version_found = self.geckodesktop_to_firefox.get(gversion)
-                if not version_found:
-                    try:
-                        nversion = float(gversion)
-                    except ValueError:
-                        nversion = 0
-                    if nversion >= 5:
-                        version_found = text_type(nversion)
-                    else:
-                        version_found = None
-                        self.issues.append((
-                            'compatgeckodesktop_unknown',
-                            item['start'], item['end'],
-                            {'version': gversion}))
-            elif kname == 'compatgeckofxos':
-                gversion = self.unquote(item['args'][0])
-                try:
-                    oversion = self.unquote(item['args'][1])
-                except IndexError:
-                    oversion = ''
-                try:
-                    nversion = float(gversion)
-                except ValueError:
-                    nversion = -1
-                if (nversion >= 0 and nversion < 19 and
-                        oversion in ('', '1.0')):
-                    version_found = '1.0'
-                elif (nversion >= 0 and nversion < 21 and
-                        oversion == '1.0.1'):
-                    version_found = '1.0.1'
-                elif (nversion >= 0 and nversion < 24 and
-                        oversion in ('1.1', '1.1.0', '1.1.1')):
-                    version_found = '1.1'
-                elif (nversion >= 19 and nversion < 27 and
-                        oversion in ('', '1.2')):
-                    version_found = '1.2'
-                elif (nversion >= 27 and nversion < 29 and
-                        oversion in ('', '1.3')):
-                    version_found = '1.3'
-                elif (nversion >= 29 and nversion < 31 and
-                        oversion in ('', '1.4')):
-                    version_found = '1.4'
-                elif (nversion >= 31 and nversion < 33 and
-                        oversion in ('', '2.0')):
-                    version_found = '2.0'
-                elif (nversion >= 33 and nversion < 35 and
-                        oversion in ('', '2.1')):
-                    version_found = '2.1'
-                elif (nversion >= 35 and nversion < 38 and
-                        oversion in ('', '2.2')):
-                    version_found = '2.2'
-                elif nversion < 0 or nversion >= 38:
-                    self.issues.append((
-                        'compatgeckofxos_unknown',
-                        item['start'], item['end'], {'version': gversion}))
-                else:
-                    self.issues.append((
-                        'compatgeckofxos_override',
-                        item['start'], item['end'],
-                        {'override': oversion, 'version': gversion}))
-            elif kname == 'compatgeckomobile':
-                gversion = self.unquote(item['args'][0])
-                version_found = gversion.split('.', 1)[0]
-                if version_found == '2':
-                    version_found = '4'
-            elif kname == 'compatnightly':
-                version_found = 'nightly'
-            elif kname in kumascript_compat_versions:
-                version_found = self.unquote(item['args'][0])
-            else:
-                self.issues.append(self.kumascript_issue(
-                    'unknown_kumascript', item, 'compatibility cell'))
-        elif item['type'] == 'p' and 'p' in depth:
-            self.issues.append(
-                ('nested_p', item['start'], item['end'], {}))
-        elif item['type'] in ('break', 'p'):
-            if item['type'] == 'p':
-                new_depth = depth + ['p']
-                self.cell_to_support_inner(item['content'], data, new_depth)
-            # Multi-support cell?
-            if data['version'].get('id') and data['support'].get('id'):
-                # We have a complete version and support
-                data['versions'].append(data['version'])
-                data['supports'].append(data['support'])
-                data['version'] = {'browser': data['browser']['id']}
-                data['support'] = {}
-            else:
-                # We don't have a complete version and support
-                assert not data['version'].get('id')
-                assert not data['support'].get('id')
-        elif item['type'] == 'removed':
-            data['support']['support'] = 'no'
-        elif item['type'] == 'noprefix':
-            data['support']['support'] = 'yes'
-        elif item['type'] == 'partial':
-            data['support']['support'] = 'partial'
-        elif item['type'] in ('text', 'code'):
-            out = self.item_to_html(item, 'support')
-            if out:
-                self.issues.append((
-                    'inline_text', item['start'], item['end'], {'text': out}))
-        elif 'content' in item:
-            if isinstance(item['content'], dict):
-                subdepth = depth + [item['type']]
-                self.cell_to_support_inner(item['content'], data, subdepth)
-            else:
-                assert isinstance(item['content'], list), item
-                subdepth = depth + [item['type']]
-                for subitem in item['content']:
-                    self.cell_to_support_inner(subitem, data, subdepth)
-        else:
-            raise ValueError("Unknown item", item)
-
-        # Attempt to find the version in the existing verisons
-        if version_found is not None:
-            version_id, version_name = self.version_id_and_name(
-                version_found, data['browser'])
-            new_version = is_new_id(version_id)
-            new_browser = is_new_id(data['browser']['id'])
-            if new_version and not new_browser:
-                self.issues.append((
-                    'unknown_version', item['start'], item['end'],
-                    {'browser_id': data['browser']['id'],
-                        'browser_name': data['browser']['name'],
-                        'version': version_found,
-                        'browser_slug': data['browser'].get(
-                            'slug', '<not loaded>')}))
-            data['version']['id'] = version_id
-            data['version']['version'] = version_name
-            support_id = self.support_id(version_id, data['feature']['id'])
-            data['support']['id'] = support_id
-            data['support'].setdefault('support', 'yes')
-            data['support']['version'] = version_id
-            data['support']['feature'] = data['feature']['id']
-
-        # Footnote + prefix => support=partial
-        if (data['support'].get('support') == 'yes' and
-                data['support'].get('prefix') and
-                data['support'].get('footnote_id')):
-            data['support']['support'] = 'partial'
+        raw_text = cell['raw']
+        reparsed = self.compat_support_grammar().parse(raw_text)
+        visitor = CompatSupportVisitor(
+            feature_id=feature['id'], browser_id=browser['id'],
+            browser_name=browser['name'], browser_slug=browser['slug'],
+            offset=cell['start'])
+        visitor.visit(reparsed)
+        for issue in visitor.issues:
+            self.issues.append(issue)
+        return visitor.versions, visitor.supports
 
 
 def scrape_page(mdn_page, feature, locale='en'):

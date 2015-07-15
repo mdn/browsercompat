@@ -1086,7 +1086,8 @@ domenic/promises-unwrapping</a></td>
     def test_cell_to_support_unknown_kumascript(self):
         issues = [(
             'unknown_kumascript', 4, 19,
-            {'name': 'UnknownKuma', 'args': [], 'scope': 'compatibility cell',
+            {'name': 'UnknownKuma', 'args': [],
+             'scope': 'compatibility support',
              'kumascript': "{{UnknownKuma}}"})]
         self.assert_cell_to_support('{{UnknownKuma}}', issues=issues)
 
@@ -1094,14 +1095,9 @@ domenic/promises-unwrapping</a></td>
         issues = [(
             'unknown_kumascript', 4, 26,
             {'name': 'UnknownKuma', 'args': ['foo'],
-             'scope': 'compatibility cell',
-             'kumascript': "{{UnknownKuma(foo)}}"})]
+             'scope': 'compatibility support',
+             'kumascript': '{{UnknownKuma("foo")}}'})]
         self.assert_cell_to_support('{{UnknownKuma("foo")}}', issues=issues)
-
-    def test_cell_to_support_nested_p(self):
-        self.assert_cell_to_support(
-            '<p><p>4.0</p></p>',
-            issues=[('nested_p', 7, 17, {})])
 
     def test_cell_to_support_with_prefix_and_break(self):
         self.assert_cell_to_support(
@@ -1201,14 +1197,6 @@ domenic/promises-unwrapping</a></td>
         self.assert_cell_to_support(
             '15&nbsp;{{property_prefix("webkit")}}',
             [{'version': '15.0'}], [{'support': 'yes', 'prefix': 'webkit'}])
-
-    def test_cell_to_support_unknown_item(self):
-        feature = {'id': '_feature', 'name': 'feature', 'slug': 'feature_slug'}
-        browser = {'id': '_browser', 'name': 'Browser', 'slug': 'browser'}
-        bad_cell = {'type': 'td', 'content': {'type': 'other'}}
-        self.assertRaises(
-            ValueError, self.visitor.cell_to_support, bad_cell, feature,
-            browser)
 
     def assert_compat_body(self, compat_body, expected, issues):
         parsed = page_grammar['compat_body'].parse(compat_body)
