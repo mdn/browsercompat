@@ -11,9 +11,10 @@ class SpecNameVisitor(KumaVisitor):
 
     This is the first column of the Specifications table.
     """
+    scope = 'specification name'
+
     def __init__(self, **kwargs):
         super(SpecNameVisitor, self).__init__(**kwargs)
-        self.scope = 'specification name'
         self.mdn_key = None
         self.subpath = None
         self.section_name = None
@@ -60,9 +61,10 @@ class Spec2Visitor(KumaVisitor):
 
     This is the second column of the Specifications table.
     """
+    scope = 'specification maturity'
+
     def __init__(self, **kwargs):
         super(Spec2Visitor, self).__init__(**kwargs)
-        self.scope = 'specification maturity'
         self.mdn_key = None
         self.spec2_item = None
         self.spec = None
@@ -98,9 +100,10 @@ class SpecDescVisitor(KumaVisitor):
 
     This is the third column of the Specifications table.
     """
+    scope = 'specification description'
+
     def __init__(self, **kwargs):
         super(SpecDescVisitor, self).__init__(**kwargs)
-        self.scope = 'specification description'
         self.desc_items = None
 
     def process(self, cls, node, **kwargs):

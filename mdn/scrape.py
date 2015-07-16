@@ -148,7 +148,7 @@ ks_bare_arg = ~r"(?P<content>.*?(?=[,)]))"
 ks_arg_rest = ks_func_arg ks_arg
 
 #
-# HTML tag attritbutes
+# HTML tag attributes
 #
 attrs = attr+
 opt_attrs = attr*

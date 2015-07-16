@@ -41,19 +41,19 @@ class TestFeatureGrammar(TestCase):
         parsed = feature_grammar['html'].parse(text)
         assert parsed
 
-    def test_footnote(self):
+    def test_cell_with_footnote(self):
         text = '<td>Bad Footnote [1]</td>'
         parsed = feature_grammar['html'].parse(text)
         assert parsed
 
 
 class TestFeatureVisitor(TestCase):
+    scope = 'compatibility feature'
+
     def setUp(self):
         self.parent_feature = self.get_instance(
             Feature, 'web-css-background-size')
-        self.visitor = CompatFeatureVisitor(
-            parent_feature=self.parent_feature)
-        self.scope = 'compatibility feature'
+        self.visitor = CompatFeatureVisitor(parent_feature=self.parent_feature)
 
     def assert_feature(
             self, contents, feature_id, name, slug, canonical=False,
@@ -222,11 +222,8 @@ class TestFeatureVisitor(TestCase):
 
 
 class TestSupportGrammar(TestCase):
-    def setUp(self):
-        self.grammar = Grammar(compat_support_grammar)
-
     def assert_version(self, text, version, eng_version=None):
-        match = self.grammar["cell_version"].parse(text).match.groupdict()
+        match = support_grammar["cell_version"].parse(text).match.groupdict()
         expected = {"version": version, "eng_version": eng_version}
         self.assertEqual(expected, match)
 
@@ -249,7 +246,7 @@ class TestSupportGrammar(TestCase):
         self.assert_version("5.0 (532.5)", version="5.0", eng_version="532.5")
 
     def assert_no_prefix(self, text):
-        node = self.grammar["cell_noprefix"].parse(text)
+        node = support_grammar["cell_noprefix"].parse(text)
         self.assertEqual(text, node.text)
 
     def test_unprefixed(self):
@@ -269,7 +266,7 @@ class TestSupportGrammar(TestCase):
         self.assert_no_prefix(" (without prefix) ")
 
     def assert_partial(self, text):
-        node = self.grammar['cell_partial'].parse(text)
+        node = support_grammar['cell_partial'].parse(text)
         self.assertEqual(text, node.text)
 
     def test_comma_partial(self):
@@ -300,12 +297,13 @@ class TestCompatVersion(TestCase):
 
 
 class TestSupportVisitor(TestCase):
+    scope = 'compatibility support'
+
     def setUp(self):
         self.feature_id = '_feature'
         self.browser_id = '_browser'
         self.browser_name = 'Browser'
         self.browser_slug = 'browser'
-        self.scope = 'compatibility support'
 
     def set_browser(self, browser):
         self.browser_id = browser.id

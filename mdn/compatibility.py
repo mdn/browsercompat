@@ -6,7 +6,7 @@ import re
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
 
-from .html import HTMLText, HTMLStructure
+from .html import HTMLStructure, HTMLText
 from .kumascript import (
     CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS, CompatGeckoMobile,
     CompatNightly, CompatNo, CompatUnknown, CompatVersionUnknown,
@@ -73,6 +73,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
 
     This is the first column of the compatibilty table.
     """
+    scope = 'compatibility feature'
 
     def __init__(self, parent_feature, *args, **kwargs):
         """Initialize a CompatFeatureVisitor.
@@ -82,7 +83,6 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         """
         super(CompatFeatureVisitor, self).__init__(*args, **kwargs)
         self.parent_feature = parent_feature
-        self.scope = 'compatibility feature'
         self.name = None
         self.name_bits = []
         self.feature_id = None
@@ -194,6 +194,8 @@ class CellPartial(HTMLText):
 
 
 class CompatSupportVisitor(CompatBaseVisitor):
+    scope = 'compatibility support'
+
     def __init__(
             self, feature_id, browser_id, browser_name, browser_slug=None,
             *args, **kwargs):
@@ -210,7 +212,6 @@ class CompatSupportVisitor(CompatBaseVisitor):
         self.browser_id = browser_id
         self.browser_name = browser_name
         self.browser_slug = browser_slug or '<no slug>'
-        self.scope = 'compatibility support'
         self.versions = []
         self.supports = []
         self.inline_texts = []

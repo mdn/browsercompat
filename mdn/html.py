@@ -102,7 +102,7 @@ tr_content = html
 tr_close = "</tr>"
 
 #
-# HTML tag attritbutes
+# HTML tag attributes
 #
 attrs = attr*
 attr = _ ident _ "=" _ value _

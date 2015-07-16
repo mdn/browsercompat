@@ -505,12 +505,12 @@ class KumaVisitor(HTMLVisitor):
 
     Extracts KumaScript, with special handling if it is known.
     """
+    scope = None
 
     def __init__(self, data=None, **kwargs):
         super(KumaVisitor, self).__init__(**kwargs)
         self.data = data or Data()
         self._kumascript_proper_names = None
-        self.scope = None
 
     def _visit_multi_block(self, node, children):
         """Visit a 1-or-more block of tokens."""
