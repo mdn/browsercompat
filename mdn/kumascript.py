@@ -506,6 +506,10 @@ class KumaVisitor(HTMLVisitor):
     Extracts KumaScript, with special handling if it is known.
     """
     scope = None
+    _attribute_validation_by_tag = {
+        None: {None: 'ban'},  # Drop all attributes by default
+        'a': {None: 'ban', 'href': 'must'}  # a tags must have href element
+    }
 
     def __init__(self, data=None, **kwargs):
         super(KumaVisitor, self).__init__(**kwargs)

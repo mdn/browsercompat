@@ -371,7 +371,80 @@ class HTMLVisitor(NodeVisitor):
         assert open_tag.startswith('<')
         tag = open_tag[1:]
         assert isinstance(attrs, HTMLAttributes), type(attrs)
+        self.validate_attributes(attrs, tag, node)
         return self.process(HTMLOpenTag, node, tag=tag, attributes=attrs)
+
+    # Default validation - Accept all values for all tags
+    _attribute_validation_by_tag = {None: {None: 'keep'}}
+
+    def validate_attributes(self, attributes, tag, open_node):
+        """Validate attributes for a tag.
+
+        Attribute validation is controlled by _attribute_validation_by_tag,
+        which is a dictionary of tag names ('p', 'pre', etc.) to a dictionary
+        of attribute identifiers ('class', 'href', etc.) to a validation
+        strategy.  The None entry for tag names and identifier gives a default
+        validation.
+
+        Valid validation actions are:
+        - 'ban': Drop the attribute, and add unexpected_attribute issue
+        - 'drop': Drop the attribute
+        - 'keep': Keep the attribute
+        - 'must': Add missing_attribute issue if not present
+        """
+        # Load validation for this tag
+        assert None in self._attribute_validation_by_tag
+        validators = self._attribute_validation_by_tag.get(
+            tag, self._attribute_validation_by_tag[None])
+        assert None in validators
+        assert validators[None] in ('ban', 'drop', 'keep')
+
+        # Are all actions 'keep' actions? Do nothing.
+        if all([action == 'keep' for action in validators.values()]):
+            return
+
+        # Look for missing 'must' attributes
+        must_idents = set(
+            ident for ident, action in validators.items() if action == 'must')
+        has_idents = set(attributes.attrs.keys())
+        missing_idents = must_idents - has_idents
+
+        # Look for attributes to drop
+        drop_idents = []
+        for attr in attributes.attrs.values():
+            ident = attr.ident
+            action = validators.get(ident, validators[None])
+            assert action in ('ban', 'drop', 'keep', 'must')
+            if action in ('ban', 'drop'):
+                drop_idents.append((ident, action))
+
+        # Construct the expected attributes string
+        if drop_idents:
+            expected = sorted(must_idents)
+            if len(expected) > 1:
+                expected_text = (
+                    'the attributes ' + ', '.join(expected[:-1]) + ' or ' +
+                    expected[-1])
+            elif len(expected) == 1:
+                expected_text = 'the attribute ' + expected[0]
+            else:
+                expected_text = 'no attributes'
+
+        # Drop attributes, and add issues for banned attributes
+        for ident, action in drop_idents:
+            if action == 'ban':
+                self.add_issue(
+                    'unexpected_attribute', attributes.attrs[ident],
+                    node_type=tag, ident=ident,
+                    value=attributes.attrs[ident].value,
+                    expected=expected_text)
+            del attributes.attrs[ident]
+
+        # Add issues for missing required attributes
+        for ident in missing_idents:
+            self.add_raw_issue((
+                'missing_attribute', open_node.start, open_node.end,
+                {'node_type': tag, 'ident': ident}))
 
     visit_a_open = _visit_open
     visit_td_open = _visit_open

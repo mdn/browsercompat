@@ -166,7 +166,11 @@ class TestSpecDescVisitor(TestCase):
             Initial definition.
         </td>"""
         expected = ["Initial definition."]
-        self.assert_specdesc(html, expected, [])
+        issue = (
+            'unexpected_attribute', 4, 32,
+            {'expected': 'no attributes', 'node_type': 'td', 'ident': 'style',
+             'value': 'vertical-align: top;'})
+        self.assert_specdesc(html, expected, [issue])
 
     def test_kumascript(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align
