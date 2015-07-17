@@ -6,13 +6,15 @@ from django.utils.six import text_type
 from parsimonious.grammar import Grammar
 
 from mdn.compatibility import (
-    compat_feature_grammar, compat_support_grammar, CellVersion,
-    CompatFeatureVisitor, CompatSupportVisitor, Footnote)
+    compat_feature_grammar, compat_support_grammar, compat_footnote_grammar,
+    CellVersion, CompatFeatureVisitor, CompatFootnoteVisitor,
+    CompatSupportVisitor, Footnote)
 from webplatformcompat.models import Browser, Feature, Support, Version
 from .base import TestCase
 
 feature_grammar = Grammar(compat_feature_grammar)
 support_grammar = Grammar(compat_support_grammar)
+footnote_grammar = Grammar(compat_footnote_grammar)
 
 
 class TestFootnote(TestCase):
@@ -538,3 +540,199 @@ class TestSupportVisitor(TestCase):
         self.assert_support(
             '22 {{experimental_inline}}',
             [{'version': '22.0'}], [{'support': 'yes'}], issues=[issue])
+
+
+class TestFootnoteGrammar(TestCase):
+    def test_footnote_paragraph(self):
+        footnotes = '<p>[2] A footnote</p>'
+        parsed = footnote_grammar['html'].parse(footnotes)
+        self.assertEqual(footnotes, parsed.text)
+
+
+class TestFootnoteVisitor(TestCase):
+    scope = 'compatibility footnote'
+
+    def setUp(self):
+        self.visitor = CompatFootnoteVisitor()
+
+    def assert_footnotes(self, content, expected, issues=None):
+        parsed = footnote_grammar['html'].parse(content)
+        self.visitor.visit(parsed)
+        footnotes = self.visitor.finalize_footnotes()
+        self.assertEqual(expected, footnotes)
+        self.assertEqual(issues or [], self.visitor.issues)
+
+    def test_empty(self):
+        footnotes = '\n'
+        expected = {}
+        self.assert_footnotes(footnotes, expected)
+
+    def test_simple(self):
+        footnotes = "<p>[1] A footnote.</p>"
+        expected = {'1': ('A footnote.', 0, 22)}
+        self.assert_footnotes(footnotes, expected)
+
+    def test_multi_paragraph(self):
+        footnotes = "<p>[1] Footnote line 1.</p><p>Footnote line 2.</p>"
+        expected = {
+            '1': ("<p>Footnote line 1.</p>\n<p>Footnote line 2.</p>", 0, 50)}
+        self.assert_footnotes(footnotes, expected)
+
+    def test_multiple_footnotes(self):
+        footnotes = "<p>[1] Footnote 1.</p><p>[2] Footnote 2.</p>"
+        expected = {'1': ('Footnote 1.', 0, 22), '2': ('Footnote 2.', 22, 44)}
+        self.assert_footnotes(footnotes, expected)
+
+    def test_kumascript_cssxref(self):
+        footnotes = '<p>[1] Use {{cssxref("-moz-border-image")}}</p>'
+        expected = {'1': ('Use <code>-moz-border-image</code>', 0, 47)}
+        self.assert_footnotes(footnotes, expected)
+
+    def test_unknown_kumascriptscript(self):
+        footnotes = (
+            "<p>[1] Footnote {{UnknownKuma}} but the beat continues.</p>")
+        expected = {'1': ('Footnote but the beat continues.', 0, 59)}
+        issue = (
+            'unknown_kumascript', 16, 32,
+            {'name': 'UnknownKuma', 'args': [], 'scope': 'footnote',
+             'kumascript': '{{UnknownKuma}}'})
+        self.assert_footnotes(footnotes, expected, issues=[issue])
+
+    def test_pre_section(self):
+        footnotes = '<p>[1] Here\'s some code:</p><pre>foo = bar</pre>'
+        expected = {
+            '1': ("<p>Here's some code:</p>\n<pre>foo = bar</pre>", 0, 48)}
+        self.assert_footnotes(footnotes, expected)
+
+    def test_pre_with_attrs_section(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
+        footnotes = (
+            '<p>[1] Here\'s some code:</p>\n'
+            '<pre class="brush:css">\n'
+            '.foo {background-image: url(bg-image.png);}\n'
+            '</pre>')
+        expected = {
+            '1': (
+                "<p>Here's some code:</p>\n<pre>\n"
+                ".foo {background-image: url(bg-image.png);}\n</pre>",
+                0, 103)}
+        issue = (
+            'unexpected_attribute', 34, 51,
+            {'ident': 'class', 'node_type': 'pre', 'value': 'brush:css',
+             'expected': 'no attributes'})
+        self.assert_footnotes(footnotes, expected, issues=[issue])
+
+    def test_asterisk(self):
+        footnotes = "<p>[*] A footnote</p>"
+        expected = {'1': ('A footnote', 0, 21)}
+        self.assert_footnotes(footnotes, expected)
+
+    def test_bad_footnote(self):
+        footnotes = "<p>A footnote.</p>"
+        issue = ('footnote_no_id', 0, 18, {})
+        self.assert_footnotes(footnotes, {}, issues=[issue])
+
+    def test_bad_footnote_prefix(self):
+        footnotes = "<p>Footnote [1] - The content.</p>"
+        expected = {'1': ('- The content.', 15, 30)}
+        issue = ('footnote_no_id', 3, 12, {})
+        self.assert_footnotes(footnotes, expected, issues=[issue])
+
+    def test_bad_footnote_unknown_kumascript(self):
+        # https://developer.mozilla.org/en-US/docs/Web/SVG/Element/color-profile
+        footnotes = '<p>{{SVGRef}}</p>'
+        issue = (
+            'unknown_kumascript', 3, 13,
+            {'name': 'SVGRef', 'args': [], 'kumascript': '{{SVGRef}}',
+             'scope': u'footnote'})
+        self.assert_footnotes(footnotes, {}, issues=[issue])
+
+    def test_empty_paragraph_no_footnotes(self):
+        footnotes = ('<p>  </p>\n')
+        self.assert_footnotes(footnotes, {})
+
+    def test_empty_paragraph_invalid_footnote(self):
+        footnotes = (
+            '<p> </p>\n'
+            '<p>Invalid footnote.</p>\n'
+            '<p>  </p>')
+        issue = ('footnote_no_id', 9, 33, {})
+        self.assert_footnotes(footnotes, {}, issues=[issue])
+        self.assertEqual(footnotes[9:33], '<p>Invalid footnote.</p>')
+
+    def test_empty_paragraphs_trimmed(self):
+        footnote = (
+            '<p> </p>\n'
+            '<p>[1] Valid footnote.</p>'
+            '<p>   </p>'
+            '<p>Continues footnote 1.</p>')
+        expected = {
+            '1': (
+                '<p>Valid footnote.</p>\n<p>Continues footnote 1.</p>',
+                9, 73)}
+        self.assert_footnotes(footnote, expected)
+
+    def test_code(self):
+        footnote = (
+            '<p>[1] From Firefox 31 to 35, <code>will-change</code>'
+            ' was available...</p>')
+        expected = {
+            '1': (
+                'From Firefox 31 to 35, <code>will-change</code>'
+                ' was available...', 0, 75)}
+        self.assert_footnotes(footnote, expected)
+
+    def test_span(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
+        footnote = (
+            '<p>[1]<span style="font-size: 14px; line-height: 18px;">'
+            'Bubbling for this event is supported by at least Gecko 1.9.2,'
+            ' Chrome 6, and Safari 4.</span></p>')
+        # TODO: Change span parsing to make this work
+        expected = {
+            '1': ('Bubbling for this event is supported by at least Gecko'
+                  ' 1.9.2, Chrome 6, and Safari 4.', 0, 152)}
+        issue = ('tag_dropped', 6, 148, {})
+        # Current behaviour
+        expected = {
+            '1': ('<span>Bubbling for this event is supported by at least'
+                  ' Gecko 1.9.2, Chrome 6, and Safari 4.</span>', 0, 152)}
+        issue = (
+            'unexpected_attribute', 12, 55,
+            {'node_type': 'span', 'ident': 'style',
+             'value': 'font-size: 14px; line-height: 18px;',
+             'expected': 'no attributes'})
+        self.assert_footnotes(footnote, expected, issues=[issue])
+
+    def test_a(self):
+        # https://developer.mozilla.org/en-US/docs/Web/SVG/SVG_as_an_Image
+        footnote = (
+            '<p>[1] Compatibility data from'
+            '<a href="http://caniuse.com" title="http://caniuse.com">'
+            'caniuse.com</a>.</p>')
+        expected = {
+            '1': ('Compatibility data from <a href="http://caniuse.com">'
+                  'caniuse.com</a>.', 0, 106)}
+        issue = (
+            'unexpected_attribute', 59, 85,
+            {'node_type': 'a', 'ident': 'title',
+             'value': 'http://caniuse.com', 'expected': u'the attribute href'})
+        self.assert_footnotes(footnote, expected, issues=[issue])
+
+    def test_br_start(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/VRFieldOfViewReadOnly/downDegrees
+        footnote = "<p><br>\n[1] To find information on Chrome's WebVR...</p>"
+        expected = {'1': ("To find information on Chrome's WebVR...", 0, 56)}
+        self.assert_footnotes(footnote, expected)
+
+    def test_br_end(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/wheel
+        footnote = "<p>[1] Here's a footnote. <br></p>"
+        expected = {'1': ("Here's a footnote.", 0, 34)}
+        self.assert_footnotes(footnote, expected)
+
+    def test_br_footnotes(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/hash
+        footnote = "<p>[1] Footnote 1.<br>[2] Footnote 2.</p>"
+        expected = {'1': ("Footnote 1.", 6, 18), '2': ("Footnote 2.", 25, 37)}
+        self.assert_footnotes(footnote, expected)

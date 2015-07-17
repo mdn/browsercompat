@@ -1,6 +1,7 @@
 # coding: utf-8
 """Parser for Compatibility section of an MDN raw page."""
 from __future__ import unicode_literals
+from collections import OrderedDict
 import re
 
 from django.utils.encoding import python_2_unicode_compatible
@@ -19,7 +20,7 @@ footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
 text_item = ~r"(?P<content>[^{<[]+)"s
 """
 
-compat_feature_grammar = kumascript_grammar + r"""
+compat_feature_grammar = compat_footnote_grammar = kumascript_grammar + r"""
 #
 # Add compat feature strings to text_token
 #
@@ -344,3 +345,89 @@ class CompatSupportVisitor(CompatBaseVisitor):
 
     def visit_cell_partial(self, node, children):
         return self.process(CellPartial, node)
+
+
+class CompatFootnoteVisitor(CompatBaseVisitor):
+    scope = 'footnote'
+
+    def __init__(self, *args, **kwargs):
+        super(CompatFootnoteVisitor, self).__init__(*args, **kwargs)
+        self._footnote_data = OrderedDict()
+        self._current_footnote_id = None
+        self.scope = 'footnote'
+
+    def finalize_footnotes(self):
+        """Finalize and return footnotes."""
+        output = OrderedDict()
+        for footnote_id, sections in self._footnote_data.items():
+            lines = []
+            start = None
+            end = None
+            for element, single, items in sections:
+                open_tag = str(element.open_tag)
+                close_tag = str(element.close_tag)
+                if element.tag == 'pre':
+                    content = join_content(item.raw for item in items)
+                else:
+                    content = join_content(item.to_html() for item in items)
+                lines.append((open_tag, content, close_tag))
+                if single:
+                    start_element = element
+                    end_element = element
+                else:
+                    start_element = items[0]
+                    end_element = items[-1]
+                if start is None:
+                    start = start_element.start
+                    end = end_element.end
+                else:
+                    start = min(start_element.start, start)
+                    end = max(end_element.end, end)
+            if len(lines) == 1:
+                output[footnote_id] = (lines[0][1], start, end)
+            else:
+                output[footnote_id] = (
+                    '\n'.join(''.join(line) for line in lines), start, end)
+        return output
+
+    def gather_content(self, element):
+        """Gather footnote IDs and content from a container element."""
+        footnote_id = self._current_footnote_id
+        footnotes = OrderedDict(((footnote_id, []),))
+
+        # Gather content by footnote ID
+        for child in element.children:
+            if isinstance(child, Footnote):
+                footnote_id = child.footnote_id
+                assert footnote_id not in footnotes
+                footnotes[footnote_id] = []
+            elif isinstance(child, (HTMLStructure, HTMLText)):
+                if child.to_html():
+                    footnotes[footnote_id].append(child)
+
+        # Store content for later combining
+        self._current_footnote_id = footnote_id
+        single = len([True for content in footnotes.values() if content]) == 1
+        for footnote_id, content in footnotes.items():
+            if content:
+                if footnote_id is None:
+                    if single:
+                        self.add_issue('footnote_no_id', element)
+                    else:
+                        start = content[0].start
+                        end = content[-1].end
+                        self.add_raw_issue(('footnote_no_id', start, end, {}))
+                else:
+                    self._footnote_data.setdefault(footnote_id, []).append(
+                        (element, single, content))
+
+    def process(self, cls, node, **kwargs):
+        processed = super(CompatFootnoteVisitor, self).process(
+            cls, node, **kwargs)
+        if isinstance(processed, HTMLStructure):
+            if processed.tag == 'p':
+                self.gather_content(processed)
+            elif processed.tag == 'pre':
+                self._footnote_data[self._current_footnote_id].append(
+                    (processed, True, processed.children))
+        return processed
