@@ -267,11 +267,6 @@ Not part of any current spec, but it was in early drafts of
         self.assert_compat_headers(
             headers, expected_feature, expected_browsers)
 
-    def test_compat_footnotes(self):
-        footnotes = '<p>[2] A footnote</p>'
-        parsed = page_grammar['compat_footnotes'].parse(footnotes)
-        self.assertEqual(footnotes, parsed.text)
-
 
 sample_spec_row = """\
 <tr>
@@ -888,75 +883,6 @@ domenic/promises-unwrapping</a></td>
         self.assertEqual(expected, footnotes)
         self.assertEqual(issues, self.visitor.issues)
 
-    def test_compat_footnotes_empty(self):
-        footnotes = '\n'
-        expected = {}
-        self.assert_compat_footnotes(footnotes, expected, [])
-
-    def test_compat_footnotes_simple(self):
-        footnotes = "<p>[1] A footnote.</p>"
-        expected = {'1': ('A footnote.', 0, 22)}
-        self.assert_compat_footnotes(footnotes, expected, [])
-
-    def test_compat_footnotes_multi_paragraph(self):
-        footnotes = "<p>[1] Footnote line 1.</p><p>Footnote line 2.</p>"
-        expected = {
-            '1': ("<p>Footnote line 1.</p>\n<p>Footnote line 2.</p>", 0, 50)}
-        self.assert_compat_footnotes(footnotes, expected, [])
-
-    def test_compat_footnotes_multiple_footnotes(self):
-        footnotes = "<p>[1] Footnote 1.</p><p>[2] Footnote 2.</p>"
-        expected = {'1': ('Footnote 1.', 0, 22), '2': ('Footnote 2.', 22, 44)}
-        self.assert_compat_footnotes(footnotes, expected, [])
-
-    def test_compat_footnotes_kumascript_cssxref(self):
-        footnotes = '<p>[1] Use {{cssxref("-moz-border-image")}}</p>'
-        expected = {'1': ('Use <code>-moz-border-image</code>', 0, 47)}
-        self.assert_compat_footnotes(footnotes, expected, [])
-
-    def test_compat_footnotes_unknown_kumascriptscript(self):
-        footnotes = (
-            "<p>[1] Footnote {{UnknownKuma}} but the beat continues.</p>")
-        expected = {'1': ('Footnote but the beat continues.', 0, 59)}
-        issues = [(
-            'unknown_kumascript', 16, 32,
-            {'name': 'UnknownKuma', 'args': [], 'scope': 'footnote',
-             'kumascript': '{{UnknownKuma}}'})]
-        self.assert_compat_footnotes(footnotes, expected, issues)
-
-    def test_compat_footnotes_unknown_kumascriptscript_with_args(self):
-        footnotes = '<p>[1] Footnote {{UnknownKuma("arg")}}</p>'
-        expected = {'1': ('Footnote', 0, 42)}
-        issues = [(
-            'unknown_kumascript', 16, 38,
-            {'name': 'UnknownKuma', 'args': ['arg'], 'scope': 'footnote',
-             'kumascript': '{{UnknownKuma("arg")}}'})]
-        self.assert_compat_footnotes(footnotes, expected, issues)
-
-    def test_compat_footnotes_pre_section(self):
-        footnotes = '<p>[1] Here\'s some code:</p><pre>foo = bar</pre>'
-        expected = {
-            '1': ("<p>Here's some code:</p>\n<pre>foo = bar</pre>", 0, 48)}
-        self.assert_compat_footnotes(footnotes, expected, [])
-
-    def test_compat_footnotes_pre_with_attrs_section(self):
-        # https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
-        footnotes = (
-            '<p>[1] Here\'s some code:</p>\n'
-            '<pre class="brush:css">\n'
-            '.foo {background-image: url(bg-image.png);}\n'
-            '</pre>')
-        expected = {
-            '1': (
-                "<p>Here's some code:</p>\n<pre>\n"
-                ".foo {background-image: url(bg-image.png);}\n</pre>",
-                0, 103)}
-        issues = [
-            ('unexpected_attribute', 34, 51,
-             {'ident': 'class', 'node_type': 'pre', 'value': 'brush:css',
-              'expected': 'no attributes'})]
-        self.assert_compat_footnotes(footnotes, expected, issues)
-
     def test_compat_footnotes_asterisk(self):
         footnotes = "<p>[*] A footnote</p>"
         expected = {'1': ('A footnote', 0, 21)}
@@ -966,120 +892,6 @@ domenic/promises-unwrapping</a></td>
         footnotes = "<p>A footnote.</p>"
         issues = [('footnote_no_id', 0, 18, {})]
         self.assert_compat_footnotes(footnotes, {}, issues)
-
-    def test_compat_footnotes_bad_footnote_unknown_kumascript(self):
-        # https://developer.mozilla.org/en-US/docs/Web/SVG/Element/color-profile
-        footnotes = '<p>{{SVGRef}}</p>'
-        issues = [
-            ('unknown_kumascript', 3, 13,
-             {'name': 'SVGRef', 'args': [], 'kumascript': '{{SVGRef}}',
-              'scope': u'footnote'})]
-        self.assert_compat_footnotes(footnotes, {}, issues)
-
-    def test_compat_footnotes_empty_paragraph_no_footnotes(self):
-        footnotes = ('<p>  </p>\n')
-        self.assert_compat_footnotes(footnotes, {}, [])
-
-    def test_compat_footnotes_empty_paragraph_invalid_footnote(self):
-        footnotes = (
-            '<p> </p>\n'
-            '<p>Invalid footnote.</p>\n'
-            '<p>  </p>')
-        issues = [('footnote_no_id', 9, 33, {})]
-        self.assert_compat_footnotes(footnotes, {}, issues)
-        self.assertEqual(footnotes[9:33], '<p>Invalid footnote.</p>')
-
-    def test_compat_footnotes_empty_paragraphs_trimmed(self):
-        footnote = (
-            '<p> </p>\n'
-            '<p>[1] Valid footnote.</p>'
-            '<p>   </p>'
-            '<p>Continues footnote 1.</p>')
-        expected = {
-            '1': (
-                '<p>Valid footnote.</p>\n<p>Continues footnote 1.</p>',
-                9, 73)}
-        self.assert_compat_footnotes(footnote, expected, [])
-
-    def test_compat_footnotes_code(self):
-        footnote = (
-            '<p>[1] From Firefox 31 to 35, <code>will-change</code>'
-            ' was available...</p>')
-        expected = {
-            '1': (
-                'From Firefox 31 to 35, <code>will-change</code>'
-                ' was available...', 0, 75)}
-        self.assert_compat_footnotes(footnote, expected, [])
-
-    def test_compat_footnotes_span(self):
-        # https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
-        footnote = (
-            '<p>[1]<span style="font-size: 14px; line-height: 18px;">'
-            'Bubbling for this event is supported by at least Gecko 1.9.2,'
-            ' Chrome 6, and Safari 4.</span></p>')
-        expected = {
-            '1': ('Bubbling for this event is supported by at least Gecko'
-                  ' 1.9.2, Chrome 6, and Safari 4.', 0, 152)}
-        issues = [
-            ('tag_dropped', 6, 56, {'tag': 'span', 'scope': 'footnote'})]
-        self.assert_compat_footnotes(footnote, expected, issues)
-
-    def test_compat_footnotes_a(self):
-        # https://developer.mozilla.org/en-US/docs/Web/SVG/SVG_as_an_Image
-        footnote = (
-            '<p>[1] Compatibility data from'
-            '<a href="http://caniuse.com" title="http://caniuse.com">'
-            'caniuse.com</a>.</p>')
-        expected = {
-            '1': ('Compatibility data from <a href="http://caniuse.com">'
-                  'caniuse.com</a>.', 0, 106)}
-        issues = [
-            ('unexpected_attribute', 59, 85,
-             {'node_type': 'a', 'ident': 'title',
-              'value': 'http://caniuse.com',
-              'expected': u'the attribute href'})]
-        self.assert_compat_footnotes(footnote, expected, issues)
-
-    def test_compat_footnotes_a_without_href(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/VRFieldOfViewReadOnly/downDegrees
-        footnote = '<p>[1] Use <a>about:config</a></p>'
-        expected = {'1': ('Use <a>about:config</a>', 0, 34)}
-        issues = [
-            ('missing_attribute', 11, 14, {'node_type': 'a', 'ident': 'href'})]
-        self.assert_compat_footnotes(footnote, expected, issues)
-
-    def test_compat_footnotes_br_start(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/VRFieldOfViewReadOnly/downDegrees
-        footnote = "<p><br>\n[1] To find information on Chrome's WebVR...</p>"
-        expected = {'1': ("To find information on Chrome's WebVR...", 0, 56)}
-        self.assert_compat_footnotes(footnote, expected, [])
-
-    def test_compat_footnotes_br_end(self):
-        # https://developer.mozilla.org/en-US/docs/Web/Events/wheel
-        footnote = "<p>[1] Here's a footnote. <br></p>"
-        expected = {'1': ("Here's a footnote.", 0, 34)}
-        self.assert_compat_footnotes(footnote, expected, [])
-
-    def test_compat_footnotes_br_footnotes(self):
-        # https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/hash
-        footnote = "<p>[1] Footnote 1.<br>[2] Footnote 2.</p>"
-        expected = {'1': ("Footnote 1.", 6, 18), '2': ("Footnote 2.", 25, 37)}
-        self.assert_compat_footnotes(footnote, expected, [])
-
-    def test_compat_footnotes_version(self):
-        # https://developer.mozilla.org/en-US/docs/Web/Events/focusin
-        link = (
-            '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=687787">'
-            '687787</a>')  # 687787 triggers the compat cell version pattern
-        footnote = '<p>[1] See bug {}.</p>'.format(link)
-        expected = {'1': ('See bug {}.'.format(link), 0, 92)}
-        self.assert_compat_footnotes(footnote, expected, [])
-
-    def test_compat_footnotes_removed(self):
-        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
-        footnote = "<p>[1] Removed in Chrome 35+</p>"
-        expected = {'1': ('Removed in Chrome 35+', 0, 32)}
-        self.assert_compat_footnotes(footnote, expected, [])
 
     def test_compat_h3(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/MozContact/key
