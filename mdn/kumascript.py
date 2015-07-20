@@ -501,19 +501,15 @@ class XrefCSSLength(KnownKumaScript):
         return '<code>&lt;length&gt;</code>'
 
 
-class KumaVisitor(HTMLVisitor):
+class BaseKumaVisitor(HTMLVisitor):
     """Extract HTML structure from a MDN Kuma raw fragment.
 
     Extracts KumaScript, with special handling if it is known.
     """
     scope = None
-    _attribute_validation_by_tag = {
-        None: {None: 'ban'},  # Drop all attributes by default
-        'a': {None: 'ban', 'href': 'must'}  # a tags must have href element
-    }
 
     def __init__(self, data=None, **kwargs):
-        super(KumaVisitor, self).__init__(**kwargs)
+        super(BaseKumaVisitor, self).__init__(**kwargs)
         self.data = data or Data()
         self._kumascript_proper_names = None
 
@@ -644,3 +640,18 @@ class KumaVisitor(HTMLVisitor):
         return item or None
 
     visit_ks_bare_arg = HTMLVisitor._visit_content
+
+
+class KumaVisitor(BaseKumaVisitor):
+    """Extract HTML structure from a MDN Kuma raw fragment.
+
+    Include extra policy for scraping pages for the importer:
+    - Ensures <a> tags have an href attribute
+    - Raises issues on all other attributes
+    """
+    _default_attribute_actions = {None: 'ban'}
+
+    def visit_a_open(self, node, children):
+        """Ensure that <a> open tags have an href element."""
+        actions = {None: 'ban', 'href': 'must'}
+        return self._visit_open(node, children, actions)

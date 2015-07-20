@@ -89,6 +89,82 @@ class TestHTMLOpenTag(TestCase):
         tag = HTMLOpenTag(raw='<strong>', tag='strong', attributes=attrs)
         self.assertEqual(raw, text_type(tag))
 
+    def assert_validate_attributes(
+            self, attrs_dict, actions, expected_attrs_dict, issues=None):
+        attrs = []
+        start = 3
+        for ident in sorted(attrs_dict):
+            value = attrs_dict[ident]
+            raw = '{}="{}"'.format(ident, value)
+            attrs.append(
+                HTMLAttribute(raw=raw, start=start, ident=ident, value=value))
+            start += len(raw) + 1
+        attrs_raw = ' '.join(attr.raw for attr in attrs)
+        html_attrs = HTMLAttributes(raw=attrs_raw, start=3, attributes=attrs)
+        if attrs_raw:
+            tag_raw = '<a {}>'.format(attrs_raw)
+        else:
+            tag_raw = '<a>'
+        tag = HTMLOpenTag(
+            raw=tag_raw, tag='a', attributes=html_attrs,
+            attribute_actions=actions)
+        attributes = tag.attributes.as_dict()
+        self.assertEqual(expected_attrs_dict, attributes)
+        self.assertEqual(issues or [], tag.issues)
+
+    def test_validate_default_keep(self):
+        attr_dict = {'href': 'http://example.com'}
+        actions = {None: 'keep'}
+        self.assert_validate_attributes(attr_dict, actions, attr_dict)
+
+    def test_validate_default_drop(self):
+        attr_dict = {'href': 'http://example.com'}
+        actions = {None: 'drop'}
+        self.assert_validate_attributes(attr_dict, actions, {})
+
+    def test_validate_default_ban(self):
+        actions = {None: 'ban'}
+        attr_dict = {'href': 'http://example.com'}
+        issue = (
+            'unexpected_attribute', 3, 28,
+            {'node_type': 'a', 'ident': 'href', 'value': 'http://example.com',
+             'expected': 'no attributes'})
+        self.assert_validate_attributes(attr_dict, actions, {}, [issue])
+
+    def test_validate_must_is_present(self):
+        actions = {None: 'drop', 'href': 'must'}
+        attr_dict = {'href': 'http://example.com'}
+        self.assert_validate_attributes(attr_dict, actions, attr_dict)
+
+    def test_validate_must_is_missing(self):
+        actions = {None: 'drop', 'href': 'must'}
+        issue = (
+            'missing_attribute', 0, 3, {'node_type': 'a', 'ident': 'href'})
+        self.assert_validate_attributes({}, actions, {}, [issue])
+
+    def test_validate_missing_and_unexpected(self):
+        actions = {None: 'drop', 'external': 'ban', 'href': 'must'}
+        ban_issue = (
+            'unexpected_attribute', 3, 15,
+            {'node_type': 'a', 'ident': 'external', 'value': '1',
+             'expected': 'the attribute href'})
+        missing_issue = (
+            'missing_attribute', 0, 16, {'node_type': 'a', 'ident': 'href'})
+        self.assert_validate_attributes(
+            {'external': '1'}, actions, {}, [ban_issue, missing_issue])
+
+    def test_validate_unexpected_2_musts(self):
+        actions = {
+            None: 'drop', 'external': 'must', 'href': 'must', 'style': 'ban'}
+        issue = (
+            'unexpected_attribute', 42, 62,
+            {'node_type': 'a', 'ident': 'style', 'value': 'display:none',
+             'expected': 'the attributes external or href'})
+        expected = {"href": "http://example.com", "external": "1"}
+        passed = expected.copy()
+        passed["style"] = "display:none"
+        self.assert_validate_attributes(passed, actions, expected, [issue])
+
 
 class TestHTMLCloseTag(TestCase):
     def test_str(self):
@@ -155,76 +231,6 @@ class TestVisitor(TestCase):
         self.assertEqual(out.tag, 'a')
         self.assertEqual(
             out.attributes.as_dict(), {'href': 'http://example.com'})
-
-    def assert_validate_attributes(self, text, expected_attrs, issues=None):
-        parsed = grammar['a_open'].parse(text)
-        out = self.visitor.visit(parsed)
-        attributes = out.attributes.as_dict()
-        self.assertEqual(expected_attrs, attributes)
-        self.assertEqual(issues or [], self.visitor.issues)
-
-    def test_validate_default(self):
-        self.assert_validate_attributes(
-            '<a href="http://example.com">', {'href': 'http://example.com'})
-
-    def test_validate_default_keep(self):
-        self.visitor._attribute_validation_by_tag = {None: {None: 'keep'}}
-        self.assert_validate_attributes(
-            '<a href="http://example.com">', {'href': 'http://example.com'})
-
-    def test_validate_default_drop(self):
-        self.visitor._attribute_validation_by_tag = {None: {None: 'drop'}}
-        self.assert_validate_attributes('<a href="http://example.com">', {})
-
-    def test_validate_default_ban(self):
-        self.visitor._attribute_validation_by_tag = {None: {None: 'ban'}}
-        issue = (
-            'unexpected_attribute', 3, 28,
-            {'node_type': 'a', 'ident': 'href', 'value': 'http://example.com',
-             'expected': 'no attributes'})
-        self.assert_validate_attributes(
-            '<a href="http://example.com">', {}, issues=[issue])
-
-    def test_validate_must_is_present(self):
-        self.visitor._attribute_validation_by_tag = {
-            None: {None: 'drop'}, 'a': {None: 'drop', 'href': 'must'}}
-        self.assert_validate_attributes(
-            '<a href="http://example.com">', {'href': 'http://example.com'})
-
-    def test_validate_must_is_missing(self):
-        self.visitor._attribute_validation_by_tag = {
-            None: {None: 'drop'}, 'a': {None: 'drop', 'href': 'must'}}
-        issue = (
-            'missing_attribute', 0, 3, {'node_type': 'a', 'ident': 'href'})
-        self.assert_validate_attributes('<a>', {}, issues=[issue])
-
-    def test_validate_missing_and_unexpected(self):
-        self.visitor._attribute_validation_by_tag = {
-            None: {None: 'drop'},
-            'a': {None: 'drop', 'external': 'ban', 'href': 'must'}}
-        ban_issue = (
-            'unexpected_attribute', 3, 15,
-            {'node_type': 'a', 'ident': 'external', 'value': '1',
-             'expected': 'the attribute href'})
-        missing_issue = (
-            'missing_attribute', 0, 16, {'node_type': 'a', 'ident': 'href'})
-        self.assert_validate_attributes(
-            '<a external="1">', {}, issues=[ban_issue, missing_issue])
-
-    def test_validate_unexpected_2_musts(self):
-        self.visitor._attribute_validation_by_tag = {
-            None: {
-                None: 'drop'},
-            'a': {
-                None: 'drop', 'external': 'must', 'href': 'must',
-                'style': 'ban'}}
-        issue = (
-            'unexpected_attribute', 42, 62,
-            {'node_type': 'a', 'ident': 'style', 'value': 'display:none',
-             'expected': 'the attributes external or href'})
-        self.assert_validate_attributes(
-            '<a href="http://example.com" external="1" style="display:none">',
-            {"href": "http://example.com", "external": "1"}, issues=[issue])
 
     def test_br(self):
         text = '<br>'

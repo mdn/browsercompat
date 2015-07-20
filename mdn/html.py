@@ -245,9 +245,21 @@ class HTMLAttributes(HTMLInterval):
 class HTMLOpenTag(HTMLSimpleTag):
     """An HTML tag, such as <a href="#foo">"""
 
-    def __init__(self, attributes, **kwargs):
+    def __init__(self, attributes, attribute_actions=None, **kwargs):
+        """Initialize an HTML open tag
+
+        Keyword Arguments:
+        attributes - An HTMLAttributes instance
+        attribute_actions - A optional dictionary of attribute identifiers to
+            validation actions (see validate_attributes).
+        """
         super(HTMLOpenTag, self).__init__(**kwargs)
         self.attributes = attributes
+        if attribute_actions:
+            self._issues = self.validate_attributes(
+                attributes, attribute_actions)
+        else:
+            self._issues = []
 
     def __str__(self):
         attrs = str(self.attributes)
@@ -255,6 +267,80 @@ class HTMLOpenTag(HTMLSimpleTag):
             return '<{} {}>'.format(self.tag, attrs)
         else:
             return '<{}>'.format(self.tag)
+
+    def validate_attributes(self, attributes, actions):
+        """Validate attributes for an open tag.
+
+        Attribute validation is controlled by actions, which is a
+        dictionary of attribute identifiers ('class', 'href', etc.) to
+        validation strategies.  The None identifier entry gives a default
+        validation.
+
+        Valid validation actions are:
+        - 'ban': Drop the attribute, and add unexpected_attribute issue
+        - 'drop': Drop the attribute
+        - 'keep': Keep the attribute
+        - 'must': Add missing_attribute issue if not present
+
+        Return is a list of issues found in the attributes
+        """
+        # Verify attribute actions
+        assert None in actions
+        assert actions[None] in ('ban', 'drop', 'keep')
+
+        # Are all actions 'keep' actions? Do nothing.
+        if all([action == 'keep' for action in actions.values()]):
+            return []
+
+        # Look for missing 'must' attributes
+        must_idents = set(
+            ident for ident, action in actions.items() if action == 'must')
+        has_idents = set(attributes.attrs.keys())
+        missing_idents = must_idents - has_idents
+
+        # Look for attributes to drop
+        drop_idents = []
+        for attr in attributes.attrs.values():
+            ident = attr.ident
+            action = actions.get(ident, actions[None])
+            assert action in ('ban', 'drop', 'keep', 'must')
+            if action in ('ban', 'drop'):
+                drop_idents.append((ident, action))
+
+        # Construct the expected attributes string
+        if drop_idents:
+            expected = sorted(must_idents)
+            if len(expected) > 1:
+                expected_text = (
+                    'the attributes ' + ', '.join(expected[:-1]) + ' or ' +
+                    expected[-1])
+            elif len(expected) == 1:
+                expected_text = 'the attribute ' + expected[0]
+            else:
+                expected_text = 'no attributes'
+
+        # Drop attributes, and add issues for banned attributes
+        issues = []
+        for ident, action in drop_idents:
+            if action == 'ban':
+                attr = attributes.attrs[ident]
+                issues.append((
+                    'unexpected_attribute', attr.start, attr.end,
+                    {'node_type': self.tag, 'ident': ident,
+                     'value': attr.value, 'expected': expected_text}))
+            del attributes.attrs[ident]
+
+        # Add issues for missing required attributes
+        for ident in missing_idents:
+            issues.append((
+                'missing_attribute', self.start, self.end,
+                {'node_type': self.tag, 'ident': ident}))
+
+        return issues
+
+    @property
+    def issues(self):
+        return self._issues
 
 
 @python_2_unicode_compatible
@@ -294,6 +380,7 @@ class HTMLVisitor(NodeVisitor):
     fragment is inside of a document, then an offset can be applied so that
     positions are reported relative to the whole document.
     """
+    _default_attribute_actions = {None: 'keep'}
 
     def __init__(self, offset=0):
         super(HTMLVisitor, self).__init__()
@@ -365,7 +452,7 @@ class HTMLVisitor(NodeVisitor):
     visit_html_block = _visit_block
     visit_html_element = _visit_token
 
-    def _visit_open(self, node, children):
+    def _visit_open(self, node, children, actions=None):
         """Parse an opening tag with an optional attributes list"""
         open_tag_node, ws, attrs, close = children
         assert isinstance(open_tag_node, Node), type(open_tag_node)
@@ -373,80 +460,9 @@ class HTMLVisitor(NodeVisitor):
         assert open_tag.startswith('<')
         tag = open_tag[1:]
         assert isinstance(attrs, HTMLAttributes), type(attrs)
-        self.validate_attributes(attrs, tag, node)
-        return self.process(HTMLOpenTag, node, tag=tag, attributes=attrs)
-
-    # Default validation - Accept all values for all tags
-    _attribute_validation_by_tag = {None: {None: 'keep'}}
-
-    def validate_attributes(self, attributes, tag, open_node):
-        """Validate attributes for a tag.
-
-        Attribute validation is controlled by _attribute_validation_by_tag,
-        which is a dictionary of tag names ('p', 'pre', etc.) to a dictionary
-        of attribute identifiers ('class', 'href', etc.) to a validation
-        strategy.  The None entry for tag names and identifier gives a default
-        validation.
-
-        Valid validation actions are:
-        - 'ban': Drop the attribute, and add unexpected_attribute issue
-        - 'drop': Drop the attribute
-        - 'keep': Keep the attribute
-        - 'must': Add missing_attribute issue if not present
-        """
-        # Load validation for this tag
-        assert None in self._attribute_validation_by_tag
-        validators = self._attribute_validation_by_tag.get(
-            tag, self._attribute_validation_by_tag[None])
-        assert None in validators
-        assert validators[None] in ('ban', 'drop', 'keep')
-
-        # Are all actions 'keep' actions? Do nothing.
-        if all([action == 'keep' for action in validators.values()]):
-            return
-
-        # Look for missing 'must' attributes
-        must_idents = set(
-            ident for ident, action in validators.items() if action == 'must')
-        has_idents = set(attributes.attrs.keys())
-        missing_idents = must_idents - has_idents
-
-        # Look for attributes to drop
-        drop_idents = []
-        for attr in attributes.attrs.values():
-            ident = attr.ident
-            action = validators.get(ident, validators[None])
-            assert action in ('ban', 'drop', 'keep', 'must')
-            if action in ('ban', 'drop'):
-                drop_idents.append((ident, action))
-
-        # Construct the expected attributes string
-        if drop_idents:
-            expected = sorted(must_idents)
-            if len(expected) > 1:
-                expected_text = (
-                    'the attributes ' + ', '.join(expected[:-1]) + ' or ' +
-                    expected[-1])
-            elif len(expected) == 1:
-                expected_text = 'the attribute ' + expected[0]
-            else:
-                expected_text = 'no attributes'
-
-        # Drop attributes, and add issues for banned attributes
-        for ident, action in drop_idents:
-            if action == 'ban':
-                self.add_issue(
-                    'unexpected_attribute', attributes.attrs[ident],
-                    node_type=tag, ident=ident,
-                    value=attributes.attrs[ident].value,
-                    expected=expected_text)
-            del attributes.attrs[ident]
-
-        # Add issues for missing required attributes
-        for ident in missing_idents:
-            self.add_raw_issue((
-                'missing_attribute', open_node.start, open_node.end,
-                {'node_type': tag, 'ident': ident}))
+        return self.process(
+            HTMLOpenTag, node, tag=tag, attributes=attrs,
+            attribute_actions=actions or self._default_attribute_actions)
 
     visit_a_open = _visit_open
     visit_code_open = _visit_open
