@@ -31,7 +31,7 @@ from django.utils.six import text_type
 from parsimonious.nodes import Node
 
 from .data import Data
-from .html import html_grammar, HTMLInterval, HTMLText, HTMLVisitor
+from .html import HTMLInterval, HTMLText, HTMLVisitor, html_grammar
 
 kumascript_grammar = html_grammar + r"""
 #
@@ -350,13 +350,14 @@ class CompatibilityTable(KnownKumaScript):
     pass
 
 
-class HTMLElement(KnownKumaScript):
+class KumaHTMLElement(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:HTMLElement
     min_args = max_args = 1
     arg_names = ['ElementName']
+    canonical_name = 'HTMLElement'
 
     def __init__(self, **kwargs):
-        super(HTMLElement, self).__init__(**kwargs)
+        super(KumaHTMLElement, self).__init__(**kwargs)
         self.element_name = self.arg(0)
 
     def to_html(self):
@@ -549,7 +550,7 @@ class KumaVisitor(HTMLVisitor):
                 return item
 
     visit_html_block = _visit_multi_block
-    visit_html_tag = _visit_multi_token
+    visit_html_element = _visit_multi_token
     visit_text_block = _visit_multi_block
     visit_text_token = _visit_multi_token
 
@@ -563,7 +564,7 @@ class KumaVisitor(HTMLVisitor):
         'CompatUnknown': CompatUnknown,
         'CompatVersionUnknown': CompatVersionUnknown,
         'CompatibilityTable': CompatibilityTable,
-        'HTMLElement': HTMLElement,
+        'HTMLElement': KumaHTMLElement,
         'Spec2': Spec2,
         'SpecName': SpecName,
         'cssbox': CSSBox,

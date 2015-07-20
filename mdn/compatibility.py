@@ -7,7 +7,7 @@ import re
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
 
-from .html import HTMLStructure, HTMLText
+from .html import HTMLElement, HTMLText
 from .kumascript import (
     CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS, CompatGeckoMobile,
     CompatNightly, CompatNo, CompatUnknown, CompatVersionUnknown,
@@ -96,7 +96,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
     def process(self, cls, node, **kwargs):
         processed = super(CompatFeatureVisitor, self).process(
             cls, node, **kwargs)
-        if isinstance(processed, HTMLStructure) and processed.tag == 'td':
+        if isinstance(processed, HTMLElement) and processed.tag == 'td':
             self.finalize_feature(processed)
         elif isinstance(processed, Footnote):
             self.add_issue('footnote_feature', processed)
@@ -113,7 +113,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
             return ''
         elif isinstance(element, HTMLText):
             return element.to_html()
-        elif isinstance(element, HTMLStructure):
+        elif isinstance(element, HTMLElement):
             tag = element.tag
             if tag == 'code':
                 return element.to_html()
@@ -252,7 +252,7 @@ class CompatSupportVisitor(CompatBaseVisitor):
     def process(self, cls, node, **kwargs):
         processed = super(CompatSupportVisitor, self).process(
             cls, node, **kwargs)
-        if isinstance(processed, HTMLStructure):
+        if isinstance(processed, HTMLElement):
             tag = processed.tag
             if tag == 'td':
                 self.add_inline_text_issues()
@@ -401,7 +401,7 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
                 footnote_id = child.footnote_id
                 assert footnote_id not in footnotes
                 footnotes[footnote_id] = []
-            elif isinstance(child, (HTMLStructure, HTMLText)):
+            elif isinstance(child, (HTMLElement, HTMLText)):
                 if child.to_html():
                     footnotes[footnote_id].append(child)
 
@@ -424,7 +424,7 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
     def process(self, cls, node, **kwargs):
         processed = super(CompatFootnoteVisitor, self).process(
             cls, node, **kwargs)
-        if isinstance(processed, HTMLStructure):
+        if isinstance(processed, HTMLElement):
             if processed.tag == 'p':
                 self.gather_content(processed)
             elif processed.tag == 'pre':

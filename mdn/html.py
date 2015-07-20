@@ -29,74 +29,75 @@ html_grammar = r"""
 # HTML tokens (only those used in compat tables)
 #
 html = html_block / empty_text
-html_block = html_tag+
-html_tag = a_tag / br / code_tag / p_tag / pre_tag / span_tag / strong_tag /
-    sup_tag / table_tag / tbody_tag / td_tag / th_tag / thead_tag / tr_tag /
+html_block = html_element+
+html_element = a_element / br / code_element / p_element / pre_element /
+    span_element / strong_element / sup_element / table_element /
+    tbody_element / td_element / th_element / thead_element / tr_element /
     text_block
 
-a_tag = a_open a_content a_close
+a_element = a_open a_content a_close
 a_open = "<a" _ attrs ">"
 a_content = html
 a_close = "</a>"
 
 br = "<" _ "br" _ ("/>" / ">") _
 
-code_tag = code_open code_content code_close
+code_element = code_open code_content code_close
 code_open = "<code" _ attrs ">"
 code_content = ~r"(?P<content>.*?(?=</code>))"s
 code_close = "</code>"
 
-p_tag = p_open p_content p_close
+p_element = p_open p_content p_close
 p_open = "<p" _ attrs ">"
 p_content = html
 p_close = "</p>"
 
-pre_tag = pre_open pre_content pre_close
+pre_element = pre_open pre_content pre_close
 pre_open = "<pre" _ attrs ">"
 pre_content = ~r"(?P<content>.*?(?=</pre>))"s
 pre_close = "</pre>"
 
-span_tag = span_open span_content span_close
+span_element = span_open span_content span_close
 span_open = "<span" _ attrs ">"
 span_content = html
 span_close = "</span>"
 
-strong_tag = strong_open strong_content strong_close
+strong_element = strong_open strong_content strong_close
 strong_open = "<strong" _ attrs ">"
 strong_content = html
 strong_close = "</strong>"
 
-sup_tag = sup_open sup_content sup_close
+sup_element = sup_open sup_content sup_close
 sup_open = "<sup" _ attrs ">"
 sup_close = "</sup>"
 sup_content = html
 
-table_tag = table_open table_content table_close
+table_element = table_open table_content table_close
 table_open = "<table" _ attrs ">"
 table_content = html
 table_close = "</table>"
 
-tbody_tag = tbody_open tbody_content tbody_close
+tbody_element = tbody_open tbody_content tbody_close
 tbody_open = "<tbody" _ attrs ">"
 tbody_content = html
 tbody_close = "</tbody>"
 
-td_tag = td_open td_content td_close
+td_element = td_open td_content td_close
 td_open = "<td" _ attrs ">"
 td_content = html
 td_close = "</td>"
 
-th_tag = th_open th_content th_close
+th_element = th_open th_content th_close
 th_open = "<th" _ attrs ">"
 th_content = html
 th_close = "</th>"
 
-thead_tag = thead_open thead_content thead_close
+thead_element = thead_open thead_content thead_close
 thead_open = "<thead" _ attrs ">"
 thead_content = html
 thead_close = "</thead>"
 
-tr_tag = tr_open tr_content tr_close
+tr_element = tr_open tr_content tr_close
 tr_open = "<tr" _ attrs ">"
 tr_content = html
 tr_close = "</tr>"
@@ -266,12 +267,13 @@ class HTMLCloseTag(HTMLSimpleTag):
 
 
 @python_2_unicode_compatible
-class HTMLStructure(HTMLInterval):
+class HTMLElement(HTMLInterval):
     """An HTML element that contains child elements"""
 
     def __init__(
-            self, open_tag, close_tag=None, children=None, **kwargs):
-        super(HTMLStructure, self).__init__(**kwargs)
+            self, open_tag, close_tag=None, children=None, drop_tag=False,
+            scope=None, **kwargs):
+        super(HTMLElement, self).__init__(**kwargs)
         self.open_tag = open_tag
         self.close_tag = close_tag
         assert self.open_tag.tag == self.close_tag.tag
@@ -361,7 +363,7 @@ class HTMLVisitor(NodeVisitor):
         return children[0]
 
     visit_html_block = _visit_block
-    visit_html_tag = _visit_token
+    visit_html_element = _visit_token
 
     def _visit_open(self, node, children):
         """Parse an opening tag with an optional attributes list"""
@@ -447,9 +449,7 @@ class HTMLVisitor(NodeVisitor):
                 {'node_type': tag, 'ident': ident}))
 
     visit_a_open = _visit_open
-    visit_td_open = _visit_open
-    visit_th_open = _visit_open
-    visit_tr_open = _visit_open
+    visit_code_open = _visit_open
     visit_p_open = _visit_open
     visit_pre_open = _visit_open
     visit_span_open = _visit_open
@@ -461,7 +461,6 @@ class HTMLVisitor(NodeVisitor):
     visit_th_open = _visit_open
     visit_thead_open = _visit_open
     visit_tr_open = _visit_open
-    visit_code_open = _visit_open
 
     def _visit_close(self, node, empty):
         close_tag = node.text
@@ -471,9 +470,7 @@ class HTMLVisitor(NodeVisitor):
         return self.process(HTMLCloseTag, node, tag=tag)
 
     visit_a_close = _visit_close
-    visit_td_close = _visit_close
-    visit_th_close = _visit_close
-    visit_tr_close = _visit_close
+    visit_code_close = _visit_close
     visit_p_close = _visit_close
     visit_pre_close = _visit_close
     visit_span_close = _visit_close
@@ -485,14 +482,13 @@ class HTMLVisitor(NodeVisitor):
     visit_th_close = _visit_close
     visit_thead_close = _visit_close
     visit_tr_close = _visit_close
-    visit_code_close = _visit_close
 
     def visit_br(self, node, parts):
         """Parse a <br> tag"""
         return self.process(HTMLSimpleTag, node, tag='br')
 
-    def _visit_tag(self, node, children):
-        """Parse a <tag>content</tag> block."""
+    def _visit_element(self, node, children):
+        """Parse a <tag>content</tag> element."""
         open_tag, content, close_tag = children
         assert isinstance(open_tag, HTMLOpenTag), open_tag
         if isinstance(content, HTMLEmptyText):
@@ -504,38 +500,33 @@ class HTMLVisitor(NodeVisitor):
             children = content
         assert isinstance(close_tag, HTMLCloseTag), close_tag
         return self.process(
-            HTMLStructure, node, open_tag=open_tag, close_tag=close_tag,
+            HTMLElement, node, open_tag=open_tag, close_tag=close_tag,
             children=children)
 
-    visit_a_tag = _visit_tag
-    visit_td_tag = _visit_tag
-    visit_th_tag = _visit_tag
-    visit_tr_tag = _visit_tag
-    visit_p_tag = _visit_tag
-    visit_pre_tag = _visit_tag
-    visit_span_tag = _visit_tag
-    visit_strong_tag = _visit_tag
-    visit_sup_tag = _visit_tag
-    visit_table_tag = _visit_tag
-    visit_tbody_tag = _visit_tag
-    visit_td_tag = _visit_tag
-    visit_th_tag = _visit_tag
-    visit_thead_tag = _visit_tag
-    visit_tr_tag = _visit_tag
-    visit_code_tag = _visit_tag
+    visit_a_element = _visit_element
+    visit_p_element = _visit_element
+    visit_span_element = _visit_element
+    visit_strong_element = _visit_element
+    visit_sup_element = _visit_element
+    visit_table_element = _visit_element
+    visit_tbody_element = _visit_element
+    visit_td_element = _visit_element
+    visit_th_element = _visit_element
+    visit_thead_element = _visit_element
+    visit_tr_element = _visit_element
 
-    def _visit_text_tag(self, node, children):
-        """Parse a <tag>unparsed text</tag> block."""
+    def _visit_text_element(self, node, children):
+        """Parse a <tag>unparsed text</tag> element."""
         open_tag, content, close_tag = children
         assert isinstance(open_tag, HTMLOpenTag), open_tag
         assert isinstance(content, HTMLText)
         assert isinstance(close_tag, HTMLCloseTag), close_tag
         return self.process(
-            HTMLStructure, node, open_tag=open_tag, close_tag=close_tag,
+            HTMLElement, node, open_tag=open_tag, close_tag=close_tag,
             children=[content])
 
-    visit_code_tag = _visit_text_tag
-    visit_pre_tag = _visit_text_tag
+    visit_code_element = _visit_text_element
+    visit_pre_element = _visit_text_element
 
     #
     # HTML tag attributes

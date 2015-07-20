@@ -1,7 +1,7 @@
 # coding: utf-8
 """Parser for Specification section of an MDN raw page."""
 
-from .html import HTMLStructure, HTMLText
+from .html import HTMLElement, HTMLText
 from .kumascript import KumaVisitor, SpecName, Spec2
 
 
@@ -110,7 +110,7 @@ class SpecDescVisitor(KumaVisitor):
         """Look for description nodes."""
         processed = super(SpecDescVisitor, self).process(
             cls, node, **kwargs)
-        if isinstance(processed, HTMLStructure) and processed.tag == 'td':
+        if isinstance(processed, HTMLElement) and processed.tag == 'td':
             assert self.desc_items is None
             self.desc_items = processed.children
         return processed

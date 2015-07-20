@@ -10,9 +10,9 @@ from mdn.kumascript import (
     CSSBox, CSSxRef, CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS,
     CompatGeckoMobile, CompatNightly, CompatNo, CompatUnknown,
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
-    ExperimentalInline, HTMLElement, KnownKumaScript, KumaScript, KumaVisitor,
-    NonStandardInline, NotStandardInline, PropertyPrefix, Spec2, SpecName,
-    UnknownKumaScript, XrefCSSLength, kumascript_grammar)
+    ExperimentalInline, KumaHTMLElement, KnownKumaScript, KumaScript,
+    KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
+    SpecName, UnknownKumaScript, XrefCSSLength, kumascript_grammar)
 from webplatformcompat.models import Specification
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
@@ -214,11 +214,11 @@ class TestCompatibilityTable(TestCase):
         self.assertEqual(text_type(ks), raw)
 
 
-class TestHTMLElement(TestCase):
+class TestKumaHTMLElement(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:HTMLElement
     def assert_value(self, name, html):
         raw = '{{HTMLElement("' + name + '")}}'
-        ks = HTMLElement(raw=raw, args=[name])
+        ks = KumaHTMLElement(raw=raw, args=[name])
         self.assertEqual(ks.to_html(), html)
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)

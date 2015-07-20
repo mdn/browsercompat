@@ -6,8 +6,8 @@ from django.utils.six import text_type
 from parsimonious.grammar import Grammar
 
 from mdn.html import (
-    html_grammar, HTMLAttribute, HTMLAttributes, HTMLCloseTag, HTMLInterval,
-    HTMLOpenTag, HTMLSimpleTag, HTMLStructure, HTMLText, HTMLVisitor)
+    HTMLAttribute, HTMLAttributes, HTMLCloseTag, HTMLElement, HTMLInterval,
+    HTMLOpenTag, HTMLSimpleTag, HTMLText, HTMLVisitor, html_grammar)
 from .base import TestCase
 
 grammar = Grammar(html_grammar)
@@ -97,7 +97,7 @@ class TestHTMLCloseTag(TestCase):
         self.assertEqual(raw, text_type(tag))
 
 
-class TestHTMLStructure(TestCase):
+class TestHTMLElement(TestCase):
     def test_str(self):
         raw = '<p class="first">A Text Element</p>'
         attr = HTMLAttribute(
@@ -107,9 +107,9 @@ class TestHTMLStructure(TestCase):
             raw='<p class="first">', tag='p', attributes=attrs)
         close_tag = HTMLCloseTag(raw='</p>', start=31, tag='p')
         children = [HTMLInterval(raw='A Text Element', start=17)]
-        structure = HTMLStructure(
+        element = HTMLElement(
             raw=raw, open_tag=open_tag, close_tag=close_tag, children=children)
-        self.assertEqual(raw, str(structure))
+        self.assertEqual(raw, str(element))
 
 
 class TestGrammar(TestCase):
@@ -234,9 +234,9 @@ class TestVisitor(TestCase):
         self.assertEqual(out.end, len(text))
         self.assertEqual(out.tag, 'br')
 
-    def test_tag(self):
+    def test_element(self):
         text = '<p>This is a simple paragraph.</p>'
-        parsed = grammar['p_tag'].parse(text)
+        parsed = grammar['p_element'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(out.start, 0)
         self.assertEqual(out.end, len(text))
@@ -260,12 +260,12 @@ class TestVisitor(TestCase):
         self.assertEqual(out[0].end, len(text))
         self.assertEqual(out[0].raw, 'This is a simple paragraph.')
 
-    def test_html_simple_tag(self):
+    def test_html_simple_element(self):
         text = '<p>Simple Paragraph</p>'
         parsed = grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
-        self.assertIsInstance(out[0], HTMLStructure)
+        self.assertIsInstance(out[0], HTMLElement)
         self.assertEqual(out[0].tag, 'p')
 
     def test_html_simple_text(self):
@@ -300,11 +300,11 @@ class TestVisitor(TestCase):
         self.assertEqual(len(out), 5)
         self.assertIsInstance(out[0], HTMLText)
         self.assertEqual(str(out[0]), '')
-        self.assertIsInstance(out[1], HTMLStructure)
+        self.assertIsInstance(out[1], HTMLElement)
         self.assertEqual(str(out[1]), '<p>Paragraph 1</p>')
         self.assertIsInstance(out[2], HTMLText)
         self.assertEqual(str(out[2]), '')
-        self.assertIsInstance(out[3], HTMLStructure)
+        self.assertIsInstance(out[3], HTMLElement)
         self.assertEqual(str(out[3]), '<p>Paragraph 2</p>')
         self.assertIsInstance(out[4], HTMLText)
         self.assertEqual(str(out[4]), '')
@@ -315,7 +315,7 @@ class TestVisitor(TestCase):
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         p_elem = out[0]
-        self.assertIsInstance(p_elem, HTMLStructure)
+        self.assertIsInstance(p_elem, HTMLElement)
         self.assertEqual('p', p_elem.tag)
         text1, code, text2 = p_elem.children
         self.assertEqual(text_type(text1), 'Here is')
