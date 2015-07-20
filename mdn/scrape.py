@@ -224,11 +224,8 @@ tr_tags = tr_tag*
 # Text segments
 #
 text_block = text_token+
-text_token = kumascript / footnote_id / text_item
-cell_version = ~r"(?P<version>\d+(\.\d+)*)"""
-    r"""(\s+\((?P<eng_version>\d+(\.\d+)*)\))?\s*"s
-footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
-text_item = ~r"(?P<content>[^{<[]+)\s*"s
+text_token = kumascript / text_item
+text_item = ~r"(?P<content>[^{<]+)\s*"s
 
 text = (double_quoted_text / single_quoted_text / bare_text)
 qtext = (double_quoted_text / single_quoted_text)
@@ -711,17 +708,6 @@ class PageVisitor(NodeVisitor):
         for issue in visitor.issues:
             self.issues.append(issue)
         return footnotes
-
-    def visit_footnote_id(self, node, children):
-        raw_id = children[1].match.group('content')
-        if raw_id.isnumeric():
-            footnote_id = raw_id
-        else:
-            footnote_id = text_type(len(raw_id))
-        return {
-            'type': 'footnote_id',
-            'footnote_id': footnote_id,
-            'start': node.start, 'end': node.end}
 
     def visit_compat_h3(self, node, children):
         title = children[6].text.strip()
