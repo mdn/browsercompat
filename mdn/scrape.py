@@ -36,8 +36,8 @@ from parsimonious.nodes import Node, NodeVisitor
 from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
 from .compatibility import (
-    CompatFeatureVisitor, CompatSupportVisitor, compat_feature_grammar,
-    compat_support_grammar)
+    CompatFeatureVisitor, CompatFootnoteVisitor, CompatSupportVisitor,
+    compat_feature_grammar, compat_footnote_grammar, compat_support_grammar)
 from .html import HTMLText
 from .kumascript import kumascript_grammar, KumaScript
 from .specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
@@ -297,6 +297,11 @@ class PageVisitor(NodeVisitor):
         if not hasattr(self, '_compat_support_grammar'):  # pragma: no branch
             self._compat_support_grammar = Grammar(compat_support_grammar)
         return self._compat_support_grammar
+
+    def compat_footnote_grammar(self):
+        if not hasattr(self, '_compat_footnote_grammar'):  # pragma: no branch
+            self._compat_footnote_grammar = Grammar(compat_footnote_grammar)
+        return self._compat_footnote_grammar
 
     def _visit_content(self, node, children):
         """Visitor for re nodes with a named (?P<content>) section."""
@@ -697,138 +702,15 @@ class PageVisitor(NodeVisitor):
     #
 
     def visit_compat_footnotes(self, node, children):
-        """Parse footnote tokens into a tree, then resolve into HTML"""
-        raw_items = children[0]
-        assert isinstance(raw_items, dict)
-        if raw_items['type'] == 'html_block':
-            items = raw_items['content']
-        else:
-            items = [raw_items]
-        for item in items:
-            assert isinstance(item, dict), type(item)
-
-        # Parse sections for footnote IDs
-        raw_sections = []
-        for item in items:
-            footnote_id, keep = self.footnote_first_pass(item)
-            if keep:
-                raw_sections.append((footnote_id, item))
-
-        # Combine raw sections into multi-line footnotes
-        last_footnote_id = None
-        last_group = []
-        sections = []
-        for footnote_id, section in raw_sections:
-            if (footnote_id is None and last_footnote_id is not None):
-                last_group.append(section)
-            else:
-                if last_group:
-                    sections.append((last_footnote_id, last_group))
-                last_group = [section]
-                last_footnote_id = footnote_id
-        if last_group:
-            sections.append((last_footnote_id, last_group))
-
-        # Convert section trees into HTML
-        footnotes = OrderedDict()
-        for footnote_id, group in sections:
-            include_p = (len(group) > 1)
-            lines = []
-            for section in group:
-                line = self.footnote_to_html(section, footnote_id, include_p)
-                br = '<br/>'
-                while line.startswith(br + ' '):
-                    line = line[len(br) + 1:]
-                while line.endswith(' ' + br):
-                    line = line[:-(len(br) + 1)]
-                if line:
-                    lines.append(line)
-            if lines:
-                start = group[0]['start']
-                end = group[-1]['end']
-                if footnote_id is None:
-                    self.issues.append(('footnote_no_id', start, end, {}))
-                else:
-                    footnotes[footnote_id] = ('\n'.join(lines), start, end)
+        """Parse footnote section."""
+        raw_text = node.text
+        reparsed = self.compat_footnote_grammar().parse(raw_text)
+        visitor = CompatFootnoteVisitor(offset=node.start)
+        visitor.visit(reparsed)
+        footnotes = visitor.finalize_footnotes()
+        for issue in visitor.issues:
+            self.issues.append(issue)
         return footnotes
-
-    def footnote_first_pass(self, item):
-        """Look for a footnote ID and content in this section."""
-        item_type = item['type']
-        if item_type == 'footnote_id':
-            return item['footnote_id'], True
-        elif item_type == 'break':
-            return None, False
-        elif item_type in ('kumascript', 'version'):
-            return None, True
-        else:
-            content = item['content']
-            if isinstance(content, dict):
-                return self.footnote_first_pass(content)
-            elif isinstance(content, list):
-                footnote_id = None
-                keep = False
-                for subitem in content:  # pragma: no branch
-                    footnote_id, subkeep = self.footnote_first_pass(subitem)
-                    keep = subkeep or keep
-                    if footnote_id:  # pragma: no branch
-                        break
-                return footnote_id, keep
-            else:
-                keep = bool(self.cleanup_whitespace(content))
-                return None, keep
-
-    def footnote_to_html(self, item, footnote_id, wrap=True):
-        """TODO: move to class, too similar to item_to_html"""
-        # Handle content lists
-        if isinstance(item, list):
-            bits = []
-            for subitem in item:
-                bits.append(self.footnote_to_html(subitem, footnote_id))
-            return self.join_content(bits)
-
-        # Handle items
-        assert isinstance(item, dict), type(item)
-        html = None
-        context = 'footnote'
-        item_type = item['type']
-        no_wrap_types = ('html_block', 'text_block', 'span')
-        if item_type == 'footnote_id':
-            if footnote_id != item['footnote_id']:
-                self.issues.append(
-                    ('second_footnote', item['start'], item['end'],
-                     {'original': footnote_id, 'new': item['footnote_id']}))
-        elif item_type == 'kumascript':
-            html = self.kumascript_to_html(item, context)
-        elif item_type == 'span':
-            self.issues.append(
-                ('span_dropped', item['start'], item['end'], {}))
-            html = self.footnote_to_html(item['content'], footnote_id)
-        elif item_type == 'break':
-            return "<br/>"
-        else:
-            attrs = self.format_attributes(item, context)
-            if item_type in ('code', 'pre'):
-                """
-                assert len(item['content']) == 1
-                subcontent = item['content'][0]
-                """
-                subcontent = item['content']
-                assert isinstance(item, dict)
-                assert subcontent['type'] == 'text'
-                subtext = subcontent['content']
-                html = "<{0}{1}>{2}</{0}>".format(item_type, attrs, subtext)
-            elif item_type in ('text', 'version', 'removed'):
-                return self.cleanup_whitespace(item['content'])
-            else:
-                shtml = self.footnote_to_html(item['content'], footnote_id)
-                wrap_this = (wrap and item_type not in no_wrap_types and
-                             (shtml or attrs))
-                if wrap_this:
-                    html = "<{0}{1}>{2}</{0}>".format(item_type, attrs, shtml)
-                else:
-                    html = shtml
-        return html or ""
 
     def visit_footnote_id(self, node, children):
         raw_id = children[1].match.group('content')
@@ -1118,7 +1000,7 @@ class PageVisitor(NodeVisitor):
         """Create an kumascript issue."""
         if item['args']:
             args = '(' + ', '.join(item['args']) + ')'
-        else:
+        else:  # pragma: no cover
             args = ''
         return (
             issue, item['start'], item['end'],
@@ -1164,58 +1046,6 @@ class PageVisitor(NodeVisitor):
         else:
             self.issues.append(
                 self.kumascript_issue('unknown_kumascript', item, scope))
-
-    expected_attrs = {}
-    must_attrs = {
-        ('a', 'footnote'): {'href': '*'},
-        ('a', 'feature'): {'href': '*'},
-    }
-
-    def format_attributes(self, item, context):
-        name = item['type']
-        attrs = item.pop('attributes', {})
-        must = self.must_attrs.get((name, context), {})
-        expected = self.expected_attrs.get((name, context), {})
-        expected.update(must)
-        attr_out = {}
-        for must_attr in must:
-            if must_attr not in attrs:
-                self.issues.append((
-                    'missing_attribute', item['start'], item['end'],
-                    {'node_type': name, 'ident': must_attr}))
-        for ident, attr in attrs.items():
-            if ident in expected:
-                assert ident not in attr_out
-                attr_out[ident] = attr['value']
-            else:
-                names = list(expected.keys())
-                # Doesn't happen in current MDN content
-                """
-                if len(names) > 1:
-                    raise Exception('Testcase')
-                    expected_text = (
-                        'the attributes ' + ', '.join(names[:-1]) + ' or ' +
-                        names[-1])
-                elif len(names) == 1:
-                """
-                assert len(names) < 2
-                if names:
-                    expected_text = 'the attribute ' + names[0]
-                else:
-                    expected_text = 'no attributes'
-                self.issues.append((
-                    'unexpected_attribute', attr['start'], attr['end'],
-                    {'node_type': name, 'ident': ident, 'value': attr['value'],
-                        'expected': expected_text}))
-        if attr_out:
-            sorted_attr = []
-            for ident in sorted(attr_out):
-                value = attr_out[ident]
-                sorted_attr.append((ident, value))
-            return " " + " ".join(
-                '{}="{}"'.format(i, v) for (i, v) in sorted_attr)
-        else:
-            return ""
 
     def join_content(self, content_bits):
         """Construct a string with just the right whitespace."""

@@ -930,7 +930,7 @@ domenic/promises-unwrapping</a></td>
         issues = [(
             'unknown_kumascript', 16, 38,
             {'name': 'UnknownKuma', 'args': ['arg'], 'scope': 'footnote',
-             'kumascript': '{{UnknownKuma(arg)}}'})]
+             'kumascript': '{{UnknownKuma("arg")}}'})]
         self.assert_compat_footnotes(footnotes, expected, issues)
 
     def test_compat_footnotes_pre_section(self):
@@ -1021,7 +1021,7 @@ domenic/promises-unwrapping</a></td>
             '1': ('Bubbling for this event is supported by at least Gecko'
                   ' 1.9.2, Chrome 6, and Safari 4.', 0, 152)}
         issues = [
-            ('span_dropped', 6, 148, {})]
+            ('tag_dropped', 6, 56, {'tag': 'span', 'scope': 'footnote'})]
         self.assert_compat_footnotes(footnote, expected, issues)
 
     def test_compat_footnotes_a(self):
@@ -1045,7 +1045,7 @@ domenic/promises-unwrapping</a></td>
         footnote = '<p>[1] Use <a>about:config</a></p>'
         expected = {'1': ('Use <a>about:config</a>', 0, 34)}
         issues = [
-            ('missing_attribute', 11, 30, {'node_type': 'a', 'ident': 'href'})]
+            ('missing_attribute', 11, 14, {'node_type': 'a', 'ident': 'href'})]
         self.assert_compat_footnotes(footnote, expected, issues)
 
     def test_compat_footnotes_br_start(self):
@@ -1063,9 +1063,8 @@ domenic/promises-unwrapping</a></td>
     def test_compat_footnotes_br_footnotes(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/hash
         footnote = "<p>[1] Footnote 1.<br>[2] Footnote 2.</p>"
-        expected = {'1': ("Footnote 1. <br/> Footnote 2.", 0, 41)}
-        issues = [('second_footnote', 22, 25, {'original': '1', 'new': '2'})]
-        self.assert_compat_footnotes(footnote, expected, issues)
+        expected = {'1': ("Footnote 1.", 6, 18), '2': ("Footnote 2.", 25, 37)}
+        self.assert_compat_footnotes(footnote, expected, [])
 
     def test_compat_footnotes_version(self):
         # https://developer.mozilla.org/en-US/docs/Web/Events/focusin
