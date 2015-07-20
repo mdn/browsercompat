@@ -111,17 +111,8 @@ class CompatFeatureVisitor(CompatBaseVisitor):
     def gather_text(self, element):
         if isinstance(element, Footnote):
             return ''
-        elif isinstance(element, HTMLText):
+        elif isinstance(element, (HTMLText, HTMLElement)):
             return element.to_html()
-        elif isinstance(element, HTMLElement):
-            tag = element.tag
-            if tag == 'code':
-                return element.to_html()
-            else:
-                self.add_issue(
-                    'tag_dropped', element, tag=tag, scope=self.scope)
-                sub_text = [self.gather_text(ch) for ch in element.children]
-                return join_content(sub_text)
 
     def finalize_feature(self, td):
         """Finalize a new or updated feature."""
@@ -159,6 +150,16 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         if not self.standardized:
             feature['standardized'] = False
         return feature
+
+    visit_a_open = KumaVisitor._visit_drop_tag_open
+    visit_p_open = KumaVisitor._visit_drop_tag_open
+    visit_strong_open = KumaVisitor._visit_drop_tag_open
+    visit_sup_open = KumaVisitor._visit_drop_tag_open
+
+    visit_a_element = KumaVisitor._visit_drop_tag_element
+    visit_p_element = KumaVisitor._visit_drop_tag_element
+    visit_strong_element = KumaVisitor._visit_drop_tag_element
+    visit_sup_element = KumaVisitor._visit_drop_tag_element
 
 
 @python_2_unicode_compatible

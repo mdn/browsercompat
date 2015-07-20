@@ -646,10 +646,24 @@ class KumaVisitor(BaseKumaVisitor):
     """Extract HTML structure from a MDN Kuma raw fragment.
 
     Include extra policy for scraping pages for the importer:
+    - Converts <span>content</span> to "content", with issues
     - Ensures <a> tags have an href attribute
     - Raises issues on all other attributes
     """
     _default_attribute_actions = {None: 'ban'}
+
+    def _visit_drop_tag_open(self, node, children):
+        """Warn that tag will be dropped."""
+        return self._visit_open(
+            node, children, {None: 'drop'}, scope=self.scope, drop_tag=True)
+
+    def _visit_drop_tag_element(self, node, children):
+        """Drop the tag, leaving the content."""
+        return self._visit_element(
+            node, children, scope=self.scope, drop_tag=True)
+
+    visit_span_open = _visit_drop_tag_open
+    visit_span_element = _visit_drop_tag_element
 
     def visit_a_open(self, node, children):
         """Ensure that <a> open tags have an href element."""

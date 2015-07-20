@@ -210,7 +210,7 @@ class TestFeatureVisitor(TestCase):
         feature_id = '_cross-origin resource sharing'
         name = 'Cross-Origin Resource Sharing'
         slug = 'web-css-background-size_cross-origin_resource_shar'
-        issue = ('tag_dropped', 4, 71, {'tag': 'a', 'scope': self.scope})
+        issue = ('tag_dropped', 4, 38, {'tag': 'a', 'scope': self.scope})
         self.assert_feature(cell, feature_id, name, slug, issues=[issue])
 
     def test_p(self):
@@ -219,7 +219,15 @@ class TestFeatureVisitor(TestCase):
         feature_id = '_reassignment fails'
         name = 'Reassignment fails'
         slug = 'web-css-background-size_reassignment_fails'
-        issue = ('tag_dropped', 4, 29, {'tag': 'p', 'scope': self.scope})
+        issue = ('tag_dropped', 4, 7, {'tag': 'p', 'scope': self.scope})
+        self.assert_feature(cell, feature_id, name, slug, issues=[issue])
+
+    def test_span(self):
+        cell = '<span class="strong">Strong</span>'
+        feature_id = '_strong'
+        name = 'Strong'
+        slug = 'web-css-background-size_strong'
+        issue = ('tag_dropped', 4, 25, {'tag': 'span', 'scope': self.scope})
         self.assert_feature(cell, feature_id, name, slug, issues=[issue])
 
 
@@ -688,20 +696,10 @@ class TestFootnoteVisitor(TestCase):
             '<p>[1]<span style="font-size: 14px; line-height: 18px;">'
             'Bubbling for this event is supported by at least Gecko 1.9.2,'
             ' Chrome 6, and Safari 4.</span></p>')
-        # TODO: Change span parsing to make this work
         expected = {
             '1': ('Bubbling for this event is supported by at least Gecko'
                   ' 1.9.2, Chrome 6, and Safari 4.', 0, 152)}
-        issue = ('tag_dropped', 6, 148, {})
-        # Current behaviour
-        expected = {
-            '1': ('<span>Bubbling for this event is supported by at least'
-                  ' Gecko 1.9.2, Chrome 6, and Safari 4.</span>', 0, 152)}
-        issue = (
-            'unexpected_attribute', 12, 55,
-            {'node_type': 'span', 'ident': 'style',
-             'value': 'font-size: 14px; line-height: 18px;',
-             'expected': 'no attributes'})
+        issue = ('tag_dropped', 6, 56, {'scope': 'footnote', 'tag': 'span'})
         self.assert_footnotes(footnote, expected, issues=[issue])
 
     def test_a(self):

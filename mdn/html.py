@@ -245,17 +245,28 @@ class HTMLAttributes(HTMLInterval):
 class HTMLOpenTag(HTMLSimpleTag):
     """An HTML tag, such as <a href="#foo">"""
 
-    def __init__(self, attributes, attribute_actions=None, **kwargs):
+    def __init__(
+            self, attributes, attribute_actions=None, drop_tag=False,
+            scope=None, **kwargs):
         """Initialize an HTML open tag
 
         Keyword Arguments:
         attributes - An HTMLAttributes instance
         attribute_actions - A optional dictionary of attribute identifiers to
             validation actions (see validate_attributes).
+        drop_tag - If true, the containing tag will be dropped in to_html()
+        scope - The scope for issues
         """
         super(HTMLOpenTag, self).__init__(**kwargs)
         self.attributes = attributes
-        if attribute_actions:
+        self.drop_tag = drop_tag
+        self.scope = scope
+
+        if self.drop_tag:
+            self._issues = (
+                ('tag_dropped', self.start, self.end,
+                 {'scope': self.scope, 'tag': self.tag}),)
+        elif attribute_actions:
             self._issues = self.validate_attributes(
                 attributes, attribute_actions)
         else:
@@ -367,10 +378,18 @@ class HTMLElement(HTMLInterval):
         self.children = []
         for child in (children or []):
             self.children.append(child)
+        self.drop_tag = drop_tag
 
     def __str__(self):
         content = join_content(text_type(child) for child in self.children)
         return "{}{}{}".format(self.open_tag, content, self.close_tag)
+
+    def to_html(self):
+        content = join_content(child.to_html() for child in self.children)
+        if self.drop_tag:
+            return content
+        else:
+            return "{}{}{}".format(self.open_tag, content, self.close_tag)
 
 
 class HTMLVisitor(NodeVisitor):
@@ -452,7 +471,7 @@ class HTMLVisitor(NodeVisitor):
     visit_html_block = _visit_block
     visit_html_element = _visit_token
 
-    def _visit_open(self, node, children, actions=None):
+    def _visit_open(self, node, children, actions=None, **kwargs):
         """Parse an opening tag with an optional attributes list"""
         open_tag_node, ws, attrs, close = children
         assert isinstance(open_tag_node, Node), type(open_tag_node)
@@ -462,7 +481,8 @@ class HTMLVisitor(NodeVisitor):
         assert isinstance(attrs, HTMLAttributes), type(attrs)
         return self.process(
             HTMLOpenTag, node, tag=tag, attributes=attrs,
-            attribute_actions=actions or self._default_attribute_actions)
+            attribute_actions=actions or self._default_attribute_actions,
+            **kwargs)
 
     visit_a_open = _visit_open
     visit_code_open = _visit_open
@@ -503,7 +523,7 @@ class HTMLVisitor(NodeVisitor):
         """Parse a <br> tag"""
         return self.process(HTMLSimpleTag, node, tag='br')
 
-    def _visit_element(self, node, children):
+    def _visit_element(self, node, children, **kwargs):
         """Parse a <tag>content</tag> element."""
         open_tag, content, close_tag = children
         assert isinstance(open_tag, HTMLOpenTag), open_tag
@@ -517,7 +537,7 @@ class HTMLVisitor(NodeVisitor):
         assert isinstance(close_tag, HTMLCloseTag), close_tag
         return self.process(
             HTMLElement, node, open_tag=open_tag, close_tag=close_tag,
-            children=children)
+            children=children, **kwargs)
 
     visit_a_element = _visit_element
     visit_p_element = _visit_element
