@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.utils.six import text_type
-from parsimonious.grammar import Grammar
 
 from mdn.html import HTMLText
 from mdn.kumascript import (
@@ -17,8 +16,6 @@ from webplatformcompat.models import Specification
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
-
-grammar = Grammar(kumascript_grammar)
 
 
 class TestUnknownKumascript(TestCase):
@@ -440,7 +437,7 @@ class TestXrefCSSLength(TestCase):
 class TestGrammar(TestHTMLGrammar):
     def test_no_arg_kumascript(self):
         text = '<p>{{CompatNo}}</p>'
-        parsed = grammar['html'].parse(text)
+        parsed = kumascript_grammar['html'].parse(text)
         assert parsed
 
 
@@ -450,7 +447,7 @@ class TestVisitor(TestHTMLVisitor):
         self.visitor.scope = 'test'
 
     def assert_kumascript(self, text, name, args, known=True, issues=None):
-        parsed = grammar['kumascript'].parse(text)
+        parsed = kumascript_grammar['kumascript'].parse(text)
         ks = self.visitor.visit(parsed)
         self.assertIsInstance(ks, KumaScript)
         self.assertEqual(ks.name, name)
@@ -510,7 +507,7 @@ class TestVisitor(TestHTMLVisitor):
    <td>{{Spec2('CSS3 Display')}}</td>
    <td>Added the <code>run-in</code> and <code>contents</code> values.</td>
 </tr>"""
-        parsed = grammar['html'].parse(html)
+        parsed = kumascript_grammar['html'].parse(html)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         tr = out[0]
@@ -540,7 +537,7 @@ class TestVisitor(TestHTMLVisitor):
   Add the {{ xref_csslength() }} value and allows it to be applied to
   element with a {{ cssxref("display") }} type of <code>table-cell</code>.
 </td>"""
-        parsed = grammar['html'].parse(html)
+        parsed = kumascript_grammar['html'].parse(html)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         tr = out[0]

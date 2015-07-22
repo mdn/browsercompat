@@ -28,12 +28,13 @@ from __future__ import unicode_literals
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
 
+from parsimonious.grammar import Grammar
 from parsimonious.nodes import Node
 
 from .data import Data
-from .html import HTMLInterval, HTMLText, HTMLVisitor, html_grammar
+from .html import HTMLInterval, HTMLText, HTMLVisitor, html_grammar_source
 
-kumascript_grammar = html_grammar + r"""
+kumascript_grammar_source = html_grammar_source + r"""
 #
 # KumaScript tokens
 #
@@ -55,6 +56,7 @@ ks_arg_rest = ks_func_arg ks_arg
 text_token = kumascript / text_item
 text_item = ~r"(?P<content>[^{<]+)"s
 """
+kumascript_grammar = Grammar(kumascript_grammar_source)
 
 
 @python_2_unicode_compatible

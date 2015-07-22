@@ -3,18 +3,13 @@
 from __future__ import unicode_literals
 
 from django.utils.six import text_type
-from parsimonious.grammar import Grammar
 
 from mdn.compatibility import (
-    compat_feature_grammar, compat_support_grammar, compat_footnote_grammar,
     CellVersion, CompatFeatureVisitor, CompatFootnoteVisitor,
-    CompatSupportVisitor, Footnote)
+    CompatSupportVisitor, Footnote,
+    compat_feature_grammar, compat_support_grammar, compat_footnote_grammar)
 from webplatformcompat.models import Browser, Feature, Support, Version
 from .base import TestCase
-
-feature_grammar = Grammar(compat_feature_grammar)
-support_grammar = Grammar(compat_support_grammar)
-footnote_grammar = Grammar(compat_footnote_grammar)
 
 
 class TestFootnote(TestCase):
@@ -35,17 +30,17 @@ class TestFootnote(TestCase):
 class TestFeatureGrammar(TestCase):
     def test_standard(self):
         text = '<td>Basic Support</td>'
-        parsed = feature_grammar['html'].parse(text)
+        parsed = compat_feature_grammar['html'].parse(text)
         assert parsed
 
     def test_rowspan(self):
         text = '<td rowspan="2">Two-line feature</td>'
-        parsed = feature_grammar['html'].parse(text)
+        parsed = compat_feature_grammar['html'].parse(text)
         assert parsed
 
     def test_cell_with_footnote(self):
         text = '<td>Bad Footnote [1]</td>'
-        parsed = feature_grammar['html'].parse(text)
+        parsed = compat_feature_grammar['html'].parse(text)
         assert parsed
 
 
@@ -62,7 +57,7 @@ class TestFeatureVisitor(TestCase):
             experimental=False, standardized=True, obsolete=False,
             issues=None):
         row_cell = "<td>%s</td>" % contents
-        parsed = feature_grammar['html'].parse(row_cell)
+        parsed = compat_feature_grammar['html'].parse(row_cell)
         self.visitor.visit(parsed)
         self.assertEqual(self.visitor.feature_id, feature_id)
         self.assertEqual(self.visitor.slug, slug)
@@ -233,7 +228,8 @@ class TestFeatureVisitor(TestCase):
 
 class TestSupportGrammar(TestCase):
     def assert_version(self, text, version, eng_version=None):
-        match = support_grammar["cell_version"].parse(text).match.groupdict()
+        match = compat_support_grammar["cell_version"].parse(
+            text).match.groupdict()
         expected = {"version": version, "eng_version": eng_version}
         self.assertEqual(expected, match)
 
@@ -256,7 +252,7 @@ class TestSupportGrammar(TestCase):
         self.assert_version("5.0 (532.5)", version="5.0", eng_version="532.5")
 
     def assert_no_prefix(self, text):
-        node = support_grammar["cell_noprefix"].parse(text)
+        node = compat_support_grammar["cell_noprefix"].parse(text)
         self.assertEqual(text, node.text)
 
     def test_unprefixed(self):
@@ -276,7 +272,7 @@ class TestSupportGrammar(TestCase):
         self.assert_no_prefix(" (without prefix) ")
 
     def assert_partial(self, text):
-        node = support_grammar['cell_partial'].parse(text)
+        node = compat_support_grammar['cell_partial'].parse(text)
         self.assertEqual(text, node.text)
 
     def test_comma_partial(self):
@@ -324,7 +320,7 @@ class TestSupportVisitor(TestCase):
             self, contents, expected_versions=None, expected_supports=None,
             issues=None):
         row_cell = "<td>%s</td>" % contents
-        parsed = support_grammar['html'].parse(row_cell)
+        parsed = compat_support_grammar['html'].parse(row_cell)
         self.visitor = CompatSupportVisitor(
             self.feature_id, self.browser_id, self.browser_name,
             self.browser_slug)
@@ -361,7 +357,7 @@ class TestSupportVisitor(TestCase):
         self.set_browser(browser)
         issue = (
             'unknown_version', 4, 7,
-            {'browser_id': 1, 'browser_name': {"en": "Firefox"},
+            {'browser_id': browser.id, 'browser_name': {"en": "Firefox"},
              'browser_slug': 'firefox', 'version': '2.0'})
         self.assert_support(
             '2.0', [{'version': '2.0'}], [{'support': 'yes'}], issues=[issue])
@@ -553,7 +549,7 @@ class TestSupportVisitor(TestCase):
 class TestFootnoteGrammar(TestCase):
     def test_footnote_paragraph(self):
         footnotes = '<p>[2] A footnote</p>'
-        parsed = footnote_grammar['html'].parse(footnotes)
+        parsed = compat_footnote_grammar['html'].parse(footnotes)
         self.assertEqual(footnotes, parsed.text)
 
 
@@ -564,7 +560,7 @@ class TestFootnoteVisitor(TestCase):
         self.visitor = CompatFootnoteVisitor()
 
     def assert_footnotes(self, content, expected, issues=None):
-        parsed = footnote_grammar['html'].parse(content)
+        parsed = compat_footnote_grammar['html'].parse(content)
         self.visitor.visit(parsed)
         footnotes = self.visitor.finalize_footnotes()
         self.assertEqual(expected, footnotes)

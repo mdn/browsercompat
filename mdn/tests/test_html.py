@@ -3,14 +3,11 @@
 from __future__ import unicode_literals
 
 from django.utils.six import text_type
-from parsimonious.grammar import Grammar
 
 from mdn.html import (
     HTMLAttribute, HTMLAttributes, HTMLCloseTag, HTMLElement, HTMLInterval,
     HTMLOpenTag, HTMLSimpleTag, HTMLText, HTMLVisitor, HnElement, html_grammar)
 from .base import TestCase
-
-grammar = Grammar(html_grammar)
 
 
 class TestHTMLInterval(TestCase):
@@ -191,17 +188,17 @@ class TestHTMLElement(TestCase):
 class TestGrammar(TestCase):
     def test_simple_paragraph(self):
         text = '<p>This is a simple paragraph.</p>'
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         assert parsed
 
     def test_simple_text(self):
         text = 'This is simple text'
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         assert parsed
 
     def test_empty_tag(self):
         text = '<td></td>'
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         assert parsed
 
 
@@ -210,7 +207,7 @@ class TestVisitor(TestCase):
         self.visitor = HTMLVisitor()
 
     def assert_attrs(self, text, expected_attrs):
-        parsed = grammar['attrs'].parse(text)
+        parsed = html_grammar['attrs'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(out.as_dict(), expected_attrs)
 
@@ -224,7 +221,7 @@ class TestVisitor(TestCase):
 
     def test_open(self):
         text = '<a href="http://example.com">'
-        parsed = grammar['a_open'].parse(text)
+        parsed = html_grammar['a_open'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(out.start, 0)
         self.assertEqual(out.end, len(text))
@@ -234,7 +231,7 @@ class TestVisitor(TestCase):
 
     def test_br(self):
         text = '<br>'
-        parsed = grammar['br'].parse(text)
+        parsed = html_grammar['br'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(out.start, 0)
         self.assertEqual(out.end, len(text))
@@ -242,7 +239,7 @@ class TestVisitor(TestCase):
 
     def test_element(self):
         text = '<p>This is a simple paragraph.</p>'
-        parsed = grammar['p_element'].parse(text)
+        parsed = html_grammar['p_element'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(out.start, 0)
         self.assertEqual(out.end, len(text))
@@ -259,7 +256,7 @@ class TestVisitor(TestCase):
 
     def test_text_block(self):
         text = 'This is a simple paragraph.'
-        parsed = grammar['text_block'].parse(text)
+        parsed = html_grammar['text_block'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         self.assertEqual(out[0].start, 0)
@@ -268,7 +265,7 @@ class TestVisitor(TestCase):
 
     def test_html_simple_element(self):
         text = '<p>Simple Paragraph</p>'
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         self.assertIsInstance(out[0], HTMLElement)
@@ -276,7 +273,7 @@ class TestVisitor(TestCase):
 
     def test_html_simple_text(self):
         text = 'Simple Text'
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         self.assertIsInstance(out[0], HTMLInterval)
@@ -285,7 +282,7 @@ class TestVisitor(TestCase):
 
     def test_html_simple_text_with_offset(self):
         text = 'Simple Text'
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         self.visitor.offset = 100
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
@@ -301,7 +298,7 @@ class TestVisitor(TestCase):
     Paragraph 2
 </p>
 '''
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 5)
         self.assertIsInstance(out[0], HTMLText)
@@ -317,7 +314,7 @@ class TestVisitor(TestCase):
 
     def test_html_with_code(self):
         text = "<p>Here is <code>code</code>.</p>"
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         p_elem = out[0]
@@ -330,7 +327,7 @@ class TestVisitor(TestCase):
 
     def test_html_simple_table(self):
         text = "<table><tr><td>A very dumb table</td></tr></table>"
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         table = out[0]
@@ -347,7 +344,7 @@ class TestVisitor(TestCase):
 
     def test_html_empty_tag(self):
         text = "<td></td>"
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         td = out[0]
@@ -358,7 +355,7 @@ class TestVisitor(TestCase):
 
     def test_add_issue(self):
         text = '<p>A paragraph</p>'
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertFalse(self.visitor.issues)
         self.assertEqual(len(out), 1)
@@ -371,7 +368,7 @@ class TestVisitor(TestCase):
 <h1>An H1 Header</h1>
 <p>This is in the h1 section</p>
 """
-        parsed = grammar['html'].parse(text)
+        parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertFalse(self.visitor.issues)
         h1_elem, text1, p_elem, text2 = out

@@ -280,26 +280,6 @@ class PageVisitor(NodeVisitor):
         """Visitor when none is specified."""
         return visited_children or node
 
-    def kumascript_grammar(self):
-        if not hasattr(self, '_kumascript_grammar'):  # pragma: no branch
-            self._kumascript_grammar = Grammar(kumascript_grammar)
-        return self._kumascript_grammar
-
-    def compat_feature_grammar(self):
-        if not hasattr(self, '_compat_feature_grammar'):  # pragma: no branch
-            self._compat_feature_grammar = Grammar(compat_feature_grammar)
-        return self._compat_feature_grammar
-
-    def compat_support_grammar(self):
-        if not hasattr(self, '_compat_support_grammar'):  # pragma: no branch
-            self._compat_support_grammar = Grammar(compat_support_grammar)
-        return self._compat_support_grammar
-
-    def compat_footnote_grammar(self):
-        if not hasattr(self, '_compat_footnote_grammar'):  # pragma: no branch
-            self._compat_footnote_grammar = Grammar(compat_footnote_grammar)
-        return self._compat_footnote_grammar
-
     def _visit_content(self, node, children):
         """Visitor for re nodes with a named (?P<content>) section."""
         return node.match.group('content')
@@ -431,7 +411,7 @@ class PageVisitor(NodeVisitor):
 
     def visit_specname_td(self, node, children):
         raw_text = node.text
-        reparsed = self.kumascript_grammar().parse(raw_text)
+        reparsed = kumascript_grammar.parse(raw_text)
         visitor = SpecNameVisitor(offset=node.start)
         visitor.visit(reparsed)
         for issue in visitor.issues:
@@ -448,7 +428,7 @@ class PageVisitor(NodeVisitor):
 
     def visit_spec2_td(self, node, children):
         raw_text = node.text
-        reparsed = self.kumascript_grammar().parse(raw_text)
+        reparsed = kumascript_grammar.parse(raw_text)
         visitor = Spec2Visitor(offset=node.start)
         visitor.visit(reparsed)
         for issue in visitor.issues:
@@ -465,7 +445,7 @@ class PageVisitor(NodeVisitor):
 
     def visit_specdesc_td(self, node, children):
         raw_text = node.text
-        reparsed = self.kumascript_grammar().parse(raw_text)
+        reparsed = kumascript_grammar.parse(raw_text)
         visitor = SpecDescVisitor(offset=node.start)
         visitor.visit(reparsed)
         for issue in visitor.issues:
@@ -701,7 +681,7 @@ class PageVisitor(NodeVisitor):
     def visit_compat_footnotes(self, node, children):
         """Parse footnote section."""
         raw_text = node.text
-        reparsed = self.compat_footnote_grammar().parse(raw_text)
+        reparsed = compat_footnote_grammar.parse(raw_text)
         visitor = CompatFootnoteVisitor(offset=node.start)
         visitor.visit(reparsed)
         footnotes = visitor.finalize_footnotes()
@@ -1122,7 +1102,7 @@ class PageVisitor(NodeVisitor):
     def cell_to_feature(self, cell):
         """Parse cell items as a feature (first column)"""
         raw_text = cell['raw']
-        reparsed = self.compat_feature_grammar().parse(raw_text)
+        reparsed = compat_feature_grammar.parse(raw_text)
         visitor = CompatFeatureVisitor(
             parent_feature=self.feature, offset=cell['start'])
         visitor.visit(reparsed)
@@ -1134,7 +1114,7 @@ class PageVisitor(NodeVisitor):
     def cell_to_support(self, cell, feature, browser):
         """Parse a cell as a support (middle cell)."""
         raw_text = cell['raw']
-        reparsed = self.compat_support_grammar().parse(raw_text)
+        reparsed = compat_support_grammar.parse(raw_text)
         visitor = CompatSupportVisitor(
             feature_id=feature['id'], browser_id=browser['id'],
             browser_name=browser['name'], browser_slug=browser['slug'],

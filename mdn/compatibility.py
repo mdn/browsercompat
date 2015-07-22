@@ -6,28 +6,30 @@ import re
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
+from parsimonious.grammar import Grammar
 
 from .html import HTMLElement, HTMLText
 from .kumascript import (
     CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS, CompatGeckoMobile,
     CompatNightly, CompatNo, CompatUnknown, CompatVersionUnknown,
     DeprecatedInline, ExperimentalInline, KumaScript, KumaVisitor,
-    NonStandardInline, NotStandardInline, PropertyPrefix, kumascript_grammar)
+    NonStandardInline, NotStandardInline, PropertyPrefix,
+    kumascript_grammar_source)
 from .utils import is_new_id, join_content
 
-compat_shared_grammar = r"""
+compat_shared_grammar_source = r"""
 footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
 text_item = ~r"(?P<content>[^{<[]+)"s
 """
 
-compat_feature_grammar = compat_footnote_grammar = kumascript_grammar + r"""
+compat_feature_grammar_source = kumascript_grammar_source + r"""
 #
 # Add compat feature strings to text_token
 #
 text_token = kumascript / footnote_id / text_item
-""" + compat_shared_grammar
+""" + compat_shared_grammar_source
 
-compat_support_grammar = kumascript_grammar + (
+compat_support_grammar_source = kumascript_grammar_source + (
     r"""
 #
 # Add compat support strings to text_token
@@ -40,7 +42,11 @@ cell_removed = ~r"[Rr]emoved\s+[Ii]n\s*"s
 cell_noprefix = _ ("(unprefixed)" / "(no prefix)" / "without prefix" /
     "(without prefix)") _
 cell_partial =  _ (", partial" / "(partial)") _
-""") + compat_shared_grammar
+""") + compat_shared_grammar_source
+
+compat_feature_grammar = Grammar(compat_feature_grammar_source)
+compat_support_grammar = Grammar(compat_support_grammar_source)
+compat_footnote_grammar = compat_feature_grammar
 
 
 @python_2_unicode_compatible

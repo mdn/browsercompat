@@ -2,15 +2,11 @@
 """Test mdn.specifications"""
 from __future__ import unicode_literals
 
-from parsimonious.grammar import Grammar
-
 from mdn.html import HTMLText
 from mdn.kumascript import kumascript_grammar, SpecName
 from mdn.specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
 from webplatformcompat.models import Specification
 from .base import TestCase
-
-grammar = Grammar(kumascript_grammar)
 
 
 class TestSpecNameVisitor(TestCase):
@@ -18,7 +14,7 @@ class TestSpecNameVisitor(TestCase):
         self.visitor = SpecNameVisitor()
 
     def assert_specname(self, html, mdn_key, subpath, section_name, issues):
-        parsed = grammar['html'].parse(html)
+        parsed = kumascript_grammar['html'].parse(html)
         out = self.visitor.visit(parsed)
         self.assertTrue(out)
         self.assertEqual(self.visitor.mdn_key, mdn_key)
@@ -95,7 +91,7 @@ class TestSpec2Visitor(TestCase):
         self.visitor = Spec2Visitor()
 
     def assert_spec2(self, html, mdn_key, issues):
-        parsed = grammar.parse(html)
+        parsed = kumascript_grammar.parse(html)
         out = self.visitor.visit(parsed)
         self.assertTrue(out)
         self.assertEqual(self.visitor.mdn_key, mdn_key)
@@ -143,7 +139,7 @@ class TestSpecDescVisitor(TestCase):
         self.visitor = SpecDescVisitor()
 
     def assert_specdesc(self, html, items, issues):
-        parsed = grammar.parse(html)
+        parsed = kumascript_grammar.parse(html)
         self.visitor.visit(parsed)
         actual = [item.to_html() for item in self.visitor.desc_items]
         self.assertEqual(items, actual)

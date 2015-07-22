@@ -18,13 +18,14 @@ import re
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type, string_types
 
+from parsimonious.grammar import Grammar
 from parsimonious.nodes import Node, NodeVisitor
 
 from .issues import ISSUES
 from .utils import join_content
 
 # Parsimonious grammar for HTML fragments
-html_grammar = r"""
+html_grammar_source = r"""
 #
 # HTML tokens (only those used in compat tables)
 #
@@ -166,6 +167,7 @@ text_token = text_item
 text_item = ~r"(?P<content>[^<]+)"s
 empty_text = ""
 """
+html_grammar = Grammar(html_grammar_source)
 
 
 @python_2_unicode_compatible
