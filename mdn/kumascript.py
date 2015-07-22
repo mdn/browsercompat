@@ -379,7 +379,7 @@ class SpecKumaScript(KnownKumaScript):
         self.spec = None
         self.data = data or Data()
         if self.mdn_key:
-            self.spec = self.data.specification_by_key(self.mdn_key)
+            self.spec = self.data.lookup_specification(self.mdn_key)
 
     def to_html(self):
         if self.spec:

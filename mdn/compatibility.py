@@ -137,7 +137,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         self.name = name
 
         # Construct or lookup ID and slug
-        feature_params = self.data.feature_params_by_name(
+        feature_params = self.data.lookup_feature_params(
             self.parent_feature, self.name)
         self.feature, self.feature_id, self.slug = feature_params
 
@@ -320,7 +320,7 @@ class CompatSupportVisitor(CompatBaseVisitor):
         assert self.is_valid_version(version_name), 'Invalid version name'
         if self.version.get('version'):
             self.commit_support_and_version()
-        version, version_id = self.data.version_params_by_version(
+        version, version_id = self.data.lookup_version_params(
             self.browser_id, self.browser_name, version_name)
         new_version = is_new_id(version_id)
         new_browser = is_new_id(self.browser_id)
@@ -332,7 +332,7 @@ class CompatSupportVisitor(CompatBaseVisitor):
         self.version['id'] = version_id
         self.version['version'] = version_name
 
-        support_id = self.data.support_id_by_relations(
+        support_id = self.data.lookup_support_id(
             version_id, self.feature_id)
         self.support['id'] = support_id
         self.support.setdefault('support', 'yes')

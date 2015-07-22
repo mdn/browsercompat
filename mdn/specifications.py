@@ -46,7 +46,7 @@ class SpecNameVisitor(KumaVisitor):
                 self.spec_item = processed
                 self.add_issue(
                     'specname_converted', processed, original=text, key=key)
-                self.spec = self.data.specification_by_key(key)
+                self.spec = self.data.lookup_specification(key)
                 if not self.spec:
                     self.add_issue('unknown_spec', self.spec_item, key=key)
             else:

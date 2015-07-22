@@ -22,7 +22,7 @@ class Data(object):
     FeatureParams = namedtuple(
         'FeatureParams', ['feature', 'feature_id', 'slug'])
 
-    def feature_params_by_name(self, parent_feature, name):
+    def lookup_feature_params(self, parent_feature, name):
         """Get or create the feature ID and slug given a name.
 
         Return is a named tuple:
@@ -62,7 +62,7 @@ class Data(object):
 
         return self.subfeature_data[parent_feature.id][nname]
 
-    def specification_by_key(self, mdn_key):
+    def lookup_specification(self, mdn_key):
         """Retrieve a Specification by key."""
         if mdn_key not in self.specifications:
             try:
@@ -72,7 +72,7 @@ class Data(object):
             self.specifications[mdn_key] = spec
         return self.specifications[mdn_key]
 
-    def support_id_by_relations(self, version_id, feature_id):
+    def lookup_support_id(self, version_id, feature_id):
         """Lookup or create a support ID for a version and feature."""
         support = None
         real_version = not is_new_id(version_id)
@@ -94,7 +94,7 @@ class Data(object):
 
     VersionParams = namedtuple("VersionParams", ["version", "version_id"])
 
-    def version_params_by_version(
+    def lookup_version_params(
             self, browser_id, browser_name, version_name):
         """Get or create the version ID and normalized name by version string.
 
