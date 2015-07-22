@@ -30,10 +30,12 @@ html_grammar = r"""
 #
 html = html_block / empty_text
 html_block = html_element+
-html_element = a_element / br / code_element / p_element / pre_element /
-    span_element / strong_element / sup_element / table_element /
-    tbody_element / td_element / th_element / thead_element / tr_element /
-    text_block
+html_element = a_element / br / code_element / div_element /
+    h1_element / h2_element / h3_element / h3_element / h4_element /
+    h5_element/ h6_element /
+    p_element / pre_element / span_element / strong_element / sup_element /
+    table_element / tbody_element / td_element / th_element / thead_element /
+    tr_element / text_block
 
 a_element = a_open a_content a_close
 a_open = "<a" _ attrs ">"
@@ -46,6 +48,41 @@ code_element = code_open code_content code_close
 code_open = "<code" _ attrs ">"
 code_content = ~r"(?P<content>.*?(?=</code>))"s
 code_close = "</code>"
+
+div_element = div_open div_content div_close
+div_open = "<div" _ attrs ">"
+div_content = html
+div_close = "</div>"
+
+h1_element = h1_open h1_content h1_close
+h1_open = "<h1" _ attrs ">"
+h1_content = html
+h1_close = "</h1>"
+
+h2_element = h2_open h2_content h2_close
+h2_open = "<h2" _ attrs ">"
+h2_content = html
+h2_close = "</h2>"
+
+h3_element = h3_open h3_content h3_close
+h3_open = "<h3" _ attrs ">"
+h3_content = html
+h3_close = "</h3>"
+
+h4_element = h4_open h4_content h4_close
+h4_open = "<h4" _ attrs ">"
+h4_content = html
+h4_close = "</h4>"
+
+h5_element = h5_open h5_content h5_close
+h5_open = "<h5" _ attrs ">"
+h5_content = html
+h5_close = "</h5>"
+
+h6_element = h6_open h6_content h6_close
+h6_open = "<h6" _ attrs ">"
+h6_content = html
+h6_close = "</h6>"
 
 p_element = p_open p_content p_close
 p_open = "<p" _ attrs ">"
@@ -392,6 +429,13 @@ class HTMLElement(HTMLInterval):
             return "{}{}{}".format(self.open_tag, content, self.close_tag)
 
 
+class HnElement(HTMLElement):
+    """An HTML header, such as <h2>"""
+    def __init__(self, **kwargs):
+        super(HnElement, self).__init__(**kwargs)
+        self.level = int(self.tag[1:])
+
+
 class HTMLVisitor(NodeVisitor):
     """Extract HTML structure from an HTML fragment.
 
@@ -470,6 +514,7 @@ class HTMLVisitor(NodeVisitor):
 
     visit_html_block = _visit_block
     visit_html_element = _visit_token
+    visit_hn_element = _visit_token
 
     def _visit_open(self, node, children, actions=None, **kwargs):
         """Parse an opening tag with an optional attributes list"""
@@ -486,6 +531,13 @@ class HTMLVisitor(NodeVisitor):
 
     visit_a_open = _visit_open
     visit_code_open = _visit_open
+    visit_div_open = _visit_open
+    visit_h1_open = _visit_open
+    visit_h2_open = _visit_open
+    visit_h3_open = _visit_open
+    visit_h4_open = _visit_open
+    visit_h5_open = _visit_open
+    visit_h6_open = _visit_open
     visit_p_open = _visit_open
     visit_pre_open = _visit_open
     visit_span_open = _visit_open
@@ -507,6 +559,13 @@ class HTMLVisitor(NodeVisitor):
 
     visit_a_close = _visit_close
     visit_code_close = _visit_close
+    visit_div_close = _visit_close
+    visit_h1_close = _visit_close
+    visit_h2_close = _visit_close
+    visit_h3_close = _visit_close
+    visit_h4_close = _visit_close
+    visit_h5_close = _visit_close
+    visit_h6_close = _visit_close
     visit_p_close = _visit_close
     visit_pre_close = _visit_close
     visit_span_close = _visit_close
@@ -527,7 +586,7 @@ class HTMLVisitor(NodeVisitor):
         """Parse a <tag>content</tag> element."""
         open_tag, content, close_tag = children
         assert isinstance(open_tag, HTMLOpenTag), open_tag
-        if isinstance(content, HTMLEmptyText):
+        if isinstance(content, (HTMLText, HTMLEmptyText)):
             children = [content]
         else:
             assert isinstance(content, list)
@@ -535,11 +594,13 @@ class HTMLVisitor(NodeVisitor):
                 assert isinstance(child, HTMLInterval), child
             children = content
         assert isinstance(close_tag, HTMLCloseTag), close_tag
+        element_class = kwargs.pop('element_class', HTMLElement)
         return self.process(
-            HTMLElement, node, open_tag=open_tag, close_tag=close_tag,
+            element_class, node, open_tag=open_tag, close_tag=close_tag,
             children=children, **kwargs)
 
     visit_a_element = _visit_element
+    visit_div_element = _visit_element
     visit_p_element = _visit_element
     visit_span_element = _visit_element
     visit_strong_element = _visit_element
@@ -551,18 +612,25 @@ class HTMLVisitor(NodeVisitor):
     visit_thead_element = _visit_element
     visit_tr_element = _visit_element
 
-    def _visit_text_element(self, node, children):
+    def _visit_text_element(self, node, children, **kwargs):
         """Parse a <tag>unparsed text</tag> element."""
         open_tag, content, close_tag = children
-        assert isinstance(open_tag, HTMLOpenTag), open_tag
         assert isinstance(content, HTMLText)
-        assert isinstance(close_tag, HTMLCloseTag), close_tag
-        return self.process(
-            HTMLElement, node, open_tag=open_tag, close_tag=close_tag,
-            children=[content])
+        return self._visit_element(node, children, **kwargs)
 
     visit_code_element = _visit_text_element
     visit_pre_element = _visit_text_element
+
+    def _visit_hn_element(self, node, children, **kwargs):
+        return self._visit_element(
+            node, children, element_class=HnElement, **kwargs)
+
+    visit_h1_element = _visit_hn_element
+    visit_h2_element = _visit_hn_element
+    visit_h3_element = _visit_hn_element
+    visit_h4_element = _visit_hn_element
+    visit_h5_element = _visit_hn_element
+    visit_h6_element = _visit_hn_element
 
     #
     # HTML tag attributes

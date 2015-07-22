@@ -7,7 +7,7 @@ from parsimonious.grammar import Grammar
 
 from mdn.html import (
     HTMLAttribute, HTMLAttributes, HTMLCloseTag, HTMLElement, HTMLInterval,
-    HTMLOpenTag, HTMLSimpleTag, HTMLText, HTMLVisitor, html_grammar)
+    HTMLOpenTag, HTMLSimpleTag, HTMLText, HTMLVisitor, HnElement, html_grammar)
 from .base import TestCase
 
 grammar = Grammar(html_grammar)
@@ -365,3 +365,21 @@ class TestVisitor(TestCase):
         p_elem = out[0]
         self.visitor.add_issue('halt_import', p_elem)
         self.assertEqual(self.visitor.issues, [('halt_import', 0, 18, {})])
+
+    def test_html_headers(self):
+        text = """\
+<h1>An H1 Header</h1>
+<p>This is in the h1 section</p>
+"""
+        parsed = grammar['html'].parse(text)
+        out = self.visitor.visit(parsed)
+        self.assertFalse(self.visitor.issues)
+        h1_elem, text1, p_elem, text2 = out
+        self.assertIsInstance(h1_elem, HnElement)
+        self.assertEqual(text_type(h1_elem), '<h1>An H1 Header</h1>')
+        self.assertIsInstance(text1, HTMLText)
+        self.assertEqual(text_type(text1), '')
+        self.assertIsInstance(p_elem, HTMLElement)
+        self.assertEqual(text_type(p_elem), '<p>This is in the h1 section</p>')
+        self.assertIsInstance(text2, HTMLText)
+        self.assertEqual(text_type(text2), '')
