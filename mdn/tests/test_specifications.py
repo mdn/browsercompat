@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from mdn.html import HTMLText
 from mdn.kumascript import kumascript_grammar, SpecName
 from mdn.specifications import Spec2Visitor, SpecDescVisitor, SpecNameVisitor
-from webplatformcompat.models import Specification
 from .base import TestCase
 
 
@@ -30,7 +29,7 @@ class TestSpecNameVisitor(TestCase):
         self.assertIsNone(self.visitor.spec_item)
 
     def test_has_specname_kumascript(self):
-        spec = self.get_instance(Specification, 'css3_ui')
+        spec = self.get_instance('Specification', 'css3_ui')
         html = "<td>{{ SpecName('CSS3 UI', '#cursor', 'cursor') }}</td>"
         self.assert_specname(html, 'CSS3 UI', '#cursor', 'cursor', [])
         self.assertIsInstance(self.visitor.spec_item, SpecName)
@@ -44,7 +43,7 @@ class TestSpecNameVisitor(TestCase):
         self.assertIsNone(self.visitor.spec_item.spec)
 
     def test_has_specname_kumascript_whitespace(self):
-        spec = self.get_instance(Specification, 'css3_ui')
+        spec = self.get_instance('Specification', 'css3_ui')
         html = "<td>\n  {{ SpecName('CSS3 UI', '#cursor', 'cursor') }}\n</td>"
         self.assert_specname(html, 'CSS3 UI', '#cursor', 'cursor', [])
         self.assertIsInstance(self.visitor.spec_item, SpecName)
@@ -52,7 +51,7 @@ class TestSpecNameVisitor(TestCase):
 
     def test_commas(self):
         # https://developer.mozilla.org/en-US/docs/Web/HTML/Element
-        spec = self.get_instance(Specification, 'html_whatwg')
+        spec = self.get_instance('Specification', 'html_whatwg')
         html = "<td>{{SpecName('HTML WHATWG',\
  'sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements',\
  '&lt;h1&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;h5&gt;, and &lt;h6&gt;'\
@@ -67,7 +66,7 @@ class TestSpecNameVisitor(TestCase):
 
     def test_ES1_legacy(self):
         # /en-US/docs/Web/JavaScript/Reference/Operators/this
-        self.get_instance(Specification, 'es1')
+        self.get_instance('Specification', 'es1')
         html = "<td>ECMAScript 1st Edition.</td>"
         expected_issue = (
             'specname_converted', 4, 27,
@@ -98,7 +97,7 @@ class TestSpec2Visitor(TestCase):
         self.assertEqual(self.visitor.issues, issues)
 
     def test_standard(self):
-        spec = self.get_instance(Specification, 'css3_ui')
+        spec = self.get_instance('Specification', 'css3_ui')
         html = '<td>{{Spec2("CSS3 UI")}}</td>'
         self.assert_spec2(html, 'CSS3 UI', [])
         self.assertEqual(self.visitor.spec, spec)
@@ -117,7 +116,7 @@ class TestSpec2Visitor(TestCase):
 
     def test_specname(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/tabIndex
-        spec = self.get_instance(Specification, 'html_whatwg')
+        spec = self.get_instance('Specification', 'html_whatwg')
         html = "<td>{{SpecName('HTML WHATWG')}}</td>"
         issues = [(
             'spec2_wrong_kumascript', 4, 31,

@@ -12,7 +12,6 @@ from mdn.kumascript import (
     ExperimentalInline, KumaHTMLElement, KnownKumaScript, KumaScript,
     KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
     SpecName, UnknownKumaScript, XrefCSSLength, kumascript_grammar)
-from webplatformcompat.models import Specification
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
@@ -230,7 +229,7 @@ class TestKumaHTMLElement(TestCase):
 class TestSpec2(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:Spec2
     def test_standard(self):
-        spec = self.get_instance(Specification, 'css3_backgrounds')
+        spec = self.get_instance('Specification', 'css3_backgrounds')
         raw = '{{Spec2("CSS3 Backgrounds")}}'
         ks = Spec2(raw=raw, args=['CSS3 Backgrounds'])
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
@@ -273,7 +272,7 @@ class TestSpec2(TestCase):
 class TestSpecName(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:SpecName
     def test_3args(self):
-        self.get_instance(Specification, 'css3_backgrounds')
+        self.get_instance('Specification', 'css3_backgrounds')
         raw = ('{{SpecName("CSS3 Backgrounds", "#the-background-size",'
                ' "background-size")}}')
         args = ['CSS3 Backgrounds', '#the-background-size', 'background-size']
@@ -285,7 +284,7 @@ class TestSpecName(TestCase):
         self.assertEqual(text_type(ks), raw)
 
     def test_1arg(self):
-        self.get_instance(Specification, 'css3_backgrounds')
+        self.get_instance('Specification', 'css3_backgrounds')
         raw = "{{SpecName('CSS3 Backgrounds')}}"
         ks = SpecName(raw=raw, args=['CSS3 Backgrounds'])
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
@@ -474,7 +473,7 @@ class TestVisitor(TestHTMLVisitor):
             '{{CompatGeckoDesktop(27)}}', 'CompatGeckoDesktop', ['27'])
 
     def test_kumascript_three_args(self):
-        self.get_instance(Specification, 'css3_backgrounds')
+        self.get_instance('Specification', 'css3_backgrounds')
         self.assert_kumascript(
             ("{{SpecName('CSS3 Backgrounds', '#the-background-size',"
              " 'background-size')}}"),

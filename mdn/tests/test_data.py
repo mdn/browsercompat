@@ -3,8 +3,7 @@
 from __future__ import unicode_literals
 
 from mdn.data import Data
-from webplatformcompat.models import (
-    Browser, Feature, Specification, Support, Version)
+from webplatformcompat.models import Feature, Support
 from .base import TestCase
 
 
@@ -24,14 +23,14 @@ class TestDataSpecificationByKey(TestDataBase):
         self.assert_specification_by_key('NoSpec', None)
 
     def test_found(self):
-        spec = self.get_instance(Specification, 'css3_backgrounds')
+        spec = self.get_instance('Specification', 'css3_backgrounds')
         self.assert_specification_by_key(spec.mdn_key, spec)
 
 
 class TestDataFeatureParamsByName(TestDataBase):
     def setUp(self):
         super(TestDataFeatureParamsByName, self).setUp()
-        self.parent = self.get_instance(Feature, 'web-css-background-size')
+        self.parent = self.get_instance('Feature', 'web-css-background-size')
 
     def assert_feature_params_by_name(self, name, feature, f_id, slug):
         params = self.data.feature_params_by_name(self.parent, name)
@@ -49,7 +48,7 @@ class TestDataFeatureParamsByName(TestDataBase):
 
     def test_feature_params_by_name_match(self):
         match = self.get_instance(
-            Feature, 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-basic_support')
         self.assert_feature_params_by_name(
             'Basic Support', match, match.id, match.slug)
 
@@ -69,9 +68,9 @@ class TestDataFeatureParamsByName(TestDataBase):
 class TestDataSupportIdByRelations(TestDataBase):
     def setUp(self):
         super(TestDataSupportIdByRelations, self).setUp()
-        self.version = self.get_instance(Version, ('firefox', 'current'))
+        self.version = self.get_instance('Version', ('firefox', 'current'))
         self.feature = self.get_instance(
-            Feature, 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-basic_support')
 
     def assert_new_support_id(self, version_id, feature_id):
         support_id = self.data.support_id_by_relations(version_id, feature_id)
@@ -101,7 +100,7 @@ class TestDataSupportIdByRelations(TestDataBase):
 class TestDataVersionParamsByVersion(TestDataBase):
     def setUp(self):
         super(TestDataVersionParamsByVersion, self).setUp()
-        self.browser = self.get_instance(Browser, 'firefox')
+        self.browser = self.get_instance('Browser', 'firefox')
 
     def test_new_browser(self):
         params = self.data.version_params_by_version(
@@ -116,7 +115,7 @@ class TestDataVersionParamsByVersion(TestDataBase):
         self.assertEqual('_Firefox-1.0', params.version_id)
 
     def test_existing_version(self):
-        version = self.get_instance(Version, ('firefox', 'current'))
+        version = self.get_instance('Version', ('firefox', 'current'))
         params = self.data.version_params_by_version(
             self.browser.id, self.browser.name['en'], 'current')
         self.assertEqual(version, params.version)

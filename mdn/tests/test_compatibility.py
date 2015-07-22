@@ -8,7 +8,7 @@ from mdn.compatibility import (
     CellVersion, CompatFeatureVisitor, CompatFootnoteVisitor,
     CompatSupportVisitor, Footnote,
     compat_feature_grammar, compat_support_grammar, compat_footnote_grammar)
-from webplatformcompat.models import Browser, Feature, Support, Version
+from webplatformcompat.models import Feature, Support
 from .base import TestCase
 
 
@@ -49,7 +49,7 @@ class TestFeatureVisitor(TestCase):
 
     def setUp(self):
         self.parent_feature = self.get_instance(
-            Feature, 'web-css-background-size')
+            'Feature', 'web-css-background-size')
         self.visitor = CompatFeatureVisitor(parent_feature=self.parent_feature)
 
     def assert_feature(
@@ -346,14 +346,14 @@ class TestSupportVisitor(TestCase):
         self.assert_support('1.0', [{'version': '1.0'}], [{'support': 'yes'}])
 
     def test_version_matches(self):
-        version = self.get_instance(Version, ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox', '1.0'))
         self.set_browser(version.browser)
         self.assert_support(
             '1.0', [{'version': '1.0', 'id': version.id}],
             [{'support': 'yes'}])
 
     def test_new_version_existing_browser(self):
-        browser = self.get_instance(Browser, 'firefox')
+        browser = self.get_instance('Browser', 'firefox')
         self.set_browser(browser)
         issue = (
             'unknown_version', 4, 7,
@@ -363,10 +363,10 @@ class TestSupportVisitor(TestCase):
             '2.0', [{'version': '2.0'}], [{'support': 'yes'}], issues=[issue])
 
     def test_support_matches(self):
-        version = self.get_instance(Version, ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox', '1.0'))
         self.set_browser(version.browser)
         feature = self.get_instance(
-            Feature, 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-basic_support')
         self.feature_id = feature.id
         support = self.create(Support, version=version, feature=feature)
         self.assert_support(

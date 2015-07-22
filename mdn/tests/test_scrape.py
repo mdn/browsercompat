@@ -8,8 +8,7 @@ from mdn.models import FeaturePage
 from mdn.scrape import (
     date_to_iso, end_of_line, page_grammar, scrape_page, scrape_feature_page,
     PageVisitor, ScrapedViewFeature)
-from webplatformcompat.models import (
-    Browser, Feature, Section, Specification, Support, Version)
+from webplatformcompat.models import Feature, Section, Support
 from .base import TestCase
 
 
@@ -325,7 +324,7 @@ class TestEndOfLine(TestCase):
 
 class TestPageVisitor(TestCase):
     def setUp(self):
-        feature = self.get_instance(Feature, 'web-css-background-size')
+        feature = self.get_instance('Feature', 'web-css-background-size')
         self.visitor = PageVisitor(feature)
 
     def test_doc_no_spec(self):
@@ -371,7 +370,7 @@ class TestPageVisitor(TestCase):
         self.assertEqual([], self.visitor.issues)
 
     def test_spec_section_expected(self):
-        spec = self.get_instance(Specification, 'css3_backgrounds')
+        spec = self.get_instance('Specification', 'css3_backgrounds')
         parsed_specs = [{
             'specification.id': spec.id,
             'specification.mdn_key': 'CSS3 Backgrounds',
@@ -421,7 +420,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         self.assertEqual(issues, self.visitor.issues)
 
     def test_spec_row_mismatch(self):
-        spec = self.get_instance(Specification, 'css3_ui')
+        spec = self.get_instance('Specification', 'css3_ui')
         spec_row = '''\
 <tr>
   <td>{{ SpecName('CSS3 UI', '#cursor', 'cursor') }}</td>
@@ -445,7 +444,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         self.assert_spec_row(spec_row, expected_specs, issues)
 
     def test_spec_row_known_spec(self):
-        spec = self.get_instance(Specification, 'css3_backgrounds')
+        spec = self.get_instance('Specification', 'css3_backgrounds')
         self.create(Section, specification=spec)
         expected_specs = [{
             'section.note': '',
@@ -457,7 +456,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         self.assert_spec_row(sample_spec_row, expected_specs, [])
 
     def test_spec_row_known_spec_and_section(self):
-        section = self.get_instance(Section, 'background-size')
+        section = self.get_instance('Section', 'background-size')
         spec = section.specification
         expected_specs = [{
             'section.note': '',
@@ -470,7 +469,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
 
     def test_spec_row_es1(self):
         # en-US/docs/Web/JavaScript/Reference/Operators/this
-        es1 = self.get_instance(Specification, 'es1')
+        es1 = self.get_instance('Specification', 'es1')
         spec_row = """\
 <tr>
   <td>ECMAScript 1st Edition.</td>
@@ -650,14 +649,14 @@ domenic/promises-unwrapping</a></td>
         self.assert_compat_headers(compat_headers, expected, issues)
 
     def test_compat_headers_known_browser(self):
-        firefox = self.get_instance(Browser, 'firefox')
+        firefox = self.get_instance('Browser', 'firefox')
         compat_headers = "<tr><th>Feature</th><th>Firefox</th></tr>"
         expected = [{'slug': 'firefox', 'name': 'Firefox', 'id': firefox.id}]
         self.assert_compat_headers(compat_headers, expected, [])
 
     def test_compat_headers_strong(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
-        firefox = self.get_instance(Browser, 'firefox')
+        firefox = self.get_instance('Browser', 'firefox')
         compat_headers = (
             "<tr><th><strong>Feature</strong></th>"
             "<th><strong>Firefox</strong></th></tr>")
@@ -666,7 +665,7 @@ domenic/promises-unwrapping</a></td>
 
     def test_compat_headers_wrong_first_column_header(self):
         # All known pages use "Feature" for first column, but be ready
-        firefox = self.get_instance(Browser, 'firefox')
+        firefox = self.get_instance('Browser', 'firefox')
         compat_headers = (
             "<tr><th><strong>Features</strong></th>"
             "<th><strong>Firefox</strong></th></tr>")
@@ -691,7 +690,7 @@ domenic/promises-unwrapping</a></td>
 
     def test_compat_headers_with_line_height(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/Navigator/serviceWorker
-        chrome = self.get_instance(Browser, 'chrome')
+        chrome = self.get_instance('Browser', 'chrome')
         compat_headers = (
             '<tr><th style="line-height: 16px;">Feature</th>'
             '<th style="line-height: 16px;">Chrome</th></tr>')
@@ -829,7 +828,7 @@ domenic/promises-unwrapping</a></td>
         self.assertEqual(issues, self.visitor.issues)
 
     def test_compat_body_success(self):
-        chrome_10 = self.get_instance(Version, ('chrome', '1.0'))
+        chrome_10 = self.get_instance('Version', ('chrome', '1.0'))
         chrome = chrome_10.browser
         compat_body = """<tbody>
             <tr><th>Feature</th><th>Chrome</th></tr>
@@ -852,7 +851,7 @@ domenic/promises-unwrapping</a></td>
     def test_compat_body_extra_feature_column(self):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/
         # Reference/Global_Objects/WeakSet, March 2015
-        chrome_10 = self.get_instance(Version, ('chrome', '1.0'))
+        chrome_10 = self.get_instance('Version', ('chrome', '1.0'))
         chrome = chrome_10.browser
         compat_body = """<tbody>
             <tr>
@@ -1104,7 +1103,7 @@ domenic/promises-unwrapping</a></td>
             '_Firefox (Gecko)')
 
     def test_browser_id_name_and_slug_found(self):
-        firefox = self.get_instance(Browser, 'firefox')
+        firefox = self.get_instance('Browser', 'firefox')
         self.assert_browser_lookup(
             'Firefox (Gecko)', firefox.id, 'Firefox', 'firefox')
 
@@ -1112,7 +1111,7 @@ domenic/promises-unwrapping</a></td>
         self.assert_browser_lookup(
             'Firefox (Gecko)', '_Firefox (Gecko)', 'Firefox',
             '_Firefox (Gecko)')
-        self.get_instance(Browser, 'firefox')
+        self.get_instance('Browser', 'firefox')
         self.assert_browser_lookup(
             'Firefox (Gecko)', '_Firefox (Gecko)', 'Firefox',
             '_Firefox (Gecko)')  # Still not found
@@ -1129,7 +1128,7 @@ domenic/promises-unwrapping</a></td>
 
     def test_feature_id_and_slug_found(self):
         feature = self.get_instance(
-            Feature, 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-basic_support')
         self.assert_feature_lookup(
             'Basic support', feature.id,
             'web-css-background-size-basic_support')
@@ -1138,7 +1137,7 @@ domenic/promises-unwrapping</a></td>
         self.assert_feature_lookup(
             'Basic support', '_basic support',
             'web-css-background-size_basic_support')
-        self.get_instance(Feature, 'web-css-background-size-basic_support')
+        self.get_instance('Feature', 'web-css-background-size-basic_support')
         self.assert_feature_lookup(
             'Basic support', '_basic support',
             'web-css-background-size_basic_support')  # Still not found
@@ -1152,7 +1151,7 @@ domenic/promises-unwrapping</a></td>
 
 class TestScrape(TestCase):
     def setUp(self):
-        self.feature = self.get_instance(Feature, 'web-css-background-size')
+        self.feature = self.get_instance('Feature', 'web-css-background-size')
 
     def assertScrape(self, page, specs, issues):
         actual = scrape_page(page, self.feature)
@@ -1176,7 +1175,7 @@ class TestScrape(TestCase):
 
     def test_spec_only(self):
         """Test with a only a Specification section."""
-        spec = self.get_instance(Specification, 'css3_backgrounds')
+        spec = self.get_instance('Specification', 'css3_backgrounds')
         page = sample_spec_section
         specs = [{
             'specification.mdn_key': 'CSS3 Backgrounds',
@@ -1198,7 +1197,7 @@ class FeaturePageTestCase(TestCase):
     def setUp(self):
         path = "/en-US/docs/Web/CSS/background-size"
         url = "https://developer.mozilla.org" + path
-        self.feature = self.get_instance(Feature, 'web-css-background-size')
+        self.feature = self.get_instance('Feature', 'web-css-background-size')
         self.page = FeaturePage.objects.create(
             url=url, feature=self.feature, status=FeaturePage.STATUS_PARSING)
         meta = self.page.meta()
@@ -1270,7 +1269,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, out)
 
     def test_load_specification(self):
-        spec = self.get_instance(Specification, 'css3_backgrounds')
+        spec = self.get_instance('Specification', 'css3_backgrounds')
         maturity = spec.maturity
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         spec_content, mat_content = view.load_specification(spec.id)
@@ -1304,7 +1303,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected_mat, mat_content)
 
     def test_load_section(self):
-        section = self.get_instance(Section, 'background-size')
+        section = self.get_instance('Section', 'background-size')
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         section_content = view.load_section(section.id)
         expected = {
@@ -1332,7 +1331,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, section_content)
 
     def test_load_browser(self):
-        browser = self.get_instance(Browser, 'firefox')
+        browser = self.get_instance('Browser', 'firefox')
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         browser_content = view.load_browser(browser.id)
         expected = {
@@ -1352,7 +1351,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, browser_content)
 
     def test_load_version(self):
-        version = self.get_instance(Version, ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox', '1.0'))
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         version_content = view.load_version(version.id)
         expected = {
@@ -1400,7 +1399,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
 
     def test_load_feature(self):
         feature = self.get_instance(
-            Feature, 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-basic_support')
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         feature_content = view.load_feature(feature.id)
         expected = {
@@ -1460,9 +1459,9 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, feature_content)
 
     def test_load_support(self):
-        version = self.get_instance(Version, ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox', '1.0'))
         feature = self.get_instance(
-            Feature, 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-basic_support')
         support = self.create(Support, version=version, feature=feature)
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         support_content = view.load_support(support.id)
@@ -1524,7 +1523,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, out)
 
     def test_load_specification_row_existing_resources(self):
-        section = self.get_instance(Section, 'background-size')
+        section = self.get_instance('Section', 'background-size')
         spec = section.specification
         scraped_spec = {
             'section.note': 'new note',
@@ -1585,10 +1584,10 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, out)
 
     def test_load_compat_table_existing_resources(self):
-        version = self.get_instance(Version, ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox', '1.0'))
         browser = version.browser
         feature = self.get_instance(
-            Feature, 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-basic_support')
         support = self.create(Support, version=version, feature=feature)
         browser_id = str(browser.id)
         version_id = str(version.id)
@@ -1624,10 +1623,10 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, out)
 
     def test_load_compat_table_new_support_with_note(self):
-        version = self.get_instance(Version, ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox', '1.0'))
         browser = version.browser
         feature = self.get_instance(
-            Feature, 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-basic_support')
         browser_id = str(browser.id)
         version_id = str(version.id)
         feature_id = str(feature.id)
