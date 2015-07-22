@@ -510,9 +510,8 @@ class BaseKumaVisitor(HTMLVisitor):
     """
     scope = None
 
-    def __init__(self, data=None, **kwargs):
+    def __init__(self, **kwargs):
         super(BaseKumaVisitor, self).__init__(**kwargs)
-        self.data = data or Data()
         self._kumascript_proper_names = None
 
     def _visit_multi_block(self, node, children):

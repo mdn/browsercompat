@@ -19,10 +19,10 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type, string_types
 
 from parsimonious.grammar import Grammar
-from parsimonious.nodes import Node, NodeVisitor
+from parsimonious.nodes import Node
 
-from .issues import ISSUES
 from .utils import join_content
+from .visitor import Visitor
 
 # Parsimonious grammar for HTML fragments
 html_grammar_source = r"""
@@ -438,7 +438,7 @@ class HnElement(HTMLElement):
         self.level = int(self.tag[1:])
 
 
-class HTMLVisitor(NodeVisitor):
+class HTMLVisitor(Visitor):
     """Extract HTML structure from an HTML fragment.
 
     Handles the limited HTML structure allowed by the parser. If the HTML
@@ -447,11 +447,6 @@ class HTMLVisitor(NodeVisitor):
     """
     _default_attribute_actions = {None: 'keep'}
 
-    def __init__(self, offset=0):
-        super(HTMLVisitor, self).__init__()
-        self.offset = offset
-        self.issues = []
-
     def process(self, cls, node, **kwargs):
         """Convert a node to an HTML* instance"""
         processed = cls(
@@ -459,23 +454,6 @@ class HTMLVisitor(NodeVisitor):
         for issue in processed.issues:
             self.add_raw_issue(issue)
         return processed
-
-    def add_issue(self, issue_slug, processed, **issue_args):
-        """Add an issue for a given processed node."""
-        assert issue_slug in ISSUES
-        assert isinstance(processed, HTMLInterval)
-        self.issues.append(
-            (issue_slug, processed.start, processed.end, issue_args))
-
-    def add_raw_issue(self, issue):
-        """Add an issue in tuple (slug, start, end, args) format."""
-        issue_slug, start, end, issue_args = issue
-        assert issue_slug in ISSUES
-        assert isinstance(start, int)
-        assert isinstance(end, int)
-        assert end >= start
-        assert hasattr(issue_args, 'keys')
-        self.issues.append(issue)
 
     #
     # Basic visitors
