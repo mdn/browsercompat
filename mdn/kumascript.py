@@ -51,9 +51,16 @@ ks_bare_arg = ~r"(?P<content>.*?(?=[,)]))"
 ks_arg_rest = ks_func_arg ks_arg
 
 #
+# WhyNoSpec block
+whynospec = _ whynospec_start whynospec_content whynospec_end
+whynospec_start = ks_esc_start ~r"WhyNoSpecStart"s _ ks_esc_end _
+whynospec_content = ~r".*?(?={{\s*WhyNoSpecEnd)"s
+whynospec_end = ks_esc_start ~r"WhyNoSpecEnd"s _ ks_esc_end _
+
+#
 # Add KumaScript to text
 #
-text_token = kumascript / text_item
+text_token = whynospec / kumascript / text_item
 text_item = ~r"(?P<content>[^{<]+)"s
 """
 kumascript_grammar = Grammar(kumascript_grammar_source)
@@ -495,6 +502,24 @@ class PropertyPrefix(KnownKumaScript):
         self.prefix = self.arg(0)
 
 
+class WhyNoSpecBlock(HTMLInterval):
+    """Psuedo-element for {{WhyNoSpecStart}}/{{WhyNoSpecEnd}} block.
+
+    Stand-alone {{WhyNoSpecStart}} and {{WhyNoSpecEnd}} elements will be
+    treated as unknown kumascript.
+
+    https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecStart
+    https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecEnd
+    """
+
+    def __init__(self, scope=None, **kwargs):
+        super(WhyNoSpecBlock, self).__init__(**kwargs)
+        self.scope = scope
+
+    def to_html(self, drop_tag=None):
+        return ""
+
+
 class XrefCSSLength(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
     canonical_name = 'xref_csslength'
@@ -642,6 +667,9 @@ class BaseKumaVisitor(HTMLVisitor):
 
     visit_ks_bare_arg = HTMLVisitor._visit_content
 
+    def visit_whynospec(self, node, children):
+        return self.process(WhyNoSpecBlock, node, scope=self.scope)
+
 
 class KumaVisitor(BaseKumaVisitor):
     """Extract HTML structure from a MDN Kuma raw fragment.
@@ -670,3 +698,15 @@ class KumaVisitor(BaseKumaVisitor):
         """Ensure that <a> open tags have an href element."""
         actions = {None: 'ban', 'href': 'must'}
         return self._visit_open(node, children, actions)
+
+    def _visit_hn_open(self, node, children, actions=None, **kwargs):
+        """Retain id and name attributes of <h#> tags."""
+        actions = actions or {None: 'drop', 'id': 'keep', 'name': 'keep'}
+        return self._visit_open(node, children, actions, **kwargs)
+
+    visit_h1_open = _visit_hn_open
+    visit_h2_open = _visit_hn_open
+    visit_h3_open = _visit_hn_open
+    visit_h4_open = _visit_hn_open
+    visit_h5_open = _visit_hn_open
+    visit_h6_open = _visit_hn_open

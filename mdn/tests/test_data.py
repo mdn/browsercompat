@@ -65,6 +65,26 @@ class TestLookupSpecification(TestDataBase):
         self.assert_specification(spec.mdn_key, spec)
 
 
+class TestLookupSectionId(TestDataBase):
+    def setUp(self):
+        super(TestLookupSectionId, self).setUp()
+        self.spec = self.get_instance('Specification', 'css3_backgrounds')
+
+    def test_not_found(self):
+        self.assertIsNone(
+            self.data.lookup_section_id(self.spec.id, "#the-background-size"))
+
+    def test_found(self):
+        section = self.get_instance('Section', 'background-size')
+        section_id = self.data.lookup_section_id(
+            self.spec.id, "#the-background-size")
+        self.assertEqual(section_id, section.id)
+
+    def test_not_found_but_others(self):
+        self.get_instance('Section', 'background-size')
+        self.assertIsNone(self.data.lookup_section_id(self.spec.id, "#other"))
+
+
 class TestLookupSupportId(TestDataBase):
     def setUp(self):
         super(TestLookupSupportId, self).setUp()

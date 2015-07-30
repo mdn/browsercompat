@@ -11,7 +11,8 @@ from mdn.kumascript import (
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
     ExperimentalInline, KumaHTMLElement, KnownKumaScript, KumaScript,
     KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
-    SpecName, UnknownKumaScript, XrefCSSLength, kumascript_grammar)
+    SpecName, UnknownKumaScript, WhyNoSpecBlock, XrefCSSLength,
+    kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
@@ -423,6 +424,16 @@ class TestPropertyPrefix(TestCase):
         self.assertEqual(text_type(ks), raw)
 
 
+class TestWhyNoSpecBlock(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecStart
+    # https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecEnd
+    def test_standard(self):
+        raw = """{{WhyNoSpecStart}}There is no spec.{{WhyNoSpecEnd}}"""
+        block = WhyNoSpecBlock(raw=raw)
+        self.assertEqual(block.to_html(), '')
+        self.assertEqual(text_type(block), raw)
+
+
 class TestXrefCSSLength(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
     def test_standard(self):
@@ -438,6 +449,29 @@ class TestGrammar(TestHTMLGrammar):
         text = '<p>{{CompatNo}}</p>'
         parsed = kumascript_grammar['html'].parse(text)
         assert parsed
+
+    def assert_whynospec(self, text):
+        parsed = kumascript_grammar['html'].parse(text)
+        assert parsed  # Hard to do more than this
+
+    def test_whynospec_plain(self):
+        text = "{{WhyNoSpecStart}}There is no spec{{WhyNoSpecEnd}}"
+        self.assert_whynospec(text)
+
+    def test_whynospec_spaces(self):
+        text = """\
+   {{ WhyNoSpecStart }} There is no spec {{ WhyNoSpecEnd }}
+"""
+        self.assert_whynospec(text)
+
+    def test_whynospec_inner_kuma(self):
+        text = """\
+{{WhyNoSpecStart}}
+Not part of any current spec, but it was in early drafts of
+{{SpecName("CSS3 Animations")}}.
+{{WhyNoSpecEnd}}
+"""
+        self.assert_whynospec(text)
 
 
 class TestVisitor(TestHTMLVisitor):

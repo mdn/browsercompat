@@ -423,9 +423,11 @@ class HTMLElement(HTMLInterval):
         content = join_content(text_type(child) for child in self.children)
         return "{}{}{}".format(self.open_tag, content, self.close_tag)
 
-    def to_html(self):
+    def to_html(self, drop_tag=None):
         content = join_content(child.to_html() for child in self.children)
-        if self.drop_tag:
+        if drop_tag is None:
+            drop_tag = self.drop_tag
+        if drop_tag:
             return content
         else:
             return "{}{}{}".format(self.open_tag, content, self.close_tag)

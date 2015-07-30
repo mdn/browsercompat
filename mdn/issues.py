@@ -136,6 +136,10 @@ ISSUES = OrderedDict((
         'The import of section {title} failed, but no parse error was'
         ' detected. This is usually because of a previous critical error,'
         ' which must be cleared before any parsing can be attempted.')),
+    ('skipped_content', (
+        WARNING,
+        'Content will not be imported.',
+        'This content will not be imported into the API.')),
     ('skipped_h3', (
         WARNING,
         '<h3>{h3}</h3> was not imported.',

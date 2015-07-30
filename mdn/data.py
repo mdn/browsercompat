@@ -3,7 +3,8 @@
 
 from collections import namedtuple
 
-from webplatformcompat.models import Feature, Specification, Support, Version
+from webplatformcompat.models import (
+    Feature, Section, Specification, Support, Version)
 from .utils import is_new_id, normalize_name, slugify
 
 
@@ -61,6 +62,13 @@ class Data(object):
                 None, feature_id, feature_slug)
 
         return self.subfeature_data[parent_feature.id][nname]
+
+    def lookup_section_id(self, spec_id, subpath, locale='en'):
+        """Retrieve a section ID given a Specification ID and subpath."""
+        for section in Section.objects.filter(specification_id=spec_id):
+            if section.subpath.get(locale) == subpath:
+                return section.id
+        return None
 
     def lookup_specification(self, mdn_key):
         """Retrieve a Specification by key."""
