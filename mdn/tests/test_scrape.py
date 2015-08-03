@@ -120,33 +120,53 @@ class TestGrammar(TestCase):
         expected_tag = '<tr style="vertical-align: top;">'
         self.assert_spec_row(spec_row, expected_tag)
 
-    def assert_specname_td(self, specname_td, expected_tag):
+    def assert_specname_td(self, specname_td, expected_tag, expected_text):
         parsed = page_grammar['specname_td'].parse(specname_td)
         tr = parsed.children[0]
+        specname_text = parsed.children[2]
         self.assertEqual(expected_tag, tr.text)
+        self.assertEqual(expected_text, specname_text.text)
 
     def test_specname_td_standard(self):
-        specname_td = """<td>{{SpecName('CSS3 Backgrounds', '#the-background-size',
-            'background-size')}}</td>"""
+        specname_td = (
+            "<td>{{SpecName('CSS3 Backgrounds', '#the-background-size',"
+            " 'background-size')}}</td>")
         expected_tag = '<td>'
-        self.assert_specname_td(specname_td, expected_tag)
+        expected_text = (
+            "{{SpecName('CSS3 Backgrounds', '#the-background-size',"
+            " 'background-size')}}")
+        self.assert_specname_td(specname_td, expected_tag, expected_text)
 
     def test_specname_td_styled(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/inherit
-        specname_td = """<td style="vertical-align: top;">{{ SpecName('CSS2.1',
-            "cascade.html#value-def-inherit", "inherit") }}</td>"""
+        specname_td = (
+            "<td style=\"vertical-align: top;\">{{ SpecName('CSS2.1',"
+            " \"cascade.html#value-def-inherit\", \"inherit\") }}</td>")
         expected_tag = '<td style="vertical-align: top;">'
-        self.assert_specname_td(specname_td, expected_tag)
+        expected_text = (
+            "{{ SpecName('CSS2.1', \"cascade.html#value-def-inherit\","
+            " \"inherit\") }}")
+        self.assert_specname_td(specname_td, expected_tag, expected_text)
 
-    def assert_spec2_td(self, spec2_td, expected_tag):
+    def test_specname_td_ES1_legacy(self):
+        # /en-US/docs/Web/JavaScript/Reference/Operators/this
+        specname_td = "<td>ECMAScript 1st Edition.</td>"
+        expected_tag = '<td>'
+        expected_text = "ECMAScript 1st Edition."
+        self.assert_specname_td(specname_td, expected_tag, expected_text)
+
+    def assert_spec2_td(self, spec2_td, expected_tag, expected_text):
         parsed = page_grammar['spec2_td'].parse(spec2_td)
         tr = parsed.children[0]
+        spec2_text = parsed.children[2]
         self.assertEqual(expected_tag, tr.text)
+        self.assertEqual(expected_text, spec2_text.text)
 
     def test_spec2_td_standard(self):
         spec2_td = "<td>{{Spec2('CSS3 Backgrounds')}}</td>"
         expected_tag = '<td>'
-        self.assert_spec2_td(spec2_td, expected_tag)
+        expected_text = "{{Spec2('CSS3 Backgrounds')}}"
+        self.assert_spec2_td(spec2_td, expected_tag, expected_text)
 
     def test_spec2_td_styled(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/inherit
@@ -154,7 +174,15 @@ class TestGrammar(TestCase):
             {{ Spec2("CSS2.1") }}
         </td>"""
         expected_tag = '<td style="vertical-align: top;">'
-        self.assert_spec2_td(spec2_td, expected_tag)
+        expected_text = '{{ Spec2("CSS2.1") }}\n        '
+        self.assert_spec2_td(spec2_td, expected_tag, expected_text)
+
+    def test_spec2_td_text(self):
+        # /en-US/docs/Web/JavaScript/Reference/Operators/this
+        spec2_td = "<td>Standard</td>"
+        expected_tag = '<td>'
+        expected_text = 'Standard'
+        self.assert_spec2_td(spec2_td, expected_tag, expected_text)
 
     def assert_specdesc_td(self, specdesc_td, expected_tag, expected_desc):
         parsed = page_grammar['specdesc_td'].parse(specdesc_td)
@@ -297,12 +325,31 @@ class ScrapeTestCase(TestCase):
 </ul>""" % sample_spec_section
     _instance_specs = {
         (Maturity, 'CR'): {'name': '{"en": "Candidate Recommendation"}'},
+        (Maturity, 'WD'): {'name': '{"en": "Working Draft"}'},
+        (Maturity, 'Standard'): {'name': '{"en": "Standard"}'},
         (Specification, 'css3_backgrounds'): {
             '_req': {'maturity': (Maturity, 'CR')},
             'mdn_key': 'CSS3 Backgrounds',
             'name': (
                 '{"en": "CSS Backgrounds and Borders Module Level&nbsp;3"}'),
             'uri': '{"en": "http://dev.w3.org/csswg/css3-background/"}'},
+        (Specification, 'css3_ui'): {
+            '_req': {'maturity': (Maturity, 'WD')},
+            'mdn_key': 'CSS3 UI',
+            'name': '{"en": "CSS Basic User Interface Module Level&nbsp;3"}',
+            'uri': '{"en": "http://dev.w3.org/csswg/css3-ui/"}'},
+        (Specification, 'web_audio_api'): {
+            '_req': {'maturity': (Maturity, 'WD')},
+            'mdn_key': 'Web Audio API',
+            'name': '{"en": "Web Audio API"}',
+            'uri': '{"en": "http://webaudio.github.io/web-audio-api/"}'},
+        (Specification, 'es1'): {
+            '_req': {'maturity': (Maturity, 'Standard')},
+            'mdn_key': 'ES1',
+            'name': '{"en": "ECMAScript 1st Edition (ECMA-262)"}',
+            'uri': ('{"en": "http://www.ecma-international.org/publications/'
+                    'files/ECMA-ST-ARCH/ECMA-262,%201st%20edition,'
+                    '%20June%201997.pdf"}')},
         (Section, 'background-size'): {
             '_req': {'specification': (Specification, 'css3_backgrounds')},
             'subpath': '{"en": "#the-background-size"}'},
@@ -432,6 +479,7 @@ class TestPageVisitor(ScrapeTestCase):
         self.assertEqual(issues, self.visitor.issues)
 
     def test_spec_row_mismatch(self):
+        spec = self.get_instance(Specification, 'css3_ui')
         spec_row = '''\
 <tr>
   <td>{{ SpecName('CSS3 UI', '#cursor', 'cursor') }}</td>
@@ -447,9 +495,8 @@ class TestPageVisitor(ScrapeTestCase):
             'section.name': 'cursor',
             'specification.mdn_key': 'CSS3 UI',
             'section.id': None,
-            'specification.id': None}]
+            'specification.id': spec.id}]
         issues = [
-            ('unknown_spec', 7, 62, {'key': 'CSS3 UI'}),
             ('spec_mismatch', 0, 199,
              {'spec2_key': 'CSS3 Basic UI', 'specname_key': 'CSS3 UI'})]
         self.assert_spec_row(spec_row, expected_specs, issues)
@@ -476,11 +523,12 @@ class TestPageVisitor(ScrapeTestCase):
             'specification.mdn_key': 'HTML WHATWG',
             'section.id': None,
             'specification.id': None}]
-        issues = [('unknown_spec', 7, 179, {'key': 'HTML WHATWG'})]
+        issues = [('unknown_spec', 11, 174, {'key': 'HTML WHATWG'})]
         self.assert_spec_row(spec_row, expected_specs, issues)
 
     def test_spec_row_no_thead(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/AudioContext
+        spec = self.get_instance(Specification, 'web_audio_api')
         spec_row = '''\
 <tr>
   <td>{{SpecName('Web Audio API', '#the-audiocontext-interface',\
@@ -494,9 +542,8 @@ class TestPageVisitor(ScrapeTestCase):
             'section.name': 'AudioContext',
             'specification.mdn_key': 'Web Audio API',
             'section.id': None,
-            'specification.id': None}]
-        issues = [('unknown_spec', 7, 92, {'key': 'Web Audio API'})]
-        self.assert_spec_row(spec_row, expected_specs, issues)
+            'specification.id': spec.id}]
+        self.assert_spec_row(spec_row, expected_specs, [])
 
     def test_spec_row_known_spec(self):
         spec = self.get_instance(Specification, 'css3_backgrounds')
@@ -522,6 +569,29 @@ class TestPageVisitor(ScrapeTestCase):
             'specification.id': spec.id}]
         self.assert_spec_row(self.sample_spec_row, expected_specs, [])
 
+    def test_spec_row_es1(self):
+        # en-US/docs/Web/JavaScript/Reference/Operators/this
+        es1 = self.get_instance(Specification, 'es1')
+        spec_row = """\
+<tr>
+  <td>ECMAScript 1st Edition.</td>
+  <td>Standard</td>
+  <td>Initial definition.</td>
+</tr>"""
+        expected_specs = [{
+            'section.note': 'Initial definition.',
+            'section.subpath': '',
+            'section.name': '',
+            'specification.mdn_key': 'ES1',
+            'section.id': None,
+            'specification.id': es1.id}]
+        issues = [
+            ('specname_converted', 11, 34,
+             {'key': 'ES1', 'original': 'ECMAScript 1st Edition.'}),
+            ('spec2_converted', 46, 54,
+             {'key': 'ES1', 'original': 'Standard'})]
+        self.assert_spec_row(spec_row, expected_specs, issues)
+
     def assert_specname_td(self, specname_td, expected, issues):
         parsed = page_grammar['specname_td'].parse(specname_td)
         specname = self.visitor.visit(parsed)
@@ -541,14 +611,41 @@ class TestPageVisitor(ScrapeTestCase):
         # https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
         specname_td = '<td>{{SpecName("Device Orientation")}}</td>'
         expected = ("Device Orientation", None, '', '')
-        issues = [('unknown_spec', 0, 43, {'key': 'Device Orientation'})]
+        issues = [('unknown_spec', 4, 38, {'key': 'Device Orientation'})]
         self.assert_specname_td(specname_td, expected, issues)
 
     def test_specname_td_empty_key(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
         specname_td = "<td>{{SpecName('', '#midiconnection')}}</td>"
         expected = ('', None, '#midiconnection', '')
-        issues = [('specname_blank_key', 0, 44, {})]
+        issues = [('specname_blank_key', 4, 39, {})]
+        self.assert_specname_td(specname_td, expected, issues)
+
+    def test_specname_td_ES1_legacy(self):
+        # /en-US/docs/Web/JavaScript/Reference/Operators/this
+        specname_td = "<td>ECMAScript 1st Edition.</td>"
+        expected = ('ES1', None, '', '')
+        issues = [
+            ('specname_converted', 4, 27,
+             {'original': 'ECMAScript 1st Edition.', 'key': 'ES1'}),
+            ('unknown_spec', 4, 27, {'key': 'ES1'})]
+        self.assert_specname_td(specname_td, expected, issues)
+
+    def test_specname_td_ES3_legacy(self):
+        # /en-US/docs/Web/JavaScript/Reference/Operators/function
+        specname_td = "<td> ECMAScript 3rd Edition. </td>"
+        expected = ('ES3', None, '', '')
+        issues = [
+            ('specname_converted', 5, 29,
+             {'original': 'ECMAScript 3rd Edition.', 'key': 'ES3'}),
+            ('unknown_spec', 5, 29, {'key': 'ES3'})]
+        self.assert_specname_td(specname_td, expected, issues)
+
+    def test_specname_td_other(self):
+        specname_td = "<td> Another Spec.</td>"
+        expected = ('', None, '', '')
+        issues = [
+            ('specname_not_kumascript', 5, 18, {'original': 'Another Spec.'})]
         self.assert_specname_td(specname_td, expected, issues)
 
     def assert_spec2_td(self, spec2_td, expected, issues):
@@ -581,6 +678,12 @@ class TestPageVisitor(ScrapeTestCase):
             {'name': 'SpecName', 'args': ["HTML WHATWG"], 'scope': 'spec2',
              'kumascript': '{{SpecName(HTML WHATWG)}}'})]
         self.assert_spec2_td(spec2_td, expected, issues)
+
+    def test_spec2_td_text_name(self):
+        # /en-US/docs/Web/JavaScript/Reference/Operators/this
+        spec2_td = "<td>Standard</td>"
+        item = {'type': 'text', 'content': 'Standard', 'start': 4, 'end': 12}
+        self.assert_spec2_td(spec2_td, item, [])
 
     def assert_compat_section(self, compat_section, compat, footnotes, issues):
         parsed = page_grammar['compat_section'].parse(compat_section)
@@ -1596,17 +1699,17 @@ class TestScrape(ScrapeTestCase):
 
     def test_spec_only(self):
         """Test with a only a Specification section."""
+        spec = self.get_instance(Specification, 'css3_backgrounds')
         page = self.sample_spec_section
         specs = [{
             'specification.mdn_key': 'CSS3 Backgrounds',
-            'specification.id': None,
+            'specification.id': spec.id,
             'section.subpath': '#the-background-size',
             'section.name': 'background-size',
             'section.note': '',
             'section.id': None,
         }]
-        issues = [('unknown_spec', 251, 335, {'key': 'CSS3 Backgrounds'})]
-        self.assertScrape(page, specs, issues)
+        self.assertScrape(page, specs, [])
 
 
 class FeaturePageTestCase(ScrapeTestCase):

@@ -387,6 +387,16 @@ ISSUES = OrderedDict((
         ERROR,
         'KumaScript SpecName has a blank key',
         'Update the MDN page to include a valid mdn_key')),
+    ('specname_converted', (
+        WARNING,
+        'Specification name should be converted to KumaScript',
+        'The specification "{original}" should be replaced with the KumaScript'
+        ' {{{{SpecName({key})}}}}')),
+    ('specname_not_kumascript', (
+        ERROR,
+        'Specification name unknown, and should be converted to KumaScript',
+        'Expected KumaScript {{{{SpecName(key, subpath, name)}}}}, but got'
+        ' text "{original}".')),
     ('spec2_wrong_kumascript', (
         ERROR,
         'Expected KumaScript Spec2(), got {kumascript}',
@@ -396,6 +406,11 @@ ISSUES = OrderedDict((
         ERROR,
         'KumaScript {kumascript} should have 1 non-blank argument',
         'Argument should be the MDN key that will return a maturity')),
+    ('spec2_converted', (
+        WARNING,
+        'Specification status should be converted to KumaScript',
+        'Expected KumaScript {{{{Spec2("{key}")}}}}, but got text'
+        ' "{original}".')),
     ('unexpected_attribute', (
         WARNING,
         'Unexpected attribute <{node_type} {ident}="{value}">',
