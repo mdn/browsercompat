@@ -25,7 +25,7 @@ def validate_mdn_url(value):
     disallowed_chars = '?$#'
     for c in disallowed_chars:
         if c in value:
-            raise ValidationError('"?" is not allowed in URL')
+            raise ValidationError('"{}" is not allowed in URL'.format(c))
     allowed_prefix = False
     for allowed in settings.MDN_ALLOWED_URLS:
         allowed_prefix = allowed_prefix or value.startswith(allowed)
@@ -49,6 +49,7 @@ class FeaturePage(models.Model):
     STATUS_PARSING = 3
     STATUS_PARSED = 4
     STATUS_ERROR = 5
+    STATUS_NO_DATA = 6
     STATUS_CHOICES = (
         (STATUS_STARTING, "Starting Import"),
         (STATUS_META, "Fetching Metadata"),
@@ -56,6 +57,7 @@ class FeaturePage(models.Model):
         (STATUS_PARSING, "Parsing MDN pages"),
         (STATUS_PARSED, "Parsing Complete"),
         (STATUS_ERROR, "Scraping Failed"),
+        (STATUS_NO_DATA, "No Compat Data"),
     )
     status = models.IntegerField(
         help_text="Status of MDN Parsing process",
@@ -98,12 +100,15 @@ class FeaturePage(models.Model):
         """Get the page translations, after fetching the meta data."""
         meta = self.meta()
         translations = []
-        for locale, path in meta.locale_paths():
+        for locale, path, title in meta.locale_paths():
             content, created = self.translatedcontent_set.get_or_create(
                 locale=locale, defaults={
-                    'path': path,
-                    'raw': '',
+                    'path': path, 'raw': '', 'title': title,
                     'status': TranslatedContent.STATUS_STARTING})
+            if content.title != title or content.path != path:
+                content.path = path
+                content.title = title
+                content.save()
             translations.append(content)
         return translations
 
@@ -142,9 +147,14 @@ class FeaturePage(models.Model):
                 ('parent', str(self.feature.parent_id)),
                 ('children', []),
             )))))
+        canonical = (list(feature['name'].keys()) == ['zxx'])
+        if canonical:
+            feature['name'] = feature['name']['zxx']
         for t in self.translations():
             if t.locale != 'en-US':
                 feature['mdn_uri'][t.locale] = t.url()
+                if not canonical:
+                    feature['name'][t.locale] = t.title
 
         view_feature = OrderedDict((
             ('features', feature),
@@ -275,6 +285,11 @@ ISSUES = OrderedDict((
         'Unknown Gecko version "{version}"',
         'The importer does not recognize this version for CompatGeckoFxOS.'
         ' Change the MDN page or update the importer.')),
+    ('doc_parse_error', (
+        CRITICAL,
+        'No imported data due to unexpected page structure.',
+        'The importer was unable to handle the page structure enough to'
+        ' determine if there was compatibility data.')),
     ('exception', (CRITICAL, 'Unhandled exception', '{traceback}')),
     ('extra_cell', (
         ERROR,
@@ -284,7 +299,7 @@ ISSUES = OrderedDict((
         ' cell in the row, or a missing header cell.')),
     ('failed_download', (
         CRITICAL, 'Failed to download {url}.',
-        'Status {status}, Content:\n{text}')),
+        'Status {status}, Content:\n{content}')),
     ('false_start', (
         CRITICAL,
         'No <h2> found in page.',
@@ -356,11 +371,11 @@ ISSUES = OrderedDict((
         ' which must be cleared before any parsing can be attempted.')),
     ('spec_h2_id', (
         WARNING,
-        'Expected <h2 id="Specifications">, actual id={{h2_id}}',
+        'Expected <h2 id="Specifications">, actual id={h2_id}',
         'Fix the id so that the table of contents, other feature work.')),
     ('spec_h2_name', (
         WARNING,
-        'Expected <h2 name="Specifications">, actual name={{h2_name}}',
+        'Expected <h2 name="Specifications">, actual name={h2_name}',
         'Fix or remove the name attribute.')),
     ('spec_mismatch', (
         ERROR,
@@ -368,6 +383,19 @@ ISSUES = OrderedDict((
         ' Spec2({spec2_key}).',
         'SpecName and Spec2 must refer to the same mdn_key. Update the MDN'
         ' page.')),
+    ('specname_blank_key', (
+        ERROR,
+        'KumaScript SpecName has a blank key',
+        'Update the MDN page to include a valid mdn_key')),
+    ('spec2_wrong_kumascript', (
+        ERROR,
+        'Expected KumaScript Spec2(), got {kumascript}',
+        'Change to Spec2(mdn_key), using the mdn_key from the SpecName()'
+        ' KumaScript.')),
+    ('spec2_arg_count', (
+        ERROR,
+        'KumaScript {kumascript} should have 1 non-blank argument',
+        'Argument should be the MDN key that will return a maturity')),
     ('unexpected_attribute', (
         WARNING,
         'Unexpected attribute <{node_type} {ident}="{value}">',
@@ -381,7 +409,7 @@ ISSUES = OrderedDict((
         ' be added to the API.')),
     ('unknown_kumascript', (
         ERROR,
-        'Unknown KumaScript {display} in {scope}.',
+        'Unknown KumaScript {kumascript} in {scope}.',
         'The importer has to run custom code to import KumaScript, and it'
         ' hasn\'t been taught how to import {name} when it appears in a'
         ' {scope}. File a bug, or convert the MDN page to not use this'
@@ -390,7 +418,7 @@ ISSUES = OrderedDict((
         ERROR,
         'Unknown Specification "{key}".',
         'The API does not have a specification with mdn_key "{key}".'
-        ' This could be a typo on the MDN page, or the specfication needs to'
+        ' This could be a typo on the MDN page, or the specification needs to'
         ' be added to the API.')),
     ('unknown_version', (
         ERROR,
@@ -486,7 +514,7 @@ class Issue(models.Model):
 class Content(models.Model):
     """The content of an MDN page."""
     page = models.ForeignKey(FeaturePage)
-    path = models.CharField(help_text="Path of MDN page", max_length=255)
+    path = models.CharField(help_text="Path of MDN page", max_length=1024)
     crawled = ModificationDateTimeField(
         help_text="Time when the content was retrieved")
     raw = models.TextField(help_text="Raw content of the page")
@@ -530,9 +558,9 @@ class PageMeta(Content):
         if self.status != self.STATUS_FETCHED:
             return []
         meta = self.data()
-        locale_paths = [(meta['locale'], meta['url'])]
+        locale_paths = [(meta['locale'], meta['url'], meta['title'])]
         for t in meta['translations']:
-            locale_paths.append((t['locale'], t['url']))
+            locale_paths.append((t['locale'], t['url'], t['title']))
         return locale_paths
 
 
@@ -541,3 +569,4 @@ class TranslatedContent(Content):
     locale = models.CharField(
         help_text="Locale for page translation",
         max_length=5, db_index=True)
+    title = models.TextField(help_text="Page title in locale", blank=True)

@@ -46,9 +46,11 @@ class TestFeaturePageModel(TestCase):
         self.metadata = {
             "locale": "en-US",
             "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+            "title": "<float>",
             "translations": [{
                 "locale": "de",
                 "url": "https://developer.mozilla.org/de/docs/Web/CSS/float",
+                "title": "<float>",
             }],
         }
 
@@ -86,10 +88,10 @@ class TestFeaturePageModel(TestCase):
             page=self.fp, path='/foo/path', status=PageMeta.STATUS_FETCHED,
             raw=dumps(self.metadata))
         TranslatedContent.objects.create(
-            page=self.fp, locale='en', path='/foo/en/path',
+            page=self.fp, locale='en', path='/foo/en/path', title='title',
             status=PageMeta.STATUS_FETCHED, raw="Black, White, Yellow, Red")
         TranslatedContent.objects.create(
-            page=self.fp, locale='de', path='/foo/de/path',
+            page=self.fp, locale='de', path='/foo/de/path', title='title',
             status=PageMeta.STATUS_ERROR, raw="Schwarz, Weiß, Gelb, Rot")
 
     def test_reset(self):
@@ -111,6 +113,11 @@ class TestFeaturePageModel(TestCase):
         self.assertEqual(t_en.status, PageMeta.STATUS_FETCHED)
         t_de = TranslatedContent.objects.get(page=self.fp, locale='de')
         self.assertEqual(t_de.status, PageMeta.STATUS_STARTING)
+
+    def test_get_data_canonical(self):
+        self.fp.feature.name = {'zxx': 'canonical'}
+        data = self.fp.data
+        self.assertEqual('canonical', data['features']['name'])
 
     def test_get_data_existing(self):
         self.fp.raw_data = '{"meta": {"scrape": {"issues": "x"}}}'
@@ -254,17 +261,22 @@ class TestPageMetaModel(TestCase):
         data = {
             'locale': 'en-US',
             'url': 'https://developer.mozilla.org/en-US/docs/Web/CSS/display',
+            'title': 'display',
             'translations': [{
                 'locale': 'es',
                 'url': 'https://developer.mozilla.org/es/docs/Web/CSS/display',
+                'title': 'display',
             }],
         }
         self.meta.status = self.meta.STATUS_FETCHED
         self.meta.raw = dumps(data)
         expected = [
             ('en-US',
-             'https://developer.mozilla.org/en-US/docs/Web/CSS/display'),
-            ('es', 'https://developer.mozilla.org/es/docs/Web/CSS/display'),
+             'https://developer.mozilla.org/en-US/docs/Web/CSS/display',
+             'display'),
+            ('es',
+             'https://developer.mozilla.org/es/docs/Web/CSS/display',
+             'display'),
         ]
         self.assertEqual(expected, self.meta.locale_paths())
 
@@ -276,8 +288,7 @@ class TestTranslatedContentModel(TestCase):
             feature_id=666,
             status=FeaturePage.STATUS_PARSED)
         self.c = TranslatedContent(
-            page=fp,
-            locale="de",
+            page=fp, locale="de", title='<float>',
             path="/de/docs/Web/CSS/float")
 
     def test_str(self):

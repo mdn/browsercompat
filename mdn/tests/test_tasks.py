@@ -81,15 +81,17 @@ class TestFetchMetaTask(TestCase):
             'mdn.tasks.fetch_all_translations.delay')
         self.mocked_fetch_all = self.patcher_fetch_all.start()
         self.mocked_fetch_all.side_effect = Exception('Not Called')
+
         self.patcher_get = mock.patch('mdn.tasks.requests.get')
         self.mocked_get = self.patcher_get.start()
-        self.mocked_get.return_value = mock.Mock(
-            spec_set=['status_code', 'json', 'text', 'raise_for_status'])
+        self.mocked_get.return_value = mock.Mock(spec_set=[
+            'status_code', 'json', 'text', 'raise_for_status', 'url'])
         self.response = self.mocked_get.return_value
         self.response.status_code = 200
         self.response.json.side_effect = Exception('Not Called')
         self.response.text = ""
         self.response.raise_for_status.side_effect = Exception('Not Called')
+        self.response.url = self.fp.url + "$json"
 
     def tearDown(self):
         self.patcher_fetch_all.stop()
@@ -97,13 +99,11 @@ class TestFetchMetaTask(TestCase):
 
     def test_good_call(self):
         data = {
-            'locale': 'en-US',
+            'locale': 'en-US', 'title': 'display',
             'url': '/en-US/docs/Web/CSS/display',
             'translations': [{
-                'locale': 'es',
-                'url': '/es/docs/Web/CSS/display',
-            }],
-        }
+                'locale': 'es', 'title': 'display',
+                'url': '/es/docs/Web/CSS/display'}]}
         self.response.json.side_effect = None
         self.response.json.return_value = data
         self.mocked_fetch_all.side_effect = None
@@ -148,6 +148,17 @@ class TestFetchMetaTask(TestCase):
         self.assertEqual(meta.STATUS_ERROR, meta.status)
         self.assertEqual("Response is not JSON:\n" + text, meta.raw)
 
+    @mock.patch('mdn.tasks.fetch_meta.delay')
+    def test_redirect(self, mocked_delay):
+        self.response.text = '<html>Some page</html>'
+        new_url = self.fp.url + '/'
+        self.response.url = new_url
+        fetch_meta(self.fp.id)
+        fp = FeaturePage.objects.get(id=self.fp.id)
+        self.assertEqual(fp.STATUS_META, fp.status)
+        self.assertEqual(new_url, fp.url)
+        mocked_delay.assertCalledOnce(self.fp.id)
+
 
 class TestFetchAllTranslationsTask(TestCase):
     def setUp(self):
@@ -158,13 +169,11 @@ class TestFetchAllTranslationsTask(TestCase):
         meta = self.fp.meta()
         meta.status = meta.STATUS_FETCHED
         meta.raw = dumps({
-            'locale': 'en-US',
+            'locale': 'en-US', 'title': 'display',
             'url': '/en-US/docs/Web/CSS/display',
             'translations': [{
-                'locale': 'es',
-                'url': '/es/docs/Web/CSS/display',
-            }],
-        })
+                'locale': 'es', 'title': 'display',
+                'url': '/es/docs/Web/CSS/display'}]})
         meta.save()
 
         self.patcher_fetch_trans = mock.patch(
@@ -228,13 +237,11 @@ class TestFetchTranslationTask(TestCase):
         meta = self.fp.meta()
         meta.status = meta.STATUS_FETCHED
         meta.raw = dumps({
-            'locale': 'en-US',
+            'locale': 'en-US', 'title': 'display',
             'url': '/en-US/docs/Web/CSS/display',
             'translations': [{
-                'locale': 'es',
-                'url': '/es/docs/Web/CSS/display',
-            }],
-        })
+                'locale': 'es', 'title': 'display',
+                'url': '/es/docs/Web/CSS/display'}]})
         meta.save()
         self.fp.translatedcontent_set.create(locale='en-US')
         self.fp.translatedcontent_set.create(locale='es')
@@ -294,20 +301,21 @@ class TestFetchTranslationTask(TestCase):
 
     def test_not_found(self):
         self.response.status_code = 404
-        self.response.text = 'Not Found'
-        self.response.raise_for_status.side_effect = RuntimeError('Was Called')
+        content = 'Not Found'
+        self.response.text = content
+        self.response.raise_for_status.side_effect = Exception('Not Called')
+        self.mocked_fetch_all.side_effect = None
 
-        self.assertRaises(RuntimeError, fetch_translation, self.fp.id, 'es')
+        fetch_translation(self.fp.id, 'es')
         fp = FeaturePage.objects.get(id=self.fp.id)
-        self.assertEqual(fp.STATUS_ERROR, fp.status)
+        self.assertEqual(fp.STATUS_PAGES, fp.status)
         trans = fp.translatedcontent_set.get(locale='es')
         self.assertEqual(trans.STATUS_ERROR, trans.status)
-        expected_msg = "Status 404, Content:\nNot Found"
-        self.assertEqual(expected_msg, trans.raw)
+        self.assertEqual(content, trans.raw)
         url = trans.url() + '?raw'
         issue = [[
             'failed_download', 0, 0,
-            {'url': url, 'status': 404, 'content': 'Not Found'}]]
+            {'url': url, 'status': 404, 'content': content}]]
         self.assertEqual(issue, fp.data['meta']['scrape']['issues'])
 
 

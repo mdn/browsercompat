@@ -522,10 +522,11 @@ class TestPageVisitor(ScrapeTestCase):
             'specification.id': spec.id}]
         self.assert_spec_row(self.sample_spec_row, expected_specs, [])
 
-    def assert_specname_td(self, specname_td, expected):
+    def assert_specname_td(self, specname_td, expected, issues):
         parsed = page_grammar['specname_td'].parse(specname_td)
         specname = self.visitor.visit(parsed)
         self.assertEqual(expected, specname)
+        self.assertEqual(issues, self.visitor.issues)
 
     def test_specname_td_3_arg(self):
         # Common usage of SpecName
@@ -533,13 +534,53 @@ class TestPageVisitor(ScrapeTestCase):
         specname_td = (
             '<td>{{SpecName("CSS3 Backgrounds", "#subpath", "Name")}}</td>')
         expected = ('CSS3 Backgrounds', spec.id, "#subpath", "Name")
-        self.assert_specname_td(specname_td, expected)
+        issues = []
+        self.assert_specname_td(specname_td, expected, issues)
 
     def test_specname_td_1_arg(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
         specname_td = '<td>{{SpecName("Device Orientation")}}</td>'
         expected = ("Device Orientation", None, '', '')
-        self.assert_specname_td(specname_td, expected)
+        issues = [('unknown_spec', 0, 43, {'key': 'Device Orientation'})]
+        self.assert_specname_td(specname_td, expected, issues)
+
+    def test_specname_td_empty_key(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
+        specname_td = "<td>{{SpecName('', '#midiconnection')}}</td>"
+        expected = ('', None, '#midiconnection', '')
+        issues = [('specname_blank_key', 0, 44, {})]
+        self.assert_specname_td(specname_td, expected, issues)
+
+    def assert_spec2_td(self, spec2_td, expected, issues):
+        parsed = page_grammar['spec2_td'].parse(spec2_td)
+        spec2 = self.visitor.visit(parsed)
+        self.assertEqual(expected, spec2)
+        self.assertEqual(self.visitor.issues, issues)
+
+    def test_spec2_td_standard(self):
+        spec2_td = '<td>{{Spec2("File API")}}</td>'
+        expected = 'File API'
+        self.assert_spec2_td(spec2_td, expected, [])
+
+    def test_spec2_td_empty(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/MIDIInput
+        spec2_td = '<td>{{Spec2()}}</td>'
+        expected = ''
+        issues = [(
+            'spec2_arg_count', 4, 15,
+            {'name': 'Spec2', 'args': [], 'scope': 'spec2',
+             'kumascript': '{{Spec2}}'})]
+        self.assert_spec2_td(spec2_td, expected, issues)
+
+    def test_spec2_td_specname(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/tabIndex
+        spec2_td = "<td>{{SpecName('HTML WHATWG')}}</td>"
+        expected = 'HTML WHATWG'
+        issues = [(
+            'spec2_wrong_kumascript', 4, 31,
+            {'name': 'SpecName', 'args': ["HTML WHATWG"], 'scope': 'spec2',
+             'kumascript': '{{SpecName(HTML WHATWG)}}'})]
+        self.assert_spec2_td(spec2_td, expected, issues)
 
     def assert_compat_section(self, compat_section, compat, footnotes, issues):
         parsed = page_grammar['compat_section'].parse(compat_section)
@@ -855,7 +896,7 @@ class TestPageVisitor(ScrapeTestCase):
             'slug': 'web-css-background-size_feature_foo'}
         issues = [
             ('unknown_kumascript', 16, 23,
-             {'name': 'bar', 'args': [], 'display': '{{bar}}',
+             {'name': 'bar', 'args': [], 'kumascript': '{{bar}}',
               'scope': 'compatibility feature'})]
         self.assert_cell_to_feature(cell, expected_feature, issues)
 
@@ -865,7 +906,7 @@ class TestPageVisitor(ScrapeTestCase):
             'id': '_foo', 'name': 'foo', 'slug': 'web-css-background-size_foo'}
         issues = [
             ('unknown_kumascript', 8, 22,
-             {'name': 'bar', 'args': ['baz'], 'display': '{{bar(baz)}}',
+             {'name': 'bar', 'args': ['baz'], 'kumascript': '{{bar(baz)}}',
               'scope': 'compatibility feature'})]
         self.assert_cell_to_feature(cell, expected_feature, issues)
 
@@ -1130,7 +1171,7 @@ class TestPageVisitor(ScrapeTestCase):
         issues = [(
             'unknown_kumascript', 4, 19,
             {'name': 'UnknownKuma', 'args': [], 'scope': 'compatibility cell',
-             'display': "{{UnknownKuma}}"})]
+             'kumascript': "{{UnknownKuma}}"})]
         self.assert_cell_to_support('{{UnknownKuma}}', issues=issues)
 
     def test_cell_to_support_unknown_kumascript_args(self):
@@ -1138,7 +1179,7 @@ class TestPageVisitor(ScrapeTestCase):
             'unknown_kumascript', 4, 26,
             {'name': 'UnknownKuma', 'args': ['foo'],
              'scope': 'compatibility cell',
-             'display': "{{UnknownKuma(foo)}}"})]
+             'kumascript': "{{UnknownKuma(foo)}}"})]
         self.assert_cell_to_support('{{UnknownKuma("foo")}}', issues=issues)
 
     def test_cell_to_support_nested_p(self):
@@ -1335,7 +1376,7 @@ class TestPageVisitor(ScrapeTestCase):
         issues = [(
             'unknown_kumascript', 15, 30,
             {'name': 'UnknownKuma', 'args': [], 'scope': 'footnote',
-             'display': '{{UnknownKuma}}'})]
+             'kumascript': '{{UnknownKuma}}'})]
         self.assert_compat_footnotes(footnotes, expected, issues)
 
     def test_compat_footnotes_unknown_kumascriptscript_with_args(self):
@@ -1344,7 +1385,7 @@ class TestPageVisitor(ScrapeTestCase):
         issues = [(
             'unknown_kumascript', 15, 37,
             {'name': 'UnknownKuma', 'args': ['"arg"'], 'scope': 'footnote',
-             'display': '{{UnknownKuma("arg")}}'})]
+             'kumascript': '{{UnknownKuma("arg")}}'})]
         self.assert_compat_footnotes(footnotes, expected, issues)
 
     def test_compat_footnotes_pre_section(self):
@@ -1466,6 +1507,11 @@ class TestPageVisitor(ScrapeTestCase):
     def test_unquote_unbalanced(self):
         self.assertRaises(ValueError, self.visitor.unquote, "'Mixed\"")
 
+    def test_unquote_quote_plus_text(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/@viewport/max-zoom
+        text = '"max-zoom" descriptor'
+        self.assertEqual(text, self.visitor.unquote(text))
+
     def assert_browser_lookup(self, name, browser_id, fixed_name, slug):
         lookup = self.visitor.browser_id_name_and_slug(name)
         self.assertEqual(browser_id, lookup[0])
@@ -1538,11 +1584,15 @@ class TestScrape(ScrapeTestCase):
 
     def test_empty(self):
         page = ""
-        self.assertScrape(page, [], [('false_start', 0, 0, {})])
+        self.assertScrape(page, [], [])
 
     def test_incomplete_parse_error(self):
         page = "<h2>Incomplete</h2><p>Incomplete</p>"
         self.assertScrape(page, [], [('halt_import', 0, 36, {})])
+
+    def test_not_compat_page(self):
+        page = "<h3>I'm not a compat page</h3>"
+        self.assertScrape(page, [], [('doc_parse_error', 0, 30, {})])
 
     def test_spec_only(self):
         """Test with a only a Specification section."""
@@ -1568,11 +1618,11 @@ class FeaturePageTestCase(ScrapeTestCase):
             url=url, feature=self.feature, status=FeaturePage.STATUS_PARSING)
         meta = self.page.meta()
         meta.raw = dumps({
-            'locale': 'en-US',
-            'url': path,
+            'locale': 'en-US', 'url': path, 'title': 'background-size',
             'translations': [{
                 'locale': 'fr',
-                'url': path.replace('en-US', 'fr')
+                'url': path.replace('en-US', 'fr'),
+                'title': 'background-size',
             }]})
         meta.status = meta.STATUS_FETCHED
         meta.save()
@@ -1597,7 +1647,7 @@ class FeaturePageTestCase(ScrapeTestCase):
                            'Web/CSS/background-size'),
                     'fr': ('https://developer.mozilla.org/fr/docs/'
                            'Web/CSS/background-size')},
-                'name': {'zxx': 'background-size'},
+                'name': 'background-size',
                 'obsolete': False,
                 'slug': 'web-css-background-size',
                 'stable': True,
@@ -2013,14 +2063,13 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
             translation.save()
 
     def test_empty_page(self):
-        self.set_content('')
+        self.set_content('  ')
         scrape_feature_page(self.page)
         fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
+        self.assertEqual(fp.STATUS_NO_DATA, fp.status)
         self.assertEqual(
-            [['false_start', 0, 0, {}]],
-            fp.data['meta']['scrape']['raw']['issues'])
-        self.assertTrue(fp.has_issues)
+            [], fp.data['meta']['scrape']['raw']['issues'])
+        self.assertFalse(fp.has_issues)
 
     def test_parse_issue(self):
         bad_page = '''\
