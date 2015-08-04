@@ -72,7 +72,10 @@ specname_td = td_open _ specname_text "</td>"
 specname_text = kumascript / inner_td
 spec2_td = td_open _ spec2_text "</td>"
 spec2_text = kumascript / inner_td
-specdesc_td = td_open _ inner_td _ "</td>"
+specdesc_td = td_open _ specdesc_text _ "</td>"
+specdesc_text = specdesc_token*
+specdesc_token = kumascript / code_block / spec_other
+spec_other = ~r"(?P<content>[^{<]+)\s*"s
 inner_td = ~r"(?P<content>.*?(?=</td>))"s
 
 #
@@ -105,8 +108,8 @@ compat_row_cell = td_open _ compat_cell _ "</td>" _
 #   Due to rowspan and colspan usage, we won't know if a cell is a feature
 #   or a support until we visit the table.
 #
-compat_cell = compat_cell_item*
-compat_cell_item = (kumascript / cell_break / code_block / cell_p_open /
+compat_cell = compat_cell_token*
+compat_cell_token = (kumascript / cell_break / code_block / cell_p_open /
     cell_p_close / cell_version / cell_footnote_id / cell_removed / cell_other)
 cell_break = "<" _ "br" _ ("/>" / ">") _
 code_block = "<code>" _ code_text _ "</code>" _
@@ -215,9 +218,15 @@ class PageVisitor(NodeVisitor):
         """Visitor when none is specified."""
         return visited_children or node
 
-    def _visit_content(self, node, args):
+    def _visit_content(self, node, children):
         """Vistor for re nodes with a named (?P<content>) section."""
         return node.match.group('content')
+
+    def _visit_token(self, node, children):
+        """Visitor for one of many tokenized items"""
+        token = children[0]
+        assert isinstance(token, dict), type(token)
+        return token
 
     def visit_doc(self, node, children):
         """At the top level, return all the collected data."""
@@ -406,10 +415,25 @@ class PageVisitor(NodeVisitor):
         return key
 
     def visit_specdesc_td(self, node, children):
-        item = children[2]
-        assert isinstance(item, dict), type(item)
-        assert item['type'] == 'text'
-        return item['content']
+        specdesc = children[2]
+        bits = []
+        if isinstance(specdesc, Node):
+            assert specdesc.start == specdesc.end
+        else:
+            assert isinstance(specdesc, list), type(specdesc)
+            for item in specdesc:
+                if item['type'] == 'kumascript':
+                    text = self.kumascript_to_text(item, 'specdesc')
+                    if text:
+                        bits.append(text)
+                elif item['type'] == 'code_block':
+                    bits.append("<code>{}</code>".format(item['content']))
+                else:
+                    assert item['type'] == 'text'
+                    bits.append(item['content'])
+        return self.join_content(bits)
+
+    visit_specdesc_token = _visit_token
 
     def visit_inner_td(self, node, children):
         text = self.cleanup_whitespace(node.text)
@@ -417,6 +441,8 @@ class PageVisitor(NodeVisitor):
         return {
             'type': 'text', 'content': text,
             'start': node.start, 'end': node.end}
+
+    visit_spec_other = visit_inner_td
 
     #
     # Browser Compatibility section
@@ -643,11 +669,7 @@ class PageVisitor(NodeVisitor):
     # Browser Compatibility table cells
     #  Due to rowspan and colspan usage, we won't know if a cell is a feature
     #  or a support until visit_compat_body
-
-    def visit_compat_cell_item(self, node, children):
-        item = children[0]
-        assert isinstance(item, dict), type(item)
-        return item
+    visit_compat_cell_token = _visit_token
 
     def visit_cell_break(self, node, children):
         return {'type': 'break', 'start': node.start, 'end': node.end}
@@ -967,6 +989,56 @@ class PageVisitor(NodeVisitor):
             issue, item['start'], item['end'],
             {'name': item['name'], 'args': item['args'], 'scope': scope,
              'kumascript': "{{%s%s}}" % (item['name'], args)})
+
+    def kumascript_to_text(self, item, scope):
+        """Convert kumascript to plain text."""
+        assert item['type'] == 'kumascript'
+        name = item['name']
+        args = item['args']
+        if name in (
+                'xref_csslength', 'xref_csspercentage',
+                'xref_cssstring', 'xref_cssimage'):
+            assert not args
+            content = name[len('xref_css'):]
+            return "<code>&lt;{}&gt;</code>".format(content)
+        elif name == 'xref_csscolorvalue':
+            assert not args
+            return "<code>&lt;color&gt;</code>"
+        elif name == 'xref_cssvisual':
+            assert not args
+            return "<code>visual</code>"
+        elif name.lower() in ('cssxref', 'domxref', 'htmlelement', 'jsxref'):
+            if len(args) > 1:
+                content = args[1]
+            else:
+                content = args[0]
+            return "<code>{}</code>".format(content)
+        elif name.lower() == 'specname':
+            assert len(args) >= 1
+            return 'specification ' + args[0]
+        elif name.lower() == 'spec2' and scope == 'specdesc':
+            assert len(args) >= 1
+            self.issues.append(self.kumascript_issue(
+                'specdesc_spec2_invalid', item, scope))
+            return 'specification ' + args[0]
+        elif name == 'experimental_inline':
+            # Don't include beaker in output
+            assert not args
+        else:
+            self.issues.append(
+                self.kumascript_issue('unknown_kumascript', item, scope))
+
+    def join_content(self, content_bits):
+        """Construct a string with just the right whitespace."""
+        out = ""
+        nospace_before = '!,.;? '
+        nospace_after = ' '
+        for bit in content_bits:
+            if (out and out[-1] not in nospace_after and
+                    bit[0] not in nospace_before):
+                out += " "
+            out += bit
+        return out
 
     #
     # API lookup methods
@@ -1821,6 +1893,8 @@ def scrape_feature_page(feature_page):
     # Add issues
     for issue in scraped_data['issues']:
         feature_page.add_issue(issue, 'en-US')
+    merged_data['meta']['scrape']['issues'] = (
+        feature_page.data['meta']['scrape']['issues'])
 
     # Update status, issues
     has_data = (scraped_data['specs'] or scraped_data['compat'] or
