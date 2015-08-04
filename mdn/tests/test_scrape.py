@@ -52,6 +52,31 @@ class TestGrammar(TestCase):
         expected_title = "Specifications"
         self.assert_spec_h2(spec_h2, expected_attrs, expected_title)
 
+    def assert_whynospec(self, text):
+        parsed = page_grammar['whynospec'].parse(text)
+        assert parsed
+
+    def test_whynospec_plain(self):
+        text = "<p>{{WhyNoSpecStart}}There is no spec{{WhyNoSpecEnd}}</p>"
+        self.assert_whynospec(text)
+
+    def test_whynospec_spaces(self):
+        text = """\
+<p>
+   {{ WhyNoSpecStart }} There is no spec {{ WhyNoSpecEnd }}
+</p>"""
+        self.assert_whynospec(text)
+
+    def test_whynospec_inner_kuma(self):
+        text = """\
+<p>
+{{WhyNoSpecStart}}
+Not part of any current spec, but it was in early drafts of
+{{SpecName("CSS3 Animations")}}.
+{{WhyNoSpecEnd}}
+</p>"""
+        self.assert_whynospec(text)
+
     def assert_spec_headers(self, spec_headers, expected_tag, expected_title):
         parsed = page_grammar['spec_headers'].parse(spec_headers)
         th_elems = parsed.children[2]
@@ -303,31 +328,19 @@ class ScrapeTestCase(TestCase):
 </table>
 """ % sample_spec_row
 
-    sample_page = """\
-<div>{{CSSREF}}</div>
-<h2 id="Summary">Summary</h2>
-<p>This represents all the other page content</p>
-<p>{{cssbox("background-size")}}</p>
-%s
+    sample_compat_section = """\
 <h2 id="Browser_compatibility">Browser compatibility</h2>
 <div>{{CompatibilityTable}}</div>
 <div id="compat-desktop">
  <table class="compat-table">
   <tbody>
-   <tr>
-     <th>Feature</th><th>Chrome</th>
-     <th>Firefox (Gecko)</th></tr>
-   <tr>
-     <td>Basic support</td><td>1.0</td>
-     <td>{{CompatGeckoDesktop("1")}}</td>
-   </tr>
+   <tr><th>Feature</th><th>Firefox (Gecko)</th></tr>
+   <tr><td>Basic support</td><td>{{CompatGeckoDesktop("1")}}</td></tr>
   </tbody>
  </table>
 </div>
-<h2 id="See_also">See also</h2>
-<ul>
- <li>{{CSS_Reference:Position}}</li>
-</ul>""" % sample_spec_section
+"""
+
     _instance_specs = {
         (Maturity, 'CR'): {'name': '{"en": "Candidate Recommendation"}'},
         (Maturity, 'WD'): {'name': '{"en": "Working Draft"}'},
@@ -444,15 +457,42 @@ class TestPageVisitor(ScrapeTestCase):
             "<h2 id=\"specifications\">Specifications</h2>\n"
             "<p><em>TODO:</em> Specs go here</p>")
         issues = [(
-            'section_skipped', 44, 79,
-            {'title': 'Specifications', 'rule_name': 'spec_table',
-             'rule': ('spec_table = "<table class="standard-table">" _'
-                      ' spec_head _ spec_body _ "</table>" _')})]
+            'section_skipped', 47, 79,
+            {'title': 'Specifications', 'rule_name': 'whynospec_start',
+             'rule': ('whynospec_start = ks_esc_start "WhyNoSpecStart" _'
+                      ' ks_esc_end _')})]
         self.assert_last_section(last_section, issues)
 
     def test_last_section_valid_specifications(self):
         issues = [('section_missed', 0, 65, {'title': 'Specifications'})]
         self.assert_last_section(self.sample_spec_section, issues)
+
+    def assert_spec_section(self, spec_section, specs):
+        parsed = page_grammar['spec_section'].parse(spec_section)
+        self.visitor.visit(parsed)
+        self.assertEqual(specs, self.visitor.specs)
+        self.assertEqual([], self.visitor.issues)
+
+    def test_spec_section_expected(self):
+        spec = self.get_instance(Specification, 'css3_backgrounds')
+        parsed_specs = [{
+            'specification.id': spec.id,
+            'specification.mdn_key': 'CSS3 Backgrounds',
+            'section.id': None, 'section.name': 'background-size',
+            'section.note': '', 'section.subpath': '#the-background-size'}]
+        self.assert_spec_section(self.sample_spec_section, parsed_specs)
+
+    def test_spec_section_why_no_spec(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/AnimationEvent/initAnimationEvent
+        spec = """\
+<h2 id="Specifications" name="Specifications">Specifications</h2>
+<p>
+{{WhyNoSpecStart}}
+This method is non-standard and not part of any specification, though it was
+present in early drafts of {{SpecName("CSS3 Animations")}}.
+{{WhyNoSpecEnd}}
+</p>"""
+        self.assert_spec_section(spec, [])
 
     def assert_spec_h2(self, spec_h2, expected_issues):
         parsed = page_grammar['spec_h2'].parse(spec_h2)
@@ -761,18 +801,7 @@ class TestPageVisitor(ScrapeTestCase):
         self.assertEqual(issues, self.visitor.issues)
 
     def test_compat_section_minimal(self):
-        compat_section = """\
-<h2 id="Browser_compatibility">Browser compatibility</h2>
-<div>{{CompatibilityTable}}</div>
-<div id="compat-desktop">
- <table class="compat-table">
-  <tbody>
-   <tr><th>Feature</th><th>Firefox (Gecko)</th></tr>
-   <tr><td>Basic support</td><td>{{CompatGeckoDesktop("1")}}</td></tr>
-  </tbody>
- </table>
-</div>
-"""
+        compat_section = self.sample_compat_section
         expected_compat = [{
             'name': u'desktop',
             'browsers': [{
@@ -2024,13 +2053,13 @@ class TestScrape(ScrapeTestCase):
         page = ""
         self.assertScrape(page, [], [])
 
-    def test_incomplete_parse_error(self):
-        page = "<h2>Incomplete</h2><p>Incomplete</p>"
-        self.assertScrape(page, [], [('halt_import', 0, 36, {})])
-
     def test_not_compat_page(self):
         page = "<h3>I'm not a compat page</h3>"
-        self.assertScrape(page, [], [('doc_parse_error', 0, 30, {})])
+        self.assertScrape(page, [], [])
+
+    def test_incomplete_parse_error(self):
+        page = "<h2>Specifications</h2><p>Incomplete</p>"
+        self.assertScrape(page, [], [('halt_import', 0, 40, {})])
 
     def test_spec_only(self):
         """Test with a only a Specification section."""
@@ -2045,6 +2074,11 @@ class TestScrape(ScrapeTestCase):
             'section.id': None,
         }]
         self.assertScrape(page, specs, [])
+
+    def test_doc_parse_error(self):
+        # https://developer.mozilla.org/en-US/docs/Navigation_timing
+        page = self.sample_compat_section.replace('h2', 'h3')
+        self.assertScrape(page, [], [('doc_parse_error', 0, 57, {})])
 
 
 class FeaturePageTestCase(ScrapeTestCase):
@@ -2520,10 +2554,10 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_PARSED, fp.status)
         expected_issues = [[
-            'section_skipped', 93, 108,
-            {'rule_name': 'spec_table', 'title': 'Specifications',
-             'rule': ('spec_table = "<table class="standard-table">"'
-                      ' _ spec_head _ spec_body _ "</table>" _')}]]
+            'section_skipped', 96, 108,
+            {'title': 'Specifications', 'rule_name': 'whynospec_start',
+             'rule': ('whynospec_start = ks_esc_start "WhyNoSpecStart" _'
+                      ' ks_esc_end _')}]]
         self.assertEqual(
             expected_issues,
             fp.data['meta']['scrape']['raw']['issues'])

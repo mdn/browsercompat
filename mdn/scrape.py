@@ -55,9 +55,13 @@ last_text =  ~r".*(?!=<h2)"s
 #
 # Specifications section
 #
-spec_section = _ spec_h2 _ spec_table
+spec_section = _ spec_h2 _ (spec_table / whynospec)
 spec_h2 = "<h2 " _ attrs? _ ">" _ spec_title _ "</h2>"
 spec_title = ~r"(?P<content>[sS]pecifications?)"
+whynospec = "<p>" _ whynospec_start whynospec_content whynospec_end "</p>" _
+whynospec_start = ks_esc_start "WhyNoSpecStart" _ ks_esc_end _
+whynospec_content = ~r".*?(?={{\s*WhyNoSpecEnd)"s
+whynospec_end = ks_esc_start "WhyNoSpecEnd" _ ks_esc_end _
 spec_table = "<table class=\"standard-table\">" _ spec_head _ spec_body
     _ "</table>" _
 
@@ -1745,7 +1749,12 @@ def scrape_page(mdn_page, feature, locale='en'):
         ('footnotes', None),
         ('issues', []),
     ))
-    if not mdn_page.strip():
+
+    # Quick check for data in page
+    if not (
+            ('Browser compatibility</h' in mdn_page) or
+            ('Specifications</h' in mdn_page) or
+            ('CompatibilityTable' in mdn_page)):
         return data
 
     try:
