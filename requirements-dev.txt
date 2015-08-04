@@ -3,31 +3,31 @@
 # Documentation
 Pygments==2.0.2
 sphinx-rtd-theme==0.1.8
-alabaster==0.7.4
+alabaster==0.7.5
 Babel==1.3
 snowballstemmer==1.2.0
 Sphinx==1.3.1
 docutils==0.12
 
 # Multi-environment testing
-py==1.4.27
+py==1.4.28
 pluggy==0.3.0
-virtualenv==13.0.1
-tox==2.0.1
+virtualenv==13.0.3
+tox==2.0.2
 
 # PEP8, PEP257 and static analysis
-mccabe==0.3
+mccabe==0.3.1
 pep8==1.5.7  # rq.filter: <1.6,>=1.5.7
-pyflakes==0.8.1
+pyflakes==0.9.1
 flake8==2.4.1
 pep257==0.5.0
 flake8-docstrings==0.2.1.post1
 
 # MANIFEST.in checker
-check-manifest==0.24
+check-manifest==0.25
 
 # Package QA
-pyroma==1.8.1
+pyroma==1.8.2
 
 # For ./manage.py runserver_plus
 Werkzeug==0.10.4
@@ -35,7 +35,7 @@ Werkzeug==0.10.4
 # Better shell, debugger
 gnureadline==6.3.3
 ipython==3.1.0
-ipdb==0.8
+ipdb==0.8.1
 
 # Debugging
 sqlparse==0.1.15

@@ -1718,6 +1718,24 @@ multipage/sections.html#the-address-element">
         self.assertDataEqual(expected, response.content.decode('utf-8'))
         self.assertContains(response, expected, html=True)
 
+    def test_slug(self):
+        feature = self.create(Feature, slug='feature')
+        browser = self.create(Browser, slug='chrome', name={'en': 'Browser'})
+        version = self.create(Version, browser=browser, status='current')
+        self.create(Support, version=version, feature=feature)
+        self.changeset.closed = True
+        self.changeset.save()
+
+        url = reverse('viewfeatures-detail', kwargs={'pk': 'feature'})
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(feature.id, response.data['id'])
+
+    def test_slug_not_found(self):
+        url = reverse('viewfeatures-detail', kwargs={'pk': 'feature'})
+        response = self.client.get(url)
+        self.assertEqual(404, response.status_code)
+
 
 class TestViewFeatureUpdates(APITestCase):
     """Test PUT to a ViewFeature detail"""
