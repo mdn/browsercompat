@@ -223,11 +223,15 @@ tr_tags = tr_tag*
 # Text segments
 #
 text_block = text_token+
-text_token = kumascript / cell_version / footnote_id / cell_removed / text_item
+text_token = kumascript / cell_version / footnote_id / cell_removed /
+    cell_noprefix / cell_partial / text_item
 cell_version = ~r"(?P<version>\d+(\.\d+)*)"""
     r"""(\s+\((?P<eng_version>\d+(\.\d+)*)\))?\s*"s
 footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
 cell_removed = ~r"[Rr]emoved\s+[Ii]n\s*"s
+cell_noprefix = _ ("(unprefixed)" / "(no prefix)" / "without prefix" /
+    "(without prefix)") _
+cell_partial =  _ (", partial" / "(partial)") _
 text_item = ~r"(?P<content>[^{<[]+)\s*"s
 
 text = (double_quoted_text / single_quoted_text / bare_text)
@@ -734,6 +738,14 @@ class PageVisitor(NodeVisitor):
 
     def visit_cell_removed(self, node, children):
         return {'type': 'removed', 'content': node.text, 'start': node.start,
+                'end': node.end}
+
+    def visit_cell_noprefix(self, node, children):
+        return {'type': 'noprefix', 'content': node.text, 'start': node.start,
+                'end': node.end}
+
+    def visit_cell_partial(self, node, children):
+        return {'type': 'partial', 'content': node.text, 'start': node.start,
                 'end': node.end}
 
     #
@@ -1695,6 +1707,10 @@ class PageVisitor(NodeVisitor):
                 assert not data['support'].get('id')
         elif item['type'] == 'removed':
             data['support']['support'] = 'no'
+        elif item['type'] == 'noprefix':
+            data['support']['support'] = 'yes'
+        elif item['type'] == 'partial':
+            data['support']['support'] = 'partial'
         elif item['type'] in ('text', 'code'):
             out = self.item_to_html(item, 'support')
             if out:
