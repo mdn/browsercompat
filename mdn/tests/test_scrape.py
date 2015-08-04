@@ -242,6 +242,11 @@ class TestGrammar(TestCase):
         self.assert_compat_headers(
             headers, expected_feature, expected_browsers)
 
+    def test_compat_footnotes(self):
+        footnotes = '<p>[2] A footnote</p>'
+        parsed = page_grammar['compat_footnotes'].parse(footnotes)
+        self.assertEqual(footnotes, parsed.text)
+
     def assert_cell_version(self, text, version, eng_version=None):
         match = page_grammar['cell_version'].parse(text).match.groupdict()
         expected = {'version': version, 'eng_version': eng_version}
@@ -846,11 +851,11 @@ class TestPageVisitor(ScrapeTestCase):
                 'id': '__basic support-_Chrome-3.0',
                 'support': 'yes', 'version': '_Chrome-3.0',
                 'footnote_id': ('1', 239, 242)}]}]
-        footnotes = {'2': ('Oops, footnote ID is wrong.', 281, 320)}
+        footnotes = {'2': ('Oops, footnote ID is wrong.', 281, 319)}
         issues = [
             ('unknown_browser', 185, 191, {'name': 'Chrome'}),
             ('footnote_missing', 239, 242, {'footnote_id': '1'}),
-            ('footnote_unused', 281, 320, {'footnote_id': '2'})]
+            ('footnote_unused', 281, 319, {'footnote_id': '2'})]
         self.assert_compat_section(
             compat_section, expected_compat, footnotes, issues)
 
@@ -906,6 +911,20 @@ class TestPageVisitor(ScrapeTestCase):
         issues = [('unknown_browser', 36, 51, {'name': 'Safari (WebKit)'})]
         self.assert_compat_headers(compat_headers, expected, issues)
 
+    def test_compat_headers_with_line_height(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Navigator/serviceWorker
+        chrome = self.get_instance(Browser, 'chrome')
+        compat_headers = (
+            '<tr><th style="line-height: 16px;">Feature</th>'
+            '<th style="line-height: 16px;">Chrome</th></tr>')
+        expected = [{'slug': 'chrome', 'name': 'Chrome', 'id': chrome.id}]
+        issues = [
+            ('unexpected_attribute', 51, 77,
+             {'node_type': 'th', 'ident': 'style',
+              'value': 'line-height: 16px;',
+              'expected': 'the attribute colspan'})]
+        self.assert_compat_headers(compat_headers, expected, issues)
+
     def assert_compat_row_cell(self, row_cell, expected_cell, issues):
         parsed = page_grammar['compat_row_cell'].parse(row_cell)
         cell = self.visitor.visit(parsed)
@@ -914,52 +933,57 @@ class TestPageVisitor(ScrapeTestCase):
 
     def test_compat_row_cell_feature_with_rowspan(self):
         row_cell = '<td rowspan="2">Some Feature</td>'
-        expected_cell = [
-            {'type': 'td', 'rowspan': '2', 'start': 0, 'end': 16},
-            {'type': 'text', 'content': 'Some Feature', 'start': 16,
-             'end': 28}]
+        expected_cell = {
+            'type': 'td', 'start': 0, 'end': 33, 'rowspan': '2', 'content': {
+                'type': 'text', 'start': 16, 'end': 28,
+                'content': 'Some Feature'}}
         self.assert_compat_row_cell(row_cell, expected_cell, [])
 
     def test_compat_row_cell_feature_with_unknown_attr(self):
         row_cell = '<td class="freaky">Freaky Feature</td>'
-        expected_cell = [
-            {'type': 'td', 'start': 0, 'end': 19},
-            {'type': 'text', 'content': 'Freaky Feature', 'start': 19,
-             'end': 33}]
+        expected_cell = {
+            'type': 'td', 'start': 0, 'end': 38, 'content': {
+                'type': 'text', 'start': 19, 'end': 33,
+                'content': 'Freaky Feature'}}
         issues = [(
             'unexpected_attribute', 4, 18,
             {'node_type': 'td', 'ident': 'class', 'value': 'freaky',
-             'expected': 'rowspan or colspan'})]
+             'expected': 'the attributes rowspan or colspan'})]
         self.assert_compat_row_cell(row_cell, expected_cell, issues)
 
-    def test_compat_row_cell_break(self):
+    def test_compat_row_break(self):
         row_cell = '<td>Multi-line<br/>feature</td>'
-        expected_cell = [
-            {'type': 'td', 'start': 0, 'end': 4},
-            {'type': 'text', 'content': 'Multi-line', 'start': 4, 'end': 14},
-            {'type': 'break', 'start': 14, 'end': 19},
-            {'type': 'text', 'content': 'feature', 'start': 19, 'end': 26},
-        ]
+        expected_cell = {
+            'type': 'td', 'start': 0, 'end': 31, 'content': {
+                'type': 'html_block', 'start': 4, 'end': 26, 'content': [
+                    {'type': 'text', 'start': 4, 'end': 14,
+                     'content': 'Multi-line'},
+                    {'type': 'break', 'start': 14, 'end': 19},
+                    {'type': 'text', 'start': 19, 'end': 26,
+                     'content': 'feature'},
+                ]}}
         self.assert_compat_row_cell(row_cell, expected_cell, [])
 
     def test_compat_row_cell_kumascript(self):
         row_cell = '<td>EXP {{experimental_inline}} FEATURE</td>'
-        expected_cell = [
-            {'type': 'td', 'start': 0, 'end': 4},
-            {'type': 'text', 'content': 'EXP', 'start': 4, 'end': 8},
-            {'type': 'kumascript', 'name': 'experimental_inline', 'args': [],
-             'start': 8, 'end': 32},
-            {'type': 'text', 'content': 'FEATURE', 'start': 32, 'end': 39},
-        ]
+        expected_cell = {
+            'type': 'td', 'start': 0, 'end': 44, 'content': {
+                'type': 'text_block', 'start': 4, 'end': 39, 'content': [
+                    {'type': 'text', 'start': 4, 'end': 8, 'content': 'EXP '},
+                    {'type': 'kumascript', 'start': 8, 'end': 32,
+                     'name': 'experimental_inline', 'args': []},
+                    {'type': 'text', 'start': 32, 'end': 39,
+                     'content': 'FEATURE'}]}}
         self.assert_compat_row_cell(row_cell, expected_cell, [])
 
-    def test_compat_row_cell_code_block(self):
+    def test_compat_row_code_block(self):
         row_cell = '<td><code>canonical</code></td>'
-        expected_cell = [
-            {'type': 'td', 'start': 0, 'end': 4},
-            {'type': 'code_block', 'content': 'canonical', 'start': 4,
-             'end': 26},
-        ]
+        expected_cell = {
+            'type': 'td', 'start': 0, 'end': 31, 'content': {
+                'type': 'code', 'start': 4, 'end': 26, 'attributes': {},
+                'content': {
+                    'type': 'text', 'start': 10, 'end': 19,
+                    'content': 'canonical'}}}
         self.assert_compat_row_cell(row_cell, expected_cell, [])
 
     def assert_cell_to_feature(
@@ -1041,9 +1065,9 @@ class TestPageVisitor(ScrapeTestCase):
     def test_cell_to_feature_ks_htmlelement(self):
         cell = '{{ HTMLElement("progress") }}'
         expected_feature = {
-            'id': '_&lt;progress&gt;', 'name': '&lt;progress&gt;',
+            'id': '_progress', 'name': '&lt;progress&gt;',
             'canonical': True,
-            'slug': 'web-css-background-size_lt_progress_gt_',
+            'slug': 'web-css-background-size_progress',
         }
         self.assert_cell_to_feature(cell, expected_feature, [])
 
@@ -1052,6 +1076,7 @@ class TestPageVisitor(ScrapeTestCase):
         expected_feature = {
             'id': '_deviceproximityevent', 'name': 'DeviceProximityEvent',
             'slug': 'web-css-background-size_deviceproximityevent',
+            'canonical': True
         }
         self.assert_cell_to_feature(cell, expected_feature, [])
 
@@ -1063,7 +1088,7 @@ class TestPageVisitor(ScrapeTestCase):
         issues = [
             ('unknown_kumascript', 16, 23,
              {'name': 'bar', 'args': [], 'kumascript': '{{bar}}',
-              'scope': 'compatibility feature'})]
+              'scope': 'feature'})]
         self.assert_cell_to_feature(cell, expected_feature, issues)
 
     def test_cell_to_feature_unknown_kumascript_with_args(self):
@@ -1073,7 +1098,7 @@ class TestPageVisitor(ScrapeTestCase):
         issues = [
             ('unknown_kumascript', 8, 22,
              {'name': 'bar', 'args': ['baz'], 'kumascript': '{{bar(baz)}}',
-              'scope': 'compatibility feature'})]
+              'scope': 'feature'})]
         self.assert_cell_to_feature(cell, expected_feature, issues)
 
     def test_cell_to_feature_nonascii_name(self):
@@ -1092,7 +1117,7 @@ class TestPageVisitor(ScrapeTestCase):
             'id': '_block alignment values', 'name': 'Block alignment values',
             'standardized': False,
             'slug': 'web-css-background-size_block_alignment_values'}
-        issues = [('footnote_feature', 27, 31, {})]
+        issues = [('footnote_feature', 27, 30, {})]
         self.assert_cell_to_feature(cell, expected_feature, issues)
 
     def test_cell_to_feature_digit(self):
@@ -1104,8 +1129,31 @@ class TestPageVisitor(ScrapeTestCase):
         }
         self.assert_cell_to_feature(cell, expected_feature, [])
 
+    def test_cell_to_feature_link(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/EventSource
+        cell = ('<a href="/En/HTTP_access_control">'
+                'Cross-Origin Resource Sharing</a><br>')
+        expected_feature = {
+            'id': '_cross-origin resource sharing',
+            'name': 'Cross-Origin Resource Sharing',
+            'slug': 'web-css-background-size_cross-origin_resource_shar'
+        }
+        issues = [('tag_dropped', 4, 71, {'tag': 'a', 'scope': 'feature'})]
+        self.assert_cell_to_feature(cell, expected_feature, issues)
+
+    def test_cell_to_feature_p(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const
+        cell = ('<p>Reassignment fails</p>')
+        expected_feature = {
+            'id': '_reassignment fails',
+            'name': 'Reassignment fails',
+            'slug': 'web-css-background-size_reassignment_fails'
+        }
+        issues = [('tag_dropped', 4, 29, {'tag': 'p', 'scope': 'feature'})]
+        self.assert_cell_to_feature(cell, expected_feature, issues)
+
     def test_cell_to_feature_unknown_item(self):
-        bad_cell = [{'type': 'td'}, {'type': 'other'}]
+        bad_cell = {'type': 'td', 'content': {'type': 'other'}}
         self.assertRaises(ValueError, self.visitor.cell_to_feature, bad_cell)
 
     def assert_cell_to_support_full(
@@ -1351,7 +1399,7 @@ class TestPageVisitor(ScrapeTestCase):
     def test_cell_to_support_nested_p(self):
         self.assert_cell_to_support(
             '<p><p>4.0</p></p>',
-            issues=[('nested_p', 7, 10, {})])
+            issues=[('nested_p', 7, 17, {})])
 
     def test_cell_to_support_with_prefix_and_break(self):
         self.assert_cell_to_support(
@@ -1425,8 +1473,8 @@ class TestPageVisitor(ScrapeTestCase):
             '{{CompatGeckoDesktop("20.0")}} '
             '<sup><a href="#bc2">[2]</a><a href="#bc3">[3]</a></sup>',
             [{'version': '20.0'}],
-            [{'support': 'yes', 'footnote_id': ('2', 35, 62)}],
-            issues=[('footnote_multiple', 62, 90,
+            [{'support': 'yes', 'footnote_id': ('2', 55, 58)}],
+            issues=[('footnote_multiple', 77, 80,
                     {'prev_footnote_id': '2', 'footnote_id': '3'})])
 
     def test_cell_to_support_star_footnote(self):
@@ -1443,7 +1491,7 @@ class TestPageVisitor(ScrapeTestCase):
     def test_cell_to_support_unknown_item(self):
         feature = {'id': '_feature', 'name': 'feature', 'slug': 'feature_slug'}
         browser = {'id': '_browser', 'name': 'Browser', 'slug': 'browser'}
-        bad_cell = [{'type': 'td'}, {'type': 'other'}]
+        bad_cell = {'type': 'td', 'content': {'type': 'other'}}
         self.assertRaises(
             ValueError, self.visitor.cell_to_support, bad_cell, feature,
             browser)
@@ -1500,7 +1548,7 @@ class TestPageVisitor(ScrapeTestCase):
                 'support': 'yes', 'version': chrome_10.id}],
             'versions': [{
                 'browser': chrome.id, 'id': chrome_10.id, 'version': '1.0'}]}
-        issues = [('extra_cell', 158, 181, {})]
+        issues = [('extra_cell', 158, 186, {})]
         self.assert_compat_body(compat_body, expected, issues)
 
     def assert_compat_footnotes(self, compat_footnotes, expected, issues):
@@ -1538,20 +1586,20 @@ class TestPageVisitor(ScrapeTestCase):
     def test_compat_footnotes_unknown_kumascriptscript(self):
         footnotes = (
             "<p>[1] Footnote {{UnknownKuma}} but the beat continues.</p>")
-        expected = {'1': ('Footnote  but the beat continues.', 0, 59)}
+        expected = {'1': ('Footnote but the beat continues.', 0, 59)}
         issues = [(
-            'unknown_kumascript', 15, 30,
+            'unknown_kumascript', 16, 32,
             {'name': 'UnknownKuma', 'args': [], 'scope': 'footnote',
              'kumascript': '{{UnknownKuma}}'})]
         self.assert_compat_footnotes(footnotes, expected, issues)
 
     def test_compat_footnotes_unknown_kumascriptscript_with_args(self):
         footnotes = '<p>[1] Footnote {{UnknownKuma("arg")}}</p>'
-        expected = {'1': ('Footnote ', 0, 42)}
+        expected = {'1': ('Footnote', 0, 42)}
         issues = [(
-            'unknown_kumascript', 15, 37,
-            {'name': 'UnknownKuma', 'args': ['"arg"'], 'scope': 'footnote',
-             'kumascript': '{{UnknownKuma("arg")}}'})]
+            'unknown_kumascript', 16, 38,
+            {'name': 'UnknownKuma', 'args': ['arg'], 'scope': 'footnote',
+             'kumascript': '{{UnknownKuma(arg)}}'})]
         self.assert_compat_footnotes(footnotes, expected, issues)
 
     def test_compat_footnotes_pre_section(self):
@@ -1561,6 +1609,7 @@ class TestPageVisitor(ScrapeTestCase):
         self.assert_compat_footnotes(footnotes, expected, [])
 
     def test_compat_footnotes_pre_with_attrs_section(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
         footnotes = (
             '<p>[1] Here\'s some code:</p>\n'
             '<pre class="brush:css">\n'
@@ -1568,10 +1617,14 @@ class TestPageVisitor(ScrapeTestCase):
             '</pre>')
         expected = {
             '1': (
-                "<p>Here's some code:</p>\n<pre class=\"brush:css\">\n"
+                "<p>Here's some code:</p>\n<pre>\n"
                 ".foo {background-image: url(bg-image.png);}\n</pre>",
                 0, 103)}
-        self.assert_compat_footnotes(footnotes, expected, [])
+        issues = [
+            ('unexpected_attribute', 34, 51,
+             {'ident': 'class', 'node_type': 'pre', 'value': 'brush:css',
+              'expected': 'no attributes'})]
+        self.assert_compat_footnotes(footnotes, expected, issues)
 
     def test_compat_footnotes_asterisk(self):
         footnotes = "<p>[*] A footnote</p>"
@@ -1582,6 +1635,129 @@ class TestPageVisitor(ScrapeTestCase):
         footnotes = "<p>A footnote.</p>"
         issues = [('footnote_no_id', 0, 18, {})]
         self.assert_compat_footnotes(footnotes, {}, issues)
+
+    def test_compat_footnotes_bad_footnote_unknown_kumascript(self):
+        # https://developer.mozilla.org/en-US/docs/Web/SVG/Element/color-profile
+        footnotes = '<p>{{SVGRef}}</p>'
+        issues = [
+            ('unknown_kumascript', 3, 13,
+             {'name': 'SVGRef', 'args': [], 'kumascript': '{{SVGRef}}',
+              'scope': u'footnote'})]
+        self.assert_compat_footnotes(footnotes, {}, issues)
+
+    def test_compat_footnotes_empty_paragraph_no_footnotes(self):
+        footnotes = ('<p>  </p>\n')
+        self.assert_compat_footnotes(footnotes, {}, [])
+
+    def test_compat_footnotes_empty_paragraph_invalid_footnote(self):
+        footnotes = (
+            '<p> </p>\n'
+            '<p>Invalid footnote.</p>\n'
+            '<p>  </p>')
+        issues = [('footnote_no_id', 9, 33, {})]
+        self.assert_compat_footnotes(footnotes, {}, issues)
+        self.assertEqual(footnotes[9:33], '<p>Invalid footnote.</p>')
+
+    def test_compat_footnotes_empty_paragraphs_trimmed(self):
+        footnote = (
+            '<p> </p>\n'
+            '<p>[1] Valid footnote.</p>'
+            '<p>   </p>'
+            '<p>Continues footnote 1.</p>')
+        expected = {
+            '1': (
+                '<p>Valid footnote.</p>\n<p>Continues footnote 1.</p>',
+                9, 73)}
+        self.assert_compat_footnotes(footnote, expected, [])
+
+    def test_compat_footnotes_code(self):
+        footnote = (
+            '<p>[1] From Firefox 31 to 35, <code>will-change</code>'
+            ' was available...</p>')
+        expected = {
+            '1': (
+                'From Firefox 31 to 35, <code>will-change</code>'
+                ' was available...', 0, 75)}
+        self.assert_compat_footnotes(footnote, expected, [])
+
+    def test_compat_footnotes_span(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
+        footnote = (
+            '<p>[1]<span style="font-size: 14px; line-height: 18px;">'
+            'Bubbling for this event is supported by at least Gecko 1.9.2,'
+            ' Chrome 6, and Safari 4.</span></p>')
+        expected = {
+            '1': ('Bubbling for this event is supported by at least Gecko'
+                  ' 1.9.2, Chrome 6, and Safari 4.', 0, 152)}
+        issues = [
+            ('span_dropped', 6, 148, {})]
+        self.assert_compat_footnotes(footnote, expected, issues)
+
+    def test_compat_footnotes_a(self):
+        # https://developer.mozilla.org/en-US/docs/Web/SVG/SVG_as_an_Image
+        footnote = (
+            '<p>[1] Compatibility data from'
+            '<a href="http://caniuse.com" title="http://caniuse.com">'
+            'caniuse.com</a>.</p>')
+        expected = {
+            '1': ('Compatibility data from <a href="http://caniuse.com">'
+                  'caniuse.com</a>.', 0, 106)}
+        issues = [
+            ('unexpected_attribute', 59, 85,
+             {'node_type': 'a', 'ident': 'title',
+              'value': 'http://caniuse.com',
+              'expected': u'the attribute href'})]
+        self.assert_compat_footnotes(footnote, expected, issues)
+
+    def test_compat_footnotes_a_without_href(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/VRFieldOfViewReadOnly/downDegrees
+        footnote = '<p>[1] Use <a>about:config</a></p>'
+        expected = {'1': ('Use <a>about:config</a>', 0, 34)}
+        issues = [
+            ('missing_attribute', 11, 30, {'node_type': 'a', 'ident': 'href'})]
+        self.assert_compat_footnotes(footnote, expected, issues)
+
+    def test_compat_footnotes_br_start(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/VRFieldOfViewReadOnly/downDegrees
+        footnote = "<p><br>\n[1] To find information on Chrome's WebVR...</p>"
+        expected = {'1': ("To find information on Chrome's WebVR...", 0, 56)}
+        self.assert_compat_footnotes(footnote, expected, [])
+
+    def test_compat_footnotes_br_end(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/wheel
+        footnote = "<p>[1] Here's a footnote. <br></p>"
+        expected = {'1': ("Here's a footnote.", 0, 34)}
+        self.assert_compat_footnotes(footnote, expected, [])
+
+    def test_compat_footnotes_br_footnotes(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/hash
+        footnote = "<p>[1] Footnote 1.<br>[2] Footnote 2.</p>"
+        expected = {'1': ("Footnote 1. <br/> Footnote 2.", 0, 41)}
+        issues = [('second_footnote', 22, 25, {'original': '1', 'new': '2'})]
+        self.assert_compat_footnotes(footnote, expected, issues)
+
+    def test_compat_footnotes_version(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/focusin
+        link = (
+            '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=687787">'
+            '687787</a>')  # 687787 triggers the compat cell version pattern
+        footnote = '<p>[1] See bug {}.</p>'.format(link)
+        expected = {'1': ('See bug {}.'.format(link), 0, 92)}
+        self.assert_compat_footnotes(footnote, expected, [])
+
+    def test_compat_footnotes_removed(self):
+        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
+        footnote = "<p>[1] Removed in Chrome 35+</p>"
+        expected = {'1': ('Removed in Chrome 35+', 0, 32)}
+        self.assert_compat_footnotes(footnote, expected, [])
+
+    def test_compat_h3(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/MozContact/key
+        h3 = '<h3 id="Gecko Gecko">Gecko Note</h3>\n<p>A note</p>'
+        parsed = page_grammar['compat_h3'].parse(h3)
+        self.visitor.visit(parsed)
+        expected = [('skipped_h3', 0, 36, {'h3': 'Gecko Note'})]
+        self.assertEqual(expected, self.visitor.issues)
 
     def assert_kumascript(self, text, name, args, issues=None):
         parsed = page_grammar['kumascript'].parse(text)
@@ -1678,86 +1854,91 @@ class TestPageVisitor(ScrapeTestCase):
         text = '"max-zoom" descriptor'
         self.assertEqual(text, self.visitor.unquote(text))
 
-    def assert_kumascript_to_text(
+    def assert_kumascript_to_html(
             self, kumascript, expected_text, scope='specdesc', issues=None):
         parsed = page_grammar['kumascript'].parse('{{' + kumascript + '}}')
         item = self.visitor.visit(parsed)
-        text = self.visitor.kumascript_to_text(item, scope)
+        text = self.visitor.kumascript_to_html(item, scope)
         self.assertEqual(expected_text, text)
         self.assertEqual(self.visitor.issues, issues or [])
 
-    def test_kumascript_to_text_xref_csslength(self):
+    def test_kumascript_to_html_xref_csslength(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'xref_csslength()', '<code>&lt;length&gt;</code>')
 
-    def test_kumascript_to_text_xref_csspercentage(self):
+    def test_kumascript_to_html_xref_csspercentage(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/position_value
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'xref_csspercentage()', '<code>&lt;percentage&gt;</code>')
 
-    def test_kumascript_to_text_xref_cssstring(self):
+    def test_kumascript_to_html_xref_cssstring(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/attr
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'xref_cssstring()', '<code>&lt;string&gt;</code>')
 
-    def test_kumascript_to_text_xref_cssimage(self):
+    def test_kumascript_to_html_xref_cssimage(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/list-style-image
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'xref_cssimage()', '<code>&lt;image&gt;</code>')
 
-    def test_kumascript_to_text_xref_csscolorvalue(self):
+    def test_kumascript_to_html_xref_csscolorvalue(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/background-color
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'xref_csscolorvalue()', '<code>&lt;color&gt;</code>')
 
-    def test_kumascript_to_text_xref_cssvisual(self):
+    def test_kumascript_to_html_xref_cssvisual(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/break-after
-        self.assert_kumascript_to_text('xref_cssvisual', '<code>visual</code>')
+        self.assert_kumascript_to_html('xref_cssvisual', '<code>visual</code>')
 
-    def test_kumascript_to_text_cssxref(self):
+    def test_kumascript_to_html_cssxref(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'cssxref("display")', '<code>display</code>')
 
-    def test_kumascript_to_text_domxref_1arg(self):
+    def test_kumascript_to_html_domxref_1arg(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/CharacterData
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'domxref("ChildNode")', '<code>ChildNode</code>')
 
-    def test_kumascript_to_text_domxref_2arg(self):
+    def test_kumascript_to_html_domxref_2arg(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/initCustomEvent
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'domxref("CustomEvent.CustomEvent", "CustomEvent()")',
             '<code>CustomEvent()</code>')
 
-    def test_kumascript_to_text_htmlelement(self):
+    def test_kumascript_to_html_htmlelement(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/HTMLIsIndexElement
-        self.assert_kumascript_to_text(
-            'HTMLElement("isindex")', '<code>isindex</code>')
+        self.assert_kumascript_to_html(
+            'HTMLElement("isindex")', '<code>&lt;isindex&gt;</code>')
 
-    def test_kumascript_to_text_jsxref_1arg(self):
+    def test_kumascript_to_html_htmlelement_with_space(self):
+        # https://developer.mozilla.org/en-US/docs/Template:HTMLElement
+        self.assert_kumascript_to_html(
+            'HTMLElement("is index")', '<code>is index</code>')
+
+    def test_kumascript_to_html_jsxref_1arg(self):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'jsxref("Array.isArray")', '<code>Array.isArray</code>')
 
-    def test_kumascript_to_text_jsxref_2arg(self):
+    def test_kumascript_to_html_jsxref_2arg(self):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'jsxref("Global_Objects/null", "null")', '<code>null</code>')
 
-    def test_kumascript_to_text_specname(self):
+    def test_kumascript_to_html_specname(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/AbstractWorker
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'SpecName("Web Workers")', 'specification Web Workers')
 
-    def test_kumascript_to_text_unknown_kumascript(self):
+    def test_kumascript_to_html_unknown_kumascript(self):
         issues = [
             ('unknown_kumascript', 0, 23,
              {'name': 'Unknown', 'args': ['textarea'],
               'scope': 'specdesc',
               'kumascript': '{{Unknown(textarea)}}'})]
-        self.assert_kumascript_to_text(
+        self.assert_kumascript_to_html(
             'Unknown("textarea")', None, issues=issues)
 
     def assert_join_content(self, content_bits, expected_text):

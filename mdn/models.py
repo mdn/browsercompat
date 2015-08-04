@@ -229,7 +229,7 @@ class FeaturePage(models.Model):
             issues = raw.get('issues', [])
         for issue in issues:
             slug = issue[0]
-            severity = ISSUES[slug][0]
+            severity = ISSUES.get(slug, UNKNOWN_ISSUE)[0]
             counts[severity] += 1
         return counts
 
@@ -377,6 +377,16 @@ ISSUES = OrderedDict((
         ERROR,
         'Nested <p> tags are not supported.',
         'Edit the MDN page to remove the nested <p> tag')),
+    ('missing_attribute', (
+        ERROR,
+        'The tag <{node_type}> is missing the expected attribute {ident}',
+        'Add the missing attribute or convert the tag to plain text.')),
+    ('second_footnote', (
+        ERROR,
+        'An additional footnote was detected in content',
+        'The footnote [{original}] is being used, and the footnote [{new}]'
+        ' discarded.  If footnotes are in the same <p> and split by <br>'
+        ' tags, then split into paragraphs to fix.')),
     ('section_skipped', (
         CRITICAL,
         'Section <h2>{title}</h2> has unexpected content.',
@@ -391,6 +401,12 @@ ISSUES = OrderedDict((
         'The import of section {title} failed, but no parse error was'
         ' detected. This is usually because of a previous critical error,'
         ' which must be cleared before any parsing can be attempted.')),
+    ('skipped_h3', (
+        WARNING,
+        '<h3>{h3}</h3> was not imported.',
+        '<h3> subsections are usually prose compatibility information, and'
+        ' anything after an <h3> is not parsed or imported. Convert to'
+        ' footnotes or move to a different <h2> section.')),
     ('spec_h2_id', (
         WARNING,
         'Expected <h2 id="Specifications">, actual id={h2_id}',
@@ -437,11 +453,17 @@ ISSUES = OrderedDict((
         ERROR,
         '{kumascript} is invalid in the spec description',
         'Handled as if {{{{SpecName(...)}}}} was used. Update the MDN page.')),
+    ('tag_dropped', (
+        WARNING,
+        'HTML element {tag} (but not wrapped content) was removed.',
+        'The element {tag} is not allowed in the {scope} scope, and was'
+        ' removed. You can remove the tag from the MDN page to remove the'
+        ' warning.')),
     ('unexpected_attribute', (
         WARNING,
         'Unexpected attribute <{node_type} {ident}="{value}">',
-        'For <{node_type}>, the importer is ready for the attributes'
-        ' {expected}. This unexpected attribute will be discarded.')),
+        'For <{node_type}>, the importer expects {expected}. This unexpected'
+        ' attribute will be discarded.')),
     ('unknown_browser', (
         ERROR,
         'Unknown Browser "{name}".',
@@ -469,6 +491,9 @@ ISSUES = OrderedDict((
         ' This could be a typo on the MDN page, or the version needs to'
         ' be added to the API.')),
 ))
+
+UNKNOWN_ISSUE = (
+    CRITICAL, 'Unknown Issue', "This issue slug doesn't have a description.")
 
 
 @python_2_unicode_compatible
@@ -498,15 +523,15 @@ class Issue(models.Model):
 
     @property
     def severity(self):
-        return ISSUES[self.slug][0]
+        return ISSUES.get(self.slug, UNKNOWN_ISSUE)[0]
 
     @property
     def brief_description(self):
-        return ISSUES[self.slug][1].format(**self.params)
+        return ISSUES.get(self.slug, UNKNOWN_ISSUE)[1].format(**self.params)
 
     @property
     def long_description(self):
-        return ISSUES[self.slug][2].format(**self.params)
+        return ISSUES.get(self.slug, UNKNOWN_ISSUE)[2].format(**self.params)
 
     @property
     def context(self):
@@ -514,6 +539,8 @@ class Issue(models.Model):
             return ''
 
         raw = self.content.raw
+        if not raw.endswith('\n'):
+            raw += '\n'
         start_line = raw.count('\n', 0, self.start)
         end_line = raw.count('\n', 0, self.end)
         ctx_start_line = max(0, start_line - 2)
@@ -539,7 +566,7 @@ class Issue(models.Model):
 
         out = []
         for num, (line, err_line) in enumerate(zip(context_lines, err_lines)):
-            lnum = ctx_start_line + num
+            lnum = ctx_start_line + num + 1
             out.append(
                 text_type(lnum).rjust(digits) + ' ' + line)
             if '^' in err_line:
