@@ -1832,6 +1832,31 @@ class TestViewFeatureUpdates(APITestCase):
         sf2 = Feature.objects.get(slug='sf2')
         self.assertEqual(sf2.parent, self.feature)
         feature = Feature.objects.get(id=self.feature.id)
+        actual = list(feature.children.all())
+        if actual != [sf1, sf2]:  # pragma: nocover
+            # Debug occasional test failure
+            def report(f, prefix='Feature'):
+                attrs = ['id', 'lft', 'rght', 'tree_id', 'level', 'parent']
+                return prefix + ': ' + ', '.join(
+                    ['%s=%s' % (a, getattr(f, a)) for a in attrs])
+            from django.db import connection
+            msg_lines = [
+                "=" * 70,
+                'Unexpected failure in test_post_add_second_subfeature.',
+                'Report at:',
+                ' https://bugzilla.mozilla.org/show_bug.cgi?id=1159337',
+                'DB queries:'
+            ]
+            msg_lines.extend([str(q) for q in connection.queries])
+            msg_lines.extend([
+                'Features:',
+                report(self.feature, 'parent'),
+                report(feature, 'parent from DB'),
+                report(sf1, 'sf1'),
+                report(sf2, 'sf2'),
+                "=" * 70]
+            )
+            print('\n'.join(msg_lines))
         self.assertEqual(list(feature.children.all()), [sf1, sf2])
 
     def test_post_update_existing_subfeature(self):
