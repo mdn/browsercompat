@@ -1,4 +1,6 @@
 """Views for MDN migration app."""
+from collections import Counter
+
 from django import forms
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
@@ -12,6 +14,8 @@ from django.views.generic.edit import CreateView, FormMixin, UpdateView
 
 from .models import FeaturePage, Issue, ISSUES, SEVERITIES, validate_mdn_url
 from .tasks import start_crawl, parse_page
+
+DEV_PREFIX = 'https://developer.mozilla.org/en-US/docs/'
 
 
 def can_create(user):
@@ -28,11 +32,34 @@ class FeaturePageListView(ListView):
     paginate_by = 50
 
     def get_queryset(self):
-        return FeaturePage.objects.order_by('feature_id')
+        qs = FeaturePage.objects.order_by('url')
+        topic = self.request.GET.get('topic')
+        if topic:
+            qs = qs.filter(url__startswith=DEV_PREFIX + topic)
+        return qs
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageListView, self).get_context_data(**kwargs)
+        topic = self.request.GET.get('topic')
+        base_url = reverse('feature_page_list')
+        if topic:
+            base_url += '?topic=' + topic
+        ctx['base_url'] = base_url
         ctx['request'] = self.request
+        ctx['topic'] = topic
+        ctx['topics'] = sorted((
+            'Web/API',
+            'Web/Accessibility',
+            'Web/CSS',
+            'Web/Events',
+            'Web/Guide',
+            'Web/HTML',
+            'Web/JavaScript',
+            'Web/MathML',
+            'Web/SVG',
+            'Web/XPath',
+            'Web/XSLT',
+        ))
         return ctx
 
 
@@ -78,8 +105,7 @@ class FeaturePageJSONView(BaseDetailView):
 class SearchForm(forms.Form):
     url = forms.URLField(
         label='MDN URL',
-        widget=forms.URLInput(attrs={
-            'placeholder': "https://developer.mozilla.org/en-US/docs/..."}))
+        widget=forms.URLInput(attrs={'placeholder': DEV_PREFIX + '...'}))
 
     def clean_url(self):
         data = self.cleaned_data['url']
@@ -116,9 +142,29 @@ class FeaturePageSearch(TemplateResponseMixin, View, FormMixin):
 
     def form_valid(self, form):
         url = form.cleaned_data['url']
+        next_url = None
+
+        # Try loading a specific page
         try:
             fp = FeaturePage.objects.get(url=url)
         except FeaturePage.DoesNotExist:
+            pass
+        else:
+            next_url = reverse('feature_page_detail', kwargs={'pk': fp.pk})
+
+        # Try filtering by a subset of pages
+        if (not next_url) and url.startswith(DEV_PREFIX):
+            suburl = url
+            while suburl.endswith('/'):
+                suburl = suburl[:-1]
+            fp_start = FeaturePage.objects.filter(url__startswith=suburl)
+            if fp_start.exists():
+                topic = suburl.replace(DEV_PREFIX, '', 1)
+                next_url = reverse('feature_page_list')
+                next_url += '?topic={}'.format(topic)
+
+        # Page does not exist
+        if not next_url:
             msg = 'URL "%s" has not been scraped.' % url
             if can_create(self.request.user):
                 msg += ' Scrape it?'
@@ -127,8 +173,7 @@ class FeaturePageSearch(TemplateResponseMixin, View, FormMixin):
             else:
                 messages.add_message(self.request, messages.INFO, msg)
                 next_url = reverse('feature_page_list')
-        else:
-            next_url = reverse('feature_page_detail', kwargs={'pk': fp.pk})
+
         return HttpResponseRedirect(next_url)
 
 
@@ -199,11 +244,36 @@ class IssuesSummary(TemplateView):
             severity = SEVERITIES[severity_num]
             target = Issue.objects.filter(slug=slug)
             count = target.count()
-            examples = set(target.values_list('page_id', 'page__url')[:10])
-            issues.append((count, slug, severity, brief, examples))
+            raw = target.values_list('page__url', 'page_id')
+            examples = sorted(set(
+                (url.replace(DEV_PREFIX, '', 1), pid) for url, pid in raw))
+            issues.append((count, slug, severity, brief, examples[:5]))
         issues.sort(reverse=True)
         ctx['total_issues'] = Issue.objects.count()
         ctx['issues'] = issues
+        return ctx
+
+
+class IssuesDetail(TemplateView):
+    template_name = "mdn/issues_detail.jinja2"
+
+    def get_context_data(self, **kwargs):
+        ctx = super(IssuesDetail, self).get_context_data(**kwargs)
+        slug = self.kwargs['slug']
+        issues = Issue.objects.filter(slug=slug)
+        if issues.exists():
+            ctx['sample_issue'] = issues.first()
+            ctx['count'] = issues.count()
+            pages = Counter()
+            for url, pid in issues.values_list('page__url', 'page_id'):
+                key = (url.replace(DEV_PREFIX, '', 1), pid)
+                pages[key] += 1
+            ctx['pages'] = pages
+        else:
+            ctx['sample_issue'] = None
+            ctx['count'] = 0
+            ctx['pages'] = {}
+        ctx['slug'] = slug
         return ctx
 
 
@@ -218,3 +288,4 @@ feature_page_reset = user_passes_test(can_refresh)(
 feature_page_reparse = user_passes_test(can_refresh)(
     FeaturePageReParse.as_view())
 issues_summary = IssuesSummary.as_view()
+issues_detail = IssuesDetail.as_view()
