@@ -54,10 +54,6 @@ These changes are:
     - **parent**, **children** - tree relations for this feature
 * supports_
     - Was `browser-version-features`, but multi-word resources are problematic.
-    - **support** - Added a value "never", for cases where developers have
-      announced they will not support a feature.  For example, the `CSS
-      @font-face at-rule`_, which has been closed as WONTFIX in `Bugzilla
-      119490`_, appears as ``{{CompatNo}}{{unimplemented_inline(119490)}}``.
     - **prefix** - string prefix to enable, or null if no prefix
     - **prefix_mandatory** - True if the prefix is required
     - **alternate_name** - An alternate name associated with this feature,
