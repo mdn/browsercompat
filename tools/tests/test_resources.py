@@ -980,13 +980,14 @@ New:
 }"""
         self.assertEqual(expected, cc.summarize())
 
-    def setup_deleted(self):
+    def setup_deleted(self, skip_deletes=False):
         browser = Browser(id='_chrome', slug='chrome')
         version = Version(id='_chrome_2', version='2.0', browser='_chrome')
         self.orig_col.add(browser)
         self.orig_col.add(version)
         resources = (browser, version)
-        return resources, CollectionChangeset(self.orig_col, self.new_col)
+        return resources, CollectionChangeset(
+            self.orig_col, self.new_col, skip_deletes)
 
     def test_changes_deleted_items(self):
         (browser, version), cc = self.setup_deleted()
@@ -1001,23 +1002,24 @@ New:
         }
         self.assertEqual(expected, cc.changes)
 
+    def fake_deletion_request(
+            self, method, resource_type, resource_id=None, params=None,
+            data=None):
+        if method == 'POST' and resource_type == 'changesets':
+            return {'changesets': {'id': '_changeset'}}
+        elif method == 'DELETE':
+            return {}
+        else:
+            assert (method == 'PUT' and resource_type == 'changesets'), \
+                'Unexpected request: %s' % repr(locals())
+            self.assertEqual('_changeset', resource_id)
+            self.assertEqual({'changesets': {'closed': True}}, data)
+            return {'changesets': {'id': '_changeset', 'closed': True}}
+
     def test_change_original_deleted_items(self):
         _, cc = self.setup_deleted()
 
-        def fake_request(
-                method, resource_type, resource_id=None, params=None,
-                data=None):
-            if method == 'POST' and resource_type == 'changesets':
-                return {'changesets': {'id': '_changeset'}}
-            elif method == 'DELETE':
-                return {}
-            else:
-                assert (method == 'PUT' and resource_type == 'changesets'), \
-                    'Unexpected request: %s' % repr(locals())
-                self.assertEqual('_changeset', resource_id)
-                self.assertEqual({'changesets': {'closed': True}}, data)
-                return {'changesets': {'id': '_changeset', 'closed': True}}
-        self.client.request.side_effect = fake_request
+        self.client.request.side_effect = self.fake_deletion_request
         expected = {
             'browsers': {'deleted': 1},
             'versions': {'deleted': 1},
@@ -1025,9 +1027,14 @@ New:
         changes = cc.change_original_collection()
         self.assertEqual(expected, changes)
 
-    def test_summary_deleted_items(self):
-        _, cc = self.setup_deleted()
-        expected = """\
+    def test_change_original_deleted_items_skipped(self):
+        _, cc = self.setup_deleted(True)
+        self.client.request.side_effect = self.fake_deletion_request
+        expected = {}
+        changes = cc.change_original_collection()
+        self.assertEqual(expected, changes)
+
+    expected_delete_summary = """\
 Deleted http://example.com/api/v1/browsers/_chrome:
 {
   "browsers": {
@@ -1043,6 +1050,15 @@ Deleted http://example.com/api/v1/versions/_chrome_2:
     }
   }
 }"""
+
+    def test_summary_deleted_items(self):
+        _, cc = self.setup_deleted()
+        self.assertEqual(self.expected_delete_summary, cc.summarize())
+
+    def test_summary_deleted_items_skipped(self):
+        _, cc = self.setup_deleted(True)
+        expected = self.expected_delete_summary.replace(
+            "Deleted", "Deleted (but skipped)")
         self.assertEqual(expected, cc.summarize())
 
     def setup_matched(self):

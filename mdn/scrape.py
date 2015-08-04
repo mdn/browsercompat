@@ -1420,13 +1420,16 @@ class PageVisitor(NodeVisitor):
     def version_id_and_name(self, raw_version, browser):
         version = None
 
-        # Version is format 'x.0', 'x.y', or '' (unknown)
-        if not raw_version:
-            clean_version = ''
-        elif '.' in raw_version:
+        # Version is format 'x.0', 'x.y', 'current', or 'nightly'
+        if '.' in raw_version:
+            clean_version = raw_version
+        elif raw_version in ('nightly', 'current'):
             clean_version = raw_version
         else:
+            assert raw_version
+            assert int(raw_version)
             clean_version = raw_version + '.0'
+
         if not is_fake_id(browser['id']):
             # Might be known version
             try:
@@ -1606,12 +1609,12 @@ class PageVisitor(NodeVisitor):
             kname = item['name'].lower()
             # See https://developer.mozilla.org/en-US/docs/Template:<name>
             if kname == 'compatversionunknown':
-                version_found = ''
+                version_found = 'current'
             elif kname == 'compatunknown':
                 # Could use support = unknown, but don't bother
                 pass
             elif kname == 'compatno':
-                version_found = ''
+                version_found = 'current'
                 data['support']['support'] = 'no'
             elif kname == 'property_prefix':
                 data['support']['prefix'] = self.unquote(item['args'][0])
@@ -1682,6 +1685,8 @@ class PageVisitor(NodeVisitor):
                 version_found = gversion.split('.', 1)[0]
                 if version_found == '2':
                     version_found = '4'
+            elif kname == 'compatnightly':
+                version_found = 'nightly'
             elif kname in kumascript_compat_versions:
                 version_found = self.unquote(item['args'][0])
             else:
@@ -2108,12 +2113,19 @@ class ScrapedViewFeature(object):
 
     def new_version(self, version_entry):
         """Serialize a new version."""
+        version = version_entry['version']
+        status = 'unknown'
+        if version == 'nightly':
+            status = 'future'
+        elif not version:
+            version = 'current'
+            status = 'current'
         version_content = OrderedDict((
             ('id', version_entry['id']),
-            ('version', version_entry['version'] or None),
+            ('version', version),
             ('release_day', None),
             ('retirement_day', None),
-            ('status', 'unknown'),
+            ('status', status),
             ('release_notes_uri', None),
             ('note', None),
             ('links', OrderedDict((

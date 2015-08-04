@@ -2,10 +2,10 @@
     "versions": [
         {
             "id": "14",
-            "version": null,
+            "version": "current",
             "release_day": null,
             "retirement_day": null,
-            "status": "unknown",
+            "status": "current",
             "release_notes_uri": null,
             "note": null,
             "order": 0,

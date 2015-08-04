@@ -415,7 +415,7 @@ class ScrapeTestCase(TestCase):
         (Browser, 'chrome'): {'name': '{"en": "Chrome"}'},
         (Browser, 'firefox'): {'name': '{"en": "Firefox"}'},
         (Version, ('chrome', '1.0')): {},
-        (Version, ('firefox', '')): {},
+        (Version, ('firefox', 'current')): {'status': 'current'},
         (Version, ('firefox', '1.0')): {},
     }
 
@@ -1298,7 +1298,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
             expected_supports, [])
 
     def test_compat_row_cell_support_compatversionunknown_vmatch(self):
-        version = self.get_instance(Version, ('firefox', ''))
+        version = self.get_instance(Version, ('firefox', 'current'))
         browser = version.browser
         feature = self.get_instance(
             Feature, 'web-css-background-size-basic_support')
@@ -1307,7 +1307,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         feature_rep = self.get_feature_rep(feature)
         browser_rep = self.get_browser_rep(browser)
         expected_versions = [{
-            'id': version.id, 'browser': browser.id, 'version': ''}]
+            'id': version.id, 'browser': browser.id, 'version': 'current'}]
         expected_supports = [{
             'id': '_%s-%s' % (feature.id, version.id),
             'version': version.id, 'feature': feature.id, 'support': "yes"}]
@@ -1347,12 +1347,12 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
     def test_cell_to_support_compatno(self):
         self.assert_cell_to_support(
             '{{CompatNo}}',
-            [{'version': ''}], [{'support': 'no'}])
+            [{'version': 'current'}], [{'support': 'no'}])
 
     def test_cell_to_support_compatversionunknown(self):
         self.assert_cell_to_support(
             '{{CompatVersionUnknown}}',
-            [{'version': ''}], [{'support': 'yes'}])
+            [{'version': 'current'}], [{'support': 'yes'}])
 
     def test_cell_to_support_compatunknown(self):
         self.assert_cell_to_support('{{CompatUnknown}}', [], [])
@@ -1442,6 +1442,11 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
             '{{CompatAndroid("3.0")}}',
             [{'version': '3.0'}], [{'support': 'yes'}])
 
+    def test_cell_to_support_compatnightly(self):
+        self.assert_cell_to_support(
+            '{{CompatNightly}}',
+            [{'version': 'nightly'}], [{'support': 'yes'}])
+
     def test_cell_to_support_unknown_kumascript(self):
         issues = [(
             'unknown_kumascript', 4, 19,
@@ -1466,7 +1471,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
         self.assert_cell_to_support(
             ('{{CompatVersionUnknown}}{{property_prefix("-webkit")}}<br>\n'
              '   2.3'),
-            [{'version': ''}, {'version': '2.3'}],
+            [{'version': 'current'}, {'version': '2.3'}],
             [{'support': 'yes', 'prefix': '-webkit'}, {'support': 'yes'}])
 
     def test_cell_to_support_p_tags(self):
@@ -2300,6 +2305,30 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         version_content = view.new_version(version_entry)
         expected = {
             'id': '_version', 'version': '1.0', 'status': 'unknown',
+            'note': None, 'release_day': None, 'retirement_day': None,
+            'release_notes_uri': None,
+            'links': {'browser': '_browser'}}
+        self.assertDataEqual(expected, version_content)
+
+    def test_new_unnamed_current_version(self):
+        version_entry = {
+            'id': '_version', 'browser': '_browser', 'version': ""}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        version_content = view.new_version(version_entry)
+        expected = {
+            'id': '_version', 'version': 'current', 'status': 'current',
+            'note': None, 'release_day': None, 'retirement_day': None,
+            'release_notes_uri': None,
+            'links': {'browser': '_browser'}}
+        self.assertDataEqual(expected, version_content)
+
+    def test_new_nightly_version(self):
+        version_entry = {
+            'id': '_version', 'browser': '_browser', 'version': 'nightly'}
+        view = ScrapedViewFeature(self.page, self.empty_scrape())
+        version_content = view.new_version(version_entry)
+        expected = {
+            'id': '_version', 'version': 'nightly', 'status': 'future',
             'note': None, 'release_day': None, 'retirement_day': None,
             'release_notes_uri': None,
             'links': {'browser': '_browser'}}

@@ -541,7 +541,8 @@ class Collection(object):
 class CollectionChangeset(object):
     """Determine changes from one collection to another."""
 
-    def __init__(self, original_collection, new_collection):
+    def __init__(
+            self, original_collection, new_collection, skip_deletes=False):
         """Initialize a CollectionChangeset.
 
         Keyword Arguments:
@@ -551,6 +552,7 @@ class CollectionChangeset(object):
         """
         self.original_collection = original_collection
         self.new_collection = new_collection
+        self.skip_deletes = skip_deletes
         assert self.original_collection.client, \
             'original_collection must have a client.'
 
@@ -680,14 +682,15 @@ class CollectionChangeset(object):
                 if (count % checkpoint == 0):  # pragma nocover
                     logger.info("Imported %d %s" % (count, resource_type))
 
-            for item in self.changes['deleted'].values():
-                resource_type = item._resource_type
-                client.delete(resource_type, item.id.id)
-                item._collection.remove(item)
-                counts[resource_type]['deleted'] += 1
-                count = counts[resource_type]['deleted']
-                if (count % checkpoint == 0):  # pragma nocover
-                    logger.info("Deleted %d %s" % (count, resource_type))
+            if not self.skip_deletes:
+                for item in self.changes['deleted'].values():
+                    resource_type = item._resource_type
+                    client.delete(resource_type, item.id.id)
+                    item._collection.remove(item)
+                    counts[resource_type]['deleted'] += 1
+                    count = counts[resource_type]['deleted']
+                    if (count % checkpoint == 0):  # pragma nocover
+                        logger.info("Deleted %d %s" % (count, resource_type))
 
             for item in self.changes['changed'].values():
                 json_api = item.to_json_api()
@@ -717,7 +720,11 @@ class CollectionChangeset(object):
         for item in self.changes['deleted'].values():
             url = client.url(item._resource_type, item.id.id)
             rep = self.format_item(item)
-            out.append("Deleted %s:\n%s" % (url, rep))
+            if self.skip_deletes:
+                fmt = "Deleted (but skipped) %s:\n%s"
+            else:
+                fmt = "Deleted %s:\n%s"
+            out.append(fmt % (url, rep))
 
         # Summarize changed resources
         for item in self.changes['changed'].values():

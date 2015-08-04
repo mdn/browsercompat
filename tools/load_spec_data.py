@@ -32,7 +32,15 @@ class LoadSpecData(Tool):
             api_spec = api_collection.get('specifications', local_spec.id.id)
             if api_spec:
                 local_spec.sections = api_spec.sections.ids
-        return self.sync_changes(api_collection, local_collection)
+        return self.sync_changes(
+            api_collection, local_collection, self.skip_deletes)
+
+    def get_parser(self):
+        parser = super(LoadSpecData, self).get_parser()
+        parser.add_argument(
+            '--skip-deletes', action="store_true",
+            help='Skip deleting API resources')
+        return parser
 
     def specname_template(self):
         return self.cached_download(

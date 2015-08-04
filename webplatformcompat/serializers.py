@@ -17,6 +17,7 @@ from .drf_fields import (
 from .history import Changeset
 from .models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
+from .validators import VersionAndStatusValidator
 
 
 def omit_some(source_list, *omitted):
@@ -236,7 +237,14 @@ class VersionSerializer(HistoricalModelSerializer):
             'id', 'browser', 'version', 'release_day', 'retirement_day',
             'status', 'release_notes_uri', 'note', 'order',
             'supports', 'history', 'history_current')
+        extra_kwargs = {
+            'version': {
+                'allow_blank': False
+            }
+        }
         read_only_fields = ('supports',)
+        write_once_fields = ('version',)
+        validators = [VersionAndStatusValidator()]
 
 
 #

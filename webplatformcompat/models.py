@@ -12,6 +12,7 @@ from sortedm2m.fields import SortedManyToManyField
 
 from .fields import TranslatedField
 from .history import register, HistoricalRecords
+from .validators import VersionAndStatusValidator
 
 
 class CachingManager(models.Manager):
@@ -228,7 +229,7 @@ class Version(models.Model):
     browser = models.ForeignKey('Browser', related_name='versions')
     version = models.CharField(
         help_text="Version string.",
-        blank=True, max_length=20)
+        max_length=20)
     release_day = models.DateField(
         help_text="Day of release to public, ISO 8601 format.",
         blank=True, null=True)
@@ -248,6 +249,10 @@ class Version(models.Model):
 
     def __str__(self):
         return "{0} {1}".format(self.browser, self.version)
+
+    def clean(self):
+        super(Version, self).clean()
+        VersionAndStatusValidator()(self)
 
     class Meta:
         order_with_respect_to = 'browser'

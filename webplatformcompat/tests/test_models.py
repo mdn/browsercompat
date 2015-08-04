@@ -4,6 +4,8 @@
 import mock
 import unittest
 
+from django.core.exceptions import ValidationError
+
 from webplatformcompat.history import Changeset
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version,
@@ -89,12 +91,17 @@ class TestSupport(unittest.TestCase):
             'firefox 1.0 support for feature feature is yes', str(support))
 
 
-class TestVersion(unittest.TestCase):
+class TestVersion(TestCase):
 
     def test_str(self):
         browser = Browser(slug="browser")
         bv = Version(browser=browser, version='1.0')
         self.assertEqual('browser 1.0', str(bv))
+
+    def test_clean(self):
+        browser = Browser(slug="browser")
+        version = Version(version='text', browser=browser)
+        self.assertRaises(ValidationError, version.clean)
 
 
 class TestSaveSignal(unittest.TestCase):
