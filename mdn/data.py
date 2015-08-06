@@ -4,7 +4,7 @@
 from collections import namedtuple
 
 from webplatformcompat.models import (
-    Feature, Section, Specification, Support, Version)
+    Browser, Feature, Section, Specification, Support, Version)
 from .utils import is_new_id, normalize_name, slugify
 
 
@@ -18,7 +18,36 @@ class Data(object):
 
     def __init__(self):
         self.specifications = {}
+        self.browser_data = None
         self.subfeature_data = {}
+
+    BrowserParams = namedtuple(
+        'BrowserParams', ['browser', 'browser_id', 'name', 'slug'])
+
+    def lookup_browser_params(self, name, locale='en'):
+        """Get or create the browser ID, name, and slug given a raw name.
+
+        Return is a named tuple:
+        * browser - A Browser if found, None if no existing browser
+        * brower_id - The browser ID, prefixed with an underscore if new
+        * name - The normalized name
+        * slug - A unique slug for this browser
+        """
+        # Load existing browser data
+        if self.browser_data is None:
+            self.browser_data = {}
+            for browser in Browser.objects.all():
+                key = browser.name[locale]
+                self.browser_data[key] = self.BrowserParams(
+                    browser, browser.pk, key, browser.slug)
+
+        # Select the Browser ID and slug
+        if name not in self.browser_data:
+            browser_id = '_' + name
+            # TODO: unique slugify instead of browser_id
+            self.browser_data[name] = self.BrowserParams(
+                None, browser_id, name, browser_id)
+        return self.browser_data[name]
 
     FeatureParams = namedtuple(
         'FeatureParams', ['feature', 'feature_id', 'slug'])

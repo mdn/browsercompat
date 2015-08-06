@@ -8,7 +8,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
 from parsimonious.grammar import Grammar
 
-from .html import HTMLElement, HTMLText
+from .html import HnElement, HTMLElement, HTMLText
 from .kumascript import (
     CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS, CompatGeckoMobile,
     CompatNightly, CompatNo, CompatUnknown, CompatVersionUnknown,
@@ -16,6 +16,7 @@ from .kumascript import (
     NonStandardInline, NotStandardInline, PropertyPrefix,
     kumascript_grammar_source)
 from .utils import is_new_id, join_content
+from .visitor import Extractor
 
 compat_shared_grammar_source = r"""
 footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
@@ -49,6 +50,353 @@ compat_support_grammar = Grammar(compat_support_grammar_source)
 compat_footnote_grammar = compat_feature_grammar
 
 
+class CompatSectionExtractor(Extractor):
+    """Extracts data from elements parsed from a Browser Compatibility section.
+
+    A Browser Compatibility section looks like this:
+
+    <h2 id="Browser_compatibility">Browser compatibility</h2>
+    <div>{{CompatibilityTable}}</div>
+    <div id="compat-desktop">
+      <table class="compat-table">
+        <tbody>
+          <tr><th>Feature</th><th>Chrome</th></tr>
+          <tr><td>Basic support</td><td>1.0 [1]</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>[1] This is a footnote.</p>
+    """
+
+    extractor_name = "Compatibility Extractor"
+
+    def __init__(self, feature, **kwargs):
+        self.feature = feature
+        self.initialize_extractor(**kwargs)
+
+    def setup_extract(self):
+        self.compat_divs = []
+        self.footnote_elems = []
+        self.footnotes = OrderedDict()
+        self.reset_compat_div()
+
+    def reset_compat_div(self):
+        self.browsers = OrderedDict()
+        self.columns = []
+        self.compat_div = None
+        self.rows = []
+        self.row = []
+
+    def entering_element(self, state, element):
+        """Extract and change state when entering an element
+
+        Return is a tuple:
+        - The next state
+        - True if the child elements should be walked, False if already
+          processed or can be skipped.
+        """
+        if state == "begin":
+            assert isinstance(element, HnElement)
+            # TODO: Check id and name
+            return "before_compat_div", False
+        elif state == "before_compat_div":
+            if self.is_tag(element, 'p') or self.is_tag(element, 'div'):
+                is_compat_div = self.extract_pre_compat_element(element)
+                if is_compat_div:
+                    return "compat_div", True
+                else:
+                    return "before_compat_div", False
+        elif state == "compat_div":
+            if self.is_tag(element, 'table'):
+                return "in_table", True
+        elif state == "in_table":
+            if self.is_tag(element, 'tr'):
+                return "in_header_row", True
+        elif state == "in_header_row":
+            assert self.is_tag(element, 'th')
+            self.extract_feature_header(element)
+            return "in_browser_names", False
+        elif state == "in_browser_names":
+            # Transition to "extracted_row" happens on </tr>
+            assert self.is_tag(element, 'th')
+            self.extract_browser_name(element)
+            return "in_browser_names", False
+        elif state == "extracted_row":
+            # Transition to "after_compat_div" happens on </table>
+            if self.is_tag(element, 'tr'):
+                return "in_data_row", True
+        elif state == "in_data_row":
+            # Transition to "extracted_row" happens on </tr>
+            assert self.is_tag(element, 'td')
+            self.extract_cell(element)
+            return "in_data_row", False
+        elif state == "after_compat_div":
+            if self.is_tag(element, 'p') or self.is_tag(element, 'div'):
+                next_state, descend = self.extract_post_compat_div(element)
+                assert next_state in (
+                    'after_compat_div', 'compat_div', 'in_footnotes')
+                return next_state, descend
+        elif state == "in_footnotes":
+            self.extract_footnotes(element)
+            return "in_footnotes", False
+        else:  # pragma: no cover
+            raise Exception('Unexpected state "{}"'.format(state))
+        return state, True
+
+    def leaving_element(self, state, element):
+        """Process data and change state when exiting an element.
+
+        Return is the next state.
+        """
+        if state == "begin":  # pragma: no cover
+            pass
+        elif state == "before_compat_div":
+            pass
+        elif state == "compat_div":
+            pass
+        elif state == "in_table":
+            pass
+        elif state == "in_header_row":  # pragma: no cover
+            pass
+        elif state == "in_browser_names":
+            if self.is_tag(element, 'tr'):
+                return 'extracted_row'
+        elif state == "extracted_row":
+            if self.is_tag(element, 'table'):
+                self.process_table()
+                return 'after_compat_div'
+        elif state == "in_data_row":
+            if self.is_tag(element, 'tr'):
+                self.process_row()
+                return 'extracted_row'
+        elif state == "after_compat_div":
+            pass
+        elif state == "in_footnotes":
+            pass
+        else:  # pragma: no cover
+            raise Exception('Unexpected state "{}"'.format(state))
+        return state
+
+    def extracted_data(self):
+        self.process_footnotes()
+        return {
+            'compat_divs': self.compat_divs,
+            'footnotes': self.footnotes,
+            'issues': self.issues
+        }
+
+    def extract_pre_compat_element(self, element):
+        """Parse <p> and <div> elements before a table.
+
+        Looking for:
+        <div id="compat-section"> - Start parsing
+        <p>{{CompatibilityTable}}</p> - Ignore
+        Others - If has content, issue warning
+        """
+        # Is it a compatibility div?
+        div_name = self.is_compat_div(element)
+        if div_name is not None:
+            self.compat_div = {'name': div_name}
+            return True
+
+        # Is there visible content?
+        if element.to_html(drop_tag=True):
+            self.add_issue('skipped_content', element)
+        return False
+
+    def is_compat_div(self, element):
+        """Return the name if a compat div, or None."""
+        if self.is_tag(element, 'div'):
+            div_id = element.attributes.get('id', '')
+            if div_id.startswith('compat-'):
+                _, name = div_id.split('-', 1)
+                return name
+
+    def extract_feature_header(self, element):
+        header = element.to_text()
+        if header != 'Feature':
+            self.add_issue('feature_header', element, header=header)
+        self.columns.append(header)
+
+    browser_name_fixes = {
+        'Firefox (Gecko)': 'Firefox',
+        'Firefox Mobile (Gecko)': 'Firefox Mobile',
+        'Firefox OS (Gecko)': 'Firefox OS',
+        'Safari (WebKit)': 'Safari',
+        'Windows Phone': 'IE Mobile',
+        'IE Phone': 'IE Mobile',
+        'IE': 'Internet Explorer',
+    }
+
+    def extract_browser_name(self, element):
+        colspan = int(element.attributes.get('colspan', 1))
+        raw_name = element.to_text()
+        fixed_name = self.browser_name_fixes.get(raw_name, raw_name)
+        browser_params = self.data.lookup_browser_params(fixed_name)
+        browser, browser_id, name, slug = browser_params
+        if not browser:
+            self.add_issue('unknown_browser', element, name=raw_name)
+        self.browsers[browser_id] = {
+            'id': browser_id, 'name': name, 'slug': slug}
+        self.columns.extend([browser_id] * colspan)
+
+    def extract_cell(self, element):
+        self.row.append(element)
+
+    def process_row(self):
+        self.rows.append(self.row)
+        self.row = []
+
+    def process_table(self):
+        """Process the collected table into features and supports."""
+        features = OrderedDict()
+        versions = OrderedDict()
+        supports = OrderedDict()
+
+        # Create an empty row grid
+        table = []
+        for row in range(len(self.rows)):
+            table_row = []
+            for col in range(len(self.columns)):
+                table_row.append(None)
+            table.append(table_row)
+
+        # Parse the rows for features and supports
+        for row, compat_row in enumerate(self.rows):
+            for cell in compat_row:
+                assert cell.tag == 'td'
+                try:
+                    col = table[row].index(None)
+                except ValueError:
+                    self.add_issue('extra_cell', cell)
+                    continue
+                rowspan = int(cell.attributes.get('rowspan', 1))
+                colspan = int(cell.attributes.get('colspan', 1))
+                if col == 0:
+                    # Insert as feature
+                    feature = self.cell_to_feature(cell)
+                    cell_id = feature['id']
+                    features[feature['id']] = feature
+                else:
+                    # Insert as support
+                    feature_id = table[row][0]
+                    assert feature_id
+                    feature = features[feature_id]
+                    browser_id = self.columns[col]
+                    browser = self.browsers[browser_id]
+                    cell_versions, cell_supports = self.cell_to_support(
+                        cell, feature, browser)
+                    cell_id = []
+                    for version in cell_versions:
+                        versions[version['id']] = version
+                    for support in cell_supports:
+                        cell_id.append(support['id'])
+                        supports[support['id']] = support
+                # Insert IDs into table
+                for r in range(rowspan):
+                    for c in range(colspan):
+                        table[row + r][col + c] = cell_id
+
+        # Commit scraped data
+        self.compat_div['browsers'] = list(self.browsers.values())
+        self.compat_div['versions'] = list(versions.values())
+        self.compat_div['features'] = list(features.values())
+        self.compat_div['supports'] = list(supports.values())
+        self.compat_divs.append(self.compat_div)
+        self.reset_compat_div()
+
+    def cell_to_feature(self, cell):
+        """Parse cell items as a feature (first column)"""
+        raw_text = cell.raw
+        reparsed = compat_feature_grammar.parse(raw_text)
+        visitor = CompatFeatureVisitor(
+            parent_feature=self.feature, offset=cell.start, data=self.data)
+        visitor.visit(reparsed)
+        for issue in visitor.issues:
+            self.add_raw_issue(issue)
+        feature = visitor.to_feature_dict()
+        return feature
+
+    def cell_to_support(self, cell, feature, browser):
+        """Parse a cell as a support (middle cell)."""
+        raw_text = cell.raw
+        reparsed = compat_support_grammar.parse(raw_text)
+        visitor = CompatSupportVisitor(
+            feature_id=feature['id'], browser_id=browser['id'],
+            browser_name=browser['name'], browser_slug=browser['slug'],
+            offset=cell.start, data=self.data)
+        visitor.visit(reparsed)
+        for issue in visitor.issues:
+            self.add_raw_issue(issue)
+        return visitor.versions, visitor.supports
+
+    def extract_post_compat_div(self, element):
+        # Is it a compatibility div?
+        div_name = self.is_compat_div(element)
+        if div_name is not None:
+            self.compat_div = {'name': div_name}
+            return 'compat_div', True
+
+        # Is there visible content?
+        if element.to_html(drop_tag=True):
+            self.extract_footnotes(element)
+            return 'in_footnotes', False
+
+        # Keep looking for compatibility div or footnotes
+        return 'after_compat_div', False
+
+    def extract_footnotes(self, element):
+        self.footnote_elems.append(element)
+
+    def process_footnotes(self):
+        if self.footnote_elems:
+            # Reassemble raw HTML from elements
+            start = self.footnote_elems[0].start
+            last = start
+            raw_bits = []
+            for elem in self.footnote_elems:
+                assert elem.start == last
+                raw_bits.append(elem.raw)
+                last = elem.end
+
+            # Reparse as footnotes
+            raw_text = ''.join(raw_bits)
+            reparsed = compat_footnote_grammar.parse(raw_text)
+            visitor = CompatFootnoteVisitor(offset=start)
+            visitor.visit(reparsed)
+            footnotes = visitor.finalize_footnotes()
+            for issue in visitor.issues:
+                self.add_raw_issue(issue)
+        else:
+            footnotes = {}
+
+        # Merge footnotes into supports
+        used_footnotes = set()
+        for div in self.compat_divs:
+            for support in div['supports']:
+                if 'footnote_id' in support:
+                    f_id, f_start, f_end = support['footnote_id']
+                    try:
+                        text, start, end = footnotes[f_id]
+                    except KeyError:
+                        self.add_raw_issue((
+                            'footnote_missing', f_start, f_end,
+                            {'footnote_id': f_id}))
+                    else:
+                        support['footnote'] = text
+                        used_footnotes.add(f_id)
+
+        # Report and save unused footnotes
+        for f_id in used_footnotes:
+            del footnotes[f_id]
+
+        for f_id, (text, start, end) in footnotes.items():
+            self.add_raw_issue((
+                'footnote_unused', start, end, {'footnote_id': f_id}))
+
+        self.footnotes = footnotes
+
+
 @python_2_unicode_compatible
 class Footnote(HTMLText):
     """A Footnote, like [1]."""
@@ -67,11 +415,16 @@ class Footnote(HTMLText):
 
 
 class CompatBaseVisitor(KumaVisitor):
-    """Shared visitor for compatibility content."""
+    """Shared visitor for compatibility cell and footnote content."""
 
     def visit_footnote_id(self, node, children):
         open_bracket, content, close_bracket = children
         return self.process(Footnote, node, footnote_id=content.text)
+
+    def visit_td_open(self, node, children):
+        """Retain colspan and rowspan attributes of <td> tags."""
+        actions = {None: 'ban', 'colspan': 'keep', 'rowspan': 'keep'}
+        return self._visit_open(node, children, actions)
 
 
 class CompatFeatureVisitor(CompatBaseVisitor):

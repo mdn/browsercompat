@@ -6,10 +6,203 @@ from django.utils.six import text_type
 
 from mdn.compatibility import (
     CellVersion, CompatFeatureVisitor, CompatFootnoteVisitor,
-    CompatSupportVisitor, Footnote,
+    CompatSectionExtractor, CompatSupportVisitor, Footnote,
     compat_feature_grammar, compat_support_grammar, compat_footnote_grammar)
+from mdn.kumascript import KumaVisitor, kumascript_grammar
 from webplatformcompat.models import Feature, Support
 from .base import TestCase
+
+
+class TestCompatSectionExtractor(TestCase):
+    def setUp(self):
+        self.feature = self.get_instance('Feature', 'web-css-background-size')
+        self.visitor = KumaVisitor()
+        self.version = self.get_instance('Version', ('firefox', '1.0'))
+
+    def construct_html(
+            self, header=None, pre_table=None, feature=None,
+            browser=None, support=None, after_table=None):
+        """Create a basic compatibility section."""
+        return """\
+{header}
+{pre_table}
+<div id="compat-desktop">
+  <table class="compat-table">
+    <tbody>
+      <tr><th>Feature</th><th>{browser}</th></tr>
+      <tr><td>{feature}</td><td>{support}</td></tr>
+    </tbody>
+  </table>
+</div>
+{after_table}
+""".format(
+            header=header or (
+                '<h2 id="Browser_compatibility">Browser compatibility</h2>'),
+            pre_table=pre_table or '<div>{{CompatibilityTable}}</div>',
+            browser=browser or 'Firefox',
+            feature=feature or 'Basic support',
+            support=support or '1.0',
+            after_table=after_table or '')
+
+    def get_default_compat_div(self):
+        browser_id = self.version.browser_id
+        version_id = self.version.id
+        return {
+            'name': u'desktop',
+            'browsers': [{
+                'id': browser_id, 'name': 'Firefox', 'slug': 'firefox'}],
+            'versions': [{
+                'browser': browser_id, 'id': version_id, 'version': '1.0'}],
+            'features': [{
+                'id': '_basic support', 'name': 'Basic support',
+                'slug': 'web-css-background-size_basic_support'}],
+            'supports': [{
+                'feature': '_basic support',
+                'id': '__basic support-%s' % version_id,
+                'support': 'yes', 'version': version_id}]}
+
+    def assert_extract(
+            self, html, compat_divs=None, footnotes=None, issues=None):
+        parsed = kumascript_grammar['html'].parse(html)
+        out = self.visitor.visit(parsed)
+        extractor = CompatSectionExtractor(feature=self.feature, elements=out)
+        extracted = extractor.extract()
+        self.assertEqual(extracted['compat_divs'], compat_divs or [])
+        self.assertEqual(extracted['footnotes'], footnotes or {})
+        self.assertEqual(extracted['issues'], issues or [])
+
+    def test_standard(self):
+        html = self.construct_html()
+        expected = self.get_default_compat_div()
+        self.assert_extract(html, [expected])
+
+    def test_unknown_browser(self):
+        html = self.construct_html(browser='Fire')
+        expected = self.get_default_compat_div()
+        expected['browsers'][0] = {
+            'id': '_Fire', 'name': 'Fire', 'slug': '_Fire'}
+        expected['versions'][0] = {
+            'id': '_Fire-1.0', 'version': '1.0', 'browser': '_Fire'}
+        expected['supports'][0] = {
+            'id': u'__basic support-_Fire-1.0',
+            'support': 'yes',
+            'feature': '_basic support',
+            'version': '_Fire-1.0'}
+        issue = ('unknown_browser', 187, 200, {'name': 'Fire'})
+        self.assert_extract(html, [expected], issues=[issue])
+
+    def test_wrong_first_column_header(self):
+        # All known pages use "Feature" for first column, but be ready
+        html = self.construct_html()
+        html = html.replace('<th>Feature</th>', '<th>Features</th>')
+        expected = self.get_default_compat_div()
+        issue = ('feature_header', 171, 188, {'header': 'Features'})
+        self.assert_extract(html, [expected], issues=[issue])
+
+    def test_footnote(self):
+        html = self.construct_html(
+            support="1.0 [1]",
+            after_table="<p>[1] This is a footnote.</p>")
+        expected = self.get_default_compat_div()
+        expected['supports'][0]['footnote'] = 'This is a footnote.'
+        expected['supports'][0]['footnote_id'] = ('1', 249, 252)
+        self.assert_extract(html, [expected])
+
+    def test_footnote_mismatch(self):
+        html = self.construct_html(
+            support="1.0 [1]",
+            after_table="<p>[2] Oops, footnote ID is wrong.</p>")
+        expected = self.get_default_compat_div()
+        expected['supports'][0]['footnote_id'] = ('1', 249, 252)
+        footnotes = {'2': ('Oops, footnote ID is wrong.', 294, 332)}
+        issues = [
+            ('footnote_missing', 249, 252, {'footnote_id': '1'}),
+            ('footnote_unused', 294, 332, {'footnote_id': '2'})]
+        self.assert_extract(
+            html, [expected], footnotes=footnotes, issues=issues)
+
+    def test_extra_row_cell(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/
+        # Reference/Global_Objects/WeakSet, March 2015
+        html = self.construct_html()
+        html = html.replace(
+            "<td>1.0</td>", "<td>1.0</td><td>{{CompatUnknown()}}</td>")
+        self.assertTrue('CompatUnknown' in html)
+        expected = self.get_default_compat_div()
+        issue = ('extra_cell', 253, 281, {})
+        self.assert_extract(html, [expected], issues=[issue])
+
+    def test_compat_mobile_table(self):
+        mobile = """
+<div id="compat-mobile">
+  <table class="compat-table">
+    <tbody>
+      <tr><th>Feature</th><th>Safari Mobile</th></tr>
+      <tr><td>Basic support</td><td>1.0 [1]</td></tr>
+    </tbody>
+  </table>
+</div>
+<p></p>
+<p>[1] It's really supported.</p>
+"""
+        html = self.construct_html(after_table=mobile)
+        expected_desktop = self.get_default_compat_div()
+        expected_mobile = {
+            'name': 'mobile',
+            'browsers': [{
+                'id': '_Safari Mobile',
+                'name': 'Safari Mobile',
+                'slug': '_Safari Mobile',
+            }],
+            'features': [{
+                'id': '_basic support',
+                'name': 'Basic support',
+                'slug': 'web-css-background-size_basic_support',
+            }],
+            'versions': [{
+                'id': '_Safari Mobile-1.0',
+                'version': '1.0',
+                'browser': '_Safari Mobile',
+            }],
+            'supports': [{
+                'id': '__basic support-_Safari Mobile-1.0',
+                'feature': '_basic support',
+                'support': 'yes',
+                'version': '_Safari Mobile-1.0',
+                'footnote': "It's really supported.",
+                'footnote_id': ('1', 453, 456),
+            }],
+        }
+        issue = ('unknown_browser', 385, 407, {'name': 'Safari Mobile'})
+        self.assert_extract(
+            html, [expected_desktop, expected_mobile], issues=[issue])
+
+    def test_pre_content(self):
+        header_plus = (
+            '<h2 id="Browser_compatibility">Browser compatibility</h2>'
+            '<p>Here\'s some extra content.</p>')
+        html = self.construct_html(header=header_plus)
+        expected = self.get_default_compat_div()
+        issue = ('skipped_content', 57, 90, {})
+        self.assert_extract(html, [expected], issues=[issue])
+
+    def test_feature_issue(self):
+        html = self.construct_html(feature='Basic support [1]')
+        expected = self.get_default_compat_div()
+        issue = ('footnote_feature', 237, 240, {})
+        self.assert_extract(html, [expected], issues=[issue])
+
+    def test_support_issue(self):
+        html = self.construct_html(support="1.0 (or earlier)")
+        expected = self.get_default_compat_div()
+        issue = ('inline_text', 249, 261, {'text': '(or earlier)'})
+        self.assert_extract(html, [expected], issues=[issue])
+
+    def test_footnote_issue(self):
+        html = self.construct_html(after_table="<p>Here's some text.</p>")
+        expected = self.get_default_compat_div()
+        issue = ('footnote_no_id', 290, 314, {})
+        self.assert_extract(html, [expected], issues=[issue])
 
 
 class TestFootnote(TestCase):

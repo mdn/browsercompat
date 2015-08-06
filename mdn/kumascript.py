@@ -677,6 +677,10 @@ class KumaVisitor(BaseKumaVisitor):
     Include extra policy for scraping pages for the importer:
     - Converts <span>content</span> to "content", with issues
     - Ensures <a> tags have an href attribute
+    - Keeps <div id="foo">, for detecting compat divs
+    - Keeps <td colspan=# rowspan=#>, for detecting spanning compat cells
+    - Keeps <th colspan=#>, for detecting spanning compat headers
+    - Keeps <h2 id="id" name="name">, for warning on mismatch
     - Raises issues on all other attributes
     """
     _default_attribute_actions = {None: 'ban'}
@@ -696,12 +700,34 @@ class KumaVisitor(BaseKumaVisitor):
 
     def visit_a_open(self, node, children):
         """Ensure that <a> open tags have an href element."""
-        actions = {None: 'ban', 'href': 'must'}
+        actions = self._default_attribute_actions.copy()
+        actions['href'] = 'must'
+        return self._visit_open(node, children, actions)
+
+    def visit_div_open(self, node, children):
+        """Retain id attribute of <div> tags."""
+        actions = self._default_attribute_actions.copy()
+        actions['id'] = 'keep'
+        return self._visit_open(node, children, actions)
+
+    def visit_td_open(self, node, children):
+        """Retain colspan and rowspan attributes of <td> tags."""
+        actions = self._default_attribute_actions.copy()
+        actions['colspan'] = 'keep'
+        actions['rowspan'] = 'keep'
+        return self._visit_open(node, children, actions)
+
+    def visit_th_open(self, node, children):
+        """Retain colspan attribute of <th> tags."""
+        actions = self._default_attribute_actions.copy()
+        actions['colspan'] = 'keep'
         return self._visit_open(node, children, actions)
 
     def _visit_hn_open(self, node, children, actions=None, **kwargs):
         """Retain id and name attributes of <h#> tags."""
-        actions = actions or {None: 'drop', 'id': 'keep', 'name': 'keep'}
+        actions = self._default_attribute_actions.copy()
+        actions['id'] = 'keep'
+        actions['name'] = 'keep'
         return self._visit_open(node, children, actions, **kwargs)
 
     visit_h1_open = _visit_hn_open

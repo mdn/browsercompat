@@ -15,6 +15,7 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 import re
 
+from django.utils.functional import cached_property
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type, string_types
 
@@ -430,6 +431,10 @@ class HTMLElement(HTMLInterval):
     def __str__(self):
         content = join_content(text_type(child) for child in self.children)
         return "{}{}{}".format(self.open_tag, content, self.close_tag)
+
+    @cached_property
+    def attributes(self):
+        return self.open_tag.attributes.as_dict()
 
     def to_html(self, drop_tag=None):
         content = join_content(child.to_html() for child in self.children)

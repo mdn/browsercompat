@@ -12,6 +12,27 @@ class TestDataBase(TestCase):
         self.data = Data()
 
 
+class TestLookupBrowserParams(TestDataBase):
+    def assert_browser_params(self, raw_name, browser, b_id, name, slug):
+        params = self.data.lookup_browser_params(raw_name)
+        self.assertEqual(params.browser, browser)
+        self.assertEqual(params.browser_id, b_id)
+        self.assertEqual(params.name, name)
+        self.assertEqual(params.slug, slug)
+        with self.assertNumQueries(0):
+            new_params = self.data.lookup_browser_params(raw_name)
+        self.assertEqual(params, new_params)
+
+    def test_browser_params_new(self):
+        self.assert_browser_params(
+            'Firefox', None, '_Firefox', 'Firefox', '_Firefox')
+
+    def test_browser_params_match(self):
+        match = self.get_instance('Browser', 'firefox')
+        self.assert_browser_params(
+            'Firefox', match, match.id, 'Firefox', 'firefox')
+
+
 class TestLookupFeatureParams(TestDataBase):
     def setUp(self):
         super(TestLookupFeatureParams, self).setUp()
