@@ -19,11 +19,19 @@ class TestHTMLInterval(TestCase):
         interval = HTMLInterval(raw='Interval')
         self.assertEqual('Interval', interval.to_html())
 
+    def test_to_text(self):
+        interval = HTMLInterval(raw='Interval')
+        self.assertEqual('', interval.to_text())
+
 
 class TestHTMLText(TestCase):
     def test_str(self):
         text = HTMLText(raw='\nSome Text\n')
         self.assertEqual('Some Text', text_type(text))
+
+    def test_to_text(self):
+        text = HTMLText(raw='\nSome Text\n')
+        self.assertEqual('Some Text', text.to_text())
 
 
 class TestHTMLSimpleTag(TestCase):
@@ -183,6 +191,26 @@ class TestHTMLElement(TestCase):
         element = HTMLElement(
             raw=raw, open_tag=open_tag, close_tag=close_tag, children=children)
         self.assertEqual(raw, str(element))
+
+    def test_to_text(self):
+        raw = '<p>A <strong>Text</strong> Element</p>'
+        strong_attrs = HTMLAttributes(raw="", attributes=[])
+        strong_open_tag = HTMLOpenTag(
+            raw="<strong>", tag="strong", attributes=strong_attrs)
+        strong_close_tag = HTMLCloseTag(raw="</strong>", tag="strong")
+        strong_text = HTMLText(raw="Text")
+        strong_elem = HTMLElement(
+            raw="<strong>Text</strong>", open_tag=strong_open_tag,
+            close_tag=strong_close_tag, children=[strong_text])
+        p_attrs = HTMLAttributes(raw="", attributes=[])
+        p_open_tag = HTMLOpenTag(raw="<p>", tag="p", attributes=p_attrs)
+        p_close_tag = HTMLCloseTag(raw="</p>", tag="p")
+        text1 = HTMLText(raw="A ")
+        text2 = HTMLText(raw=" Element")
+        p_elem = HTMLElement(
+            raw=raw, open_tag=p_open_tag, close_tag=p_close_tag,
+            children=[text1, strong_elem, text2])
+        self.assertEqual('A Text Element', p_elem.to_text())
 
 
 class TestGrammar(TestCase):

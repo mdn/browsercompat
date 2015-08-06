@@ -186,7 +186,12 @@ class HTMLInterval(object):
         return self.raw
 
     def to_html(self):
+        """Convert to HTML."""
         return text_type(self)
+
+    def to_text(self):
+        """Convert to non-HTML text."""
+        return ""
 
     @property
     def issues(self):
@@ -211,6 +216,9 @@ class HTMLText(HTMLInterval):
      (\&nbsp;)          # HTML nbsp character
     )+                  # One or more in a row
     ''')
+
+    def to_text(self):
+        return self.cleaned
 
     def cleanup_whitespace(self, text):
         """Normalize whitespace"""
@@ -431,6 +439,10 @@ class HTMLElement(HTMLInterval):
             return content
         else:
             return "{}{}{}".format(self.open_tag, content, self.close_tag)
+
+    def to_text(self):
+        content = join_content(child.to_text() for child in self.children)
+        return content
 
 
 class HnElement(HTMLElement):
