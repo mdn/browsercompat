@@ -10,6 +10,13 @@ class ImportMDNData(Tool):
     logger_name = 'tools.import_mdn'
     parser_options = ['api', 'user', 'password']
 
+    def get_parser(self):
+        parser = super(ImportMDNData, self).get_parser()
+        parser.add_argument(
+            '--reparse', action="store_true",
+            help="Re-parse cached pages instead of downloading fresh")
+        return parser
+
     def run(self, rate=5, *args, **kwargs):
         self.login()
         collection = Collection(self.client)
@@ -21,7 +28,12 @@ class ImportMDNData(Tool):
             if feature.mdn_uri and feature.mdn_uri.get('en'):
                 uris.append((feature.mdn_uri['en'], feature.id.id))
         total = len(uris)
-        self.logger.info('Features loaded, %d MDN pages found.', total)
+        if self.reparse:
+            action = "Reparsing cached pages..."
+        else:
+            action = "Reparsing latest pages..."
+        self.logger.info(
+            'Features loaded, %d MDN pages found. %s', total, action)
 
         # Import from MDN, with rate limiting
         start_time = time.time()
@@ -49,11 +61,16 @@ class ImportMDNData(Tool):
                 response.raise_for_status()
                 obj_url = response.url
                 assert '/importer/' in obj_url
-                reparse_url = obj_url + '/reparse'
+                if self.reparse:
+                    action_url = obj_url + '/reparse'
+                    counter = 'reparsed'
+                else:
+                    action_url = obj_url + '/reset'
+                    counter = 'reset'
                 csrf = self.client.session.cookies['csrftoken']
                 params = {'csrfmiddlewaretoken': csrf}
-                response = self.client.session.post(reparse_url, params)
-                counts['reparsed'] += 1
+                response = self.client.session.post(action_url, params)
+                counts[counter] += 1
 
             # Pause for rate limiting?
             current_time = time.time()
