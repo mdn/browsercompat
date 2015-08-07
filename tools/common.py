@@ -6,6 +6,7 @@ import codecs
 import getpass
 import hashlib
 import logging
+import os
 import os.path
 import string
 import sys
@@ -137,6 +138,16 @@ class Tool(object):
     def cached_download(self, filename, url, headers=None, retries=1):
         """Download a file, then serve it from the cache."""
         path = self.data_file(filename)
+
+        # Create the folder if it doesn't exist
+        # http://stackoverflow.com/a/14364249/10612
+        folder = os.path.dirname(path)
+        try:
+            os.makedirs(folder)
+        except OSError:
+            if not os.path.isdir(folder):
+                raise
+
         use_cache = getattr(self, 'use_cache', False)
         if not use_cache or not os.path.exists(path):
             retry = 0
