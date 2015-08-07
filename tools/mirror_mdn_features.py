@@ -14,7 +14,7 @@ from resources import Collection, Feature
 class MirrorMDNFeatures(Tool):
     """Create and Update API features for MDN pages."""
     logger_name = 'tools.mirror_mdn_features'
-    parser_options = ['api', 'user', 'password', 'data']
+    parser_options = ['api', 'user', 'password', 'data', 'nocache']
     base_mdn_domain = 'https://developer.mozilla.org'
     base_mdn_uri = base_mdn_domain + '/en-US/docs/'
     rate = 5
@@ -38,7 +38,8 @@ class MirrorMDNFeatures(Tool):
         feature_by_slug = dict((k[1], k[2]) for k in features)
         slugs = set(feature_by_slug.keys())
 
-        self.logger.info('Reading pages from MDN')
+        cache_state = "using cache" if self.use_cache else "no cache"
+        self.logger.info('Reading pages from MDN (%s)', cache_state)
         mdn_uris = self.current_mdn_uris()
 
         new_page, needs_url, existing_page = 0, 0, 0

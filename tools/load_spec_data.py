@@ -8,7 +8,7 @@ from resources import Collection, Maturity, Specification
 class LoadSpecData(Tool):
     """Initialize API with specification data from MDN."""
     logger_name = 'tools.load_spec_data'
-    parser_options = ['api', 'user', 'password']
+    parser_options = ['api', 'user', 'password', 'nocache']
 
     def run(self, *args, **kwargs):
         self.login()
@@ -19,7 +19,8 @@ class LoadSpecData(Tool):
         api_collection.load_all('maturities')
         api_collection.load_all('specifications')
 
-        self.logger.info('Reading spec data from MDN templates')
+        cache = "using cache" if self.use_cache else "no cache"
+        self.logger.info('Reading spec data from MDN templates (%s)', cache)
         specname = self.specname_template()
         self.parse_specname(specname, api_collection, local_collection)
         spec2 = self.spec2_template()
