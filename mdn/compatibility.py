@@ -113,23 +113,23 @@ class CompatSectionExtractor(Extractor):
             if self.is_tag(element, 'tr'):
                 return "in_header_row", True
         elif state == "in_header_row":
-            assert self.is_tag(element, 'th')
-            self.extract_feature_header(element)
-            return "in_browser_names", False
+            if self.is_tag(element, 'th'):
+                self.extract_feature_header(element)
+                return "in_browser_names", False
         elif state == "in_browser_names":
             # Transition to "extracted_row" happens on </tr>
-            assert self.is_tag(element, 'th')
-            self.extract_browser_name(element)
-            return "in_browser_names", False
+            if self.is_tag(element, 'th'):
+                self.extract_browser_name(element)
+                return "in_browser_names", False
         elif state == "extracted_row":
             # Transition to "after_compat_div" happens on </table>
             if self.is_tag(element, 'tr'):
                 return "in_data_row", True
         elif state == "in_data_row":
             # Transition to "extracted_row" happens on </tr>
-            assert self.is_tag(element, 'td')
-            self.extract_cell(element)
-            return "in_data_row", False
+            if self.is_tag(element, 'td'):
+                self.extract_cell(element)
+                return "in_data_row", False
         elif state == "after_compat_div":
             if self.is_tag(element, 'p') or self.is_tag(element, 'div'):
                 next_state, descend = self.extract_post_compat_div(element)

@@ -29,8 +29,14 @@ class TestCompatSectionExtractor(TestCase):
 <div id="compat-desktop">
   <table class="compat-table">
     <tbody>
-      <tr><th>Feature</th><th>{browser}</th></tr>
-      <tr><td>{feature}</td><td>{support}</td></tr>
+      <tr>
+        <th>Feature</th>
+        <th>{browser}</th>
+      </tr>
+      <tr>
+        <td>{feature}</td>
+        <td>{support}</td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -88,7 +94,7 @@ class TestCompatSectionExtractor(TestCase):
             'support': 'yes',
             'feature': '_basic support',
             'version': '_Fire-1.0'}
-        issue = ('unknown_browser', 187, 200, {'name': 'Fire'})
+        issue = ('unknown_browser', 205, 218, {'name': 'Fire'})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_wrong_first_column_header(self):
@@ -96,7 +102,7 @@ class TestCompatSectionExtractor(TestCase):
         html = self.construct_html()
         html = html.replace('<th>Feature</th>', '<th>Features</th>')
         expected = self.get_default_compat_div()
-        issue = ('feature_header', 171, 188, {'header': 'Features'})
+        issue = ('feature_header', 180, 197, {'header': 'Features'})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_footnote(self):
@@ -105,7 +111,7 @@ class TestCompatSectionExtractor(TestCase):
             after_table="<p>[1] This is a footnote.</p>")
         expected = self.get_default_compat_div()
         expected['supports'][0]['footnote'] = 'This is a footnote.'
-        expected['supports'][0]['footnote_id'] = ('1', 249, 252)
+        expected['supports'][0]['footnote_id'] = ('1', 292, 295)
         self.assert_extract(html, [expected])
 
     def test_footnote_mismatch(self):
@@ -113,11 +119,11 @@ class TestCompatSectionExtractor(TestCase):
             support="1.0 [1]",
             after_table="<p>[2] Oops, footnote ID is wrong.</p>")
         expected = self.get_default_compat_div()
-        expected['supports'][0]['footnote_id'] = ('1', 249, 252)
-        footnotes = {'2': ('Oops, footnote ID is wrong.', 294, 332)}
+        expected['supports'][0]['footnote_id'] = ('1', 292, 295)
+        footnotes = {'2': ('Oops, footnote ID is wrong.', 344, 382)}
         issues = [
-            ('footnote_missing', 249, 252, {'footnote_id': '1'}),
-            ('footnote_unused', 294, 332, {'footnote_id': '2'})]
+            ('footnote_missing', 292, 295, {'footnote_id': '1'}),
+            ('footnote_unused', 344, 382, {'footnote_id': '2'})]
         self.assert_extract(
             html, [expected], footnotes=footnotes, issues=issues)
 
@@ -129,7 +135,7 @@ class TestCompatSectionExtractor(TestCase):
             "<td>1.0</td>", "<td>1.0</td><td>{{CompatUnknown()}}</td>")
         self.assertTrue('CompatUnknown' in html)
         expected = self.get_default_compat_div()
-        issue = ('extra_cell', 253, 281, {})
+        issue = ('extra_cell', 296, 324, {})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_compat_mobile_table(self):
@@ -170,10 +176,10 @@ class TestCompatSectionExtractor(TestCase):
                 'support': 'yes',
                 'version': '_Safari Mobile-1.0',
                 'footnote': "It's really supported.",
-                'footnote_id': ('1', 453, 456),
+                'footnote_id': ('1', 503, 506),
             }],
         }
-        issue = ('unknown_browser', 385, 407, {'name': 'Safari Mobile'})
+        issue = ('unknown_browser', 435, 457, {'name': 'Safari Mobile'})
         self.assert_extract(
             html, [expected_desktop, expected_mobile], issues=[issue])
 
@@ -189,19 +195,19 @@ class TestCompatSectionExtractor(TestCase):
     def test_feature_issue(self):
         html = self.construct_html(feature='Basic support [1]')
         expected = self.get_default_compat_div()
-        issue = ('footnote_feature', 237, 240, {})
+        issue = ('footnote_feature', 271, 274, {})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_support_issue(self):
         html = self.construct_html(support="1.0 (or earlier)")
         expected = self.get_default_compat_div()
-        issue = ('inline_text', 249, 261, {'text': '(or earlier)'})
+        issue = ('inline_text', 292, 304, {'text': '(or earlier)'})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_footnote_issue(self):
         html = self.construct_html(after_table="<p>Here's some text.</p>")
         expected = self.get_default_compat_div()
-        issue = ('footnote_no_id', 290, 314, {})
+        issue = ('footnote_no_id', 340, 364, {})
         self.assert_extract(html, [expected], issues=[issue])
 
 
