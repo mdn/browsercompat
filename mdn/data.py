@@ -1,6 +1,6 @@
 # coding: utf-8
 """Data lookup operations for MDN parsing."""
-
+from __future__ import unicode_literals
 from collections import namedtuple
 
 from webplatformcompat.models import (
