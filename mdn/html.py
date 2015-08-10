@@ -32,12 +32,13 @@ html_grammar_source = r"""
 #
 html = html_block / empty_text
 html_block = html_element+
-html_element = a_element / br / code_element / div_element /
+html_element = a_element / br / code_element / dd_element / div_element /
+    dl_element / dt_element / em_element /
     h1_element / h2_element / h3_element / h3_element / h4_element /
     h5_element/ h6_element /
-    p_element / pre_element / span_element / strong_element / sup_element /
-    table_element / tbody_element / td_element / th_element / thead_element /
-    tr_element / text_block
+    li_element / p_element / pre_element / span_element / strong_element /
+    sup_element / table_element / tbody_element / td_element / th_element /
+    thead_element / tr_element / ul_element / text_block
 
 a_element = a_open a_content a_close
 a_open = "<a" _ attrs ">"
@@ -55,6 +56,26 @@ div_element = div_open div_content div_close
 div_open = "<div" _ attrs ">"
 div_content = html
 div_close = "</div>"
+
+dd_element = dd_open dd_content dd_close
+dd_open = "<dd" _ attrs ">"
+dd_content = html
+dd_close = "</dd>"
+
+dl_element = dl_open dl_content dl_close
+dl_open = "<dl" _ attrs ">"
+dl_content = html
+dl_close = "</dl>"
+
+dt_element = dt_open dt_content dt_close
+dt_open = "<dt" _ attrs ">"
+dt_content = html
+dt_close = "</dt>"
+
+em_element = em_open em_content em_close
+em_open = "<em" _ attrs ">"
+em_content = html
+em_close = "</em>"
 
 h1_element = h1_open h1_content h1_close
 h1_open = "<h1" _ attrs ">"
@@ -85,6 +106,11 @@ h6_element = h6_open h6_content h6_close
 h6_open = "<h6" _ attrs ">"
 h6_content = html
 h6_close = "</h6>"
+
+li_element = li_open li_content li_close
+li_open = "<li" _ attrs ">"
+li_content = html
+li_close = "</li>"
 
 p_element = p_open p_content p_close
 p_open = "<p" _ attrs ">"
@@ -140,6 +166,11 @@ tr_element = tr_open tr_content tr_close
 tr_open = "<tr" _ attrs ">"
 tr_content = html
 tr_close = "</tr>"
+
+ul_element = ul_open ul_content ul_close
+ul_open = "<ul" _ attrs ">"
+ul_content = html
+ul_close = "</ul>"
 
 #
 # HTML tag attributes
@@ -530,13 +561,18 @@ class HTMLVisitor(Visitor):
 
     visit_a_open = _visit_open
     visit_code_open = _visit_open
+    visit_dd_open = _visit_open
     visit_div_open = _visit_open
+    visit_dl_open = _visit_open
+    visit_dt_open = _visit_open
+    visit_em_open = _visit_open
     visit_h1_open = _visit_open
     visit_h2_open = _visit_open
     visit_h3_open = _visit_open
     visit_h4_open = _visit_open
     visit_h5_open = _visit_open
     visit_h6_open = _visit_open
+    visit_li_open = _visit_open
     visit_p_open = _visit_open
     visit_pre_open = _visit_open
     visit_span_open = _visit_open
@@ -548,6 +584,7 @@ class HTMLVisitor(Visitor):
     visit_th_open = _visit_open
     visit_thead_open = _visit_open
     visit_tr_open = _visit_open
+    visit_ul_open = _visit_open
 
     def _visit_close(self, node, empty):
         close_tag = node.text
@@ -558,13 +595,18 @@ class HTMLVisitor(Visitor):
 
     visit_a_close = _visit_close
     visit_code_close = _visit_close
+    visit_dd_close = _visit_close
     visit_div_close = _visit_close
+    visit_dl_close = _visit_close
+    visit_dt_close = _visit_close
+    visit_em_close = _visit_close
     visit_h1_close = _visit_close
     visit_h2_close = _visit_close
     visit_h3_close = _visit_close
     visit_h4_close = _visit_close
     visit_h5_close = _visit_close
     visit_h6_close = _visit_close
+    visit_li_close = _visit_close
     visit_p_close = _visit_close
     visit_pre_close = _visit_close
     visit_span_close = _visit_close
@@ -576,6 +618,7 @@ class HTMLVisitor(Visitor):
     visit_th_close = _visit_close
     visit_thead_close = _visit_close
     visit_tr_close = _visit_close
+    visit_ul_close = _visit_close
 
     def visit_br(self, node, parts):
         """Parse a <br> tag"""
@@ -599,7 +642,12 @@ class HTMLVisitor(Visitor):
             children=children, **kwargs)
 
     visit_a_element = _visit_element
+    visit_dd_element = _visit_element
     visit_div_element = _visit_element
+    visit_dl_element = _visit_element
+    visit_dt_element = _visit_element
+    visit_em_element = _visit_element
+    visit_li_element = _visit_element
     visit_p_element = _visit_element
     visit_span_element = _visit_element
     visit_strong_element = _visit_element
@@ -610,6 +658,7 @@ class HTMLVisitor(Visitor):
     visit_th_element = _visit_element
     visit_thead_element = _visit_element
     visit_tr_element = _visit_element
+    visit_ul_element = _visit_element
 
     def _visit_text_element(self, node, children, **kwargs):
         """Parse a <tag>unparsed text</tag> element."""
