@@ -44,9 +44,7 @@ output/*/index.html
 docs/_build/*
 
 # Downloaded and generate files
-data/*.json
-data/*.txt
-data/*.csv
+data/
 
 # SQLite databases
 *.sqlite3

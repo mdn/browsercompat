@@ -6,6 +6,7 @@ import codecs
 import getpass
 import hashlib
 import logging
+import os
 import os.path
 import string
 import sys
@@ -45,11 +46,12 @@ class ToolParser(argparse.ArgumentParser):
             user - Add --user option
             password - Add --password option
             data - Add --data option
+            nocache - Add --no-cache option (default with cache)
         """
         super(ToolParser, self).__init__(*args, **kwargs)
 
         self.include_set = set(include or [])
-        valid = set(['api', 'user', 'password', 'data'])
+        valid = set(['api', 'user', 'password', 'data', 'nocache'])
         if self.include_set - valid:
             raise ValueError(
                 'Unknown include items: {}'.format(self.include_set - valid))
@@ -85,6 +87,12 @@ class ToolParser(argparse.ArgumentParser):
                 '-d', '--data', default=_data_dir,
                 action=ToolParser.StripTrailingSlash,
                 help='Output data folder (default: %s)' % _data_dir)
+
+        if 'nocache' in self.include_set:
+            self.add_argument(
+                '--no-cache', action="store_false", default=True,
+                dest="use_cache",
+                help='Ignore cache and redownload files')
 
     def parse_args(self, *args, **kwargs):
         args = super(ToolParser, self).parse_args(*args, **kwargs)
@@ -130,7 +138,18 @@ class Tool(object):
     def cached_download(self, filename, url, headers=None, retries=1):
         """Download a file, then serve it from the cache."""
         path = self.data_file(filename)
-        if not os.path.exists(path):
+
+        # Create the folder if it doesn't exist
+        # http://stackoverflow.com/a/14364249/10612
+        folder = os.path.dirname(path)
+        try:
+            os.makedirs(folder)
+        except OSError:
+            if not os.path.isdir(folder):
+                raise
+
+        use_cache = getattr(self, 'use_cache', False)
+        if not use_cache or not os.path.exists(path):
             retry = 0
             while retry < retries:
                 if retry == 0:

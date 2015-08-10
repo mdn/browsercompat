@@ -5,7 +5,10 @@ from __future__ import print_function
 from cgi import escape
 from json import loads
 from string import lowercase
+import os.path
 import time
+
+from requests.exceptions import HTTPError
 
 from common import Tool
 from resources import Collection, Feature
@@ -14,15 +17,21 @@ from resources import Collection, Feature
 class MirrorMDNFeatures(Tool):
     """Create and Update API features for MDN pages."""
     logger_name = 'tools.mirror_mdn_features'
-    parser_options = ['api', 'user', 'password', 'data']
+    parser_options = ['api', 'user', 'password', 'data', 'nocache']
     base_mdn_domain = 'https://developer.mozilla.org'
     base_mdn_uri = base_mdn_domain + '/en-US/docs/'
-    rate = 5
 
     def __init__(self, *args, **kwargs):
         super(MirrorMDNFeatures, self).__init__(*args, **kwargs)
         self.rate_limit_start = time.time()
         self.rate_limit_requests = 0
+
+    def get_parser(self):
+        parser = super(MirrorMDNFeatures, self).get_parser()
+        parser.add_argument(
+            '--skip-deletes', action="store_true",
+            help='Skip deleting API resources')
+        return parser
 
     def run(self, *args, **kwargs):
         self.login()
@@ -38,12 +47,16 @@ class MirrorMDNFeatures(Tool):
         feature_by_slug = dict((k[1], k[2]) for k in features)
         slugs = set(feature_by_slug.keys())
 
-        self.logger.info('Reading pages from MDN')
+        cache_state = "using cache" if self.use_cache else "no cache"
+        self.logger.info('Reading pages from MDN (%s)', cache_state)
         mdn_uris = self.current_mdn_uris()
 
+        # Find new / updated pages
         new_page, needs_url, existing_page = 0, 0, 0
+        seen_uris = set()
         for path, parent_path, raw_slug, title in mdn_uris:
             uri = self.base_mdn_domain + path
+            seen_uris.add(uri)
             feature = feature_by_uri.get(uri)
             if feature:
                 existing_page += 1
@@ -75,7 +88,13 @@ class MirrorMDNFeatures(Tool):
             'MDN URIs gathered, %d found (%d new, %d needs url, %d existing).',
             len(mdn_uris), new_page, needs_url, existing_page)
 
-        return self.sync_changes(api_collection, local_collection)
+        # Find deleted pages
+        for uri, feature in feature_by_uri.items():
+            if uri and uri not in seen_uris:
+                local_collection.remove(feature)
+
+        return self.sync_changes(
+            api_collection, local_collection, self.skip_deletes)
 
     def to_trans(self, text):
         """Convert text to an API translatable string.
@@ -105,16 +124,51 @@ class MirrorMDNFeatures(Tool):
         base_paths = [
             'Web', 'Navigation_timing', 'Server-sent_events', 'WebAPI',
             'WebSockets']
-        headers = {'Accept': 'application/json'}
 
         data = []
         for base_path in base_paths:
-            cache_file = base_path + "_mdn_children.json"
-            mdn_uri = self.base_mdn_uri + base_path + '$children'
-            children = self.cached_download(
-                cache_file, mdn_uri, headers=headers, retries=60)
-            data.extend(self.gather_mdn_json(loads(children)))
+            data.extend(self.crawl_mdn(base_path))
         return data
+
+    def crawl_mdn(self, path, parent_path=None, attempt=0):
+        """Recursively crawl MDN paths."""
+        cache_file = os.path.join("mdn_children", path + ".json")
+        mdn_uri = self.base_mdn_uri + path
+        children_uri = mdn_uri + '$children?depth=1'
+        headers = {'Accept': 'application/json'}
+        try:
+            children_data = self.cached_download(
+                cache_file, children_uri, headers=headers, retries=60)
+        except HTTPError as e:
+            self.logger.error('Error downloading %s: %s', children_uri, e)
+            return []
+
+        try:
+            mdn_json = loads(children_data)
+        except ValueError as e:
+            self.logger.error(
+                'Unable to decode JSON in %s: %s', cache_file, e)
+            if attempt < 3:
+                os.remove(cache_file)
+                return self.crawl_mdn(path, parent_path, attempt + 1)
+            else:
+                raise
+        if mdn_json:
+            path = mdn_json['url']
+            title = mdn_json['title']
+            slug = mdn_json['slug']
+            data = [(path, parent_path, slug, title)]
+            for subjson in mdn_json['subpages']:
+                subslug = subjson['slug']
+                if subslug.endswith('/'):
+                    # /en-US/docs/Web/Events/onconnected redirected
+                    self.logger.warning('Invalid slug for %s', subjson)
+                else:
+                    data.extend(self.crawl_mdn(subslug, parent_path=path))
+            return data
+        else:
+            self.logger.warning('No data at %s', path)
+            return []
 
     def known_features(self, collection):
         """Load URIs from collection's features."""
@@ -124,39 +178,6 @@ class MirrorMDNFeatures(Tool):
             slug = feature.slug
             uris.append((uri, slug, feature))
         return uris
-
-    def gather_mdn_json(self, mdn_json, parent_path=None):
-        """Recursively gather data from MDN JSON."""
-        path = mdn_json['url']
-        title = mdn_json['title']
-        slug = mdn_json['slug']
-        subpages = mdn_json['subpages']
-        data = [(path, parent_path, slug, title)]
-        for subjson in subpages:
-            data.extend(self.gather_mdn_json(subjson, path))
-        return data
-
-    def rate_limit(self):
-        """Pause and return True if exceeding the rate limit."""
-        self.rate_limit_requests += 1
-
-        # Sleep if we need to wait for the rate limit
-        current_time = time.time()
-        if self.rate:
-            elapsed = current_time - self.rate_limit_start
-            target = (
-                self.rate_limit_start +
-                float(self.rate_limit_requests) / self.rate)
-            current_rate = float(self.rate_limit_requests) / elapsed
-            if current_time < target:
-                rest = int(target - current_time) + 1
-                self.logger.warning(
-                    "%d pages fetched, %0.2f per second, target rate %d per"
-                    " second.  Resting %d seconds.",
-                    self.rate_limit_requests, current_rate, self.rate, rest)
-                time.sleep(rest)
-                return True
-        return False
 
 
 if __name__ == '__main__':
