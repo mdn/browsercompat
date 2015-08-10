@@ -6,6 +6,22 @@ from django.utils.six import text_type
 import string
 
 
+def date_to_iso(date):
+    """Convert a datetime.Date to the ISO 8601 format, or None"""
+    if date:
+        return date.isoformat()
+    else:
+        return None
+
+
+def end_of_line(text, pos):
+    """Get the position of the end of the line from pos"""
+    try:
+        return text.index('\n', pos)
+    except ValueError:
+        return len(text)
+
+
 def is_new_id(_id):
     """Detect if an ID signifies a new resource.
 

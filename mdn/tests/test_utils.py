@@ -1,9 +1,29 @@
 # coding: utf-8
 """Test mdn.utils."""
 from __future__ import unicode_literals
+from datetime import date
 
-from mdn.utils import is_new_id, join_content, slugify
+from mdn.utils import (
+    date_to_iso, end_of_line, is_new_id, join_content, slugify)
 from .base import TestCase
+
+
+class TestDateToIso(TestCase):
+    def test_date(self):
+        self.assertEqual('2015-02-02', date_to_iso(date(2015, 2, 2)))
+
+    def test_none(self):
+        self.assertEqual(None, date_to_iso(''))
+
+
+class TestEndOfLine(TestCase):
+    def test_single_line(self):
+        line = 'This is a single line.'
+        self.assertEqual(len(line), end_of_line(line, 2))
+
+    def test_multiple_line(self):
+        line = 'This is a multi line\nSee, two lines'
+        self.assertEqual(20, end_of_line(line, 2))
 
 
 class TestIsNewID(TestCase):
