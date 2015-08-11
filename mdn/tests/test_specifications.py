@@ -182,6 +182,27 @@ domenic/promises-unwrapping</a></td>
              'arg_spec': 'exactly 1 argument (SpecKey)'})]
         self.assert_extract(html, expected_specs, issues)
 
+    def test_specrow_empty(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/BluetoothGattService
+        spec_row = """\
+<tr>
+   <td> </td>
+   <td> </td>
+   <td> </td>
+</tr>"""
+        html = self.construct_html(row=spec_row)
+        expected_spec = {
+            'section.note': '',
+            'section.subpath': '',
+            'section.name': '',
+            'specification.mdn_key': '',
+            'section.id': None,
+            'specification.id': None}
+        issues = [
+            ('specname_omitted', 248, 258, {}),
+            ('spec2_omitted', 262, 272, {})]
+        self.assert_extract(html, [expected_spec], issues)
+
     def test_whynospec(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/AnimationEvent/initAnimationEvent
         pre_table = """

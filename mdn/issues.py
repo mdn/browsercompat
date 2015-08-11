@@ -175,6 +175,11 @@ ISSUES = OrderedDict((
         'Specification name unknown, and should be converted to KumaScript',
         'Expected KumaScript {{{{SpecName(key, subpath, name)}}}}, but got'
         ' text "{original}".')),
+    ('specname_omitted', (
+        WARNING,
+        'Expected KumaScript SpecName(), got nothing',
+        'Expected KumaScript {{{{SpecName(key, subpath, name)}}}}, but got'
+        ' no text. Fix or remove empty table row.')),
     ('spec2_wrong_kumascript', (
         ERROR,
         'Expected KumaScript Spec2(), got {kumascript}',
@@ -185,6 +190,11 @@ ISSUES = OrderedDict((
         'Specification status should be converted to KumaScript',
         'Expected KumaScript {{{{Spec2("{key}")}}}}, but got text'
         ' "{original}".')),
+    ('spec2_omitted', (
+        WARNING,
+        'Expected KumaScript Spec2(), got nothing',
+        'Change to Spec2(mdn_key), using the mdn_key from the SpecName()'
+        ' KumaScript, or remove empty table row.')),
     ('specdesc_spec2_invalid', (
         ERROR,
         '{kumascript} is invalid in the spec description',

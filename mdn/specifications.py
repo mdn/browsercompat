@@ -161,6 +161,8 @@ class SpecSectionExtractor(Extractor):
         visitor.visit(reparsed)
         self.issues.extend(visitor.issues)
         self.key = visitor.mdn_key or ""
+        if not (self.key or visitor.issues):
+            self.add_issue('specname_omitted', td_element)
         if visitor.spec:
             self.spec_id = visitor.spec.id
         self.section_id = visitor.section_id or None
@@ -179,14 +181,15 @@ class SpecSectionExtractor(Extractor):
                 self.add_issue(
                     'spec_mismatch', td_element, spec2_key=spec2_key,
                     specname_key=self.key)
-        else:
+        elif visitor.spec2_item:
             # Text like 'Standard' or non-standard KumaScript
             item = visitor.spec2_item
-            assert item
             if isinstance(item, HTMLText) and not isinstance(item, KumaScript):
                 self.add_issue(
                     'spec2_converted', item, key=self.key,
                     original=item.cleaned)
+        else:
+            self.add_issue('spec2_omitted', td_element)
 
     def extract_specdesc(self, td_element):
         reparsed = kumascript_grammar.parse(td_element.raw)
