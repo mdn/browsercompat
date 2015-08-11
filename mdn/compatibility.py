@@ -20,6 +20,7 @@ from .visitor import Extractor
 
 compat_shared_grammar_source = r"""
 footnote_id = _ "[" ~r"(?P<content>\d+|\*+)" "]" _
+bracket_text = _ ~r"(?P<content>\[[^]]+\])" _
 text_item = ~r"(?P<content>[^{<[]+)"s
 """
 
@@ -27,7 +28,7 @@ compat_feature_grammar_source = kumascript_grammar_source + r"""
 #
 # Add compat feature strings to text_token
 #
-text_token = kumascript / footnote_id / text_item
+text_token = kumascript / footnote_id / bracket_text / text_item
 """ + compat_shared_grammar_source
 
 compat_support_grammar_source = kumascript_grammar_source + (
@@ -35,8 +36,8 @@ compat_support_grammar_source = kumascript_grammar_source + (
 #
 # Add compat support strings to text_token
 #
-text_token = kumascript / cell_version / footnote_id / cell_removed /
-    cell_noprefix / cell_partial / text_item
+text_token = kumascript / cell_version / footnote_id / bracket_text /
+    cell_removed / cell_noprefix / cell_partial / text_item
 cell_version = _ ~r"(?P<version>\d+(\.\d+)*)"""
     r"""(\s+\((?P<eng_version>\d+(\.\d+)*)\))?\s*"s _
 cell_removed = _ ~r"[Rr]emoved\s+[Ii]n\s*"s _
@@ -420,6 +421,10 @@ class CompatBaseVisitor(KumaVisitor):
     def visit_footnote_id(self, node, children):
         ws1, open_bracket, content, close_bracket, ws2 = children
         return self.process(Footnote, node, footnote_id=content.text)
+
+    def visit_bracket_text(self, node, children):
+        ws1, content, ws2 = children
+        return self.process(HTMLText, content)
 
     def visit_td_open(self, node, children):
         """Retain colspan and rowspan attributes of <td> tags."""

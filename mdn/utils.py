@@ -33,7 +33,7 @@ def is_new_id(_id):
 def join_content(content_bits):
     """Construct a string with just the right whitespace."""
     out = ""
-    nospace_before = '!,.;? '
+    nospace_before = '!,.;?[ '
     nospace_after = ' '
     for bit in content_bits:
         if bit:
@@ -66,6 +66,8 @@ def slugify(word, length=50, suffix=""):
     slugged = ''.join(out)
     while '__' in slugged:
         slugged = slugged.replace('__', '_')
+    if slugged.endswith('_') and len(slugged) > 1:
+        slugged = slugged[:-1]
     suffix = text_type(suffix) if suffix else ""
     with_suffix = slugged[slice(length - len(suffix))] + suffix
     return with_suffix

@@ -33,12 +33,12 @@ html_grammar_source = r"""
 html = html_block / empty_text
 html_block = html_element+
 html_element = a_element / br_element / code_element / dd_element /
-    div_element / dl_element / dt_element / em_element / h1_element /
-    h2_element / h3_element / h3_element / h4_element / h5_element/
-    h6_element / img_element / li_element / p_element / pre_element /
-    span_element / strong_element / sup_element / table_element /
-    tbody_element / td_element / th_element / thead_element / tr_element /
-    ul_element / text_block
+    dfn_element / div_element / dl_element / dt_element / em_element /
+    h1_element / h2_element / h3_element / h3_element / h4_element /
+    h5_element/ h6_element / img_element / input_element / li_element /
+    p_element / pre_element / span_element / strong_element / sup_element /
+    table_element / tbody_element / td_element / th_element / thead_element /
+    tr_element / ul_element / text_block
 
 a_element = a_open a_content a_close
 a_open = "<a" _ attrs ">"
@@ -52,15 +52,20 @@ code_open = "<code" _ attrs ">"
 code_content = ~r"(?P<content>.*?(?=</code>))"s
 code_close = "</code>"
 
-div_element = div_open div_content div_close
-div_open = "<div" _ attrs ">"
-div_content = html
-div_close = "</div>"
-
 dd_element = dd_open dd_content dd_close
 dd_open = "<dd" _ attrs ">"
 dd_content = html
 dd_close = "</dd>"
+
+dfn_element = dfn_open dfn_content dfn_close
+dfn_open = "<dfn" _ attrs ">"
+dfn_content = html
+dfn_close = "</dfn>"
+
+div_element = div_open div_content div_close
+div_open = "<div" _ attrs ">"
+div_content = html
+div_close = "</div>"
 
 dl_element = dl_open dl_content dl_close
 dl_open = "<dl" _ attrs ">"
@@ -108,6 +113,8 @@ h6_content = html
 h6_close = "</h6>"
 
 img_element = "<img" _ attrs ("/>" / ">")
+
+input_element = "<input" _ attrs ("/>" / ">")
 
 li_element = li_open li_content li_close
 li_open = "<li" _ attrs ">"
@@ -570,6 +577,7 @@ class HTMLVisitor(Visitor):
     visit_a_open = _visit_open
     visit_code_open = _visit_open
     visit_dd_open = _visit_open
+    visit_dfn_open = _visit_open
     visit_div_open = _visit_open
     visit_dl_open = _visit_open
     visit_dt_open = _visit_open
@@ -600,6 +608,7 @@ class HTMLVisitor(Visitor):
 
     visit_br_element = _visit_self_closing_element
     visit_img_element = _visit_self_closing_element
+    visit_input_element = _visit_self_closing_element
 
     def _visit_close(self, node, empty):
         close_tag = node.text
@@ -611,6 +620,7 @@ class HTMLVisitor(Visitor):
     visit_a_close = _visit_close
     visit_code_close = _visit_close
     visit_dd_close = _visit_close
+    visit_dfn_close = _visit_close
     visit_div_close = _visit_close
     visit_dl_close = _visit_close
     visit_dt_close = _visit_close
@@ -654,6 +664,7 @@ class HTMLVisitor(Visitor):
 
     visit_a_element = _visit_element
     visit_dd_element = _visit_element
+    visit_dfn_element = _visit_element
     visit_div_element = _visit_element
     visit_dl_element = _visit_element
     visit_dt_element = _visit_element

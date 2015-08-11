@@ -335,7 +335,7 @@ class TestFeatureVisitor(TestCase):
         cell = '<code>initAnimationEvent()</code> {{non-standard_inline}}'
         feature_id = '_initanimationevent()'
         name = 'initAnimationEvent()'
-        slug = 'web-css-background-size_initanimationevent_'
+        slug = 'web-css-background-size_initanimationevent'
         self.assert_feature(
             cell, feature_id, name, slug, canonical=True, standardized=False)
 
@@ -343,7 +343,7 @@ class TestFeatureVisitor(TestCase):
         cell = '<code>initAnimationEvent()</code> {{deprecated_inline}}'
         feature_id = '_initanimationevent()'
         name = 'initAnimationEvent()'
-        slug = 'web-css-background-size_initanimationevent_'
+        slug = 'web-css-background-size_initanimationevent'
         self.assert_feature(
             cell, feature_id, name, slug, canonical=True, obsolete=True)
 
@@ -388,6 +388,14 @@ class TestFeatureVisitor(TestCase):
         issue = ('footnote_feature', 27, 31, {})
         self.assert_feature(
             cell, feature_id, name, slug, standardized=False, issues=[issue])
+
+    def test_bracket(self):
+        # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
+        cell = 'accept=[file extension]'
+        feature_id = '_accept=[file extension]'
+        name = 'accept=[file extension]'
+        slug = 'web-css-background-size_accept_file_extension'
+        self.assert_feature(cell, feature_id, name, slug)
 
     def test_digit(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/transform
