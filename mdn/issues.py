@@ -96,7 +96,8 @@ ISSUES = OrderedDict((
         CRITICAL,
         'Unable to finish importing MDN page.',
         'The importer was unable to finish parsing the MDN page. This may be'
-        ' due to a duplicated section, or other unexpected content.')),
+        ' due to an unknown HTML tag, nested <code> or <pre> elements, or'
+        ' other unexpected content.')),
     ('inline_text', (
         ERROR,
         'Unknown inline support text "{text}".',

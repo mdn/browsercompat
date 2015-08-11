@@ -37,7 +37,7 @@ from .compatibility import CompatSectionExtractor
 from .html import HnElement
 from .kumascript import kumascript_grammar, KumaVisitor
 from .specifications import SpecSectionExtractor
-from .utils import date_to_iso, end_of_line, is_new_id
+from .utils import date_to_iso, is_new_id
 from .visitor import Extractor
 
 
@@ -155,11 +155,12 @@ def scrape_page(mdn_page, feature, locale='en'):
         return data
 
     # Parse the page with HTML + KumaScript grammar
+
     try:
         page_parsed = kumascript_grammar.parse(mdn_page)
     except IncompleteParseError as ipe:
-        data['issues'].append((
-            'halt_import', ipe.pos, end_of_line(ipe.text, ipe.pos), {}))
+        narrow_pos, narrow_end = narrow_parse_error(mdn_page, ipe.pos)
+        data['issues'].append(('halt_import', narrow_pos, narrow_end, {}))
         return data
 
     # Convert parsed page and extract data
@@ -168,6 +169,55 @@ def scrape_page(mdn_page, feature, locale='en'):
         elements=elements, feature=feature, locale=locale)
     page_data = extractor.extract()
     return page_data
+
+
+def narrow_parse_error(fragment, pos):
+    """Try to narrow parse errors to inner elements.
+
+    Return is a tuple:
+    - start - The probable start position of the error
+    - end - The probable end position of the error
+    """
+    default = pos, len(fragment)
+    if fragment[pos] != '<':
+        # Not an element error - mark rest of fragment
+        return default
+
+    # Determine outer tags
+    try:
+        end = fragment.index('>', pos)
+    except ValueError:
+        return default
+    try:
+        ws_start = fragment.index(' ', pos)
+    except ValueError:
+        ws_start = end + 1
+    if ws_start < end:
+        tag = fragment[pos:ws_start] + '>'
+    else:
+        tag = fragment[pos:(end + 1)]
+    end_tag = tag.replace("<", "</")
+    try:
+        end_index = fragment.index(end_tag, pos)
+    except ValueError:
+        # Can't find end tag - mark rest of fragment
+        return default
+    else:
+        # Try parsing the content inside the tags
+        subfragment = fragment[(end + 1):end_index]
+        try:
+            kumascript_grammar.parse(subfragment)
+        except IncompleteParseError as ipe:
+            if ipe.pos:
+                # Narrow down to an inner tag
+                subpos, subend = narrow_parse_error(subfragment, ipe.pos)
+                return subpos + end + 1, subend + end + 1
+            else:
+                # Mark all inner content as issue
+                return end + 1, end_index
+        else:
+            # Inner parses - the tag is the problem
+            return pos, end_index + len(end_tag)
 
 
 class ScrapedViewFeature(object):

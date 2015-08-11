@@ -5,8 +5,8 @@ from json import dumps
 
 from mdn.models import FeaturePage
 from mdn.scrape import (
-    scrape_page, scrape_feature_page, PageExtractor, PageVisitor,
-    ScrapedViewFeature)
+    narrow_parse_error, scrape_page, scrape_feature_page, PageExtractor,
+    PageVisitor, ScrapedViewFeature)
 from mdn.kumascript import kumascript_grammar
 from webplatformcompat.models import Feature, Support
 from .base import TestCase
@@ -180,12 +180,63 @@ class TestScrape(BaseTestCase):
   <p>The parser expects a page fragment, not a full document.</p>
   </body>
 </html>"""
-        self.assertScrape(page, [], [('halt_import', 1, 7, {})])
+        self.assertScrape(page, [], [('halt_import', 21, 53, {})])
 
     def test_spec_only(self):
         """Test with a only a Specification section."""
         sample_spec_section, expected_specs = self.get_sample_specs()
         self.assertScrape(sample_spec_section, expected_specs, [])
+
+
+class TestNarrowParseError(TestCase):
+    def test_unknown_element(self):
+        html = """\
+<ul>
+  <li>Plain</li>
+  <li><strong>Bold</strong></li>
+  <li><unknown>Strange</unknown></li>
+  <li><em>Emphasized</em></li>
+</ul>"""
+        narrow_pos, narrow_end = narrow_parse_error(html, 0)
+        expected_pos = html.index('<unknown>')
+        expected_end = html.index('</li>', expected_pos)
+        self.assertEqual(expected_pos, narrow_pos)
+        self.assertEqual(expected_end, narrow_end)
+
+    def test_unknown_with_attributes(self):
+        html = '<p><unknown class="foo">foo</unknown></p>'
+        narrow_pos, narrow_end = narrow_parse_error(html, 3)
+        expected_pos = html.index('<unknown')
+        expected_end = html.index('</p>', expected_pos)
+        self.assertEqual(expected_pos, narrow_pos)
+        self.assertEqual(expected_end, narrow_end)
+
+    def test_no_end_tag(self):
+        html = '<p>This is <strong>bold</p></strong>'
+        narrow_pos, narrow_end = narrow_parse_error(html, 0)
+        expected_pos = html.index('<strong')
+        expected_end = html.index('</p>', expected_pos)
+        self.assertEqual(expected_pos, narrow_pos)
+        self.assertEqual(expected_end, narrow_end)
+
+    def test_inner_lt(self):
+        html = '<p><div>4 < 5</div></p>'
+        narrow_pos, narrow_end = narrow_parse_error(html, 0)
+        self.assertEqual(html.index('<div>'), narrow_pos)
+        self.assertEqual(html.index('</p>'), narrow_end)
+
+    def test_naked_lt(self):
+        html = "Here's a naked < Wow that might cause problems."
+        pos = html.index('<')
+        narrow_pos, narrow_end = narrow_parse_error(html, pos)
+        self.assertEqual(pos, narrow_pos)
+        self.assertEqual(len(html), narrow_end)
+
+    def test_non_element_error(self):
+        html = '<p>unknown [error]</p>'
+        narrow_pos, narrow_end = narrow_parse_error(html, 10)
+        self.assertEqual(10, narrow_pos)
+        self.assertEqual(len(html), narrow_end)
 
 
 class FeaturePageTestCase(TestCase):
