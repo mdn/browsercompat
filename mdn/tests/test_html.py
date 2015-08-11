@@ -6,7 +6,7 @@ from django.utils.six import text_type
 
 from mdn.html import (
     HTMLAttribute, HTMLAttributes, HTMLCloseTag, HTMLElement, HTMLInterval,
-    HTMLOpenTag, HTMLSimpleTag, HTMLText, HTMLVisitor, HnElement, html_grammar)
+    HTMLOpenTag, HTMLBaseTag, HTMLText, HTMLVisitor, HnElement, html_grammar)
 from .base import TestCase
 
 
@@ -34,9 +34,9 @@ class TestHTMLText(TestCase):
         self.assertEqual('Some Text', text.to_text())
 
 
-class TestHTMLSimpleTag(TestCase):
+class TestHTMLBaseTag(TestCase):
     def test_str(self):
-        tag = HTMLSimpleTag(raw='<br/>', tag='br')
+        tag = HTMLBaseTag(raw='<br/>', tag='br')
         self.assertEqual('<br>', text_type(tag))
 
 
@@ -259,7 +259,7 @@ class TestVisitor(TestCase):
 
     def test_br(self):
         text = '<br>'
-        parsed = html_grammar['br'].parse(text)
+        parsed = html_grammar['br_element'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(out.start, 0)
         self.assertEqual(out.end, len(text))

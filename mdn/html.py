@@ -32,20 +32,20 @@ html_grammar_source = r"""
 #
 html = html_block / empty_text
 html_block = html_element+
-html_element = a_element / br / code_element / dd_element / div_element /
-    dl_element / dt_element / em_element /
-    h1_element / h2_element / h3_element / h3_element / h4_element /
-    h5_element/ h6_element /
-    li_element / p_element / pre_element / span_element / strong_element /
-    sup_element / table_element / tbody_element / td_element / th_element /
-    thead_element / tr_element / ul_element / text_block
+html_element = a_element / br_element / code_element / dd_element /
+    div_element / dl_element / dt_element / em_element / h1_element /
+    h2_element / h3_element / h3_element / h4_element / h5_element/
+    h6_element / img_element / li_element / p_element / pre_element /
+    span_element / strong_element / sup_element / table_element /
+    tbody_element / td_element / th_element / thead_element / tr_element /
+    ul_element / text_block
 
 a_element = a_open a_content a_close
 a_open = "<a" _ attrs ">"
 a_content = html
 a_close = "</a>"
 
-br = "<" _ "br" _ ("/>" / ">") _
+br_element = "<br" _ attrs ("/>" / ">") _
 
 code_element = code_open code_content code_close
 code_open = "<code" _ attrs ">"
@@ -106,6 +106,8 @@ h6_element = h6_open h6_content h6_close
 h6_open = "<h6" _ attrs ">"
 h6_content = html
 h6_close = "</h6>"
+
+img_element = "<img" _ attrs ("/>" / ">") _
 
 li_element = li_open li_content li_close
 li_open = "<li" _ attrs ">"
@@ -272,11 +274,11 @@ class HTMLEmptyText(HTMLText):
 
 
 @python_2_unicode_compatible
-class HTMLSimpleTag(HTMLInterval):
-    """An HTML tag, such as <li>"""
+class HTMLBaseTag(HTMLInterval):
+    """An HTML tag, such as <li>, <br/>, or </code>"""
 
     def __init__(self, tag, **kwargs):
-        super(HTMLSimpleTag, self).__init__(**kwargs)
+        super(HTMLBaseTag, self).__init__(**kwargs)
         assert tag in self.raw
         self.tag = tag
 
@@ -321,7 +323,7 @@ class HTMLAttributes(HTMLInterval):
 
 
 @python_2_unicode_compatible
-class HTMLOpenTag(HTMLSimpleTag):
+class HTMLOpenTag(HTMLBaseTag):
     """An HTML tag, such as <a href="#foo">"""
 
     def __init__(
@@ -434,12 +436,17 @@ class HTMLOpenTag(HTMLSimpleTag):
 
 
 @python_2_unicode_compatible
-class HTMLCloseTag(HTMLSimpleTag):
+class HTMLCloseTag(HTMLBaseTag):
     """An HTML closing tag, such as </a>"""
     pass
 
     def __str__(self):
         return "</{}>".format(self.tag)
+
+
+class HTMLSelfClosingElement(HTMLOpenTag):
+    """An HTML element that is just a tag, such as <br> and <img>."""
+    pass
 
 
 @python_2_unicode_compatible
@@ -546,7 +553,7 @@ class HTMLVisitor(Visitor):
     visit_html_element = _visit_token
     visit_hn_element = _visit_token
 
-    def _visit_open(self, node, children, actions=None, **kwargs):
+    def _visit_open(self, node, children, actions=None, cls=None, **kwargs):
         """Parse an opening tag with an optional attributes list"""
         open_tag_node, ws, attrs, close = children
         assert isinstance(open_tag_node, Node), type(open_tag_node)
@@ -554,8 +561,9 @@ class HTMLVisitor(Visitor):
         assert open_tag.startswith('<')
         tag = open_tag[1:]
         assert isinstance(attrs, HTMLAttributes), type(attrs)
+        cls = cls or HTMLOpenTag
         return self.process(
-            HTMLOpenTag, node, tag=tag, attributes=attrs,
+            cls, node, tag=tag, attributes=attrs,
             attribute_actions=actions or self._default_attribute_actions,
             **kwargs)
 
@@ -585,6 +593,13 @@ class HTMLVisitor(Visitor):
     visit_thead_open = _visit_open
     visit_tr_open = _visit_open
     visit_ul_open = _visit_open
+
+    def _visit_self_closing_element(self, node, children, **kwargs):
+        return self._visit_open(
+            node, children[:-1], cls=HTMLSelfClosingElement, **kwargs)
+
+    visit_br_element = _visit_self_closing_element
+    visit_img_element = _visit_self_closing_element
 
     def _visit_close(self, node, empty):
         close_tag = node.text
@@ -619,10 +634,6 @@ class HTMLVisitor(Visitor):
     visit_thead_close = _visit_close
     visit_tr_close = _visit_close
     visit_ul_close = _visit_close
-
-    def visit_br(self, node, parts):
-        """Parse a <br> tag"""
-        return self.process(HTMLSimpleTag, node, tag='br')
 
     def _visit_element(self, node, children, **kwargs):
         """Parse a <tag>content</tag> element."""
