@@ -45,7 +45,7 @@ a_open = "<a" _ attrs ">"
 a_content = html
 a_close = "</a>"
 
-br_element = "<br" _ attrs ("/>" / ">") _
+br_element = "<br" _ attrs ("/>" / ">")
 
 code_element = code_open code_content code_close
 code_open = "<code" _ attrs ">"
@@ -107,7 +107,7 @@ h6_open = "<h6" _ attrs ">"
 h6_content = html
 h6_close = "</h6>"
 
-img_element = "<img" _ attrs ("/>" / ">") _
+img_element = "<img" _ attrs ("/>" / ">")
 
 li_element = li_open li_content li_close
 li_open = "<li" _ attrs ">"
@@ -596,7 +596,7 @@ class HTMLVisitor(Visitor):
 
     def _visit_self_closing_element(self, node, children, **kwargs):
         return self._visit_open(
-            node, children[:-1], cls=HTMLSelfClosingElement, **kwargs)
+            node, children, cls=HTMLSelfClosingElement, **kwargs)
 
     visit_br_element = _visit_self_closing_element
     visit_img_element = _visit_self_closing_element

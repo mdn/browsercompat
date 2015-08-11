@@ -385,7 +385,7 @@ class TestFeatureVisitor(TestCase):
         feature_id = '_block alignment values'
         name = 'Block alignment values'
         slug = 'web-css-background-size_block_alignment_values'
-        issue = ('footnote_feature', 27, 30, {})
+        issue = ('footnote_feature', 27, 31, {})
         self.assert_feature(
             cell, feature_id, name, slug, standardized=False, issues=[issue])
 
@@ -427,8 +427,9 @@ class TestFeatureVisitor(TestCase):
 
 class TestSupportGrammar(TestCase):
     def assert_version(self, text, version, eng_version=None):
-        match = compat_support_grammar["cell_version"].parse(
-            text).match.groupdict()
+        ws1, version_node, ws2 = (
+            compat_support_grammar["cell_version"].parse(text))
+        match = version_node.match.groupdict()
         expected = {"version": version, "eng_version": eng_version}
         self.assertEqual(expected, match)
 
@@ -653,11 +654,18 @@ class TestSupportVisitor(TestCase):
             '18<br>\n(behind a pref) [1]',
             [{'version': '18.0'}],
             [{'support': 'yes', 'footnote_id': ('1', 27, 30)}],
-            issues=[('inline_text', 11, 27, {'text': '(behind a pref)'})])
+            issues=[('inline_text', 10, 27, {'text': '(behind a pref)'})])
 
     def test_removed_in_gecko(self):
         self.assert_support(
             ('{{ CompatGeckoMobile("6.0") }}<br>'
+             'Removed in {{ CompatGeckoMobile("23.0") }}'),
+            [{'version': '6.0'}, {'version': '23.0'}],
+            [{'support': 'yes'}, {'support': 'no'}])
+
+    def test_multi_br(self):
+        self.assert_support(
+            ('{{ CompatGeckoMobile("6.0") }}<br><br>'
              'Removed in {{ CompatGeckoMobile("23.0") }}'),
             [{'version': '6.0'}, {'version': '23.0'}],
             [{'support': 'yes'}, {'support': 'no'}])
@@ -743,6 +751,21 @@ class TestSupportVisitor(TestCase):
         self.assert_support(
             '22 {{experimental_inline}}',
             [{'version': '22.0'}], [{'support': 'yes'}], issues=[issue])
+
+    def test_multiversion_prefix_no(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Text/replaceWholeText
+        self.assert_support(
+            '{{CompatVersionUnknown}} [1] <br> 30.0 <br> {{CompatNo}} 41.0',
+            [{'version': 'current'}, {'version': '30.0'}, {'version': '41.0'}],
+            [{'support': 'yes', 'footnote_id': ('1', 29, 33)},
+             {'support': 'yes'}, {'support': 'no'}])
+
+    def test_multiversion_suffix_no(self):
+        self.assert_support(
+            '{{CompatVersionUnknown}} [1] <br> 30.0 <br> 41.0 {{CompatNo}}',
+            [{'version': 'current'}, {'version': '30.0'}, {'version': '41.0'}],
+            [{'support': 'yes', 'footnote_id': ('1', 29, 33)},
+             {'support': 'yes'}, {'support': 'no'}])
 
 
 class TestFootnoteGrammar(TestCase):
@@ -837,7 +860,7 @@ class TestFootnoteVisitor(TestCase):
 
     def test_bad_footnote_prefix(self):
         footnotes = "<p>Footnote [1] - The content.</p>"
-        expected = {'1': ('- The content.', 15, 30)}
+        expected = {'1': ('- The content.', 16, 30)}
         issue = ('footnote_no_id', 3, 12, {})
         self.assert_footnotes(footnotes, expected, issues=[issue])
 
@@ -927,5 +950,5 @@ class TestFootnoteVisitor(TestCase):
     def test_br_footnotes(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/hash
         footnote = "<p>[1] Footnote 1.<br>[2] Footnote 2.</p>"
-        expected = {'1': ("Footnote 1.", 6, 18), '2': ("Footnote 2.", 25, 37)}
+        expected = {'1': ("Footnote 1.", 7, 18), '2': ("Footnote 2.", 26, 37)}
         self.assert_footnotes(footnote, expected)

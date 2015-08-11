@@ -8,7 +8,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
 from parsimonious.grammar import Grammar
 
-from .html import HnElement, HTMLElement, HTMLText
+from .html import HnElement, HTMLElement, HTMLSelfClosingElement, HTMLText
 from .kumascript import (
     CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS, CompatGeckoMobile,
     CompatNightly, CompatNo, CompatUnknown, CompatVersionUnknown,
@@ -19,7 +19,7 @@ from .utils import is_new_id, join_content
 from .visitor import Extractor
 
 compat_shared_grammar_source = r"""
-footnote_id = "[" ~r"(?P<content>\d+|\*+)" "]"
+footnote_id = _ "[" ~r"(?P<content>\d+|\*+)" "]" _
 text_item = ~r"(?P<content>[^{<[]+)"s
 """
 
@@ -37,9 +37,9 @@ compat_support_grammar_source = kumascript_grammar_source + (
 #
 text_token = kumascript / cell_version / footnote_id / cell_removed /
     cell_noprefix / cell_partial / text_item
-cell_version = ~r"(?P<version>\d+(\.\d+)*)"""
-    r"""(\s+\((?P<eng_version>\d+(\.\d+)*)\))?\s*"s
-cell_removed = ~r"[Rr]emoved\s+[Ii]n\s*"s
+cell_version = _ ~r"(?P<version>\d+(\.\d+)*)"""
+    r"""(\s+\((?P<eng_version>\d+(\.\d+)*)\))?\s*"s _
+cell_removed = _ ~r"[Rr]emoved\s+[Ii]n\s*"s _
 cell_noprefix = _ ("(unprefixed)" / "(no prefix)" / "without prefix" /
     "(without prefix)") _
 cell_partial =  _ (", partial" / "(partial)") _
@@ -418,7 +418,7 @@ class CompatBaseVisitor(KumaVisitor):
     """Shared visitor for compatibility cell and footnote content."""
 
     def visit_footnote_id(self, node, children):
-        open_bracket, content, close_bracket = children
+        ws1, open_bracket, content, close_bracket, ws2 = children
         return self.process(Footnote, node, footnote_id=content.text)
 
     def visit_td_open(self, node, children):
@@ -579,19 +579,30 @@ class CompatSupportVisitor(CompatBaseVisitor):
         self.init_version_and_support()
 
     def init_version_and_support(self):
-        self.version = {'browser': self.browser_id}
-        self.support = {'feature': self.feature_id}
+        self.version = {}
+        self.provisional_version = None
+        self.provisional_element = None
+        self.support = {}
 
     def commit_support_and_version(self):
         """Commit new or updated support and version, and prepare for next."""
+        if self.provisional_version and 'version' not in self.version:
+            self.set_version(
+                self.provisional_version, self.provisional_element)
         if self.version.get('version'):
             if (self.support.get('support') == 'yes' and
                     self.support.get('prefix') and
                     self.support.get('footnote_id')):
                 # Footnote + prefix => support=partial
                 self.support['support'] = 'partial'
+            self.version['browser'] = self.browser_id
+            self.support['feature'] = self.feature_id
             self.versions.append(self.version)
             self.supports.append(self.support)
+            self.init_version_and_support()
+        elif (self.version or self.support) and self.versions:
+            self.versions[-1].update(self.version)
+            self.supports[-1].update(self.support)
             self.init_version_and_support()
 
     def add_inline_text_issues(self):
@@ -626,7 +637,8 @@ class CompatSupportVisitor(CompatBaseVisitor):
         elif isinstance(processed, CompatNightly):
             self.set_version('nightly', processed)
         elif isinstance(processed, CompatNo):
-            self.set_version('current', processed)
+            self.provisional_version = 'current'
+            self.provisional_element = processed
             self.support['support'] = 'no'
         elif isinstance(processed, CompatUnknown):
             pass  # Don't record unknown support in API
@@ -660,7 +672,12 @@ class CompatSupportVisitor(CompatBaseVisitor):
             if processed.known:
                 self.add_raw_issue(processed._make_issue('unknown_kumascript'))
         elif isinstance(processed, HTMLText):
-            self.inline_texts.append((processed, processed.cleaned))
+            if processed.cleaned:
+                self.inline_texts.append((processed, processed.cleaned))
+        elif (isinstance(processed, HTMLSelfClosingElement) and
+              processed.tag == 'br'):
+            if self.version.get('version'):
+                self.commit_support_and_version()
         return processed
 
     version_re = re.compile(r"((\d+(\.\d+)*)|current|nightly)$")
@@ -692,19 +709,23 @@ class CompatSupportVisitor(CompatBaseVisitor):
         self.support['version'] = version_id
 
     def visit_cell_version(self, node, children):
-        version = node.match.group('version')
-        engine_version = node.match.group('eng_version')
+        ws1, version_node, ws2 = children
+        version = version_node.match.group('version')
+        engine_version = version_node.match.group('eng_version')
         return self.process(
             CellVersion, node, version=version, engine_version=engine_version)
 
     def visit_cell_removed(self, node, children):
-        return self.process(CellRemoved, node)
+        ws1, removed_node, ws2 = children
+        return self.process(CellRemoved, removed_node)
 
     def visit_cell_noprefix(self, node, children):
-        return self.process(CellNoPrefix, node)
+        ws1, noprefix_choices, ws2 = children
+        return self.process(CellNoPrefix, noprefix_choices[0])
 
     def visit_cell_partial(self, node, children):
-        return self.process(CellPartial, node)
+        ws1, partial_choices, ws2 = children
+        return self.process(CellPartial, partial_choices[0])
 
 
 class CompatFootnoteVisitor(CompatBaseVisitor):
