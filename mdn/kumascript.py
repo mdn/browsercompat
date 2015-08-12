@@ -61,7 +61,7 @@ whynospec_end = ks_esc_start ~r"WhyNoSpecEnd"s _ ks_esc_end _
 # Add KumaScript to text
 #
 text_token = whynospec / kumascript / text_item
-text_item = ~r"(?P<content>[^{<]+)"s
+text_item = ~r"(?P<content>(?:[^{<]|{(?!{))+)"s
 """
 kumascript_grammar = Grammar(kumascript_grammar_source)
 

@@ -473,6 +473,11 @@ Not part of any current spec, but it was in early drafts of
 """
         self.assert_whynospec(text)
 
+    def test_single_curly(self):
+        text = "Here is some sample text: { ... }."
+        parsed = kumascript_grammar['text_block'].parse(text)
+        self.assertEqual(text, parsed.text)
+
 
 class TestVisitor(TestHTMLVisitor):
     def setUp(self):
