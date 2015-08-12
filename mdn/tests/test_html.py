@@ -229,6 +229,16 @@ class TestGrammar(TestCase):
         parsed = html_grammar['html'].parse(text)
         assert parsed
 
+    def test_double_quoted(self):
+        text = '"text"'
+        parsed = html_grammar['double_quoted_text'].parse(text)
+        self.assertEqual('text', parsed.match.group('content'))
+
+    def test_double_quoted_with_escape(self):
+        text = '"\\"text\\""'
+        parsed = html_grammar['double_quoted_text'].parse(text)
+        self.assertEqual('\\"text\\"', parsed.match.group('content'))
+
 
 class TestVisitor(TestCase):
     def setUp(self):
@@ -408,3 +418,21 @@ class TestVisitor(TestCase):
         self.assertEqual(text_type(p_elem), '<p>This is in the h1 section</p>')
         self.assertIsInstance(text2, HTMLText)
         self.assertEqual(text_type(text2), '')
+
+    def test_double_quoted_text(self):
+        text = '"text"'
+        parsed = html_grammar['text'].parse(text)
+        out = self.visitor.visit(parsed)
+        self.assertEqual(['text'], out)
+
+    def test_double_quoted_escaped_text(self):
+        text = '"the \\"text\\"."'
+        parsed = html_grammar['text'].parse(text)
+        out = self.visitor.visit(parsed)
+        self.assertEqual(['the "text".'], out)
+
+    def test_single_quoted_escaped_text(self):
+        text = "'I don\\'t like escaped text'"
+        parsed = html_grammar['text'].parse(text)
+        out = self.visitor.visit(parsed)
+        self.assertEqual(["I don't like escaped text"], out)

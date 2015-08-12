@@ -560,8 +560,8 @@ value = (double_quoted_text / single_quoted_text / "0" / "1")
 #
 text = (double_quoted_text / single_quoted_text / bare_text)
 bare_text = ~r"(?P<content>[^<]*)"
-double_quoted_text = ~r'"(?P<content>[^"]*)"'
-single_quoted_text = ~r"'(?P<content>[^']*)'"
+double_quoted_text = ~r'"(?P<content>(?:[^"\\]|\\.)*)"'
+single_quoted_text = ~r"'(?P<content>(?:[^'\\]|\\.)*)'"
 # Whitespace
 _ = ~r"[ \t\r\n]*"s
 
@@ -1267,8 +1267,21 @@ class HTMLVisitor(Visitor):
     # Generic text
     #
     visit_bare_text = _visit_content
-    visit_single_quoted_text = _visit_content
-    visit_double_quoted_text = _visit_content
+
+    def _unslash_text(self, node, children):
+        raw = self._visit_content(node, children)
+        bits = []
+        slash = False
+        for char in raw:
+            if char == '\\' and not slash:
+                slash = True
+            else:
+                bits.append(char)
+                slash = False
+        return ''.join(bits)
+
+    visit_single_quoted_text = _unslash_text
+    visit_double_quoted_text = _unslash_text
 
     #
     # Text segments
