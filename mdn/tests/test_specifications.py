@@ -246,7 +246,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
             'Specifications</h2>')
         html = self.construct_html(header=h2_browser_compat)
         issues = [
-            ('spec_h2_id', 4, 31, {'h2_id': 'Browser_compatibility'}),
+            ('spec_h2_id', 4, 30, {'h2_id': 'Browser_compatibility'}),
             ('spec_h2_name', 31, 59, {'h2_name': 'Browser_compatibility'})]
         self.assert_extract(html, [self.get_default_spec()], issues)
 

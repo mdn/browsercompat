@@ -50,6 +50,16 @@ class TestHTMLAttribute(TestCase):
         attr = HTMLAttribute(raw='selected=1', ident='selected', value=1)
         self.assertEqual('selected=1', text_type(attr))
 
+    def test_str_bool_value(self):
+        attr = HTMLAttribute(
+            raw='selected', ident='selected', value=True)
+        self.assertEqual('selected', text_type(attr))
+
+    def test_false_raises(self):
+        self.assertRaises(
+            ValueError, HTMLAttribute,
+            raw="selected", ident='selected', value=False)
+
 
 class TestHTMLAttributes(TestCase):
     def test_str_empty(self):
@@ -256,6 +266,12 @@ class TestVisitor(TestCase):
         text = 'foo="bar" key=\'value\' selected=1'
         expected = {'foo': 'bar', 'key': 'value', 'selected': 1}
         self.assert_attrs(text, expected)
+
+    def test_option_selected(self):
+        text = '<option value="value2" selected>Value 2</option>'
+        parsed = html_grammar['option_element'].parse(text)
+        out = self.visitor.visit(parsed)
+        self.assertIsInstance(out, HTMLElement)
 
     def test_open(self):
         text = '<a href="http://example.com">'

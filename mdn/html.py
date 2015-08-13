@@ -551,7 +551,8 @@ var_close = "</var>"
 # HTML tag attributes
 #
 attrs = attr*
-attr = _ ident _ "=" _ value _
+attr = _ (assign_attr / ident) _
+assign_attr = ident _ "=" _ value
 ident = ~r"(?P<content>[a-z][a-z0-9-:]*)"
 value = (double_quoted_text / single_quoted_text / "0" / "1")
 
@@ -666,11 +667,18 @@ class HTMLAttribute(HTMLInterval):
     def __init__(self, ident, value, **kwargs):
         super(HTMLAttribute, self).__init__(**kwargs)
         assert ident in self.raw
-        assert text_type(value) in self.raw
+        if value is True:
+            assert '=' not in self.raw
+        elif value is False:
+            raise ValueError('False is not an allowed value')
+        else:
+            assert text_type(value) in self.raw
         self.ident = ident
         self.value = value
 
     def __str__(self):
+        if self.value is True:
+            return self.ident
         if isinstance(self.value, string_types):
             fmt = '{}="{}"'
         else:
@@ -1248,8 +1256,19 @@ class HTMLVisitor(Visitor):
         return self.process(HTMLAttributes, node, attributes=attrs)
 
     def visit_attr(self, node, children):
+        """Strip whitespace from an attribute."""
+        ws1, attr_option, ws2 = children
+        assert len(attr_option) == 1
+        attr = attr_option[0]
+        if isinstance(attr, HTMLAttribute):
+            return attr
+        else:
+            # Boolean attribute
+            return self.process(HTMLAttribute, node, ident=attr, value=True)
+
+    def visit_assign_attr(self, node, children):
         """Parse a single ident=value attribute."""
-        ws1, ident, ws2, eq, ws3, value, ws4 = children
+        ident, ws1, equals, ws2, value = children
         assert isinstance(ident, text_type), type(ident)
         assert isinstance(value, (text_type, int)), type(value)
         return self.process(HTMLAttribute, node, ident=ident, value=value)
