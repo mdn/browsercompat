@@ -296,7 +296,10 @@ class CompatSectionExtractor(Extractor):
                 # Insert IDs into table
                 for r in range(rowspan):
                     for c in range(colspan):
-                        table[row + r][col + c] = cell_id
+                        try:
+                            table[row + r][col + c] = cell_id
+                        except IndexError:
+                            self.add_issue('cell_out_of_bounds', cell)
 
         # Commit scraped data
         self.compat_div['browsers'] = list(self.browsers.values())

@@ -22,6 +22,11 @@ ISSUES = OrderedDict((
         CRITICAL,
         'Response from {url} is not JSON',
         'Actual content:\n{content}')),
+    ('cell_out_of_bounds', (
+        ERROR,
+        'Cell ranges outside of the compatibility table',
+        'The cell expands past the bounds of the compatibility table. If it'
+        ' has a rowspan or colspan, in-bound cells will be applied.')),
     ('compatgeckodesktop_unknown', (
         ERROR,
         'Unknown Gecko version "{version}"',

@@ -210,6 +210,14 @@ class TestCompatSectionExtractor(TestCase):
         issue = ('footnote_no_id', 340, 364, {})
         self.assert_extract(html, [expected], issues=[issue])
 
+    def test_support_colspan_exceeds_table_width(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
+        html = self.construct_html()
+        html = html.replace("<td>1.0", '<td colspan="2">1.0')
+        expected = self.get_default_compat_div()
+        issue = ('cell_out_of_bounds', 284, 308, {})
+        self.assert_extract(html, [expected], issues=[issue])
+
 
 class TestFootnote(TestCase):
     def test_numeric(self):
