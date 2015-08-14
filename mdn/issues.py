@@ -70,6 +70,11 @@ ISSUES = OrderedDict((
         'Footnotes are not allowed on features',
         'The Feature model does not include a notes field. Remove the'
         ' footnote from the feature.')),
+    ('footnote_gap', (
+        ERROR,
+        'There are unexpected elements in the footnote section',
+        'The footnotes parser expects only <p> and <pre> sections in the'
+        ' footnotes. Check for incorrect <div> wrapping and other issues.')),
     ('footnote_missing', (
         ERROR,
         'Footnote [{footnote_id}] not found.',

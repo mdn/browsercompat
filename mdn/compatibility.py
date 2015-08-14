@@ -359,7 +359,9 @@ class CompatSectionExtractor(Extractor):
             last = start
             raw_bits = []
             for elem in self.footnote_elems:
-                assert elem.start == last
+                if elem.start != last:
+                    self.add_raw_issue((
+                        'footnote_gap', last + 1, elem.start - 1, {}))
                 raw_bits.append(elem.raw)
                 last = elem.end
 

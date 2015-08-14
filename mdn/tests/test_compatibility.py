@@ -210,6 +210,18 @@ class TestCompatSectionExtractor(TestCase):
         issue = ('footnote_no_id', 340, 364, {})
         self.assert_extract(html, [expected], issues=[issue])
 
+    def test_table_div_wraps_h3(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
+        html = self.construct_html()
+        html = html.replace(
+            '</div>', "<h3>Gecko Notes</h3><p>It rocks</p></div>")
+        expected = self.get_default_compat_div()
+        issues = [
+            ('skipped_content', 58, 126, {}),
+            ('footnote_gap', 404, 408, {}),
+            ('footnote_no_id', 388, 403, {})]
+        self.assert_extract(html, [expected], issues=issues)
+
     def test_support_colspan_exceeds_table_width(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
         html = self.construct_html()
