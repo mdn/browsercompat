@@ -838,6 +838,13 @@ class TestFootnoteVisitor(TestCase):
             '1': ("<p>Here's some code:</p>\n<pre>foo = bar</pre>", 0, 48)}
         self.assert_footnotes(footnotes, expected)
 
+    def test_pre_without_footnotes(self):
+        footnotes = '<p>Here\'s some code:</p><pre>foo = bar</pre>'
+        issues = [
+            ('footnote_no_id', 0, 24, {}),
+            ('footnote_no_id', 24, 44, {})]
+        self.assert_footnotes(footnotes, {}, issues)
+
     def test_pre_with_attrs_section(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
         footnotes = (

@@ -814,6 +814,12 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
             if processed.tag == 'p':
                 self.gather_content(processed)
             elif processed.tag == 'pre':
-                self._footnote_data[self._current_footnote_id].append(
-                    (processed, True, processed.children))
+                self.process_pre(processed)
         return processed
+
+    def process_pre(self, pre_element):
+        if self._current_footnote_id:
+            self._footnote_data[self._current_footnote_id].append(
+                (pre_element, True, pre_element.children))
+        else:
+            self.add_issue('footnote_no_id', pre_element)
