@@ -827,7 +827,12 @@ class HTMLCloseTag(HTMLBaseTag):
 
 class HTMLSelfClosingElement(HTMLOpenTag):
     """An HTML element that is just a tag, such as <br> and <img>."""
-    pass
+
+    def to_html(self):
+        if self.drop_tag:
+            return ""
+        else:
+            return super(HTMLSelfClosingElement, self).to_html()
 
 
 @python_2_unicode_compatible
@@ -884,9 +889,19 @@ class HTMLVisitor(Visitor):
     positions are reported relative to the whole document.
     """
     _default_attribute_actions = {None: 'keep'}
+    _allowed_tags = None
+    scope = 'HTML'
 
     def process(self, cls, node, **kwargs):
         """Convert a node to an HTML* instance"""
+        dropable = issubclass(cls, (HTMLElement, HTMLOpenTag))
+        if dropable and self._allowed_tags is not None:
+            if issubclass(cls, HTMLOpenTag):
+                if kwargs['tag'] not in self._allowed_tags:
+                    kwargs['drop_tag'] = True
+            else:
+                if kwargs['open_tag'].tag not in self._allowed_tags:
+                    kwargs['drop_tag'] = True
         processed = cls(
             raw=node.text, start=node.start + self.offset, **kwargs)
         for issue in processed.issues:
@@ -944,7 +959,7 @@ class HTMLVisitor(Visitor):
         assert isinstance(attrs, HTMLAttributes), type(attrs)
         cls = cls or HTMLOpenTag
         return self.process(
-            cls, node, tag=tag, attributes=attrs,
+            cls, node, tag=tag, attributes=attrs, scope=self.scope,
             attribute_actions=actions or self._default_attribute_actions,
             **kwargs)
 
@@ -1149,7 +1164,7 @@ class HTMLVisitor(Visitor):
         element_class = kwargs.pop('element_class', HTMLElement)
         return self.process(
             element_class, node, open_tag=open_tag, close_tag=close_tag,
-            children=children, **kwargs)
+            children=children, scope=self.scope, **kwargs)
 
     visit_a_element = _visit_element
     visit_acronym_element = _visit_element

@@ -416,6 +416,9 @@ class Footnote(HTMLText):
             # TODO: use raw footnote instead
             self.footnote_id = text_type(len(self.raw_footnote))
 
+    def to_html(self):
+        return ''
+
     def __str__(self):
         return "[{}]".format(self.footnote_id)
 
@@ -444,6 +447,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
     This is the first column of the compatibilty table.
     """
     scope = 'compatibility feature'
+    _allowed_tags = ['code', 'td']
 
     def __init__(self, parent_feature, *args, **kwargs):
         """Initialize a CompatFeatureVisitor.
@@ -461,12 +465,19 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         self.standardized = True
         self.obsolete = False
         self.feature = None
+        self.outer_td = None
 
     def process(self, cls, node, **kwargs):
         processed = super(CompatFeatureVisitor, self).process(
             cls, node, **kwargs)
-        if isinstance(processed, HTMLElement) and processed.tag == 'td':
-            self.finalize_feature(processed)
+        if isinstance(processed, HTMLElement):
+            if processed.tag == 'td':
+                processed.drop_tag = True
+                if self.outer_td:
+                    self.add_issue(
+                        'tag_dropped', self.outer_td.open_tag, tag='td',
+                        scope=self.scope)
+                self.outer_td = processed
         elif isinstance(processed, Footnote):
             self.add_issue('footnote_feature', processed)
         elif isinstance(processed, DeprecatedInline):
@@ -477,22 +488,9 @@ class CompatFeatureVisitor(CompatBaseVisitor):
             self.standardized = False
         return processed
 
-    def gather_text(self, element):
-        if isinstance(element, Footnote):
-            return ''
-        elif isinstance(element, (HTMLText, HTMLElement)):
-            return element.to_html()
-
     def finalize_feature(self, td):
         """Finalize a new or updated feature."""
-        # Gather text
-        for child in td.children:
-            self.name_bits.append(self.gather_text(child))
-        assert self.name_bits
-
-        # Construct the name
-        assert self.name is None
-        name = join_content(self.name_bits)
+        name = td.to_html()
         if (name.startswith('<code>') and name.endswith('</code>') and
                 name.count('<code>') == 1):
             self.canonical = True
@@ -506,6 +504,8 @@ class CompatFeatureVisitor(CompatBaseVisitor):
 
     def to_feature_dict(self):
         """Convert to a dictionary of feature parameters, as used by parser."""
+        assert self.outer_td
+        self.finalize_feature(self.outer_td)
         feature = {
             'id': self.feature_id,
             'slug': self.slug,
@@ -519,16 +519,6 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         if not self.standardized:
             feature['standardized'] = False
         return feature
-
-    visit_a_open = KumaVisitor._visit_drop_tag_open
-    visit_p_open = KumaVisitor._visit_drop_tag_open
-    visit_strong_open = KumaVisitor._visit_drop_tag_open
-    visit_sup_open = KumaVisitor._visit_drop_tag_open
-
-    visit_a_element = KumaVisitor._visit_drop_tag_element
-    visit_p_element = KumaVisitor._visit_drop_tag_element
-    visit_strong_element = KumaVisitor._visit_drop_tag_element
-    visit_sup_element = KumaVisitor._visit_drop_tag_element
 
 
 @python_2_unicode_compatible
@@ -566,6 +556,7 @@ class CellPartial(HTMLText):
 
 class CompatSupportVisitor(CompatBaseVisitor):
     scope = 'compatibility support'
+    _allowed_tags = ['a', 'br', 'code', 'p', 'sup', 'td']
 
     def __init__(
             self, feature_id, browser_id, browser_name, browser_slug=None,
@@ -740,6 +731,7 @@ class CompatSupportVisitor(CompatBaseVisitor):
 
 class CompatFootnoteVisitor(CompatBaseVisitor):
     scope = 'footnote'
+    _allowed_tags = ['a', 'br', 'code', 'p', 'pre']
 
     def __init__(self, *args, **kwargs):
         super(CompatFootnoteVisitor, self).__init__(*args, **kwargs)
@@ -792,9 +784,8 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
                 footnote_id = child.footnote_id
                 assert footnote_id not in footnotes
                 footnotes[footnote_id] = []
-            elif isinstance(child, (HTMLElement, HTMLText)):
-                if child.to_html():
-                    footnotes[footnote_id].append(child)
+            elif child.to_html():
+                footnotes[footnote_id].append(child)
 
         # Store content for later combining
         self._current_footnote_id = footnote_id
@@ -816,10 +807,13 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
         processed = super(CompatFootnoteVisitor, self).process(
             cls, node, **kwargs)
         if isinstance(processed, HTMLElement):
-            if processed.tag == 'p':
+            tag = processed.tag
+            if tag == 'p':
                 self.gather_content(processed)
-            elif processed.tag == 'pre':
+            elif tag == 'pre':
                 self.process_pre(processed)
+        elif isinstance(processed, HTMLSelfClosingElement):
+            processed.drop_tag = True
         return processed
 
     def process_pre(self, pre_element):

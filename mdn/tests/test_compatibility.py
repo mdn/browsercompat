@@ -278,31 +278,24 @@ class TestFeatureVisitor(TestCase):
         row_cell = "<td>%s</td>" % contents
         parsed = compat_feature_grammar['html'].parse(row_cell)
         self.visitor.visit(parsed)
-        self.assertEqual(self.visitor.feature_id, feature_id)
-        self.assertEqual(self.visitor.slug, slug)
-        self.assertEqual(self.visitor.name, name)
-        self.assertEqual(self.visitor.canonical, canonical)
-        self.assertEqual(self.visitor.experimental, experimental)
-        self.assertEqual(self.visitor.standardized, standardized)
-        self.assertEqual(self.visitor.obsolete, obsolete)
-        self.assertEqual(issues or [], self.visitor.issues)
         feature_dict = self.visitor.to_feature_dict()
-        self.assertEqual(self.visitor.feature_id, feature_dict['id'])
-        self.assertEqual(self.visitor.slug, feature_dict['slug'])
-        self.assertEqual(self.visitor.name, feature_dict['name'])
-        if self.visitor.canonical:
+        self.assertEqual(issues or [], self.visitor.issues)
+        self.assertEqual(feature_id, feature_dict['id'])
+        self.assertEqual(slug, feature_dict['slug'])
+        self.assertEqual(name, feature_dict['name'])
+        if canonical:
             self.assertTrue(feature_dict['canonical'])
         else:
             self.assertFalse('canonical' in feature_dict)
-        if self.visitor.experimental:
+        if experimental:
             self.assertTrue(feature_dict['experimental'])
         else:
             self.assertFalse('experimental' in feature_dict)
-        if self.visitor.obsolete:
+        if obsolete:
             self.assertTrue(feature_dict['obsolete'])
         else:
             self.assertFalse('obsolete' in feature_dict)
-        if self.visitor.standardized:
+        if standardized:
             self.assertFalse('standardized' in feature_dict)
         else:
             self.assertFalse(feature_dict['standardized'])
@@ -314,7 +307,9 @@ class TestFeatureVisitor(TestCase):
         feature_id = '_support for contain and cover'
         name = 'Support for <code>contain</code> and <code>cover</code>'
         slug = 'web-css-background-size_support_for_contain_and_co'
-        self.assert_feature(cell, feature_id, name, slug)
+        issue = ('tag_dropped', 16, 20,
+                 {'scope': 'compatibility feature', 'tag': 'br'})
+        self.assert_feature(cell, feature_id, name, slug, issues=[issue])
 
     def test_code_sequence(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/display
@@ -432,8 +427,10 @@ class TestFeatureVisitor(TestCase):
         feature_id = '_cross-origin resource sharing'
         name = 'Cross-Origin Resource Sharing'
         slug = 'web-css-background-size_cross-origin_resource_shar'
-        issue = ('tag_dropped', 4, 38, {'tag': 'a', 'scope': self.scope})
-        self.assert_feature(cell, feature_id, name, slug, issues=[issue])
+        issues = [
+            ('tag_dropped', 4, 38, {'tag': 'a', 'scope': self.scope}),
+            ('tag_dropped', 71, 75, {'tag': 'br', 'scope': self.scope})]
+        self.assert_feature(cell, feature_id, name, slug, issues=issues)
 
     def test_p(self):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const
@@ -451,6 +448,27 @@ class TestFeatureVisitor(TestCase):
         slug = 'web-css-background-size_strong'
         issue = ('tag_dropped', 4, 25, {'tag': 'span', 'scope': self.scope})
         self.assert_feature(cell, feature_id, name, slug, issues=[issue])
+
+    def test_table(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack
+        cell = """\
+<table class="compat-table">
+  <tbody>
+    <tr>
+      <td><code>.stop()</code></td>
+    </tr>
+  </tbody>
+</table>"""
+        feature_id = '_.stop()'
+        name = '.stop()'
+        slug = 'web-css-background-size_stop'
+        issues = [
+            ('tag_dropped', 4, 32, {'tag': 'table', 'scope': self.scope}),
+            ('tag_dropped', 35, 42, {'tag': 'tbody', 'scope': self.scope}),
+            ('tag_dropped', 47, 51, {'tag': 'tr', 'scope': self.scope}),
+            ('tag_dropped', 58, 62, {'tag': 'td', 'scope': self.scope})]
+        self.assert_feature(
+            cell, feature_id, name, slug, canonical=True, issues=issues)
 
 
 class TestSupportGrammar(TestCase):

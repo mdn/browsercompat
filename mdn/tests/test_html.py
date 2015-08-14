@@ -6,7 +6,8 @@ from django.utils.six import text_type
 
 from mdn.html import (
     HTMLAttribute, HTMLAttributes, HTMLCloseTag, HTMLElement, HTMLInterval,
-    HTMLOpenTag, HTMLBaseTag, HTMLText, HTMLVisitor, HnElement, html_grammar)
+    HTMLOpenTag, HTMLBaseTag, HTMLSelfClosingElement, HTMLText, HTMLVisitor,
+    HnElement, html_grammar)
 from .base import TestCase
 
 
@@ -186,6 +187,21 @@ class TestHTMLCloseTag(TestCase):
         raw = '</p>'
         tag = HTMLCloseTag(raw=raw, tag='p')
         self.assertEqual(raw, text_type(tag))
+
+
+class TestHTMLSelfClosingElement(TestCase):
+    def test_to_html(self):
+        raw = '<br>'
+        attrs = HTMLAttributes()
+        element = HTMLSelfClosingElement(raw=raw, tag='br', attributes=attrs)
+        self.assertEqual(raw, element.to_html())
+
+    def test_to_html_drop_tag(self):
+        raw = '<br>'
+        attrs = HTMLAttributes()
+        element = HTMLSelfClosingElement(
+            raw=raw, tag='br', attributes=attrs, drop_tag=True)
+        self.assertEqual('', element.to_html())
 
 
 class TestHTMLElement(TestCase):

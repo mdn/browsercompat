@@ -217,10 +217,10 @@ ISSUES = OrderedDict((
         'Handled as if {{{{SpecName(...)}}}} was used. Update the MDN page.')),
     ('tag_dropped', (
         WARNING,
-        'HTML element {tag} (but not wrapped content) was removed.',
-        'The element {tag} is not allowed in the {scope} scope, and was'
-        ' removed. You can remove the tag from the MDN page to remove the'
-        ' warning.')),
+        'HTML element <{tag}> (but not wrapped content) was removed.',
+        'The element <{tag}> is not allowed in the {scope} scope, and was'
+        ' removed. You can remove the tag from the MDN page (source mode is'
+        ' recommended) to remove the warning.')),
     ('unexpected_attribute', (
         WARNING,
         'Unexpected attribute <{node_type} {ident}="{value}">',

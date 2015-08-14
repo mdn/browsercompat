@@ -150,6 +150,8 @@ domenic/promises-unwrapping</a></td>
             'section.id': None,
             'specification.id': None}]
         issues = [
+            ('tag_dropped', 252, 309,
+             {'tag': 'a', 'scope': 'specification name'}),
             ('specname_not_kumascript', 309, 336,
              {'original': 'domenic/promises-unwrapping'}),
             ('spec2_converted', 353, 358,

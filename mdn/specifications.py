@@ -207,6 +207,7 @@ class SpecNameVisitor(KumaVisitor):
     This is the first column of the Specifications table.
     """
     scope = 'specification name'
+    _allowed_tags = ['td']
 
     def __init__(self, **kwargs):
         super(SpecNameVisitor, self).__init__(**kwargs)
@@ -263,6 +264,7 @@ class Spec2Visitor(KumaVisitor):
     This is the second column of the Specifications table.
     """
     scope = 'specification maturity'
+    _allowed_tags = ['td']
 
     def __init__(self, **kwargs):
         super(Spec2Visitor, self).__init__(**kwargs)
@@ -302,6 +304,7 @@ class SpecDescVisitor(KumaVisitor):
     This is the third column of the Specifications table.
     """
     scope = 'specification description'
+    _allowed_tags = ['br', 'code', 'td']
 
     def __init__(self, **kwargs):
         super(SpecDescVisitor, self).__init__(**kwargs)
