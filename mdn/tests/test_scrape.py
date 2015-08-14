@@ -147,6 +147,20 @@ class TestPageExtractor(BaseTestCase):
         issues = [('skipped_h3', 310, 346, {'h3': 'Gecko Note'})]
         self.assert_extract(page, compat=expected_compat, issues=issues)
 
+    def test_div_wrapped(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
+        sample_spec_section, expected_specs = self.get_sample_specs()
+        sample_compat_section, expected_compat = self.get_sample_compat()
+        page = """\
+<p>Some lead content</p>
+<div>
+%s
+%s
+</div>
+""" % (sample_spec_section, sample_compat_section)
+        issue = ('no_data', 0, 24, {})
+        self.assert_extract(page, issues=[issue])
+
 
 class TestScrape(BaseTestCase):
     def setUp(self):

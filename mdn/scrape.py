@@ -91,7 +91,10 @@ class PageExtractor(Extractor):
             raise Exception('Unexpected state "{}"'.format(state))
 
     def extracted_data(self):
-        self.process_current_section()
+        if self.section:
+            self.process_current_section()
+        if not (self.specs or self.compat or self.issues):
+            self.add_issue('no_data', self.elements[0])
         return OrderedDict((
             ('locale', self.locale),
             ('specs', self.specs),

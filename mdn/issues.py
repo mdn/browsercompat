@@ -113,6 +113,12 @@ ISSUES = OrderedDict((
         ERROR,
         'Nested <p> tags are not supported.',
         'Edit the MDN page to remove the nested <p> tag')),
+    ('no_data', (
+        CRITICAL,
+        'No data was extracted from the page.',
+        'The page appears to have data, but nothing was extracted. Check for'
+        ' header sections wrapped in a <div> or other element. (Context'
+        ' will probably not highlight the issue)')),
     ('missing_attribute', (
         ERROR,
         'The tag <{node_type}> is missing the expected attribute {ident}',
