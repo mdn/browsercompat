@@ -449,13 +449,13 @@ class CompatFeatureVisitor(CompatBaseVisitor):
     scope = 'compatibility feature'
     _allowed_tags = ['code', 'td']
 
-    def __init__(self, parent_feature, *args, **kwargs):
+    def __init__(self, parent_feature, **kwargs):
         """Initialize a CompatFeatureVisitor.
 
         Keyword Arguments:
         parent_feature - The parent feature
         """
-        super(CompatFeatureVisitor, self).__init__(*args, **kwargs)
+        super(CompatFeatureVisitor, self).__init__(**kwargs)
         self.parent_feature = parent_feature
         self.name = None
         self.name_bits = []
@@ -560,7 +560,7 @@ class CompatSupportVisitor(CompatBaseVisitor):
 
     def __init__(
             self, feature_id, browser_id, browser_name, browser_slug=None,
-            *args, **kwargs):
+            **kwargs):
         """Initialize a CompatSupportVisitor.
 
         Keyword Arguments:
@@ -569,7 +569,7 @@ class CompatSupportVisitor(CompatBaseVisitor):
         browser_name - The browser name for this column
         browser_slug - The browser slug for this column
         """
-        super(CompatSupportVisitor, self).__init__(*args, **kwargs)
+        super(CompatSupportVisitor, self).__init__(**kwargs)
         self.feature_id = feature_id
         self.browser_id = browser_id
         self.browser_name = browser_name
@@ -733,8 +733,8 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
     scope = 'footnote'
     _allowed_tags = ['a', 'br', 'code', 'p', 'pre']
 
-    def __init__(self, *args, **kwargs):
-        super(CompatFootnoteVisitor, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(CompatFootnoteVisitor, self).__init__(**kwargs)
         self._footnote_data = OrderedDict()
         self._current_footnote_id = None
         self.scope = 'footnote'

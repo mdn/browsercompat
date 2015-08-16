@@ -34,6 +34,7 @@ from webplatformcompat.models import (
     Browser, Feature, Section, Specification, Support, Version)
 
 from .compatibility import CompatSectionExtractor
+from .data import Data
 from .html import HnElement
 from .kumascript import kumascript_grammar, KumaVisitor
 from .specifications import SpecSectionExtractor
@@ -140,9 +141,9 @@ class PageExtractor(Extractor):
         self.section = []
 
 
-def scrape_page(mdn_page, feature, locale='en'):
+def scrape_page(mdn_page, feature, locale='en', data=None):
     """Find data and data issues in an MDN feature page."""
-    data = OrderedDict((
+    no_data = OrderedDict((
         ('locale', locale),
         ('specs', []),
         ('compat', []),
@@ -155,7 +156,7 @@ def scrape_page(mdn_page, feature, locale='en'):
             ('Browser compatibility</h' in mdn_page) or
             ('Specifications</h' in mdn_page) or
             ('CompatibilityTable' in mdn_page)):
-        return data
+        return no_data
 
     # Parse the page with HTML + KumaScript grammar
 
@@ -163,13 +164,14 @@ def scrape_page(mdn_page, feature, locale='en'):
         page_parsed = kumascript_grammar.parse(mdn_page)
     except IncompleteParseError as ipe:
         narrow_pos, narrow_end = narrow_parse_error(mdn_page, ipe.pos)
-        data['issues'].append(('halt_import', narrow_pos, narrow_end, {}))
-        return data
+        no_data['issues'].append(('halt_import', narrow_pos, narrow_end, {}))
+        return no_data
 
     # Convert parsed page and extract data
-    elements = PageVisitor().visit(page_parsed)
+    data = data or Data()
+    elements = PageVisitor(data=data).visit(page_parsed)
     extractor = PageExtractor(
-        elements=elements, feature=feature, locale=locale)
+        elements=elements, feature=feature, locale=locale, data=data)
     page_data = extractor.extract()
     return page_data
 
