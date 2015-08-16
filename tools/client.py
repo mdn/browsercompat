@@ -80,7 +80,7 @@ class Client(object):
         if response.status_code not in expected_statuses:
             raise APIException(
                 '%s %s: Unexpected response' % (method, url),
-                response.status_code, response.content)
+                response.status_code, response.content, data_json)
 
         end = time()
         logger.debug('%s %s completed in %0.1fs', method, url, end - start)
