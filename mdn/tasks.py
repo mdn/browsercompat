@@ -53,9 +53,14 @@ def fetch_meta(featurepage_id):
     r = requests.get(url, headers={'Cache-Control': 'no-cache'})
     next_task = None
     next_task_args = []
-    if r.url != url:
+    if r.url != url and not r.url.endswith('$json'):
         # There was a redirect to the regular page
-        assert not r.url.endswith('$json'), r.url
+        '''
+        if r.url.endswith('$json'):
+            # There was a redirect to another meta (zone change)
+            fp.url = r.url[:-len('$json')]
+        else:
+        '''
         meta.delete()
         fp.url = r.url
         fp.status = fp.STATUS_META
@@ -68,6 +73,9 @@ def fetch_meta(featurepage_id):
         meta.status = meta.STATUS_ERROR
         next_task = r.raise_for_status
     else:
+        if r.url != url and r.url.endswith('$json'):
+            # There was a redirect to another meta (zone change)
+            fp.url = r.url[:-len('$json')]
         try:
             meta.raw = dumps(r.json())
         except ValueError:
