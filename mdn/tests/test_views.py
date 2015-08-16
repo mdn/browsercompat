@@ -41,7 +41,7 @@ class TestFeaturePageListView(TestCase):
         FeaturePage.objects.create(
             url="https://developer.mozilla.org/en-US/docs/Other",
             feature_id=2)
-        url = self.url + "?topic=Web"
+        url = self.url + "?topic=docs/Web"
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
         pages = response.context_data['page_obj']
@@ -140,7 +140,7 @@ class TestFeaturePageSearch(TestCase):
             url=self.mdn_url, feature_id=self.feature.id)
         url = "https://developer.mozilla.org/en-US/docs/Web"
         response = self.client.get(self.url, {'url': url})
-        next_url = reverse('feature_page_list') + '?topic=Web'
+        next_url = reverse('feature_page_list') + '?topic=docs/Web'
         self.assertRedirects(response, next_url)
 
     def test_post_found_topic_trailing_slash(self):
@@ -148,7 +148,7 @@ class TestFeaturePageSearch(TestCase):
             url=self.mdn_url, feature_id=self.feature.id)
         url = "https://developer.mozilla.org/en-US/docs/Web/"
         response = self.client.get(self.url, {'url': url})
-        next_url = reverse('feature_page_list') + '?topic=Web'
+        next_url = reverse('feature_page_list') + '?topic=docs/Web'
         self.assertRedirects(response, next_url)
 
     def test_not_found_with_perms(self):

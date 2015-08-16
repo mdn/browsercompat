@@ -15,7 +15,7 @@ from django.views.generic.edit import CreateView, FormMixin, UpdateView
 from .models import FeaturePage, Issue, ISSUES, SEVERITIES, validate_mdn_url
 from .tasks import start_crawl, parse_page
 
-DEV_PREFIX = 'https://developer.mozilla.org/en-US/docs/'
+DEV_PREFIX = 'https://developer.mozilla.org/en-US/'
 
 
 def can_create(user):
@@ -48,17 +48,17 @@ class FeaturePageListView(ListView):
         ctx['request'] = self.request
         ctx['topic'] = topic
         ctx['topics'] = sorted((
-            'Web/API',
-            'Web/Accessibility',
-            'Web/CSS',
-            'Web/Events',
-            'Web/Guide',
-            'Web/HTML',
-            'Web/JavaScript',
-            'Web/MathML',
-            'Web/SVG',
-            'Web/XPath',
-            'Web/XSLT',
+            'docs/Web/API',
+            'docs/Web/Accessibility',
+            'docs/Web/CSS',
+            'docs/Web/Events',
+            'docs/Web/Guide',
+            'docs/Web/HTML',
+            'docs/Web/JavaScript',
+            'docs/Web/MathML',
+            'docs/Web/SVG',
+            'docs/Web/XPath',
+            'docs/Web/XSLT',
         ))
         return ctx
 

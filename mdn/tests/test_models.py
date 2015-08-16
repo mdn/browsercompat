@@ -58,7 +58,7 @@ class TestFeaturePageModel(TestCase):
         self.assertEqual("https://developer.mozilla.org", self.fp.domain())
 
     def test_str(self):
-        expected = "Fetching Metadata for Web/CSS/float"
+        expected = "Fetching Metadata for docs/Web/CSS/float"
         self.assertEqual(expected, str(self.fp))
 
     def test_meta_new(self):

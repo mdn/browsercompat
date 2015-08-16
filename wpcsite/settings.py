@@ -263,7 +263,7 @@ if environ.get('MDN_ALLOWED_URL_PREFIXES') and not TESTING:
     raw = environ['MDN_ALLOWED_URL_PREFIXES']
     MDN_ALLOWED_URLS = tuple(raw.split(','))
 else:
-    MDN_ALLOWED_URLS = ('https://developer.mozilla.org/en-US/docs/', )
+    MDN_ALLOWED_URLS = ('https://developer.mozilla.org/en-US/', )
 
 #
 # 3rd Party Libraries
