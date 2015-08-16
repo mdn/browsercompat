@@ -1,29 +1,4 @@
-"""Scrape data from MDN pages into API format.
-
-This code is messy. Parsing is messy. This may be related. It also, hopefully,
-temporary, and will be jettisoned when the MDN data is imported.
-
-The workflow is:
-1. scrape_featurepage() takes a FeaturePage, which links an API Feature with
-   an MDN page.  It passes the English raw page [1] plus the feature to:
-2. scrape_page(), which extracts the specification and compatibility data
-   from the page, by parsing it into a node tree with:
-3. kumascript_grammar, a parsing expression grammar in the Parsimonious [2]
-   syntax, which is then passed to:
-4. PageVisitor, which converts the parsed page into HTML and text elements.
-   These are passed to:
-4. PageExtractor, which collects the elements into sections, and then passes
-   select sections onto futher section-specific extractors and
-   content-specific visitors to extract and collect the data.
-5. The extracted data is returned to scrape_featurepage, which turns it into
-   JSON-API in the view_feature format [3], with scrape-specific metadata.
-6. The JSON can be used to view the scraped data, plan fixes to the MDN page,
-   or be fed back into the API.
-
-[1] https://developer.mozilla.org/en-US/docs/Web/API/CSSMediaRule?raw
-[2] https://github.com/erikrose/parsimonious
-[3] api/v1/view_features/1.json
-"""
+"""Scrape data from MDN pages into API format."""
 from __future__ import unicode_literals
 from collections import OrderedDict
 from itertools import chain
@@ -42,107 +17,47 @@ from .utils import date_to_iso, is_new_id
 from .visitor import Extractor
 
 
-class PageVisitor(KumaVisitor):
-    """Converts a parsed MDN page into HTML and text elements."""
-    _default_attribute_actions = {None: 'keep'}
+def scrape_feature_page(feature_page):
+    """Scrape a FeaturePage object, which links an API Feature to an MDN page.
 
-
-class PageExtractor(Extractor):
-    """Collects elements into sections and extracts relevant data.
-
-    Split elements into sections by header elements (<h2>, <h3>, etc.).
-    Looks for the Specifications and Browser Compatibility sections, and
-    passes the sections to specialized extractors to find data and record
-    issues.
+    1. Data and data issues are extracted from the English raw page using
+       scrape_page(). The page is fetched with the MDN ?raw API call, such as
+       https://developer.mozilla.org/en-US/docs/Web/API/CSSMediaRule?raw
+    2. ScrapedViewFeature converts the data into the 'view_feature' format used
+       by the API, with additions for issues and scrape metadata, and
+    3. The formatted data is stored in the FeaturePage.data field.
     """
+    en_content = feature_page.translatedcontent_set.get(locale='en-US')
+    scraped_data = scrape_page(en_content.raw, feature_page.feature)
+    view_feature = ScrapedViewFeature(feature_page, scraped_data)
+    merged_data = view_feature.generate_data()
 
-    def __init__(self, feature, locale='en', **kwargs):
-        self.feature = feature
-        self.locale = locale
-        self.initialize_extractor(**kwargs)
+    # Add issues
+    for issue in scraped_data['issues']:
+        feature_page.add_issue(issue, 'en-US')
+    merged_data['meta']['scrape']['issues'] = (
+        feature_page.data['meta']['scrape']['issues'])
 
-    def setup_extract(self):
-        self.previous_section = None
-        self.section = []
-        self.specs = []
-        self.compat = []
-        self.footnotes = OrderedDict()
-
-    def entering_element(self, state, element):
-        """Extract and change state when entering an element.
-
-        Return is a tuple:
-        - The next state
-        - True if the child elements should be walked, False if
-          already processed or can be skipped.
-        """
-        if state == "begin":
-            if isinstance(element, HnElement):
-                return self.process_header(element)
-            else:
-                return "begin", False
-        elif state == "in_section":
-            if isinstance(element, HnElement):
-                self.process_current_section()
-                return self.process_header(element)
-            else:
-                self.process_section_element(element)
-                return "in_section", False
-        else:  # pragma: no cover
-            raise Exception('Unexpected state "{}"'.format(state))
-
-    def extracted_data(self):
-        if self.section:
-            self.process_current_section()
-        if not (self.specs or self.compat or self.issues):
-            self.add_issue('no_data', self.elements[0])
-        return OrderedDict((
-            ('locale', self.locale),
-            ('specs', self.specs),
-            ('compat', self.compat),
-            ('issues', self.issues),
-            ('footnotes', self.footnotes or None),
-        ))
-
-    def process_header(self, element):
-        self.section.append(element)
-        return 'in_section', False
-
-    def process_section_element(self, element):
-        self.section.append(element)
-
-    def process_current_section(self):
-        header = self.section[0]
-        if header.to_text().lower() in ('specification', 'specifications'):
-            extractor = SpecSectionExtractor(
-                elements=self.section, data=self.data)
-            extracted = extractor.extract()
-            self.specs.extend(extracted['specs'])
-            self.issues.extend(extracted['issues'])
-        elif header.to_text().lower() == 'browser compatibility':
-            extractor = CompatSectionExtractor(
-                elements=self.section, feature=self.feature, data=self.data)
-            extracted = extractor.extract()
-            self.compat.extend(extracted['compat_divs'])
-            self.footnotes.update(extracted['footnotes'])
-            self.issues.extend(extracted['issues'])
-
-        replace_section = True
-        if self.previous_section:
-            if header.level > self.previous_section[0].level:
-                replace_section = False
-                prev_title = self.previous_section[0].to_text().lower()
-                is_browser_compat = prev_title == 'browser compatibility'
-                if is_browser_compat:
-                    title = header.to_text()
-                    self.add_issue('skipped_h3', header, h3=title)
-        if replace_section:
-            self.previous_section = self.section
-        self.section = []
+    # Update status, issues
+    has_data = (scraped_data['specs'] or scraped_data['compat'] or
+                scraped_data['issues'])
+    if has_data:
+        feature_page.status = feature_page.STATUS_PARSED
+    else:
+        feature_page.status = feature_page.STATUS_NO_DATA
+    merged_data['meta']['scrape']['phase'] = feature_page.get_status_display()
+    feature_page.data = merged_data
+    feature_page.save()
 
 
 def scrape_page(mdn_page, feature, locale='en', data=None):
-    """Find data and data issues in an MDN feature page."""
+    """Find data and data issues in an MDN feature page.
+
+    If the page appears to have relevant data, it is:
+    1. Parsed with the kumascript_grammar,
+    2. Processed with the PageVisitor into HTMLIntervals
+    3. Data and data issues are extracted and packaged with PageExtractor
+    """
     no_data = OrderedDict((
         ('locale', locale),
         ('specs', []),
@@ -225,15 +140,122 @@ def narrow_parse_error(fragment, pos):
             return pos, end_index + len(end_tag)
 
 
+class PageVisitor(KumaVisitor):
+    """Converts a parsed MDN page into HTML and text elements.
+
+    Uses most of KumaVisitor behaviour, except defaults to allowing all
+    HTML element attributes, leaving validation to section-specific extractors.
+    """
+    _default_attribute_actions = {None: 'keep'}
+
+
+class PageExtractor(Extractor):
+    """Collects elements into sections and extracts relevant data.
+
+    Split elements into sections by header elements (<h2>, <h3>, etc.).
+    Looks for the Specifications and Browser Compatibility sections, and
+    passes the sections to specialized extractors to find data and record
+    issues.
+    """
+
+    def __init__(self, feature, locale='en', **kwargs):
+        self.feature = feature
+        self.locale = locale
+        self.initialize_extractor(**kwargs)
+
+    def setup_extract(self):
+        """Initialize the extractor."""
+        self.previous_section = None
+        self.section = []
+        self.specs = []
+        self.compat = []
+        self.footnotes = OrderedDict()
+
+    def entering_element(self, state, element):
+        """Extract and change state when entering an element.
+
+        Return is a tuple:
+        - The next state
+        - True if the child elements should be walked, False if
+          already processed or can be skipped.
+        """
+        if state == "begin":
+            if isinstance(element, HnElement):
+                self.section.append(element)
+                return 'in_section', False
+            else:
+                return "begin", False
+        elif state == "in_section":
+            if isinstance(element, HnElement):
+                self.process_current_section()
+                self.section.append(element)  # Start new section
+            else:
+                self.section.append(element)
+            return "in_section", False
+        else:  # pragma: no cover
+            raise Exception('Unexpected state "{}"'.format(state))
+
+    def extracted_data(self):
+        """Finalize and return extracted data."""
+        if self.section:
+            self.process_current_section()
+        if not (self.specs or self.compat or self.issues):
+            self.add_issue('no_data', self.elements[0])
+        return OrderedDict((
+            ('locale', self.locale),
+            ('specs', self.specs),
+            ('compat', self.compat),
+            ('issues', self.issues),
+            ('footnotes', self.footnotes or None),
+        ))
+
+    def process_current_section(self):
+        """Process complete, relevant sections with specific Extractors."""
+        header = self.section[0]
+        if header.to_text().lower() in ('specification', 'specifications'):
+            extractor = SpecSectionExtractor(
+                elements=self.section, data=self.data)
+            extracted = extractor.extract()
+            self.specs.extend(extracted['specs'])
+            self.issues.extend(extracted['issues'])
+        elif header.to_text().lower() == 'browser compatibility':
+            extractor = CompatSectionExtractor(
+                elements=self.section, feature=self.feature, data=self.data)
+            extracted = extractor.extract()
+            self.compat.extend(extracted['compat_divs'])
+            self.footnotes.update(extracted['footnotes'])
+            self.issues.extend(extracted['issues'])
+
+        # Should this become the new "previous section"?
+        # If the same level (<h2> vs previous <h2>), yes
+        # If a higher level (<h1> vs previous <h2>), yes
+        # If a lower level (<h3> vs previous <h2>, no, but check if it's a
+        #   documentation section after a Browser Compatibility section, to
+        #   warn about lost data.
+        replace_section = True
+        if self.previous_section:
+            if header.level > self.previous_section[0].level:
+                replace_section = False
+                prev_title = self.previous_section[0].to_text().lower()
+                is_browser_compat = prev_title == 'browser compatibility'
+                if is_browser_compat:
+                    title = header.to_text()
+                    self.add_issue('skipped_h3', header, h3=title)
+        if replace_section:
+            self.previous_section = self.section
+        self.section = []
+
+
 class ScrapedViewFeature(object):
     """Combine a scraped MDN page with existing API data.
 
     This code scrapes data from the English features pages. It merge new
     scraped data with existing API data.
 
-    Further work is needed to scrape pages in non-English languages.
+    Further work is needed to scrape pages in non-English languages, but it is
+    doubtful this will be a high priority.  Translators may need to redo work
+    inside the new contribution interface.
     """
-
     tab_name = {
         'desktop': 'Desktop Browsers',
         'mobile': 'Mobile Browsers',
@@ -594,28 +616,3 @@ class ScrapedViewFeature(object):
         if support_entry.get('footnote'):
             support_content['note'] = {'en': support_entry['footnote']}
         return support_content
-
-
-def scrape_feature_page(feature_page):
-    """Scrape a FeaturePage object."""
-    en_content = feature_page.translatedcontent_set.get(locale='en-US')
-    scraped_data = scrape_page(en_content.raw, feature_page.feature)
-    view_feature = ScrapedViewFeature(feature_page, scraped_data)
-    merged_data = view_feature.generate_data()
-
-    # Add issues
-    for issue in scraped_data['issues']:
-        feature_page.add_issue(issue, 'en-US')
-    merged_data['meta']['scrape']['issues'] = (
-        feature_page.data['meta']['scrape']['issues'])
-
-    # Update status, issues
-    has_data = (scraped_data['specs'] or scraped_data['compat'] or
-                scraped_data['issues'])
-    if has_data:
-        feature_page.status = feature_page.STATUS_PARSED
-    else:
-        feature_page.status = feature_page.STATUS_NO_DATA
-    merged_data['meta']['scrape']['phase'] = feature_page.get_status_display()
-    feature_page.data = merged_data
-    feature_page.save()
