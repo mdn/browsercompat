@@ -1,3 +1,5 @@
+import re
+
 from django.core.exceptions import ValidationError
 from django.db.models import Model
 from django.utils.deconstruct import deconstructible
@@ -53,6 +55,8 @@ class LanguageDictValidator(object):
 class VersionAndStatusValidator(object):
     """For Version resource, restrict version/status combinations."""
 
+    re_numeric = re.compile(r"^(?:(\d+)\.)?(?:(\d+)\.)?(\*|\d+)$")
+
     def __init__(self):
         """Initialize for Django model validation."""
         self.instance = None
@@ -90,13 +94,8 @@ class VersionAndStatusValidator(object):
         if not version:
             # DRF will catch in field validation
             raise self.Error({"version": ["This field may not be blank."]})
-        try:
-            float(version)
-        except ValueError:
-            is_numeric = False
-        else:
-            is_numeric = True
 
+        is_numeric = bool(self.re_numeric.match(version))
         numeric_only = ['beta', 'retired beta', 'retired', 'unknown']
         if status in numeric_only and not is_numeric:
             msg = 'With status "{0}", version must be numeric.'.format(status)
