@@ -444,7 +444,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
     """
     Visitor for a compatibility feature cell
 
-    This is the first column of the compatibilty table.
+    This is the first column of the compatibility table.
     """
     scope = 'compatibility feature'
     _allowed_tags = ['code', 'td']
@@ -737,7 +737,6 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
         super(CompatFootnoteVisitor, self).__init__(**kwargs)
         self._footnote_data = OrderedDict()
         self._current_footnote_id = None
-        self.scope = 'footnote'
 
     def finalize_footnotes(self):
         """Finalize and return footnotes."""
