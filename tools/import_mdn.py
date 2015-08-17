@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import time
 
+from requests import RequestException
+
 from common import Tool
 from resources import Collection
 
@@ -39,38 +41,30 @@ class ImportMDNData(Tool):
         start_time = time.time()
         mdn_requests = 0
         counts = {'new': 0, 'reset': 0, 'reparsed': 0, 'unchanged': 0}
-        importer_search = self.api + '/importer/search'
         log_at = 15
         logged_at = time.time()
-        for uri, f_id in uris:
-            response = self.client.session.get(
-                importer_search, params={'url': uri})
-            if 'importer/create?' in response.url:
-                self.logger.info('Fetching %s...', uri)
-                counts['new'] += 1
-                create_url = response.url
-                csrf = self.client.session.cookies['csrftoken']
-                params = {
-                    'url': uri,
-                    'feature': f_id,
-                    'csrfmiddlewaretoken': csrf,
-                }
-                response = self.client.session.post(create_url, params)
-                mdn_requests += 1
-            else:
-                response.raise_for_status()
-                obj_url = response.url
-                assert '/importer/' in obj_url
-                if self.reparse:
-                    action_url = obj_url + '/reparse'
-                    counter = 'reparsed'
+        for uri, feature_id in uris:
+            attempt = 1
+            max_attempt = 3
+            while attempt <= max_attempt:
+                if attempt > 1:
+                    self.logger.info(
+                        "Attempt %d of %d for %s", attempt, max_attempt, uri)
+                try:
+                    import_type = self.import_page(uri, feature_id)
+                except RequestException as exception:
+                    if attempt < max_attempt:
+                        self.logger.error("%s", exception)
+                        attempt += 1
+                        self.logger.info('Pausing 5 seconds...')
+                        time.sleep(5)
+                    else:
+                        raise
                 else:
-                    action_url = obj_url + '/reset'
-                    counter = 'reset'
-                csrf = self.client.session.cookies['csrftoken']
-                params = {'csrfmiddlewaretoken': csrf}
-                response = self.client.session.post(action_url, params)
-                counts[counter] += 1
+                    counts[import_type] += 1
+                    if import_type in ('new', 'reset'):
+                        mdn_requests += 1
+                    break
 
             # Pause for rate limiting?
             current_time = time.time()
@@ -98,6 +92,37 @@ class ImportMDNData(Tool):
                 logged_at = current_time
 
         return counts
+
+    def import_page(self, uri, feature_id):
+        """Import an MDN page."""
+        importer_search = self.api + '/importer/search'
+        response = self.client.session.get(
+            importer_search, params={'url': uri})
+        if 'importer/create?' in response.url:
+            self.logger.info('Fetching %s...', uri)
+            create_url = response.url
+            csrf = self.client.session.cookies['csrftoken']
+            params = {
+                'url': uri,
+                'feature': feature_id,
+                'csrfmiddlewaretoken': csrf,
+            }
+            response = self.client.session.post(create_url, params)
+            return 'new'
+        else:
+            response.raise_for_status()
+            obj_url = response.url
+            assert '/importer/' in obj_url
+            if self.reparse:
+                action_url = obj_url + '/reparse'
+                import_type = 'reparsed'
+            else:
+                action_url = obj_url + '/reset'
+                import_type = 'reset'
+            csrf = self.client.session.cookies['csrftoken']
+            params = {'csrfmiddlewaretoken': csrf}
+            response = self.client.session.post(action_url, params)
+            return import_type
 
 
 if __name__ == '__main__':

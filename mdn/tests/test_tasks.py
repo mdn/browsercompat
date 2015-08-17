@@ -99,11 +99,11 @@ class TestFetchMetaTask(TestCase):
 
     def test_good_call(self):
         data = {
-            'locale': 'en-US', 'title': 'display',
-            'url': '/en-US/docs/Web/CSS/display',
+            'locale': 'en-US', 'title': 'float',
+            'url': '/en-US/docs/Web/CSS/float',
             'translations': [{
-                'locale': 'es', 'title': 'display',
-                'url': '/es/docs/Web/CSS/display'}]}
+                'locale': 'es', 'title': 'float',
+                'url': '/es/docs/Web/CSS/float'}]}
         self.response.json.side_effect = None
         self.response.json.return_value = data
         self.mocked_fetch_all.side_effect = None
@@ -159,6 +159,28 @@ class TestFetchMetaTask(TestCase):
         self.assertEqual(fp.STATUS_META, fp.status)
         self.assertEqual(new_url, fp.url)
         mocked_delay.assertCalledOnce(self.fp.id)
+
+    def test_redirect_to_zone(self):
+        data = {
+            'locale': 'en-US', 'title': 'float',
+            'url': '/en-US/CSS/float',
+            'translations': []}
+        self.response.json.side_effect = None
+        self.response.json.return_value = data
+        self.response.text = '<html>Some page</html>'
+        new_url = 'https://developer.mozilla.org/en-US/CSS/float'
+        self.response.url = new_url + '$json'
+        self.mocked_fetch_all.side_effect = None
+
+        fetch_meta(self.fp.id)
+        fp = FeaturePage.objects.get(id=self.fp.id)
+        self.assertEqual(fp.STATUS_PAGES, fp.status)
+        self.assertEqual(new_url, fp.url)
+        self.assertEqual([], fp.data['meta']['scrape']['issues'])
+        meta = fp.meta()
+        self.assertEqual(meta.STATUS_FETCHED, meta.status)
+        self.assertEqual(data, meta.data())
+        self.mocked_fetch_all.assertCalledOnce(self.fp.id)
 
 
 class TestFetchAllTranslationsTask(TestCase):

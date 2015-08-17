@@ -80,7 +80,7 @@ class FeaturePage(models.Model):
 
     def slug(self):
         path = self.path()
-        prefix = '/en-US/docs/'
+        prefix = '/en-US/'
         assert path.startswith(prefix)
         return path[len(prefix):]
 

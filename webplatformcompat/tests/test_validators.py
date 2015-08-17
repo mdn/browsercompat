@@ -83,8 +83,8 @@ class SharedVersionAndStatusTests(object):
     def test_float_unknown_ok(self):
         self.assertPasses("1.0", "unknown")
 
-    def test_double_dotted_failed(self):
-        self.assertFailsValidation("1.0.5556", "unknown")
+    def test_double_dotted_ok(self):
+        self.assertPasses("1.0.1", "unknown")
 
     def test_current_current_ok(self):
         self.assertPasses("current", "current")
