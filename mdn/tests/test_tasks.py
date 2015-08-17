@@ -162,8 +162,8 @@ class TestFetchMetaTask(TestCase):
 
     def test_redirect_to_zone(self):
         data = {
-            'locale': 'en-US', 'title': 'display',
-            'url': '/en-US/CSS/display',
+            'locale': 'en-US', 'title': 'float',
+            'url': '/en-US/CSS/float',
             'translations': []}
         self.response.json.side_effect = None
         self.response.json.return_value = data

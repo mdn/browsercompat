@@ -55,12 +55,6 @@ def fetch_meta(featurepage_id):
     next_task_args = []
     if r.url != url and not r.url.endswith('$json'):
         # There was a redirect to the regular page
-        '''
-        if r.url.endswith('$json'):
-            # There was a redirect to another meta (zone change)
-            fp.url = r.url[:-len('$json')]
-        else:
-        '''
         meta.delete()
         fp.url = r.url
         fp.status = fp.STATUS_META

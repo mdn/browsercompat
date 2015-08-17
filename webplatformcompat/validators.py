@@ -55,6 +55,7 @@ class LanguageDictValidator(object):
 class VersionAndStatusValidator(object):
     """For Version resource, restrict version/status combinations."""
 
+    # From http://stackoverflow.com/questions/82064
     re_numeric = re.compile(r"^(?:(\d+)\.)?(?:(\d+)\.)?(\*|\d+)$")
 
     def __init__(self):
