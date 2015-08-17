@@ -441,6 +441,11 @@ class SpecName(SpecKumaScript):
         super(SpecName, self).__init__(**kwargs)
         self.subpath = self.arg(1)
         self.section_name = self.arg(2)
+        if self.spec:
+            self.section_id = self.data.lookup_section_id(
+                self.spec.id, self.subpath)
+        else:
+            self.section_id = None
 
     def _validate(self):
         issues = super(SpecName, self)._validate()

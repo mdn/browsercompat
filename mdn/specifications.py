@@ -222,7 +222,6 @@ class SpecNameVisitor(KumaVisitor):
         """Look for SpecName nodes."""
         processed = super(SpecNameVisitor, self).process(
             cls, node, **kwargs)
-        spec = None
         if isinstance(processed, SpecName):
             assert not self.spec_item
             assert not self.mdn_key
@@ -232,7 +231,8 @@ class SpecNameVisitor(KumaVisitor):
             self.mdn_key = processed.mdn_key
             self.subpath = processed.subpath
             self.section_name = processed.section_name
-            spec = processed.spec
+            self.spec = processed.spec
+            self.section_id = processed.section_id
         elif isinstance(processed, KumaScript):
             pass  # Issues added by KS
         elif (isinstance(processed, HTMLText) and processed.cleaned):
@@ -246,16 +246,15 @@ class SpecNameVisitor(KumaVisitor):
                 self.spec_item = processed
                 self.add_issue(
                     'specname_converted', processed, original=text, key=key)
-                spec = self.data.lookup_specification(key)
-                if not spec:
+                self.spec = self.data.lookup_specification(key)
+                if self.spec:
+                    self.section_id = self.data.lookup_section_id(
+                        self.spec.id, self.subpath)
+                else:
                     self.add_issue('unknown_spec', self.spec_item, key=key)
             else:
                 self.add_issue(
                     'specname_not_kumascript', processed, original=text)
-        if spec:
-            self.spec = spec
-            self.section_id = self.data.lookup_section_id(
-                spec.id, self.subpath)
         return processed
 
 
