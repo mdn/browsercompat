@@ -42,11 +42,6 @@ ISSUES = OrderedDict((
         'Unknown Gecko version "{version}"',
         'The importer does not recognize this version for CompatGeckoFxOS.'
         ' Change the MDN page or update the importer.')),
-    ('doc_parse_error', (
-        CRITICAL,
-        'No imported data due to unexpected page structure.',
-        'The importer was unable to handle the page structure enough to'
-        ' determine if there was compatibility data.')),
     ('exception', (CRITICAL, 'Unhandled exception', '{traceback}')),
     ('extra_cell', (
         ERROR,
@@ -57,10 +52,6 @@ ISSUES = OrderedDict((
     ('failed_download', (
         CRITICAL, 'Failed to download {url}.',
         'Status {status}, Content:\n{content}')),
-    ('false_start', (
-        CRITICAL,
-        'No <h2> found in page.',
-        'A compatibility table must be after a proper <h2> to be imported.')),
     ('feature_header', (
         WARNING,
         'Expected first header to be "Feature"',
@@ -119,10 +110,6 @@ ISSUES = OrderedDict((
         'Bad argument count in KumaScript {kumascript} in {scope}.',
         'The importer expected {name} to have {arg_spec}, but it had'
         ' {arg_count}')),
-    ('nested_p', (
-        ERROR,
-        'Nested <p> tags are not supported.',
-        'Edit the MDN page to remove the nested <p> tag')),
     ('no_data', (
         CRITICAL,
         'No data was extracted from the page.',
@@ -133,26 +120,6 @@ ISSUES = OrderedDict((
         ERROR,
         'The tag <{node_type}> is missing the expected attribute {ident}',
         'Add the missing attribute or convert the tag to plain text.')),
-    ('second_footnote', (
-        ERROR,
-        'An additional footnote was detected in content',
-        'The footnote [{original}] is being used, and the footnote [{new}]'
-        ' discarded.  If footnotes are in the same <p> and split by <br>'
-        ' tags, then split into paragraphs to fix.')),
-    ('section_skipped', (
-        CRITICAL,
-        'Section <h2>{title}</h2> has unexpected content.',
-        'The parser was trying to match rule "{rule_name}", but was unable to'
-        ' understand some unexpected content. This may be markup or'
-        ' text, or a side-effect of previous issues. Look closely at the'
-        ' context (as well as any previous issues) to find the problem'
-        ' content.')),
-    ('section_missed', (
-        CRITICAL,
-        'Section <h2>{title}</h2> was not imported.',
-        'The import of section {title} failed, but no parse error was'
-        ' detected. This is usually because of a previous critical error,'
-        ' which must be cleared before any parsing can be attempted.')),
     ('skipped_content', (
         WARNING,
         'Content will not be imported.',
@@ -196,11 +163,6 @@ ISSUES = OrderedDict((
         'Expected KumaScript SpecName(), got nothing',
         'Expected KumaScript {{{{SpecName(key, subpath, name)}}}}, but got'
         ' no text. Fix or remove empty table row.')),
-    ('spec2_wrong_kumascript', (
-        ERROR,
-        'Expected KumaScript Spec2(), got {kumascript}',
-        'Change to Spec2(mdn_key), using the mdn_key from the SpecName()'
-        ' KumaScript.')),
     ('spec2_converted', (
         WARNING,
         'Specification status should be converted to KumaScript',
@@ -211,10 +173,6 @@ ISSUES = OrderedDict((
         'Expected KumaScript Spec2(), got nothing',
         'Change to Spec2(mdn_key), using the mdn_key from the SpecName()'
         ' KumaScript, or remove empty table row.')),
-    ('specdesc_spec2_invalid', (
-        ERROR,
-        '{kumascript} is invalid in the spec description',
-        'Handled as if {{{{SpecName(...)}}}} was used. Update the MDN page.')),
     ('tag_dropped', (
         WARNING,
         'HTML element <{tag}> (but not wrapped content) was removed.',
