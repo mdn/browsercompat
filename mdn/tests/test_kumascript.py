@@ -27,7 +27,7 @@ class TestUnknownKumascript(TestCase):
 class TestKnownKumaScript(TestCase):
     def test_known(self):
         raw = '{{CompatNo}}'
-        ks = KnownKumaScript(raw=raw)
+        ks = KnownKumaScript(raw=raw, scope='compatibility support')
         self.assertTrue(ks.known)
 
 
@@ -35,7 +35,8 @@ class TestCompatAndroid(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatAndroid
     def test_standard(self):
         raw = "{{CompatAndroid(1.0)}}"
-        ks = CompatAndroid(raw=raw, args=['1.0'])
+        ks = CompatAndroid(
+            raw=raw, args=['1.0'], scope='compatibility support')
         self.assertEqual(ks.version, '1.0')
         self.assertEqual(ks.to_html(), '1.0')
         self.assertFalse(ks.issues)
@@ -46,7 +47,8 @@ class TestCompatGeckoDesktop(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop
     def assert_value(self, gecko_version, version, issues=[]):
         raw = '{{CompatGeckoDesktop("' + gecko_version + '")}}'
-        ks = CompatGeckoDesktop(raw=raw, args=[gecko_version])
+        ks = CompatGeckoDesktop(
+            raw=raw, args=[gecko_version], scope='compatibility support')
         self.assertEqual(ks.gecko_version, gecko_version)
         self.assertEqual(ks.version, version)
         self.assertEqual(ks.to_html(), version)
@@ -74,7 +76,8 @@ class TestCompatGeckoFxOS(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatGeckoFxOS
     def assert_value(self, gecko_version, version, issues=[]):
         raw = '{{CompatGeckoFxOS("' + gecko_version + '")}}'
-        ks = CompatGeckoFxOS(raw=raw, args=[gecko_version])
+        ks = CompatGeckoFxOS(
+            raw=raw, args=[gecko_version], scope='compatibility support')
         self.assertEqual(ks.gecko_version, gecko_version)
         self.assertEqual(ks.version, version)
         self.assertEqual(ks.to_html(), version)
@@ -110,7 +113,9 @@ class TestCompatGeckoFxOS(TestCase):
             self, gecko_version, override, version, issues=[]):
         raw = (
             '{{CompatGeckoFxOS("' + gecko_version + '", "' + override + '")}}')
-        ks = CompatGeckoFxOS(raw=raw, args=[gecko_version, override])
+        ks = CompatGeckoFxOS(
+            raw=raw, args=[gecko_version, override],
+            scope='compatibility support')
         self.assertEqual(ks.gecko_version, gecko_version)
         self.assertEqual(ks.version, override)
         self.assertEqual(ks.to_html(), override)
@@ -134,7 +139,8 @@ class TestCompatGeckoMobile(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatGeckoMobile
     def assert_value(self, gecko_version, version, issues=[]):
         raw = '{{CompatGeckoMobile("' + gecko_version + '")}}'
-        ks = CompatGeckoMobile(raw=raw, args=[gecko_version])
+        ks = CompatGeckoMobile(
+            raw=raw, args=[gecko_version], scope='compatibility support')
         self.assertEqual(ks.gecko_version, gecko_version)
         self.assertEqual(ks.version, version)
         self.assertEqual(ks.to_html(), version)
@@ -155,7 +161,7 @@ class TestCompatNightly(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNightly
     def test_standard(self):
         raw = '{{CompatNightly}}'
-        ks = CompatNightly(raw=raw)
+        ks = CompatNightly(raw=raw, scope='compatibility support')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -163,20 +169,21 @@ class TestCompatNightly(TestCase):
 
 class TestCompatNo(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNo
+    scope = 'compatibility support'
+
     def test_standard(self):
         raw = '{{CompatNo}}'
-        ks = CompatNo(raw=raw)
+        ks = CompatNo(raw=raw, scope=self.scope)
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
 
     def test_passing_args_fails(self):
         raw = '{{CompatNo("14.0")}}'
-        ks = CompatNo(raw=raw, args=['14.0'])
+        ks = CompatNo(raw=raw, args=['14.0'], scope=self.scope)
         issue = ks._make_issue(
-            'kumascript_wrong_args',
-            {'min': 0, 'max': 0, 'count': 1, 'arg_names': [],
-             'arg_spec': 'no arguments', 'arg_count': '1 argument'})
+            'kumascript_wrong_args', min=0, max=0, count=1, arg_names=[],
+            arg_spec='no arguments', arg_count='1 argument')
         self.assertEqual(ks.issues, [issue])
         self.assertEqual(text_type(ks), raw)
 
@@ -185,7 +192,7 @@ class TestCompatUnknown(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatUnknown
     def test_standard(self):
         raw = '{{CompatUnknown}}'
-        ks = CompatUnknown(raw=raw)
+        ks = CompatUnknown(raw=raw, scope='compatibility support')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -195,7 +202,7 @@ class TestCompatVersionUnknown(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatVersionUnknown
     def test_standard(self):
         raw = '{{CompatVersionUnknown}}'
-        ks = CompatVersionUnknown(raw=raw)
+        ks = CompatVersionUnknown(raw=raw, scope='compatibility support')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -205,9 +212,10 @@ class TestCompatibilityTable(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatibilityTable
     def test_standard(self):
         raw = '{{CompatibilityTable}}'
-        ks = CompatibilityTable(raw=raw)
+        ks = CompatibilityTable(raw=raw, scope='footnote')
         self.assertEqual(ks.to_html(), '')
-        self.assertFalse(ks.issues)
+        self.assertEqual(len(ks.issues), 1)
+        self.assertEqual(ks.issues[0][0], 'unexpected_kumascript')
         self.assertEqual(text_type(ks), raw)
 
 
@@ -215,7 +223,7 @@ class TestKumaHTMLElement(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:HTMLElement
     def assert_value(self, name, html):
         raw = '{{HTMLElement("' + name + '")}}'
-        ks = KumaHTMLElement(raw=raw, args=[name])
+        ks = KumaHTMLElement(raw=raw, args=[name], scope='footnote')
         self.assertEqual(ks.to_html(), html)
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -229,10 +237,12 @@ class TestKumaHTMLElement(TestCase):
 
 class TestSpec2(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:Spec2
+    scope = 'specification maturity'
+
     def test_standard(self):
         spec = self.get_instance('Specification', 'css3_backgrounds')
         raw = '{{Spec2("CSS3 Backgrounds")}}'
-        ks = Spec2(raw=raw, args=['CSS3 Backgrounds'])
+        ks = Spec2(raw=raw, args=['CSS3 Backgrounds'], scope=self.scope)
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
         self.assertEqual(ks.spec, spec)
         self.assertFalse(ks.issues)
@@ -243,7 +253,7 @@ class TestSpec2(TestCase):
 
     def test_unknown_mdn_key(self):
         raw = "{{Spec2('CSS3 Backgrounds')}}"
-        ks = Spec2(raw=raw, args=['CSS3 Backgrounds'])
+        ks = Spec2(raw=raw, args=['CSS3 Backgrounds'], scope=self.scope)
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
         self.assertIsNone(ks.spec)
         issues = [('unknown_spec', 0, 29, {'key': ks.mdn_key})]
@@ -252,32 +262,33 @@ class TestSpec2(TestCase):
 
     def test_empty_key(self):
         raw = "{{Spec2()}}"
-        ks = Spec2(raw=raw)
+        ks = Spec2(raw=raw, scope=self.scope)
         self.assertIsNone(ks.mdn_key)
         self.assertIsNone(ks.spec)
         expected = ks._make_issue(
-            'kumascript_wrong_args',
-            {'min': 1, 'max': 1, 'arg_names': ['SpecKey'], 'count': 0,
-             'arg_count': '0 arguments',
-             'arg_spec': 'exactly 1 argument (SpecKey)'})
+            'kumascript_wrong_args', min=1, max=1, arg_names=['SpecKey'],
+            count=0, arg_count='0 arguments',
+            arg_spec='exactly 1 argument (SpecKey)')
         self.assertEqual(ks.issues, [expected])
         self.assertEqual(ks.to_html(), 'specification (None)')
 
     def test_str_double_quote(self):
         raw = "{{Spec2('The \"Foo\" Spec')}}"
-        ks = Spec2(raw=raw, args=['The "Foo" Spec'])
+        ks = Spec2(raw=raw, args=['The "Foo" Spec'], scope=self.scope)
         self.assertEqual(ks.mdn_key, 'The "Foo" Spec')
         self.assertEqual(text_type(ks), raw)
 
 
 class TestSpecName(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:SpecName
+    scope = 'specification name'
+
     def test_3args(self):
         self.get_instance('Specification', 'css3_backgrounds')
         raw = ('{{SpecName("CSS3 Backgrounds", "#the-background-size",'
                ' "background-size")}}')
         args = ['CSS3 Backgrounds', '#the-background-size', 'background-size']
-        ks = SpecName(raw=raw, args=args)
+        ks = SpecName(raw=raw, args=args, scope=self.scope)
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
         self.assertEqual(ks.subpath, '#the-background-size')
         self.assertEqual(ks.section_name, 'background-size')
@@ -287,7 +298,7 @@ class TestSpecName(TestCase):
     def test_1arg(self):
         self.get_instance('Specification', 'css3_backgrounds')
         raw = "{{SpecName('CSS3 Backgrounds')}}"
-        ks = SpecName(raw=raw, args=['CSS3 Backgrounds'])
+        ks = SpecName(raw=raw, args=['CSS3 Backgrounds'], scope=self.scope)
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
         self.assertEqual(ks.subpath, None)
         self.assertEqual(ks.section_name, None)
@@ -295,7 +306,7 @@ class TestSpecName(TestCase):
 
     def test_unknown_spec(self):
         raw = "{{SpecName('CSS3 Backgrounds')}}"
-        ks = SpecName(raw=raw, args=['CSS3 Backgrounds'])
+        ks = SpecName(raw=raw, args=['CSS3 Backgrounds'], scope=self.scope)
         self.assertEqual(ks.mdn_key, 'CSS3 Backgrounds')
         self.assertEqual(ks.subpath, None)
         self.assertEqual(ks.section_name, None)
@@ -305,7 +316,7 @@ class TestSpecName(TestCase):
     def test_blank_mdn_key(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
         raw = "{{SpecName('', '#midiconnection')}}"
-        ks = SpecName(raw=raw, args=['', '#midiconnection'])
+        ks = SpecName(raw=raw, args=['', '#midiconnection'], scope=self.scope)
         self.assertEqual(ks.mdn_key, '')
         self.assertEqual(ks.subpath, '#midiconnection')
         self.assertIsNone(ks.section_name, None)
@@ -314,15 +325,13 @@ class TestSpecName(TestCase):
 
     def test_no_args(self):
         raw = "{{SpecName}}"
-        ks = SpecName(raw=raw)
+        ks = SpecName(raw=raw, scope=self.scope)
         issue = ks._make_issue(
-            'kumascript_wrong_args',
-            {'min': 1, 'max': 3, 'count': 0,
-             'arg_names': ['SpecKey', 'Anchor', 'AnchorName'],
-             'arg_count': '0 arguments',
-             'arg_spec': (
-                 'between 1 and 3 arguments (SpecKey, Anchor, [AnchorName])')
-             })
+            'kumascript_wrong_args', min=1, max=3, count=0,
+            arg_names=['SpecKey', 'Anchor', 'AnchorName'],
+            arg_count='0 arguments',
+            arg_spec=(
+                'between 1 and 3 arguments (SpecKey, Anchor, [AnchorName])'))
         self.assertEqual(ks.issues, [issue])
 
 
@@ -330,17 +339,20 @@ class TestCSSBox(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:cssbox
     def test_standard(self):
         raw = '{{cssbox("background-clip")}}'
-        ks = CSSBox(raw=raw, args=['background-clip'])
+        ks = CSSBox(raw=raw, args=['background-clip'], scope='footnote')
         self.assertEqual(ks.to_html(), '')
-        self.assertEqual(ks.issues, [])
+        self.assertEqual(len(ks.issues), 1)
+        self.assertEqual(ks.issues[0][0], 'unexpected_kumascript')
         self.assertEqual(text_type(ks), raw)
 
 
 class TestCSSxRef(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:cssxref
+    scope = 'footnote'
+
     def test_standard(self):
         raw = '{{cssxref("z-index")}}'
-        ks = CSSxRef(raw=raw, args=['z-index'])
+        ks = CSSxRef(raw=raw, args=['z-index'], scope=self.scope)
         self.assertEqual(ks.api_name, 'z-index')
         self.assertIsNone(ks.display_name)
         self.assertEqual(ks.to_html(), '<code>z-index</code>')
@@ -349,7 +361,7 @@ class TestCSSxRef(TestCase):
 
     def test_display_override(self):
         raw = '{{cssxref("the-foo", "foo")}}'
-        ks = CSSxRef(raw=raw, args=['the-foo', 'foo'])
+        ks = CSSxRef(raw=raw, args=['the-foo', 'foo'], scope=self.scope)
         self.assertEqual(ks.api_name, 'the-foo')
         self.assertEqual(ks.display_name, 'foo')
         self.assertEqual(ks.to_html(), '<code>foo</code>')
@@ -360,7 +372,7 @@ class TestDeprecatedInline(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:deprecated_inline
     def test_standard(self):
         raw = '{{deprecated_inline}}'
-        ks = DeprecatedInline(raw=raw)
+        ks = DeprecatedInline(raw=raw, scope='compatibility feature')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -368,10 +380,12 @@ class TestDeprecatedInline(TestCase):
 
 class TestDOMxRef(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:domxref
+    scope = 'footnote'
+
     def test_standard(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/CharacterData
         raw = '{{domxref("ChildNode")}}'
-        ks = DOMxRef(raw=raw, args=['ChildNode'])
+        ks = DOMxRef(raw=raw, args=['ChildNode'], scope=self.scope)
         self.assertEqual(ks.to_html(), '<code>ChildNode</code>')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -380,7 +394,7 @@ class TestDOMxRef(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/initCustomEvent
         raw = '{{domxref("CustomEvent.CustomEvent", "CustomEvent()")}}'
         args = ['CustomEvent.CustomEvent', 'CustomEvent()']
-        ks = DOMxRef(raw=raw, args=args)
+        ks = DOMxRef(raw=raw, args=args, scope=self.scope)
         self.assertEqual(ks.to_html(), '<code>CustomEvent()</code>')
 
 
@@ -388,7 +402,7 @@ class TestExperimentalInline(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:experimental_inline
     def test_standard(self):
         raw = '{{experimental_inline}}'
-        ks = ExperimentalInline(raw=raw)
+        ks = ExperimentalInline(raw=raw, scope='compatibility feature')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -398,7 +412,7 @@ class TestNonStandardInline(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:non-standard_inline
     def test_standard(self):
         raw = '{{non-standard_inline}}'
-        ks = NonStandardInline(raw=raw)
+        ks = NonStandardInline(raw=raw, scope='compatibility feature')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -408,7 +422,7 @@ class TestNotStandardInline(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:not_standard_inline
     def test_standard(self):
         raw = '{{not_standard_inline}}'
-        ks = NotStandardInline(raw=raw)
+        ks = NotStandardInline(raw=raw, scope='compatibility feature')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -418,7 +432,8 @@ class TestPropertyPrefix(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:property_prefix
     def test_standard(self):
         raw = '{{property_prefix("-webkit")}}'
-        ks = PropertyPrefix(raw=raw, args=['-webkit'])
+        ks = PropertyPrefix(
+            raw=raw, args=['-webkit'], scope='compatibility support')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -429,7 +444,7 @@ class TestWhyNoSpecBlock(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecEnd
     def test_standard(self):
         raw = """{{WhyNoSpecStart}}There is no spec.{{WhyNoSpecEnd}}"""
-        block = WhyNoSpecBlock(raw=raw)
+        block = WhyNoSpecBlock(raw=raw, scope='footnote')
         self.assertEqual(block.to_html(), '')
         self.assertEqual(text_type(block), raw)
 
@@ -438,7 +453,7 @@ class TestXrefCSSLength(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
     def test_standard(self):
         raw = '{{xref_csslength()}}'
-        ks = XrefCSSLength(raw=raw)
+        ks = XrefCSSLength(raw=raw, scope='footnote')
         self.assertEqual('<code>&lt;length&gt;</code>', ks.to_html())
         self.assertEqual([], ks.issues)
         self.assertEqual(text_type(ks), '{{xref_csslength}}')
@@ -482,10 +497,11 @@ Not part of any current spec, but it was in early drafts of
 class TestVisitor(TestHTMLVisitor):
     def setUp(self):
         self.visitor = KumaVisitor()
-        self.visitor.scope = 'test'
 
-    def assert_kumascript(self, text, name, args, known=True, issues=None):
+    def assert_kumascript(
+            self, text, name, args, scope, known=True, issues=None):
         parsed = kumascript_grammar['kumascript'].parse(text)
+        self.visitor.scope = scope
         ks = self.visitor.visit(parsed)
         self.assertIsInstance(ks, KumaScript)
         self.assertEqual(ks.name, name)
@@ -494,22 +510,26 @@ class TestVisitor(TestHTMLVisitor):
         self.assertEqual(ks.issues, issues or [])
 
     def test_kumascript_no_args(self):
-        self.assert_kumascript('{{CompatNo}}', 'CompatNo', [])
+        self.assert_kumascript(
+            '{{CompatNo}}', 'CompatNo', [], 'compatibility support')
 
     def test_kumascript_no_parens_and_spaces(self):
-        self.assert_kumascript('{{ CompatNo }}', 'CompatNo', [])
+        self.assert_kumascript(
+            '{{ CompatNo }}', 'CompatNo', [], 'compatibility support')
 
     def test_kumascript_empty_parens(self):
-        self.assert_kumascript('{{CompatNo()}}', 'CompatNo', [])
+        self.assert_kumascript(
+            '{{CompatNo()}}', 'CompatNo', [], 'compatibility support')
 
     def test_kumascript_one_arg(self):
         self.assert_kumascript(
             '{{cssxref("-moz-border-image")}}', 'cssxref',
-            ['-moz-border-image'])
+            ['-moz-border-image'], 'footnote')
 
     def test_kumascript_one_arg_no_quotes(self):
         self.assert_kumascript(
-            '{{CompatGeckoDesktop(27)}}', 'CompatGeckoDesktop', ['27'])
+            '{{CompatGeckoDesktop(27)}}', 'CompatGeckoDesktop', ['27'],
+            'compatibility support')
 
     def test_kumascript_three_args(self):
         self.get_instance('Specification', 'css3_backgrounds')
@@ -518,7 +538,7 @@ class TestVisitor(TestHTMLVisitor):
              " 'background-size')}}"),
             "SpecName",
             ["CSS3 Backgrounds", "#the-background-size",
-             "background-size"])
+             "background-size"], 'specification name')
 
     def test_kumascript_empty_string(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
@@ -527,16 +547,19 @@ class TestVisitor(TestHTMLVisitor):
         args = ['', '#midiconnection']
         issue = (
             'specname_blank_key', 0, 35,
-            {'name': name, 'args': args, 'scope': 'test',
+            {'name': name, 'args': args, 'scope': 'specification name',
              'kumascript': '{{SpecName("", "#midiconnection")}}'})
-        self.assert_kumascript(raw, name, args, issues=[issue])
+        self.assert_kumascript(
+            raw, name, args, 'specification name', issues=[issue])
 
     def test_kumascript_unknown(self):
         issue = (
             'unknown_kumascript', 0, 10,
-            {'name': 'CSSRef', 'args': [], 'scope': 'test',
+            {'name': 'CSSRef', 'args': [], 'scope': 'footnote',
              'kumascript': '{{CSSRef}}'})
-        self.assert_kumascript("{{CSSRef}}", "CSSRef", [], False, [issue])
+        self.assert_kumascript(
+            "{{CSSRef}}", "CSSRef", [], scope='footnote', known=False,
+            issues=[issue])
 
     def test_kumascript_in_html(self):
         html = """\

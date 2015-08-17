@@ -329,6 +329,18 @@ class TestSpecNameVisitor(TestCase):
         self.assert_specname(html, 'ES3', None, None, [issue1, issue2])
         self.assertIsInstance(self.visitor.spec_item, HTMLText)
 
+    def test_other_kumascript(self):
+        self.get_instance('Specification', 'css3_ui')
+        html = ("<td>{{ SpecName('CSS3 UI', '#cursor', 'cursor') }}"
+                "{{not_standard_inline}}</td>")
+        kname = 'not_standard_inline'
+        issue = (
+            'unexpected_kumascript', 50, 73,
+            {'args': [], 'kumascript': '{{%s}}' % kname,
+             'name': kname, 'scope': 'specification name',
+             'expected_scopes': 'compatibility feature'})
+        self.assert_specname(html, 'CSS3 UI', '#cursor', 'cursor', [issue])
+
 
 class TestSpec2Visitor(TestCase):
     def setUp(self):
@@ -361,21 +373,32 @@ class TestSpec2Visitor(TestCase):
 
     def test_specname(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/tabIndex
-        spec = self.get_instance('Specification', 'html_whatwg')
+        self.get_instance('Specification', 'html_whatwg')
         html = "<td>{{SpecName('HTML WHATWG')}}</td>"
         issues = [(
-            'spec2_wrong_kumascript', 4, 31,
+            'unexpected_kumascript', 4, 31,
             {'name': 'SpecName', 'args': ["HTML WHATWG"],
              'scope': 'specification maturity',
-             'kumascript': '{{SpecName("HTML WHATWG")}}'})]
-        self.assert_spec2(html, 'HTML WHATWG', issues)
-        self.assertEqual(self.visitor.spec, spec)
-        self.assertEqual(self.visitor.maturity, spec.maturity)
+             'kumascript': '{{SpecName("HTML WHATWG")}}',
+             'expected_scopes': 'specification name'})]
+        self.assert_spec2(html, None, issues)
+        self.assertEqual(self.visitor.spec, None)
 
     def test_text_name(self):
         # /en-US/docs/Web/JavaScript/Reference/Operators/this
         html = "<td>Standard</td>"
         self.assert_spec2(html, None, [])
+
+    def test_other_kumascript(self):
+        self.get_instance('Specification', 'css3_ui')
+        html = '<td>{{Spec2("CSS3 UI")}}{{deprecated_inline}}</td>'
+        kname = 'deprecated_inline'
+        issue = (
+            'unexpected_kumascript', 24, 45,
+            {'args': [], 'kumascript': '{{%s}}' % kname,
+             'name': kname, 'scope': 'specification maturity',
+             'expected_scopes': 'compatibility feature'})
+        self.assert_spec2(html, 'CSS3 UI', [issue])
 
 
 class TestSpecDescVisitor(TestCase):
@@ -429,10 +452,12 @@ class TestSpecDescVisitor(TestCase):
         html = "<td>No change from {{Spec2('HTML5 W3C')}}</td>"
         expected = ["No change from", "specification HTML5 W3C"]
         issues = [
-            ('specdesc_spec2_invalid', 19, 41,
+            ('unexpected_kumascript', 19, 41,
              {'name': 'Spec2', 'args': ['HTML5 W3C'],
               'scope': 'specification description',
-              'kumascript': '{{Spec2("HTML5 W3C")}}'})]
+              'kumascript': '{{Spec2("HTML5 W3C")}}',
+              'expected_scopes': 'specification maturity'}),
+            ('unknown_spec', 19, 41, {'key': 'HTML5 W3C'})]
         self.assert_specdesc(html, expected, issues)
 
     def test_kumascript_experimental_inline(self):
@@ -444,4 +469,10 @@ class TestSpecDescVisitor(TestCase):
         expected = [
             'Defines', '<code>&lt;position&gt;</code>',
             'explicitly and extends it to support offsets from any edge.', '']
-        self.assert_specdesc(html, expected, [])
+        kname = 'experimental_inline'
+        issue = (
+            'unexpected_kumascript', 102, 129,
+            {'args': [], 'kumascript': '{{%s}}' % kname,
+             'name': kname, 'scope': 'specification description',
+             'expected_scopes': 'compatibility feature'})
+        self.assert_specdesc(html, expected, [issue])

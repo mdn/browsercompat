@@ -791,9 +791,10 @@ class TestSupportVisitor(TestCase):
 
     def test_other_kumascript(self):
         issue = (
-            'unknown_kumascript', 7, 30,
+            'unexpected_kumascript', 7, 30,
             {'kumascript': '{{experimental_inline}}',
-             'name': 'experimental_inline', 'args': [], 'scope': self.scope})
+             'name': 'experimental_inline', 'args': [], 'scope': self.scope,
+             'expected_scopes': 'compatibility feature'})
         self.assert_support(
             '22 {{experimental_inline}}',
             [{'version': '22.0'}], [{'support': 'yes'}], issues=[issue])

@@ -670,8 +670,7 @@ class CompatSupportVisitor(CompatBaseVisitor):
         elif isinstance(processed, CellNoPrefix):
             self.support['support'] = 'yes'
         elif isinstance(processed, KumaScript):
-            if processed.known:
-                self.add_raw_issue(processed._make_issue('unknown_kumascript'))
+            pass
         elif isinstance(processed, HTMLText):
             if processed.cleaned:
                 self.inline_texts.append((processed, processed.cleaned))

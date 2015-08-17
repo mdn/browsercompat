@@ -27,6 +27,7 @@ from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
+from django.utils.text import get_text_list
 
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import Node
@@ -65,6 +66,15 @@ text_item = ~r"(?P<content>(?:[^{<]|{(?!{))+)"s
 """
 kumascript_grammar = Grammar(kumascript_grammar_source)
 
+SCOPES = set((
+    'specification name',
+    'specification maturity',
+    'specification description',
+    'compatibility feature',
+    'compatibility support',
+    'footnote',
+))
+
 
 @python_2_unicode_compatible
 class KumaScript(HTMLText):
@@ -102,12 +112,12 @@ class KumaScript(HTMLText):
         """Convert to HTML.  Default is an empty string."""
         return ''
 
-    def _make_issue(self, issue_slug, extra_kwargs=None):
+    def _make_issue(self, issue_slug, **extra_kwargs):
         """Create an importer issue with standard KumaScript parameters."""
         assert self.scope
         kwargs = {'name': self.name, 'args': self.args, 'scope': self.scope,
                   'kumascript': str(self)}
-        kwargs.update(extra_kwargs or {})
+        kwargs.update(extra_kwargs)
         return (issue_slug, self.start, self.end, kwargs)
 
 
@@ -135,6 +145,7 @@ class KnownKumaScript(KumaScript):
     min_args = 0
     max_args = 0
     arg_names = []
+    expected_scopes = SCOPES
 
     def __init__(self, args=None, scope=None, **kwargs):
         """Validate arg count of a known KumaScript macro."""
@@ -182,7 +193,12 @@ class KnownKumaScript(KumaScript):
             else:
                 extra['arg_count'] = '{0} arguments'.format(count)
 
-            issues.append(self._make_issue('kumascript_wrong_args', extra))
+            issues.append(self._make_issue('kumascript_wrong_args', **extra))
+        assert not (self.expected_scopes - SCOPES)
+        if self.scope not in self.expected_scopes:
+            expected = get_text_list(sorted(self.expected_scopes))
+            issues.append(self._make_issue(
+                'unexpected_kumascript', expected_scopes=expected))
         return issues
 
     @property
@@ -193,6 +209,7 @@ class KnownKumaScript(KumaScript):
 class CompatKumaScript(KnownKumaScript):
     """Base class for KumaScript specifying a browser version."""
     min_args = max_args = 1
+    expected_scopes = set(('compatibility support', ))
 
     def to_html(self):
         return self.version
@@ -336,27 +353,27 @@ class CompatGeckoMobile(CompatKumaScript):
 
 class CompatNightly(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNightly
-    pass
+    expected_scopes = set(('compatibility support',))
 
 
 class CompatNo(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNo
-    pass
+    expected_scopes = set(('compatibility support',))
 
 
 class CompatUnknown(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatUnknown
-    pass
+    expected_scopes = set(('compatibility support',))
 
 
 class CompatVersionUnknown(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatVersionUnknown
-    pass
+    expected_scopes = set(('compatibility support',))
 
 
 class CompatibilityTable(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatibilityTable
-    pass
+    expected_scopes = set()
 
 
 class KumaHTMLElement(KnownKumaScript):
@@ -364,6 +381,9 @@ class KumaHTMLElement(KnownKumaScript):
     min_args = max_args = 1
     arg_names = ['ElementName']
     canonical_name = 'HTMLElement'
+    expected_scopes = set((
+        'compatibility feature', 'compatibility support', 'footnote',
+        'specification description'))
 
     def __init__(self, **kwargs):
         super(KumaHTMLElement, self).__init__(**kwargs)
@@ -400,12 +420,11 @@ class Spec2(SpecKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:Spec2
     min_args = max_args = 1
     arg_names = ['SpecKey']
+    expected_scopes = set(('specification maturity',))
 
     def _validate(self):
         issues = super(Spec2, self)._validate()
-        if self.scope == 'specification description':
-            issues.append(self._make_issue('specdesc_spec2_invalid'))
-        elif self.mdn_key and not self.spec:
+        if self.mdn_key and not self.spec:
             issues.append(
                 ('unknown_spec', self.start, self.end, {'key': self.mdn_key}))
         return issues
@@ -416,6 +435,7 @@ class SpecName(SpecKumaScript):
     min_args = 1
     max_args = 3
     arg_names = ['SpecKey', 'Anchor', 'AnchorName']
+    expected_scopes = set(('specification name',))
 
     def __init__(self, **kwargs):
         super(SpecName, self).__init__(**kwargs)
@@ -437,6 +457,7 @@ class CSSBox(KnownKumaScript):
     min_args = max_args = 1
     arg_names = ['PropertyName']
     canonical_name = 'cssbox'
+    expected_scopes = set()
 
 
 class CSSxRef(KnownKumaScript):
@@ -445,6 +466,7 @@ class CSSxRef(KnownKumaScript):
     max_args = 3
     arg_names = ['APIName', 'DisplayName', 'Anchor']
     canonical_name = 'cssxref'
+    expected_scopes = set(('specification description', 'footnote'))
 
     def __init__(self, **kwargs):
         super(CSSxRef, self).__init__(**kwargs)
@@ -458,6 +480,7 @@ class CSSxRef(KnownKumaScript):
 class DeprecatedInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:deprecated_inline
     canonical_name = 'deprecated_inline'
+    expected_scopes = set(('compatibility feature',))
 
 
 class DOMxRef(KnownKumaScript):
@@ -466,6 +489,8 @@ class DOMxRef(KnownKumaScript):
     max_args = 2
     arg_names = ['DOMPath', 'DOMText']
     canonical_name = 'domxref'
+    expected_scopes = set(
+        ('specification description', 'compatibility feature', 'footnote'))
 
     def __init__(self, **kwargs):
         super(DOMxRef, self).__init__(**kwargs)
@@ -479,16 +504,19 @@ class DOMxRef(KnownKumaScript):
 class ExperimentalInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:experimental_inline
     canonical_name = 'experimental_inline'
+    expected_scopes = set(('compatibility feature',))
 
 
 class NonStandardInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:non-standard_inline
     canonical_name = 'non-standard_inline'
+    expected_scopes = set(('compatibility feature',))
 
 
 class NotStandardInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:not_standard_inline
     canonical_name = 'not_standard_inline'
+    expected_scopes = set(('compatibility feature',))
 
 
 class PropertyPrefix(KnownKumaScript):
@@ -496,6 +524,7 @@ class PropertyPrefix(KnownKumaScript):
     min_args = max_args = 1
     arg_names = ['Prefix']
     canonical_name = 'property_prefix'
+    expected_scopes = set(('compatibility support',))
 
     def __init__(self, **kwargs):
         super(PropertyPrefix, self).__init__(**kwargs)
@@ -511,6 +540,7 @@ class WhyNoSpecBlock(HTMLInterval):
     https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecStart
     https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecEnd
     """
+    expected_scopes = set()
 
     def __init__(self, scope=None, **kwargs):
         super(WhyNoSpecBlock, self).__init__(**kwargs)
@@ -523,6 +553,7 @@ class WhyNoSpecBlock(HTMLInterval):
 class XrefCSSLength(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
     canonical_name = 'xref_csslength'
+    expected_scopes = set(('specification description', 'footnote'))
 
     def to_html(self):
         return '<code>&lt;length&gt;</code>'

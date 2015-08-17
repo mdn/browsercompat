@@ -233,6 +233,8 @@ class SpecNameVisitor(KumaVisitor):
             self.subpath = processed.subpath
             self.section_name = processed.section_name
             spec = processed.spec
+        elif isinstance(processed, KumaScript):
+            pass  # Issues added by KS
         elif (isinstance(processed, HTMLText) and processed.cleaned):
             text = processed.cleaned
             legacy_specs = {
@@ -285,12 +287,8 @@ class Spec2Visitor(KumaVisitor):
             self.spec = processed.spec
             if self.spec:
                 self.maturity = self.spec.maturity
-        elif isinstance(processed, SpecName):
-            self.spec2_item = processed
-            self.mdn_key = processed.mdn_key
-            self.spec = processed.spec
-            self.maturity = self.spec.maturity if self.spec else None
-            self.add_raw_issue(processed._make_issue('spec2_wrong_kumascript'))
+        elif isinstance(processed, KumaScript):
+            pass
         elif (isinstance(processed, HTMLText) and processed.cleaned and
                 not self.mdn_key and not self.spec2_item):
             self.spec2_item = processed

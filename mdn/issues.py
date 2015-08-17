@@ -226,6 +226,12 @@ ISSUES = OrderedDict((
         'Unexpected attribute <{node_type} {ident}="{value}">',
         'For <{node_type}>, the importer expects {expected}. This unexpected'
         ' attribute will be discarded.')),
+    ('unexpected_kumascript', (
+        ERROR,
+        'KumaScript {kumascript} was not expected in {scope}.',
+        'The KumaScript {name} appears in a {scope}, but is only expected in'
+        ' {expected_scopes}. File a bug, or convert the MDN page to not use'
+        ' this KumaScript macro here.')),
     ('unknown_browser', (
         ERROR,
         'Unknown Browser "{name}".',
