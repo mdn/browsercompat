@@ -33,7 +33,6 @@ class FeaturePageListView(ListView):
     paginate_by = 50
     topics = (
         'docs/Web/API',
-        'docs/Web/Accessibility',
         'docs/Web/CSS',
         'docs/Web/Events',
         'docs/Web/Guide',
@@ -41,8 +40,6 @@ class FeaturePageListView(ListView):
         'docs/Web/JavaScript',
         'docs/Web/MathML',
         'docs/Web/SVG',
-        'docs/Web/XPath',
-        'docs/Web/XSLT',
     )
     status_names = dict(FeaturePage.STATUS_CHOICES)
     statuses = (
