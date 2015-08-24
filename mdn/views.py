@@ -1,13 +1,14 @@
 """Views for MDN migration app."""
 from collections import Counter
 from json import loads
+import csv
 
 from django import forms
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Count
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils.six.moves.urllib.parse import urlparse, urlunparse
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.base import TemplateResponseMixin, View
@@ -374,6 +375,47 @@ class IssuesDetail(TemplateView):
             ctx['pages'] = {}
         ctx['slug'] = slug
         return ctx
+
+
+def issues_summary_csv(request):
+    raw_counts = Issue.objects.values('slug').annotate(total=Count('slug'))
+    counts = [(raw['total'], raw['slug']) for raw in raw_counts]
+    counts.sort(reverse=True)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = (
+        'attachment; filename="import_issue_counts.csv"')
+    writer = csv.writer(response)
+    writer.writerow(['Count', 'Issue'])
+    writer.writerows(counts)
+    return response
+
+
+def issues_detail_csv(request, slug):
+    issues = Issue.objects.filter(slug=slug).select_related('page__url')
+    raw_headers = set()
+    lines = []
+    raw_params = []
+    for issue in issues:
+        full_url = request.build_absolute_uri(
+            reverse('feature_page_detail', kwargs={'pk': issue.page_id}))
+        mdn_slug = issue.page.url.replace(DEV_PREFIX, '', 1)
+        lines.append([mdn_slug, full_url, issue.start, issue.end])
+        raw_params.append(issue.params)
+        raw_headers.update(set(issue.params.keys()))
+    headers = sorted(raw_headers)
+    for line, params in zip(lines, raw_params):
+        line.extend([params.get(header, "") for header in headers])
+
+    response = HttpResponse(content_type='text/csv')
+    filename = 'import_issues_for_{}.csv'.format(slug)
+    response['Content-Disposition'] = (
+        'attachment; filename="{}"'.format(filename))
+    writer = csv.writer(response)
+    writer.writerow(
+        ['MDN Slug', 'Import URL', 'Source Start', 'Source End'] + headers)
+    writer.writerows(lines)
+    return response
 
 
 feature_page_create = user_passes_test(can_create)(

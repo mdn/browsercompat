@@ -4,7 +4,10 @@
 {% block body_title %}MDN Importer - {{ total_issues }} Issue{% if total_issues != 1 %}s{% endif %}{% endblock %}
 
 {% block quick_nav %}
-<p><em>back to <a href="{{ url('feature_page_list') }}">list of imported pages</a></em></p>
+<p><em>
+  back to <a href="{{ url('feature_page_list') }}">list of imported pages</a>,
+  or <a href="{{ url('issues_summary_csv') }}">download as CSV</a>
+</em></p>
 {% endblock %}
 
 {% block content %}

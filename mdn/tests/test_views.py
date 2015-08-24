@@ -310,3 +310,42 @@ class TestIssuesSummary(TestCase):
         url = reverse('issues_summary')
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
+
+
+class CSVTestCase(TestCase):
+    def setUp(self):
+        self.feature = self.create(Feature, slug='web-css-float')
+        self.fp = FeaturePage.objects.create(
+            url="https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+            feature_id=self.feature.id, data='{"foo": "bar"}',
+            status=FeaturePage.STATUS_PARSED)
+        self.issue = Issue.objects.create(
+            page=self.fp, slug="inline-text", start=10, end=20,
+            params='{"text": "inline"}')
+
+    def assert_csv_response(self, url, expected_lines):
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        csv_lines = response.content.decode('utf8').splitlines()
+        self.assertEqual(expected_lines, csv_lines)
+
+
+class TestIssuesDetailCSV(CSVTestCase):
+    def test_get(self):
+        url = reverse('issues_detail_csv', kwargs={'slug': 'inline-text'})
+        full_url = 'http://testserver/importer/{}'.format(self.fp.pk)
+        expected = [
+            'MDN Slug,Import URL,Source Start,Source End,text',
+            'docs/Web/CSS/float,{},10,20,inline'.format(full_url),
+        ]
+        self.assert_csv_response(url, expected)
+
+
+class TestIssuesSummaryCSV(CSVTestCase):
+    def test_get(self):
+        url = reverse('issues_summary_csv')
+        expected = [
+            'Count,Issue',
+            '1,inline-text',
+        ]
+        self.assert_csv_response(url, expected)

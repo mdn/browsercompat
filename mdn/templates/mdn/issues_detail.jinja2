@@ -13,7 +13,8 @@
 {% block quick_nav %}
 <p><em>back to
     <a href="{{ url('issues_summary') }}">issues summary</a>, or the
-    <a href="{{ url('feature_page_list') }}">list of imported pages</a>
+    <a href="{{ url('feature_page_list') }}">list of imported pages</a>, or
+    <a href="{{ url('issues_detail_csv', slug=slug) }}">download as CSV</a>
 </em></p>
 {% endblock %}
 
