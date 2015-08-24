@@ -287,6 +287,16 @@ class TestIssuesDetail(TestCase):
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, response.context_data['count'])
+        self.assertEqual([], response.context_data['headers'])
+
+    def test_get_with_issue_parameters(self):
+        self.issue.params = {'text': 'inline text'}
+        self.issue.save()
+        url = reverse('issues_detail', kwargs={'slug': 'inline-text'})
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, response.context_data['count'])
+        self.assertEqual(['Page', 'text'], response.context_data['headers'])
 
     def test_get_without_issues(self):
         url = reverse('issues_detail', kwargs={'slug': 'other'})

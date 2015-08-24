@@ -13,7 +13,8 @@
 {% block quick_nav %}
 <p><em>back to
     <a href="{{ url('issues_summary') }}">issues summary</a>, or the
-    <a href="{{ url('feature_page_list') }}">list of imported pages</a></em></p>
+    <a href="{{ url('feature_page_list') }}">list of imported pages</a>
+</em></p>
 {% endblock %}
 
 {% block content %}
@@ -32,6 +33,35 @@
 <p>{{ macros.issue_div(sample_issue) }}</p>
 <h3>Imports with this issue</h3>
 <p>Here's the full list of imports where this issue was found:<p>
+
+{% if headers %}
+
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        {% for header in headers -%}
+        <th>{{ header }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+    {% if details %}
+      {% for detail in details %}
+      <tr>
+        <td><a href="{{ url('feature_page_detail', pk=detail[1]) }}">{{ detail[0] }}</a></td>
+        {% for param in detail[2:] -%}
+        <td>{{ param }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr><td rowspan=0><em>No pages with this issue</em></td></tr>
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+{% else %}
 <ul>
 {% for key, page_count in pages | dictsort -%}
 <li>
@@ -40,6 +70,8 @@
 </li>
 {%- endfor %}
 </ul>
+{% endif %}
+
 {% else %}
 <p>There are no pages with this issue.</p>
 {% endif %}

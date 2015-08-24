@@ -1,5 +1,6 @@
 """Views for MDN migration app."""
 from collections import Counter
+from json import loads
 
 from django import forms
 from django.contrib.auth.decorators import user_passes_test
@@ -318,6 +319,21 @@ class IssuesSummary(TemplateView):
 
 class IssuesDetail(TemplateView):
     template_name = "mdn/issues_detail.jinja2"
+    headers_by_issue = {
+        'exception': (),
+        'failed_download': (),
+        'footnote_missing': (),
+        'footnote_multiple': (),
+        'footnote_unused': (),
+        'kumascript_wrong_args': ('kumascript', 'arg_spec', 'scope'),
+        'missing_attribute': ('node_type', 'ident'),
+        'skipped_h3': (),
+        'tag_dropped': ('tag', 'scope'),
+        'unexpected_attribute': ('node_type', 'ident', 'value', 'expected'),
+        'unexpected_kumascript': ('kumascript', 'scope'),
+        'unknown_kumascript': ('kumascript', 'scope'),
+        'unknown_version': ('browser_name', 'version'),
+    }
 
     def get_context_data(self, **kwargs):
         ctx = super(IssuesDetail, self).get_context_data(**kwargs)
@@ -327,13 +343,34 @@ class IssuesDetail(TemplateView):
             ctx['sample_issue'] = issues.first()
             ctx['count'] = issues.count()
             pages = Counter()
-            for url, pid in issues.values_list('page__url', 'page_id'):
-                key = (url.replace(DEV_PREFIX, '', 1), pid)
-                pages[key] += 1
+            raw_details = []
+            raw_headers = set()
+            for url, pid, raw_params in issues.values_list(
+                    'page__url', 'page_id', 'params'):
+                mdn_slug = url.replace(DEV_PREFIX, '', 1)
+                pages[(mdn_slug, pid)] += 1
+                params = loads(raw_params)
+                raw_details.append((mdn_slug, pid, params))
+                raw_headers.update(set(params.keys()))
+            headers = list(
+                self.headers_by_issue.get(slug, sorted(raw_headers)))
+            if headers:
+                details = []
+                for mdn_slug, pid, params in raw_details:
+                    details.append(
+                        [mdn_slug, pid] +
+                        [params.get(header, '') for header in headers])
+                ctx['headers'] = ['Page'] + headers
+                ctx['details'] = details
+            else:
+                ctx['headers'] = []
+                ctx['details'] = []
             ctx['pages'] = pages
         else:
             ctx['sample_issue'] = None
             ctx['count'] = 0
+            ctx['headers'] = []
+            ctx['details'] = []
             ctx['pages'] = {}
         ctx['slug'] = slug
         return ctx
