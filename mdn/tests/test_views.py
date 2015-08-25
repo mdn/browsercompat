@@ -17,9 +17,10 @@ class TestFeaturePageListView(TestCase):
         self.url = reverse('feature_page_list')
 
     def add_page(self):
+        feature = self.create(Feature, slug='web-css-display')
         return FeaturePage.objects.create(
             url="https://developer.mozilla.org/en-US/docs/Web/CSS/display",
-            feature_id=1)
+            feature=feature)
 
     def test_empty_list(self):
         response = self.client.get(self.url)
@@ -42,6 +43,38 @@ class TestFeaturePageListView(TestCase):
             url="https://developer.mozilla.org/en-US/docs/Other",
             feature_id=2)
         url = self.url + "?topic=docs/Web"
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        pages = response.context_data['page_obj']
+        self.assertEqual(1, len(pages.object_list))
+        obj = pages.object_list[0]
+        self.assertEqual(obj.id, feature_page.id)
+
+    def test_status_filter(self):
+        feature_page = self.add_page()
+        feature_page.status = FeaturePage.STATUS_PARSED_CRITICAL
+        feature_page.save()
+        FeaturePage.objects.create(
+            url="https://developer.mozilla.org/en-US/docs/Other",
+            status=FeaturePage.STATUS_PARSED,
+            feature_id=2)
+        url = self.url + "?status=%s" % FeaturePage.STATUS_PARSED_CRITICAL
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        pages = response.context_data['page_obj']
+        self.assertEqual(1, len(pages.object_list))
+        obj = pages.object_list[0]
+        self.assertEqual(obj.id, feature_page.id)
+
+    def test_status_other_filter(self):
+        feature_page = self.add_page()
+        feature_page.status = FeaturePage.STATUS_META
+        feature_page.save()
+        FeaturePage.objects.create(
+            url="https://developer.mozilla.org/en-US/docs/Other",
+            status=FeaturePage.STATUS_PARSED,
+            feature_id=2)
+        url = self.url + "?status=other"
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
         pages = response.context_data['page_obj']

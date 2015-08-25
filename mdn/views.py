@@ -43,12 +43,37 @@ class FeaturePageListView(ListView):
         'docs/Web/XPath',
         'docs/Web/XSLT',
     )
+    status_names = dict(FeaturePage.STATUS_CHOICES)
+    statuses = (
+        (str(FeaturePage.STATUS_PARSED_CRITICAL),
+            status_names[FeaturePage.STATUS_PARSED_CRITICAL], 'danger'),
+        (str(FeaturePage.STATUS_PARSED_ERROR),
+            status_names[FeaturePage.STATUS_PARSED_ERROR], 'danger'),
+        (str(FeaturePage.STATUS_PARSED_WARNING),
+            status_names[FeaturePage.STATUS_PARSED_WARNING], 'warning'),
+        (str(FeaturePage.STATUS_PARSED), 'No Errors', 'success'),
+        (str(FeaturePage.STATUS_NO_DATA),
+            status_names[FeaturePage.STATUS_NO_DATA], 'default'),
+        ('other', 'Other', 'info'),
+    )
+    standard_statuses = (
+        FeaturePage.STATUS_PARSED_CRITICAL,
+        FeaturePage.STATUS_PARSED_ERROR,
+        FeaturePage.STATUS_PARSED_WARNING,
+        FeaturePage.STATUS_PARSED,
+        FeaturePage.STATUS_NO_DATA)
 
     def get_queryset(self):
         qs = FeaturePage.objects.order_by('url')
         topic = self.request.GET.get('topic')
         if topic:
             qs = qs.filter(url__startswith=DEV_PREFIX + topic)
+        status = self.request.GET.get('status')
+        if status:
+            if status == 'other':
+                qs = qs.exclude(status__in=self.standard_statuses)
+            else:
+                qs = qs.filter(status=status)
         return qs
 
     def get_context_data(self, **kwargs):
@@ -58,6 +83,10 @@ class FeaturePageListView(ListView):
         # Topic filter buttons
         ctx['topic'] = self.request.GET.get('topic')
         ctx['topics'] = self.topics
+
+        # Status filter buttons
+        ctx['status'] = self.request.GET.get('status')
+        ctx['statuses'] = self.statuses
 
         return ctx
 
