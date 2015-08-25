@@ -69,7 +69,7 @@
 {% endif %}
 </div>
 
-{% if object.status in (object.STATUS_PARSED, object.STATUS_NO_DATA) %}
+{% if object.is_parsed %}
 <h1>Sample Presentation of {{ object.slug() }}</h1>
 <h2>Specifications</h2>
 <div id="wpc_specifications">

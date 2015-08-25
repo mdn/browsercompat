@@ -51,6 +51,9 @@ class FeaturePage(models.Model):
     STATUS_PARSED = 4
     STATUS_ERROR = 5
     STATUS_NO_DATA = 6
+    STATUS_PARSED_WARNING = 7
+    STATUS_PARSED_ERROR = 8
+    STATUS_PARSED_CRITICAL = 9
     STATUS_CHOICES = (
         (STATUS_STARTING, "Starting Import"),
         (STATUS_META, "Fetching Metadata"),
@@ -59,6 +62,9 @@ class FeaturePage(models.Model):
         (STATUS_PARSED, "Parsing Complete"),
         (STATUS_ERROR, "Scraping Failed"),
         (STATUS_NO_DATA, "No Compat Data"),
+        (STATUS_PARSED_WARNING, "Has Warnings"),
+        (STATUS_PARSED_ERROR, "Has Errors"),
+        (STATUS_PARSED_CRITICAL, "Has Critical Errors"),
     )
     status = models.IntegerField(
         help_text="Status of MDN Parsing process",
@@ -274,6 +280,15 @@ class FeaturePage(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('mdn.views.feature_page_detail', [str(self.id)])
+
+    @property
+    def is_parsed(self):
+        return self.status in (
+            self.STATUS_PARSED,
+            self.STATUS_PARSED_WARNING,
+            self.STATUS_PARSED_ERROR,
+            self.STATUS_PARSED_CRITICAL,
+            self.STATUS_NO_DATA)
 
 
 @python_2_unicode_compatible

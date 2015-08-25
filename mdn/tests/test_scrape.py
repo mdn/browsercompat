@@ -739,7 +739,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
             [], fp.data['meta']['scrape']['raw']['issues'])
         self.assertFalse(fp.has_issues)
 
-    def test_parse_issue(self):
+    def test_parse_warning(self):
         bad_page = '''\
 <p>The page has a bad specification section.</p>
 <h2 id="Specifications">Specifications</h2>
@@ -748,9 +748,81 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         self.set_content(bad_page)
         scrape_feature_page(self.page)
         fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED, fp.status)
+        self.assertEqual(fp.STATUS_PARSED_WARNING, fp.status)
         expected_issues = [['skipped_content', 93, 108, {}]]
         self.assertEqual(
             expected_issues,
             fp.data['meta']['scrape']['raw']['issues'])
         self.assertTrue(fp.has_issues)
+
+    def test_parse_error(self):
+        self.get_instance('Specification', 'css3_backgrounds')
+        bad_page = '''\
+<p>The page has an error in the specification section.</p>
+<h2 id="Specifications">Specifications</h2>
+<table class="standard-table">
+ <thead>
+  <tr>
+   <th scope="col">Specification</th>
+   <th scope="col">Status</th>
+   <th scope="col">Comment</th>
+  </tr>
+ </thead>
+ <tbody>
+   <tr>
+     <td>{{SpecName('CSS3 Backgrounds', '#the-background-size',\
+ 'background-size')}}</td>
+     <td>{{SpecName('CSS3 Backgrounds')}}</td>
+     <td></td>
+   </tr>"
+ </tbody>
+</table>
+'''
+        self.set_content(bad_page)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED_ERROR, fp.status)
+        self.assertTrue(fp.has_issues)
+
+    def test_parse_critical(self):
+        bad_page = '''\
+<p>The page has a div element wrapping the content.</p>
+<div>
+  <h2 id="Specifications">Specifications</h2>
+  <p>No specs</p>
+</div>
+'''
+        self.set_content(bad_page)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED_CRITICAL, fp.status)
+        self.assertTrue(fp.has_issues)
+
+    def test_parse_ok(self):
+        self.get_instance('Specification', 'css3_backgrounds')
+        good_page = '''\
+<p>This page is OK.</p>
+<h2 id="Specifications">Specifications</h2>
+<table class="standard-table">
+ <thead>
+  <tr>
+   <th scope="col">Specification</th>
+   <th scope="col">Status</th>
+   <th scope="col">Comment</th>
+  </tr>
+ </thead>
+ <tbody>
+   <tr>
+     <td>{{SpecName('CSS3 Backgrounds', '#the-background-size',\
+ 'background-size')}}</td>
+     <td>{{Spec2('CSS3 Backgrounds')}}</td>
+     <td></td>
+   </tr>"
+ </tbody>
+</table>
+'''
+        self.set_content(good_page)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED, fp.status)
+        self.assertFalse(fp.has_issues)

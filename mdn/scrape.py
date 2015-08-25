@@ -42,7 +42,14 @@ def scrape_feature_page(feature_page):
     has_data = (scraped_data['specs'] or scraped_data['compat'] or
                 scraped_data['issues'])
     if has_data:
-        feature_page.status = feature_page.STATUS_PARSED
+        if feature_page.critical:
+            feature_page.status = feature_page.STATUS_PARSED_CRITICAL
+        elif feature_page.errors:
+            feature_page.status = feature_page.STATUS_PARSED_ERROR
+        elif feature_page.warnings:
+            feature_page.status = feature_page.STATUS_PARSED_WARNING
+        else:
+            feature_page.status = feature_page.STATUS_PARSED
     else:
         feature_page.status = feature_page.STATUS_NO_DATA
     merged_data['meta']['scrape']['phase'] = feature_page.get_status_display()

@@ -68,7 +68,7 @@
       <td><a href="{{ url('feature_page_detail', pk=page.id) }}">{{ page.get_status_display() }}</a></td>
       <td>
         <a href="{{ url('feature_page_detail', pk=page.id) }}">
-        {%- if page.status == page.STATUS_PARSED -%}
+        {%- if page.is_parsed -%}
           {%- if page.has_issues %}
             {{ page.warnings }} / {{ page.errors }} / {{ page.critical }}
           {% else %}
