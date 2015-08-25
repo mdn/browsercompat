@@ -30,6 +30,19 @@ class FeaturePageListView(ListView):
     model = FeaturePage
     template_name = "mdn/feature_page_list.jinja2"
     paginate_by = 50
+    topics = (
+        'docs/Web/API',
+        'docs/Web/Accessibility',
+        'docs/Web/CSS',
+        'docs/Web/Events',
+        'docs/Web/Guide',
+        'docs/Web/HTML',
+        'docs/Web/JavaScript',
+        'docs/Web/MathML',
+        'docs/Web/SVG',
+        'docs/Web/XPath',
+        'docs/Web/XSLT',
+    )
 
     def get_queryset(self):
         qs = FeaturePage.objects.order_by('url')
@@ -40,26 +53,12 @@ class FeaturePageListView(ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageListView, self).get_context_data(**kwargs)
-        topic = self.request.GET.get('topic')
-        base_url = reverse('feature_page_list')
-        if topic:
-            base_url += '?topic=' + topic
-        ctx['base_url'] = base_url
         ctx['request'] = self.request
-        ctx['topic'] = topic
-        ctx['topics'] = sorted((
-            'docs/Web/API',
-            'docs/Web/Accessibility',
-            'docs/Web/CSS',
-            'docs/Web/Events',
-            'docs/Web/Guide',
-            'docs/Web/HTML',
-            'docs/Web/JavaScript',
-            'docs/Web/MathML',
-            'docs/Web/SVG',
-            'docs/Web/XPath',
-            'docs/Web/XSLT',
-        ))
+
+        # Topic filter buttons
+        ctx['topic'] = self.request.GET.get('topic')
+        ctx['topics'] = self.topics
+
         return ctx
 
 

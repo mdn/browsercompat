@@ -25,18 +25,20 @@
 {% for topic_name in topics %}
 {% if topic == topic_name %}
 <a class="btn btn-primary"
-   href="{{ url('feature_page_list') }}">
+   href="{{ drop_filter_from_current_url('topic') }}">
   {{ topic_name }} (clear)
 </a>
 {% else %}
 <a class="btn btn-default"
-   href="{{ url('feature_page_list') + '?topic=' + topic_name }}">
+   href="{{ add_filter_to_current_url('topic', topic_name) }}">
   {{ topic_name }}
 </a>
 {% endif %}
 {% endfor %}
 {% if topic and topic not in topics %}
-<a class="btn btn-primary">{{ topic }} (clear)</a>
+<a class="btn btn-primary"
+   href="{{ drop_filter_from_current_url('topic') }}">
+  {{ topic }} (clear)</a>
 {% endif %}
 </div>
 
@@ -46,7 +48,7 @@
     ({{ page_obj.paginator.count }}
     import{% if page_obj.paginator.count > 1 %}s{% endif %})
 </h3>
-{{ pagination_control(page_obj, base_url) }}
+{{ pagination_control(page_obj) }}
 <table class="table table-condensed">
   <thead>
     <tr>
@@ -87,7 +89,7 @@
     {% endfor %}
   </tbody>
 </table>
-{{ pagination_control(page_obj, base_url) }}
+{{ pagination_control(page_obj) }}
 {% else %}
 <p><i>No pages imported yet.</i></p>
 {% endif %}

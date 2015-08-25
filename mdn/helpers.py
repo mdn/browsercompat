@@ -2,12 +2,43 @@
 
 This file is loaded by jingo and must be named helpers.py
 """
-
+from django.utils.six.moves.urllib_parse import urlencode
 from jinja2 import contextfunction, Markup
 from jingo import register
 
-from webplatformcompat.helpers import add_query_param
 from .views import can_create, can_refresh
+
+
+@register.function
+@contextfunction
+def add_filter_to_current_url(context, name, value):
+    """Add a filter to the current URL"""
+    query_parts = []
+    added = False
+    for qs_name, qs_value in context['request'].GET.items():
+        if qs_name == name:
+            added = True
+            query_parts.append((name, value))
+        else:
+            query_parts.append((qs_name, qs_value))
+    if not added:
+        query_parts.append((name, value))
+    return context['request'].path + "?" + urlencode(query_parts)
+
+
+@register.function
+@contextfunction
+def drop_filter_from_current_url(context, name):
+    """Drop a filter from the current URL"""
+    query_parts = []
+    for qs_name, qs_value in context['request'].GET.items():
+        if qs_name != name:
+            query_parts.append((qs_name, qs_value))
+    path = context['request'].path
+    if query_parts:
+        return path + "?" + urlencode(query_parts)
+    else:
+        return path
 
 
 def page_list(page_obj):
@@ -38,7 +69,7 @@ def page_list(page_obj):
 
 @register.function
 @contextfunction
-def pagination_control(context, page_obj, url):
+def pagination_control(context, page_obj):
     """Add a bootstrap-style pagination control.
 
     The basic pagination control is:
@@ -46,6 +77,7 @@ def pagination_control(context, page_obj, url):
     1, 2 - First two pages
     ... - Break
     n-1, n, n+1 - Current page and context
+    ... - Break
     total-1, total - End pages
     >> - Next page
 
@@ -57,9 +89,9 @@ def pagination_control(context, page_obj, url):
     if page_obj.has_previous():
         prev_page = page_obj.previous_page_number()
         if prev_page == 1:
-            prev_url = url
+            prev_url = drop_filter_from_current_url(context, 'page')
         else:
-            prev_url = add_query_param(url, page=prev_page)
+            prev_url = add_filter_to_current_url(context, 'page', prev_page)
         previous_nav = (
             '<li><a href="{prev_url}" aria-label="Previous">'
             '<span aria-hidden="true">&laquo;</span></a></li>'
@@ -83,17 +115,18 @@ def pagination_control(context, page_obj, url):
         else:
             active = ''
         if page == 1:
-            page_url = url
+            page_url = drop_filter_from_current_url(context, 'page')
         else:
-            page_url = add_query_param(url, page=page)
+            page_url = add_filter_to_current_url(context, 'page', page)
         page_navs.append(
             '<li{active}><a href="{page_url}">'
             '{page}</a></li>'.format(
-                active=active, url=url, page_url=page_url, page=page))
+                active=active, page_url=page_url, page=page))
     page_nav = "\n    ".join(page_navs)
 
     if page_obj.has_next():
-        next_url = add_query_param(url, page=page_obj.next_page_number())
+        next_page = page_obj.next_page_number()
+        next_url = add_filter_to_current_url(context, 'page', next_page)
         next_nav = """<li>
       <a href="{next_url}" aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
