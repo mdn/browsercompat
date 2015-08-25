@@ -5,6 +5,7 @@ from django import forms
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils.six.moves.urllib.parse import urlparse, urlunparse
 from django.views.generic import DetailView, ListView, TemplateView
@@ -62,6 +63,13 @@ class FeaturePageListView(ListView):
         FeaturePage.STATUS_PARSED_WARNING,
         FeaturePage.STATUS_PARSED,
         FeaturePage.STATUS_NO_DATA)
+    progress_bar_order = (
+        (FeaturePage.STATUS_PARSED_CRITICAL, 'Critical errors',
+            ('danger', 'striped')),
+        (FeaturePage.STATUS_PARSED_ERROR, 'Errors', ('danger',)),
+        (FeaturePage.STATUS_PARSED_WARNING, 'Warnings', ('warning',)),
+        (FeaturePage.STATUS_PARSED, 'No Errors', ('success',)),
+    )
 
     def get_queryset(self):
         qs = FeaturePage.objects.order_by('url')
@@ -87,6 +95,35 @@ class FeaturePageListView(ListView):
         # Status filter buttons
         ctx['status'] = self.request.GET.get('status')
         ctx['statuses'] = self.statuses
+
+        # Status progress bar
+        raw_status_counts = self.object_list.order_by(
+            'status').values('status').annotate(total=Count('status'))
+        status_counts = {}
+        total = 0
+        for item in raw_status_counts:
+            status_counts[item['status']] = item['total']
+            total += item['total']
+        have_data_count = sum(
+            status_counts.get(item[0], 0) for item in self.progress_bar_order)
+        data_counts_list = []
+        for status, name, classes in self.progress_bar_order:
+            count = status_counts.get(status, 0)
+            if count:
+                percent = "%0.1f" % (
+                    100.0 * (float(count) / float(have_data_count)))
+            else:
+                percent = 0
+            data_counts_list.append((name, classes, count, percent))
+        ctx['data_counts'] = data_counts_list
+        no_data_count = status_counts.get(FeaturePage.STATUS_NO_DATA, 0)
+        other_count = total - have_data_count - no_data_count
+        ctx['status_counts'] = {
+            'total': total,
+            'data': have_data_count,
+            'no_data': no_data_count,
+            'other': other_count
+        }
 
         return ctx
 

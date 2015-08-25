@@ -45,6 +45,25 @@
 </p>
 
 <p><strong>By Status</strong>:
+{% if not status %}
+<p>
+  {{ status_counts.no_data }} pages have no compatibility data.
+  {{ status_counts.data }} pages with data by error status:
+<div class="progress">
+{% for name, classes, count, percent in data_counts %}
+  {% if count %}
+    <div class="progress-bar {% for class in classes %}progress-bar-{{ class }} {% endfor %}"
+        aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ percent }}"
+        style="width: {{ percent }}%;"
+        data-toggle="tooltip" data-placement="top"
+        title="{{ count }} ({{ percent }}%) with {{ name }}">
+        {{ percent }}%
+    </div>
+  {% endif %}
+{% endfor %}
+</div>
+</p>
+{% endif %}
   <div>
   {% for status_value, name, class in statuses %}
     {% if status == status_value %}
@@ -124,10 +143,10 @@
 
 {% endblock content %}
 
-{% block block_js_extra %}
+{% block body_js_extra %}
 <script>
 $(function () {
-  $('#issue-header').tooltip()
+  $('[data-toggle="tooltip"]').tooltip()
 })
 </script>
 {% endblock %}

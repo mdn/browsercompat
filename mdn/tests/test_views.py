@@ -36,6 +36,32 @@ class TestFeaturePageListView(TestCase):
         self.assertEqual(1, len(pages.object_list))
         obj = pages.object_list[0]
         self.assertEqual(obj.id, feature_page.id)
+        data_counts = [
+            ('Critical errors', ('danger', 'striped'), 0, 0),
+            ('Errors', ('danger',), 0, 0),
+            ('Warnings', ('warning',), 0, 0),
+            ('No Errors', ('success',), 0, 0),
+        ]
+        self.assertEqual(data_counts, response.context_data['data_counts'])
+        status_counts = {'total': 1, 'data': 0, 'no_data': 0, 'other': 1}
+        self.assertEqual(status_counts, response.context_data['status_counts'])
+
+    def test_with_issue(self):
+        feature_page = self.add_page()
+        feature_page.issues.create(slug='halt_import', start=1, end=1)
+        feature_page.status = FeaturePage.STATUS_PARSED_CRITICAL
+        feature_page.save()
+        response = self.client.get(self.url)
+        self.assertEqual(200, response.status_code)
+        data_counts = [
+            ('Critical errors', ('danger', 'striped'), 1, '100.0'),
+            ('Errors', ('danger',), 0, 0),
+            ('Warnings', ('warning',), 0, 0),
+            ('No Errors', ('success',), 0, 0),
+        ]
+        self.assertEqual(data_counts, response.context_data['data_counts'])
+        status_counts = {'total': 1, 'data': 1, 'no_data': 0, 'other': 0}
+        self.assertEqual(status_counts, response.context_data['status_counts'])
 
     def test_topic_filter(self):
         feature_page = self.add_page()
