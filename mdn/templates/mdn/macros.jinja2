@@ -1,12 +1,12 @@
 {% macro issue_div(issue) -%}
 <div>
   <p>
-    <strong>{{issue.get_severity_display()}}: {{issue.brief_description}}</strong>
+    <strong>{{ issue.get_severity_display() }}: {{ issue.brief_description }}</strong>
     <br>
-    {{issue.long_description}}
+    {{ issue.long_description }}
     <br>
-    <a href="https://wiki.mozilla.org/MDN/Development/CompatibilityTables/Importer#{{issue.slug}}">
-      More information about issue "{{issue.slug}}"
+    <a href="https://wiki.mozilla.org/MDN/Development/CompatibilityTables/Importer#{{ issue.slug }}">
+      More information about issue "{{ issue.slug }}"
     </a>
   </p>
 {% if issue.params.get('rule') %}
