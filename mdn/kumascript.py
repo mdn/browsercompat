@@ -376,6 +376,11 @@ class CompatNo(KnownKumaScript):
     expected_scopes = set(('compatibility support',))
 
 
+class CompatOpera(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatOpera
+    arg_names = ['OperaVer']
+
+
 class CompatUnknown(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatUnknown
     expected_scopes = set(('compatibility support',))
@@ -636,6 +641,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'CompatIE': CompatIE,
         'CompatNightly': CompatNightly,
         'CompatNo': CompatNo,
+        'CompatOpera': CompatOpera,
         'CompatUnknown': CompatUnknown,
         'CompatVersionUnknown': CompatVersionUnknown,
         'CompatibilityTable': CompatibilityTable,
