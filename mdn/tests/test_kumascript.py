@@ -6,8 +6,8 @@ from django.utils.six import text_type
 
 from mdn.html import HTMLText
 from mdn.kumascript import (
-    CSSBox, CSSxRef, CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS,
-    CompatGeckoMobile, CompatNightly, CompatNo, CompatUnknown,
+    CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
+    CompatGeckoFxOS, CompatGeckoMobile, CompatNightly, CompatNo, CompatUnknown,
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
     ExperimentalInline, KumaHTMLElement, KnownKumaScript, KumaScript,
     KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
@@ -618,3 +618,16 @@ class TestVisitor(TestHTMLVisitor):
         self.assertEqual('{{xref_csslength}}', str(ks[0]))
         self.assertEqual('{{cssxref("display")}}', str(ks[1]))
         self.assertEqual('<code>table-cell</code>', str(code))
+
+    def assert_compat_version(self, html, cls, version):
+        """Check that Compat* KumaScript is parsed correctly"""
+        parsed = kumascript_grammar['html'].parse(html)
+        out = self.visitor.visit(parsed)
+        self.assertEqual(len(out), 1)
+        ks = out[0]
+        self.assertIsInstance(ks, cls)
+        self.assertEqual(version, ks.version)
+
+    def test_compatchrome(self):
+        self.assert_compat_version(
+            '{{CompatChrome("10.0")}}', CompatChrome, '10.0')

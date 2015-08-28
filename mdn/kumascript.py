@@ -229,6 +229,11 @@ class CompatAndroid(CompatBasicKumaScript):
     arg_names = ['AndroidVersion']
 
 
+class CompatChrome(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatChrome
+    arg_names = ['ChromeVer']
+
+
 class CompatGeckoDesktop(CompatKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatGeckoDesktop
     arg_names = ['GeckoVersion']
@@ -619,6 +624,7 @@ class BaseKumaVisitor(HTMLVisitor):
 
     known_kumascript = {
         'CompatAndroid': CompatAndroid,
+        'CompatChrome': CompatChrome,
         'CompatGeckoDesktop': CompatGeckoDesktop,
         'CompatGeckoFxOS': CompatGeckoFxOS,
         'CompatGeckoMobile': CompatGeckoMobile,
