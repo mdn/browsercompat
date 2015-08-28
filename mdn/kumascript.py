@@ -361,6 +361,11 @@ class CompatGeckoMobile(CompatKumaScript):
             return "{}.0".format(nversion)
 
 
+class CompatIE(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatIE
+    arg_names = ['IEver']
+
+
 class CompatNightly(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNightly
     expected_scopes = set(('compatibility support',))
@@ -628,6 +633,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'CompatGeckoDesktop': CompatGeckoDesktop,
         'CompatGeckoFxOS': CompatGeckoFxOS,
         'CompatGeckoMobile': CompatGeckoMobile,
+        'CompatIE': CompatIE,
         'CompatNightly': CompatNightly,
         'CompatNo': CompatNo,
         'CompatUnknown': CompatUnknown,
