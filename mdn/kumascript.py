@@ -34,6 +34,7 @@ from parsimonious.nodes import Node
 
 from .data import Data
 from .html import HTMLInterval, HTMLText, HTMLVisitor, html_grammar_source
+from .utils import format_version
 
 kumascript_grammar_source = html_grammar_source + r"""
 #
@@ -215,13 +216,17 @@ class CompatKumaScript(KnownKumaScript):
         return self.version
 
 
-class CompatAndroid(CompatKumaScript):
-    # https://developer.mozilla.org/en-US/docs/Template:CompatAndroid
-    arg_names = ['AndroidVersion']
+class CompatBasicKumaScript(CompatKumaScript):
+    """Base class for KumaScript specifying the actual browser version"""
 
     def __init__(self, **kwargs):
-        super(CompatAndroid, self).__init__(**kwargs)
-        self.version = self.arg(0)
+        super(CompatBasicKumaScript, self).__init__(**kwargs)
+        self.version = format_version(self.arg(0))
+
+
+class CompatAndroid(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatAndroid
+    arg_names = ['AndroidVersion']
 
 
 class CompatGeckoDesktop(CompatKumaScript):

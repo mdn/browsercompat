@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 from datetime import date
 
 from mdn.utils import (
-    date_to_iso, end_of_line, is_new_id, join_content, slugify)
+    date_to_iso, end_of_line, format_version, is_new_id, join_content,
+    slugify)
 from .base import TestCase
 
 
@@ -24,6 +25,17 @@ class TestEndOfLine(TestCase):
     def test_multiple_line(self):
         line = 'This is a multi line\nSee, two lines'
         self.assertEqual(20, end_of_line(line, 2))
+
+
+class TestFormatVersion(TestCase):
+    def test_dotted(self):
+        self.assertEqual('1.0', format_version('1.0'))
+
+    def test_double_dotted(self):
+        self.assertEqual('1.0.1', format_version('1.0.1'))
+
+    def test_plain(self):
+        self.assertEqual('1.0', format_version('1'))
 
 
 class TestIsNewID(TestCase):

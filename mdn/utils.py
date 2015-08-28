@@ -22,6 +22,16 @@ def end_of_line(text, pos):
         return len(text)
 
 
+def format_version(version):
+    """Format a version to 1.0, 1.0.1, etc."""
+    if '.' in version:
+        return version
+    else:
+        assert version
+        assert int(version)
+        return version + '.0'
+
+
 def is_new_id(_id):
     """Detect if an ID signifies a new resource.
 
