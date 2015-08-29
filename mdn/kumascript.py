@@ -381,6 +381,11 @@ class CompatOpera(CompatBasicKumaScript):
     arg_names = ['OperaVer']
 
 
+class CompatOperaMobile(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatOperaMobile
+    arg_names = ['OperaVer']
+
+
 class CompatSafari(CompatBasicKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatSafari
     arg_names = ['SafariVer']
@@ -647,6 +652,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'CompatNightly': CompatNightly,
         'CompatNo': CompatNo,
         'CompatOpera': CompatOpera,
+        'CompatOperaMobile': CompatOperaMobile,
         'CompatSafari': CompatSafari,
         'CompatUnknown': CompatUnknown,
         'CompatVersionUnknown': CompatVersionUnknown,
