@@ -368,6 +368,8 @@ class CompatIE(CompatBasicKumaScript):
 
 class CompatNightly(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNightly
+    max_args = 1
+    arg_names = ['browser']
     expected_scopes = set(('compatibility support',))
 
 

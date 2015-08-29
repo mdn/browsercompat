@@ -167,6 +167,14 @@ class TestCompatNightly(TestCase):
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
 
+    def test_with_arg(self):
+        raw = '{{CompatNightly("firefox")}}'
+        ks = CompatNightly(
+            raw=raw, args=['firefox'], scope='compatibility support')
+        self.assertEqual(ks.to_html(), '')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
 
 class TestCompatNo(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNo
