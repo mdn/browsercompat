@@ -381,6 +381,11 @@ class CompatOpera(CompatBasicKumaScript):
     arg_names = ['OperaVer']
 
 
+class CompatSafari(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatSafari
+    arg_names = ['SafariVer']
+
+
 class CompatUnknown(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatUnknown
     expected_scopes = set(('compatibility support',))
@@ -642,6 +647,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'CompatNightly': CompatNightly,
         'CompatNo': CompatNo,
         'CompatOpera': CompatOpera,
+        'CompatSafari': CompatSafari,
         'CompatUnknown': CompatUnknown,
         'CompatVersionUnknown': CompatVersionUnknown,
         'CompatibilityTable': CompatibilityTable,

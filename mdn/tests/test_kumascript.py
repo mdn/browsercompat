@@ -8,11 +8,11 @@ from mdn.html import HTMLText
 from mdn.kumascript import (
     CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
-    CompatOpera, CompatUnknown, CompatVersionUnknown, CompatibilityTable,
-    DOMxRef, DeprecatedInline, ExperimentalInline, KumaHTMLElement,
-    KnownKumaScript, KumaScript, KumaVisitor, NonStandardInline,
-    NotStandardInline, PropertyPrefix, Spec2, SpecName, UnknownKumaScript,
-    WhyNoSpecBlock, XrefCSSLength, kumascript_grammar)
+    CompatOpera, CompatSafari, CompatUnknown, CompatVersionUnknown,
+    CompatibilityTable, DOMxRef, DeprecatedInline, ExperimentalInline,
+    KumaHTMLElement, KnownKumaScript, KumaScript, KumaVisitor,
+    NonStandardInline, NotStandardInline, PropertyPrefix, Spec2, SpecName,
+    UnknownKumaScript, WhyNoSpecBlock, XrefCSSLength, kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
@@ -639,3 +639,7 @@ class TestVisitor(TestHTMLVisitor):
     def test_compatopera(self):
         self.assert_compat_version(
             '{{CompatOpera("9")}}', CompatOpera, '9.0')
+
+    def test_compatsafari(self):
+        self.assert_compat_version(
+            '{{CompatSafari("2")}}', CompatSafari, '2.0')
