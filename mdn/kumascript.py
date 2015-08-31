@@ -554,9 +554,13 @@ class CSSxRef(XRefBase):
         self.api_name = self.arg(0)
         self.display_name = self.arg(1)
         self.anchor = self.arg(2)
+        self.construct_crossref(
+            self.api_name, self.display_name, self.anchor)
+
+    def construct_crossref(self, api_name, display_name, anchor=None):
         self.url = '{}/Web/CSS/{}{}'.format(
-            MDN_DOCS, self.api_name, self.anchor or '')
-        self.display = self.display_name or self.api_name
+            MDN_DOCS, api_name, anchor or '')
+        self.display = display_name or api_name
 
 
 class DeprecatedInline(KnownKumaScript):
@@ -741,13 +745,20 @@ class WhyNoSpecBlock(HTMLInterval):
         return ""
 
 
-class XrefCSSLength(KnownKumaScript):
+class XrefCSSBase(CSSxRef):
+    """Base class for xref_cssXXX macros"""
+    min_args = max_args = 0
+    arg_names = []
+
+    def __init__(self, **kwargs):
+        super(XrefCSSBase, self).__init__(**kwargs)
+        self.construct_crossref(*self.xref_args)
+
+
+class XrefCSSLength(XrefCSSBase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
     canonical_name = 'xref_csslength'
-    expected_scopes = set(('specification description', 'footnote'))
-
-    def to_html(self):
-        return '<code>&lt;length&gt;</code>'
+    xref_args = ('length', '&lt;length&gt;')
 
 
 class BaseKumaVisitor(HTMLVisitor):

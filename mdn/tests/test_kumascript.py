@@ -627,12 +627,20 @@ class TestWhyNoSpecBlock(TestCase):
 
 class TestXrefCSSLength(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
-    def test_standard(self):
+    def test_feature_name(self):
         raw = '{{xref_csslength()}}'
-        ks = XrefCSSLength(raw=raw, scope='footnote')
+        ks = XrefCSSLength(raw=raw, scope='compatibility feature')
         self.assertEqual('<code>&lt;length&gt;</code>', ks.to_html())
         self.assertEqual([], ks.issues)
         self.assertEqual(text_type(ks), '{{xref_csslength}}')
+
+    def test_footnote(self):
+        raw = '{{xref_csslength()}}'
+        ks = XrefCSSLength(raw=raw, scope='footnote')
+        self.assertEqual(
+            '<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+            'length"><code>&lt;length&gt;</code></a>',
+            ks.to_html())
 
 
 class TestGrammar(TestHTMLGrammar):
