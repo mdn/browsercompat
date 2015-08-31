@@ -546,6 +546,66 @@ class ExperimentalInline(KnownKumaScript):
     expected_scopes = set(('compatibility feature',))
 
 
+class GeckoRelease(KnownKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:geckoRelease
+    min_args = max_args = 1
+    arg_names = ['release']
+    canonical_name = 'geckoRelease'
+    expected_scopes = set(('footnote',))
+    early_versions = {
+        '1.8': ('Firefox 1.5', 'Thunderbird 1.5', 'SeaMonkey 1.0'),
+        '1.8.1': ('Firefox 2', 'Thunderbird 2', 'SeaMonkey 1.1'),
+        '1.9': ('Firefox 3',),
+        '1.9.1': ('Firefox 3.5', 'Thunderbird 3.0', 'SeaMonkey 2.0'),
+        '1.9.1.4': ('Firefox 3.5.4',),
+        '1.9.2': ('Firefox 3.6', 'Thunderbird 3.1', 'Fennec 1.0'),
+        '1.9.2.4': ('Firefox 3.6.4',),
+        '1.9.2.5': ('Firefox 3.6.5',),
+        '1.9.2.9': ('Firefox 3.6.9',),
+        '2.0b2': ('Firefox 4.0b2',),
+        '2.0b4': ('Firefox 4.0b4',),
+        '2': ('Firefox 4', 'Thunderbird 3.3', 'SeaMonkey 2.1'),
+        '2.0': ('Firefox 4', 'Thunderbird 3.3', 'SeaMonkey 2.1'),
+        '2.1': ('Firefox 4 Mobile',),
+    }
+    firefoxos_name = 'Firefox OS {}'
+    firefoxos_versions = {
+        '18.0': ('1.0.1', '1.1'),
+        '26.0': ('1.2',),
+        '28.0': ('1.3',),
+        '30.0': ('1.4',),
+        '32.0': ('2.0',),
+    }
+    release_names = (
+        'Firefox {rnum}', 'Thunderbird {rnum}', 'SeaMonkey 2.{snum}')
+
+    def __init__(self, **kwargs):
+        super(GeckoRelease, self).__init__(**kwargs)
+        raw_version = self.arg(0)
+        self.gecko_version = raw_version
+        self.and_higher = False
+        if raw_version.endswith('+'):
+            self.gecko_version = raw_version[:-1]
+            self.and_higher = True
+
+        if self.gecko_version in self.early_versions:
+            self.releases = self.early_versions[self.gecko_version]
+        else:
+            vnum = float(self.gecko_version)
+            assert vnum >= 5.0
+            rnum = "{:.1f}".format(vnum)
+            snum = int(vnum) - 3
+            self.releases = [
+                name.format(rnum=rnum, snum=snum)
+                for name in self.release_names]
+            for fxosnum in self.firefoxos_versions.get(rnum, []):
+                self.releases.append(self.firefoxos_name.format(fxosnum))
+
+    def to_html(self):
+        plus = '+' if self.and_higher else ''
+        return '(' + ' / '.join([rel + plus for rel in self.releases]) + ')'
+
+
 class NonStandardInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:non-standard_inline
     canonical_name = 'non-standard_inline'
@@ -686,6 +746,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'deprecated_inline': DeprecatedInline,
         'domxref': DOMxRef,
         'experimental_inline': ExperimentalInline,
+        'geckoRelease': GeckoRelease,
         'non-standard_inline': NonStandardInline,
         'not_standard_inline': NotStandardInline,
         'property_prefix': PropertyPrefix,
