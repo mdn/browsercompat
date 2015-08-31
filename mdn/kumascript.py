@@ -781,6 +781,8 @@ class KumaVisitor(BaseKumaVisitor):
         """Validate and cleanup <a> open tags."""
         actions = self._default_attribute_actions.copy()
         actions['href'] = 'must'
+        actions['title'] = 'drop'
+        actions['class'] = 'keep'
         converted = self._visit_open(node, children, actions)
 
         # Convert relative links to absolute links
@@ -789,6 +791,18 @@ class KumaVisitor(BaseKumaVisitor):
             href = attrs['href'].value
             if href and href[0] == '/':
                 attrs['href'].value = MDN_DOMAIN + href
+
+        # Drop class attribute, warning if unexpected
+        if 'class' in attrs:
+            class_attr = attrs.pop('class')
+            for value in class_attr.value.split():
+                if value in ('external', 'external-icon'):
+                    pass
+                else:
+                    self.add_issue(
+                        'unexpected_attribute', class_attr, node_type='a',
+                        ident='class', value=value,
+                        expected='the attribute href')
 
         return converted
 

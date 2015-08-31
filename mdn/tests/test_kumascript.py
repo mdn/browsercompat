@@ -695,3 +695,25 @@ class TestVisitor(TestHTMLVisitor):
             '<a href="/en-US/docs/Web/CSS/CSS3">CSS3</a>',
             ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS3">'
              'CSS3</a>'))
+
+    def test_a_external(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
+        self.assert_a(
+            ('<a href="https://dvcs.w3.org/hg/speech-api/raw-file/tip/'
+             'speechapi.html" class="external external-icon">Web Speech API'
+             '</a>'),
+            ('<a href="https://dvcs.w3.org/hg/speech-api/raw-file/tip/'
+             'speechapi.html">Web Speech API</a>'))
+
+    def test_a_bad_class(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Element/getElementsByTagNameNS
+        self.assert_a(
+            ('<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=542185#c5"'
+             ' class="link-https"'
+             ' title="https://bugzilla.mozilla.org/show_bug.cgi?id=542185#c5">'
+             'comment from Henri Sivonen about the change</a>'),
+            ('<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=542185#c5"'
+             '>comment from Henri Sivonen about the change</a>'),
+            [('unexpected_attribute', 65, 83,
+              {'node_type': 'a', 'ident': 'class', 'value': 'link-https',
+               'expected': 'the attribute href'})])
