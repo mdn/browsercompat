@@ -407,7 +407,8 @@ class TestDOMxRef(TestCase):
     def test_standard(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/CharacterData
         raw = '{{domxref("ChildNode")}}'
-        ks = DOMxRef(raw=raw, args=['ChildNode'], scope=self.scope)
+        ks = DOMxRef(
+            raw=raw, args=['ChildNode'], scope='compatibility feature')
         self.assertEqual(ks.to_html(), '<code>ChildNode</code>')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -417,7 +418,28 @@ class TestDOMxRef(TestCase):
         raw = '{{domxref("CustomEvent.CustomEvent", "CustomEvent()")}}'
         args = ['CustomEvent.CustomEvent', 'CustomEvent()']
         ks = DOMxRef(raw=raw, args=args, scope=self.scope)
-        self.assertEqual(ks.to_html(), '<code>CustomEvent()</code>')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
+             'CustomEvent/CustomEvent"><code>CustomEvent()</code></a>'))
+
+    def test_space(self):
+        # No current pages, but in macro definition
+        raw = '{{domxref("Notifications API")}}'
+        ks = DOMxRef(raw=raw, args=['Notifications API'], scope=self.scope)
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
+             'Notifications_API"><code>Notifications API</code></a>'))
+
+    def test_parens_dot_caps(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/mozbrowsershowmodalprompt
+        raw = '{{domxref("window.alert()")}}'
+        ks = DOMxRef(raw=raw, args=['window.alert()'], scope=self.scope)
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
+             'Window/alert"><code>window.alert()</code></a>'))
 
 
 class TestExperimentalInline(TestCase):

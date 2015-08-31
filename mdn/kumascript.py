@@ -565,22 +565,23 @@ class DeprecatedInline(KnownKumaScript):
     expected_scopes = set(('compatibility feature',))
 
 
-class DOMxRef(KnownKumaScript):
+class DOMxRef(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:domxref
     min_args = 1
     max_args = 2
     arg_names = ['DOMPath', 'DOMText']
     canonical_name = 'domxref'
-    expected_scopes = set(
-        ('specification description', 'compatibility feature', 'footnote'))
 
     def __init__(self, **kwargs):
         super(DOMxRef, self).__init__(**kwargs)
         self.dom_path = self.arg(0)
         self.dom_text = self.arg(1)
-
-    def to_html(self):
-        return '<code>{}</code>'.format(self.dom_text or self.dom_path)
+        path = self.dom_path.replace(' ', '_').replace('()', '')
+        if '.' in path and '..' not in path:
+            path = path.replace('.', '/')
+        path = path[0].upper() + path[1:]
+        self.url = '{}/Web/API/{}'.format(MDN_DOCS, path)
+        self.display = self.dom_text or self.dom_path
 
 
 class ExperimentalInline(KnownKumaScript):
