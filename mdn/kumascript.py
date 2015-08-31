@@ -76,6 +76,8 @@ SCOPES = set((
     'footnote',
 ))
 
+MDN_DOMAIN = "https://developer.mozilla.org"
+
 
 @python_2_unicode_compatible
 class KumaScript(HTMLText):
@@ -766,7 +768,7 @@ class KumaVisitor(BaseKumaVisitor):
 
     Include extra policy for scraping pages for the importer:
     - Converts <span>content</span> to "content", with issues
-    - Ensures <a> tags have an href attribute
+    - Validate and cleanup <a> tags
     - Keeps <div id="foo">, for detecting compat divs
     - Keeps <td colspan=# rowspan=#>, for detecting spanning compat cells
     - Keeps <th colspan=#>, for detecting spanning compat headers
@@ -776,10 +778,19 @@ class KumaVisitor(BaseKumaVisitor):
     _default_attribute_actions = {None: 'ban'}
 
     def visit_a_open(self, node, children):
-        """Ensure that <a> open tags have an href element."""
+        """Validate and cleanup <a> open tags."""
         actions = self._default_attribute_actions.copy()
         actions['href'] = 'must'
-        return self._visit_open(node, children, actions)
+        converted = self._visit_open(node, children, actions)
+
+        # Convert relative links to absolute links
+        attrs = converted.attributes.attrs
+        if 'href' in attrs:
+            href = attrs['href'].value
+            if href and href[0] == '/':
+                attrs['href'].value = MDN_DOMAIN + href
+
+        return converted
 
     def visit_div_open(self, node, children):
         """Retain id attribute of <div> tags."""

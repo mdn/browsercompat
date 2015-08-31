@@ -669,3 +669,29 @@ class TestVisitor(TestHTMLVisitor):
     def test_compatsafari(self):
         self.assert_compat_version(
             '{{CompatSafari("2")}}', CompatSafari, '2.0')
+
+    def assert_a(self, html, converted, issues=None):
+        parsed = kumascript_grammar['html'].parse(html)
+        out = self.visitor.visit(parsed)
+        self.assertEqual(len(out), 1)
+        a = out[0]
+        self.assertEqual('a', a.tag)
+        self.assertEqual(converted, a.to_html())
+        self.assertEqual(issues or [], self.visitor.issues)
+
+    def test_a_missing(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/flex
+        issues = [
+            ('unexpected_attribute', 3, 13,
+             {'node_type': 'a', 'ident': 'name', 'value': 'bc1',
+              'expected': 'the attribute href'}),
+            ('missing_attribute', 0, 14, {'node_type': 'a', 'ident': 'href'})]
+        self.assert_a(
+            '<a name="bc1">[1]</a>', '<a>[1]</a>', issues=issues)
+
+    def test_a_MDN_relative(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/image
+        self.assert_a(
+            '<a href="/en-US/docs/Web/CSS/CSS3">CSS3</a>',
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS3">'
+             'CSS3</a>'))
