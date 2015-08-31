@@ -536,6 +536,22 @@ class PropertyPrefix(KnownKumaScript):
         self.prefix = self.arg(0)
 
 
+class WebkitBug(KnownKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:WebkitBug
+    min_args = max_args = 1
+    arg_names = ['number']
+    expected_scopes = set(('footnote',))
+
+    def __init__(self, **kwargs):
+        super(WebkitBug, self).__init__(**kwargs)
+        self.number = self.arg(0)
+
+    def to_html(self):
+        return (
+            '<a href="https://bugs.webkit.org/show_bug.cgi?id={number}">'
+            'WebKit bug {number}</a>').format(number=self.number)
+
+
 class WhyNoSpecBlock(HTMLInterval):
     """Psuedo-element for {{WhyNoSpecStart}}/{{WhyNoSpecEnd}} block.
 
@@ -625,6 +641,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'HTMLElement': KumaHTMLElement,
         'Spec2': Spec2,
         'SpecName': SpecName,
+        'WebkitBug': WebkitBug,
         'cssbox': CSSBox,
         'cssxref': CSSxRef,
         'deprecated_inline': DeprecatedInline,
