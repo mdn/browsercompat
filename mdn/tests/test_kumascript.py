@@ -10,7 +10,7 @@ from mdn.kumascript import (
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
-    ExperimentalInline, GeckoRelease, KumaHTMLElement, KnownKumaScript,
+    ExperimentalInline, GeckoRelease, JSxRef, KumaHTMLElement, KnownKumaScript,
     KumaScript, KumaVisitor, NonStandardInline, NotStandardInline,
     PropertyPrefix, Spec2, SpecName, UnknownKumaScript, WebkitBug,
     WhyNoSpecBlock, XrefCSSLength, kumascript_grammar)
@@ -457,6 +457,87 @@ class TestGeckoRelease(TestCase):
         ks = GeckoRelease(raw=raw, args=["33.0+"], scope='footnote')
         expected = "(Firefox 33.0+ / Thunderbird 33.0+ / SeaMonkey 2.30+)"
         self.assertEqual(ks.to_html(), expected)
+
+
+class TestJSxRef(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:jsxref
+    def test_standard(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global
+        raw = '{{jsxref("RegExp")}}'
+        ks = JSxRef(
+            raw=raw, args=['RegExp'], scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/RegExp"><code>RegExp</code></a>'))
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+    def test_display_name(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/arguments
+        raw = '{{jsxref("Functions/arguments", "arguments")}}'
+        ks = JSxRef(
+            raw=raw, args=["Functions/arguments", "arguments"],
+            scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/Functions/arguments"><code>arguments'
+             '</code></a>'))
+
+    def test_feature_name(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SIMD
+        raw = '{{jsxref("Float32x4", "SIMD.Float32x4")}}'
+        ks = JSxRef(
+            raw=raw, args=["Float32x4", "SIMD.Float32x4"],
+            scope='compatibility feature')
+        self.assertEqual(ks.to_html(), '<code>SIMD.Float32x4</code>')
+
+    def test_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Blob
+        raw = '{{jsxref("Array/slice", "Array.slice()")}}'
+        ks = JSxRef(
+            raw=raw, args=["Array/slice", "Array.slice()"], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/Array/slice"><code>Array.slice()'
+             '</code></a>'))
+
+    def test_prototype(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+        raw = '{{jsxref("Array.prototype.lastIndexOf", "lastIndexOf")}}'
+        ks = JSxRef(
+            raw=raw, args=["Array.prototype.lastIndexOf", "lastIndexOf"],
+            scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/Array/lastIndexOf"><code>lastIndexOf'
+             '</code></a>'))
+
+    def test_dotted_function(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math
+        raw = '{{jsxref("Math.log10()", "log10()")}}'
+        ks = JSxRef(
+            raw=raw, args=["Math.log10()", "log10()"],
+            scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/Math/log10"><code>log10()'
+             '</code></a>'))
+
+    def test_global_object(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
+        raw = '{{jsxref("Global_Objects/null", "null")}}'
+        ks = JSxRef(
+            raw=raw, args=["Global_Objects/null", "null"],
+            scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/null"><code>null</code></a>'))
 
 
 class TestNonStandardInline(TestCase):

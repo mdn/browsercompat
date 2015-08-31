@@ -77,6 +77,7 @@ SCOPES = set((
 ))
 
 MDN_DOMAIN = "https://developer.mozilla.org"
+MDN_DOCS = MDN_DOMAIN + '/en-US/docs'
 
 
 @python_2_unicode_compatible
@@ -629,6 +630,42 @@ class GeckoRelease(KnownKumaScript):
         return '(' + ' / '.join([rel + plus for rel in self.releases]) + ')'
 
 
+class JSxRef(KnownKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:jsxref
+    min_args = 1
+    max_args = 2
+    arg_names = ['API name', 'display name']
+    canonical_name = 'jsxref'
+    expected_scopes = set((
+        'compatibility feature', 'footnote', 'specification description'))
+
+    def __init__(self, **kwargs):
+        """
+        Initialize JSxRef
+
+        {{jsxref}} macro can take 4 arguments, but only handling first two.
+        """
+        super(JSxRef, self).__init__(**kwargs)
+        self.api_name = self.arg(0)
+        self.display_name = self.arg(1)
+        path_name = self.api_name.replace('.prototype.', '/').replace('()', '')
+        if path_name.startswith('Global_Objects/'):
+            path_name = path_name.replace('Global_Objects/', '', 1)
+        if '.' in path_name and '...' not in path_name:
+            path_name = path_name.replace('.', '/')
+        self.url = '{}/Web/JavaScript/Reference/Global_Objects/{}'.format(
+            MDN_DOCS, path_name)
+        self.linked = self.scope in ('footnote', 'specification description')
+
+    def to_html(self):
+        display_name = self.display_name or self.api_name
+        if self.linked:
+            return '<a href="{}"><code>{}</code></a>'.format(
+                self.url, display_name)
+        else:
+            return "<code>{}</code>".format(display_name)
+
+
 class NonStandardInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:non-standard_inline
     canonical_name = 'non-standard_inline'
@@ -777,6 +814,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'domxref': DOMxRef,
         'experimental_inline': ExperimentalInline,
         'geckoRelease': GeckoRelease,
+        'jsxref': JSxRef,
         'non-standard_inline': NonStandardInline,
         'not_standard_inline': NotStandardInline,
         'obsolete_inline': ObsoleteInline,
