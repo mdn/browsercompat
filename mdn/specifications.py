@@ -301,7 +301,7 @@ class SpecDescVisitor(KumaVisitor):
     This is the third column of the Specifications table.
     """
     scope = 'specification description'
-    _allowed_tags = ['br', 'code', 'td']
+    _allowed_tags = ['a', 'br', 'code', 'td']
 
     def __init__(self, **kwargs):
         super(SpecDescVisitor, self).__init__(**kwargs)
