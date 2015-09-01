@@ -523,7 +523,26 @@ class CSSBox(KnownKumaScript):
     expected_scopes = set()
 
 
-class CSSxRef(KnownKumaScript):
+class XRefBase(KnownKumaScript):
+    """Base class for cross-reference KumaScript"""
+    expected_scopes = set((
+        'compatibility feature', 'specification description', 'footnote'))
+
+    def __init__(self, **kwargs):
+        super(XRefBase, self).__init__(**kwargs)
+        self.url = None
+        self.display = "(unset)"
+        self.linked = self.scope in ('specification description', 'footnote')
+
+    def to_html(self):
+        if self.linked:
+            return '<a href="{}"><code>{}</code></a>'.format(
+                self.url, self.display)
+        else:
+            return '<code>{}</code>'.format(self.display)
+
+
+class CSSxRef(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:cssxref
     min_args = 1
     max_args = 3
@@ -630,14 +649,12 @@ class GeckoRelease(KnownKumaScript):
         return '(' + ' / '.join([rel + plus for rel in self.releases]) + ')'
 
 
-class JSxRef(KnownKumaScript):
+class JSxRef(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:jsxref
     min_args = 1
     max_args = 2
     arg_names = ['API name', 'display name']
     canonical_name = 'jsxref'
-    expected_scopes = set((
-        'compatibility feature', 'footnote', 'specification description'))
 
     def __init__(self, **kwargs):
         """
@@ -655,15 +672,7 @@ class JSxRef(KnownKumaScript):
             path_name = path_name.replace('.', '/')
         self.url = '{}/Web/JavaScript/Reference/Global_Objects/{}'.format(
             MDN_DOCS, path_name)
-        self.linked = self.scope in ('footnote', 'specification description')
-
-    def to_html(self):
-        display_name = self.display_name or self.api_name
-        if self.linked:
-            return '<a href="{}"><code>{}</code></a>'.format(
-                self.url, display_name)
-        else:
-            return "<code>{}</code>".format(display_name)
+        self.display = self.display_name or self.api_name
 
 
 class NonStandardInline(KnownKumaScript):
