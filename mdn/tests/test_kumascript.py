@@ -377,17 +377,26 @@ class TestCSSxRef(TestCase):
         ks = CSSxRef(raw=raw, args=['z-index'], scope=self.scope)
         self.assertEqual(ks.api_name, 'z-index')
         self.assertIsNone(ks.display_name)
-        self.assertEqual(ks.to_html(), '<code>z-index</code>')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+             'z-index"><code>z-index</code></a>'))
         self.assertEqual(ks.issues, [])
         self.assertEqual(text_type(ks), raw)
 
     def test_display_override(self):
         raw = '{{cssxref("the-foo", "foo")}}'
         ks = CSSxRef(raw=raw, args=['the-foo', 'foo'], scope=self.scope)
-        self.assertEqual(ks.api_name, 'the-foo')
-        self.assertEqual(ks.display_name, 'foo')
-        self.assertEqual(ks.to_html(), '<code>foo</code>')
-        self.assertEqual(ks.issues, [])
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+             'the-foo"><code>foo</code></a>'))
+
+    def test_feature_name(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/attr
+        raw = '{{cssxref("content")}}'
+        ks = CSSxRef(raw=raw, args=['content'], scope='compatibility feature')
+        self.assertEqual(ks.to_html(), '<code>content</code>')
 
 
 class TestDeprecatedInline(TestCase):

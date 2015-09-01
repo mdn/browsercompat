@@ -548,15 +548,15 @@ class CSSxRef(XRefBase):
     max_args = 3
     arg_names = ['APIName', 'DisplayName', 'Anchor']
     canonical_name = 'cssxref'
-    expected_scopes = set(('specification description', 'footnote'))
 
     def __init__(self, **kwargs):
         super(CSSxRef, self).__init__(**kwargs)
         self.api_name = self.arg(0)
         self.display_name = self.arg(1)
-
-    def to_html(self):
-        return '<code>{}</code>'.format(self.display_name or self.api_name)
+        self.anchor = self.arg(2)
+        self.url = '{}/Web/CSS/{}{}'.format(
+            MDN_DOCS, self.api_name, self.anchor or '')
+        self.display = self.display_name or self.api_name
 
 
 class DeprecatedInline(KnownKumaScript):

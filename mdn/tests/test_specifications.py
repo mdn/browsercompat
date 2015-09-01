@@ -445,7 +445,9 @@ class TestSpecDescVisitor(TestCase):
         expected = [
             'Add the', '<code>&lt;length&gt;</code>',
             'value and allows it to be applied to element with a',
-            '<code>display</code>', 'type of', '<code>table-cell</code>', '.']
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+             'display"><code>display</code></a>'),
+            'type of', '<code>table-cell</code>', '.']
         self.assert_specdesc(html, expected, [])
 
     def test_kumascript_spec2(self):
