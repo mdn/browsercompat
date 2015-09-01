@@ -767,6 +767,12 @@ class XrefCSSLength(XrefCSSBase):
     xref_args = ('length', '&lt;length&gt;')
 
 
+class XrefCSSPercentage(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_csspercentage
+    canonical_name = 'xref_csspercentage'
+    xref_args = ('percentage', '&lt;percentage&gt;')
+
+
 class BaseKumaVisitor(HTMLVisitor):
     """Extract HTML structure from a MDN Kuma raw fragment.
 
@@ -848,6 +854,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'property_prefix': PropertyPrefix,
         'xref_cssimage': XrefCSSImage,
         'xref_csslength': XrefCSSLength,
+        'xref_csspercentage': XrefCSSPercentage,
     }
 
     def _kumascript_lookup(self, name):
