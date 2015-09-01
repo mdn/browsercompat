@@ -755,6 +755,12 @@ class XrefCSSBase(CSSxRef):
         self.construct_crossref(*self.xref_args)
 
 
+class XrefCSSImage(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssimage
+    canonical_name = 'xref_cssimage'
+    xref_args = ('image', '&lt;image&gt;')
+
+
 class XrefCSSLength(XrefCSSBase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
     canonical_name = 'xref_csslength'
@@ -840,6 +846,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'not_standard_inline': NotStandardInline,
         'obsolete_inline': ObsoleteInline,
         'property_prefix': PropertyPrefix,
+        'xref_cssimage': XrefCSSImage,
         'xref_csslength': XrefCSSLength,
     }
 
