@@ -761,6 +761,12 @@ class XrefCSSColorValue(XrefCSSBase):
     xref_args = ('color_value', '&lt;color&gt;')
 
 
+class XrefCSSGradient(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssgradient
+    canonical_name = 'xref_cssgradient'
+    xref_args = ('gradient', '&lt;gradient&gt;')
+
+
 class XrefCSSImage(XrefCSSBase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_cssimage
     canonical_name = 'xref_cssimage'
@@ -877,6 +883,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'obsolete_inline': ObsoleteInline,
         'property_prefix': PropertyPrefix,
         'xref_csscolorvalue': XrefCSSColorValue,
+        'xref_cssgradient': XrefCSSGradient,
         'xref_cssimage': XrefCSSImage,
         'xref_cssinteger': XrefCSSInteger,
         'xref_csslength': XrefCSSLength,
