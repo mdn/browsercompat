@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for `web-platform-compat` fields module."""
+"""Tests for browsercompat fields module."""
 from __future__ import unicode_literals
 from unittest import TestCase as BaseTestCase
 

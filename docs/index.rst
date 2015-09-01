@@ -1,10 +1,10 @@
-.. Web Platform Compatibility API documentation master file, created by
+.. Browser Compatibility API documentation master file, created by
    sphinx-quickstart on Mon Jul 21 13:24:51 2014.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
 =============================
-web-platform-compat
+browsercompat
 =============================
 
 .. include:: ../README.rst

@@ -24,13 +24,13 @@ readme = open('README.rst').read()
 
 
 setup(
-    name='web-platform-compat',
+    name='browsercompat',
     version=version,
-    description="""Web Platform Compatibility API""",
+    description="""Browser Compatibility API""",
     long_description=readme,
     author='John Whitlock',
-    author_email='john@factorialfive.com',
-    url='https://github.com/jwhitlock/web-platform-compat',
+    author_email='jwhitlock@mozilla.com',
+    url='https://github.com/mdn/browsercompat',
     packages=[
         'webplatformcompat',
     ],
@@ -40,7 +40,7 @@ setup(
     test_suite='wpcsite.runtests.runtests',
     license="MPL 2.0",
     zip_safe=False,
-    keywords='web-platform-compat',
+    keywords='browsercompat',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Framework :: Django',

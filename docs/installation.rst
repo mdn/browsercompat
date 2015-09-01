@@ -32,7 +32,7 @@ instructions, see the `Installation page on the wiki`_.
 9. Verify that tests pass with ``./manage,py test`` or ``make test``.
 10. Run it with ``./manage.py runserver`` or ``./manage.py runserver_plus``.
 
-.. _Installation page on the wiki: https://github.com/jwhitlock/web-platform-compat/wiki/Installation
+.. _Installation page on the wiki: https://github.com/mdn/browsercompat/wiki/Installation
 .. _Python: https://www.python.org
 .. _pip: https://pip.pypa.io/en/latest/
 .. _virtualenv: https://virtualenv.pypa.io/en/latest/
@@ -48,7 +48,7 @@ instructions, see the `Installation page on the wiki`_.
 Install in Heroku
 -----------------
 
-Heroku_ allows you to quickly deploy web-platform-compat.  Heroku hosts
+Heroku_ allows you to quickly deploy browsercompat.  Heroku hosts
 the beta version of the service at https://browsercompat.herokuapp.com, using
 the add-ons:
 
@@ -103,7 +103,7 @@ for install hints.
 .. _`Firefox Accounts`: https://developer.mozilla.org/en-US/Firefox_Accounts
 .. _`configure Django to send email`: https://docs.djangoproject.com/en/1.7/topics/email/
 .. _`providers documentation`: http://django-allauth.readthedocs.org/en/latest/providers.html
-.. _`Firefox Accounts page on the wiki`: https://github.com/jwhitlock/web-platform-compat/wiki/Firefox%20Accounts
+.. _`Firefox Accounts page on the wiki`: https://github.com/mdn/browsercompat/wiki/Firefox%20Accounts
 
 
 Load Data
@@ -111,7 +111,7 @@ Load Data
 There are several ways to get data into your API:
 
 1. Load data from the github export
-2. Load data from another webcompat server
+2. Load data from another browsercompat server
 3. Load sample data from the `WebPlatform project`_ and MDN_
 
 Load from GitHub
@@ -120,13 +120,13 @@ The data on browsercompat.herokuapp.com_ is archived in the
 `browsercompat-data`_ github repo, and this is the fastest way to get data
 into your empty API:
 
-1. Clone the github repo (``git clone https://github.com/jwhitlock/browsercompat-data.git``)
+1. Clone the github repo (``git clone https://github.com/mdn/browsercompat-data.git``)
 2. Run the API (``./manage.py runserver``)
 3. Import the data (``tools/upload_data.py --data /path/to/browsercompat-data/data``)
 
-Load from another webcompat server
-**********************************
-If you have read access to a webcompat server that you'd like to clone, you
+Load from another browsercompat server
+**************************************
+If you have read access to a browsercompat server that you'd like to clone, you
 can grab the data for your own server.
 
 1. Download the data (``tools/download_data.py --api https://browsercompat.example.com``)

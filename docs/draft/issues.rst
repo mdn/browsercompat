@@ -327,7 +327,7 @@ perform additional steps:
 
 .. image:: ../../_static/canonicalized-display.svg
    :alt: Reorganization of Web/CSS/display
-   :target: https://rawgit.com/jwhitlock/web-platform-compat/master/docs/_static/canonicalized-display.svg
+   :target: https://rawgit.com/mdn/browsercompat/master/docs/_static/canonicalized-display.svg
 
 Data sources for browser versions
 ---------------------------------

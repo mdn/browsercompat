@@ -2,7 +2,7 @@ Proposed Technologies
 ---------------------
 
 The two sites are served from a single codebase, at
-https://github.com/mozilla/web-platform-compat.  Technologies include:
+https://github.com/mdn/browsercompat.  Technologies include:
 
 * `Django 1.7`_, a web framework
 * `Django REST Framework`_, an API framework

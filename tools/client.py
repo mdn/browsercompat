@@ -23,7 +23,7 @@ class APIException(Exception):
 
 
 class Client(object):
-    """Client for talking to the web-platform-compat API."""
+    """Client for talking to the browsercompat API."""
 
     def __init__(self, base_url):
         self.base_url = base_url
