@@ -767,6 +767,12 @@ class XrefCSSImage(XrefCSSBase):
     xref_args = ('image', '&lt;image&gt;')
 
 
+class XrefCSSInteger(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssinteger
+    canonical_name = 'xref_cssinteger'
+    xref_args = ('integer', '&lt;integer&gt;')
+
+
 class XrefCSSLength(XrefCSSBase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
     canonical_name = 'xref_csslength'
@@ -872,6 +878,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'property_prefix': PropertyPrefix,
         'xref_csscolorvalue': XrefCSSColorValue,
         'xref_cssimage': XrefCSSImage,
+        'xref_cssinteger': XrefCSSInteger,
         'xref_csslength': XrefCSSLength,
         'xref_cssnumber': XrefCSSNumber,
         'xref_csspercentage': XrefCSSPercentage,
