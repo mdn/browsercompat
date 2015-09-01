@@ -755,6 +755,12 @@ class XrefCSSBase(CSSxRef):
         self.construct_crossref(*self.xref_args)
 
 
+class XrefCSSAngle(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssangle
+    canonical_name = 'xref_cssangle'
+    xref_args = ('angle', '&lt;angle&gt;')
+
+
 class XrefCSSColorValue(XrefCSSBase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csscolorvalue
     canonical_name = 'xref_csscolorvalue'
@@ -882,6 +888,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'not_standard_inline': NotStandardInline,
         'obsolete_inline': ObsoleteInline,
         'property_prefix': PropertyPrefix,
+        'xref_cssangle': XrefCSSAngle,
         'xref_csscolorvalue': XrefCSSColorValue,
         'xref_cssgradient': XrefCSSGradient,
         'xref_cssimage': XrefCSSImage,
