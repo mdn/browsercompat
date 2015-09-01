@@ -588,6 +588,21 @@ class DOMxRef(XRefBase):
         self.display = self.dom_text or self.dom_path
 
 
+class Event(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:event
+    min_args = 1
+    max_args = 2
+    arg_names = ['api_name', 'display_name']
+    canonical_name = 'event'
+
+    def __init__(self, **kwargs):
+        super(Event, self).__init__(**kwargs)
+        self.api_name = self.arg(0)
+        self.display_name = self.arg(1)
+        self.url = '{}/Web/Events/{}'.format(MDN_DOCS, self.api_name)
+        self.display = self.display_name or self.api_name
+
+
 class ExperimentalInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:experimental_inline
     canonical_name = 'experimental_inline'
@@ -887,6 +902,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'cssxref': CSSxRef,
         'deprecated_inline': DeprecatedInline,
         'domxref': DOMxRef,
+        'event': Event,
         'experimental_inline': ExperimentalInline,
         'geckoRelease': GeckoRelease,
         'jsxref': JSxRef,

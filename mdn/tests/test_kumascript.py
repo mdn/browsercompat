@@ -9,7 +9,7 @@ from mdn.kumascript import (
     Bug, CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
-    CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
+    CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline, Event,
     ExperimentalInline, GeckoRelease, JSxRef, KumaHTMLElement, KnownKumaScript,
     KumaScript, KumaVisitor, NonStandardInline, NotStandardInline,
     PropertyPrefix, Spec2, SpecName, UnknownKumaScript, WebkitBug,
@@ -449,6 +449,27 @@ class TestDOMxRef(TestCase):
             ks.to_html(),
             ('<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
              'Window/alert"><code>window.alert()</code></a>'))
+
+
+class TestEvent(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:event
+
+    def test_feature_name(self):
+        # No current compat pages
+        raw = '{{event("close")}}'
+        ks = Event(raw=raw, args=['close'], scope='compatibility feature')
+        self.assertEqual(ks.to_html(), '<code>close</code>')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+    def test_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/DeviceLightEvent/value
+        raw = '{{event("devicelight")}}'
+        ks = Event(raw=raw, args=['devicelight'], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/Events/'
+             'devicelight"><code>devicelight</code></a>'))
 
 
 class TestExperimentalInline(TestCase):
