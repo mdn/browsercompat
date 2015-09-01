@@ -569,6 +569,25 @@ class DeprecatedInline(KnownKumaScript):
     expected_scopes = set(('compatibility feature',))
 
 
+class DOMEventXRef(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:domeventxref
+    min_args = max_args = 1
+    arg_names = ['api_name']
+    canonical_name = 'domeventxref'
+
+    def __init__(self, **kwargs):
+        """Initialize DOMEventXRef.
+
+        Only implements the subset of domeventxref used on current pages.
+        """
+        super(DOMEventXRef, self).__init__(**kwargs)
+        self.api_name = self.arg(0)
+        assert '()' not in self.api_name
+        self.url = '{}/DOM/DOM_event_reference/{}'.format(
+            MDN_DOCS, self.api_name)
+        self.display = self.api_name
+
+
 class DOMException(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:exception
     min_args = max_args = 1
@@ -935,6 +954,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'cssbox': CSSBox,
         'cssxref': CSSxRef,
         'deprecated_inline': DeprecatedInline,
+        'domeventxref': DOMEventXRef,
         'domxref': DOMxRef,
         'event': Event,
         'exception': DOMException,

@@ -9,11 +9,11 @@ from mdn.kumascript import (
     Bug, CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
-    CompatVersionUnknown, CompatibilityTable, DOMException, DOMxRef,
-    DeprecatedInline, Event, ExperimentalInline, GeckoRelease, HTMLAttrXRef,
-    JSxRef, KumaHTMLElement, KnownKumaScript, KumaScript, KumaVisitor,
-    NonStandardInline, NotStandardInline, PropertyPrefix, Spec2, SpecName,
-    UnknownKumaScript, WebkitBug, WhyNoSpecBlock, XrefCSSLength,
+    CompatVersionUnknown, CompatibilityTable, DOMEventXRef, DOMException,
+    DOMxRef, DeprecatedInline, Event, ExperimentalInline, GeckoRelease,
+    HTMLAttrXRef, JSxRef, KumaHTMLElement, KnownKumaScript, KumaScript,
+    KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
+    SpecName, UnknownKumaScript, WebkitBug, WhyNoSpecBlock, XrefCSSLength,
     kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
@@ -406,6 +406,22 @@ class TestDeprecatedInline(TestCase):
         raw = '{{deprecated_inline}}'
         ks = DeprecatedInline(raw=raw, scope='compatibility feature')
         self.assertEqual(ks.to_html(), '')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+
+class TestDOMEventXRef(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:domeventxref
+
+    def test_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/compositionupdate
+        raw = '{{domeventxref("compositionstart")}}'
+        ks = DOMEventXRef(raw=raw, args=['compositionstart'], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/DOM/'
+             'DOM_event_reference/compositionstart"><code>compositionstart'
+             '</code></a>'))
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
 
