@@ -773,6 +773,12 @@ class XrefCSSLength(XrefCSSBase):
     xref_args = ('length', '&lt;length&gt;')
 
 
+class XrefCSSNumber(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssnumber
+    canonical_name = 'xref_cssnumber'
+    xref_args = ('number', '&lt;number&gt;')
+
+
 class XrefCSSPercentage(XrefCSSBase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csspercentage
     canonical_name = 'xref_csspercentage'
@@ -867,6 +873,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'xref_csscolorvalue': XrefCSSColorValue,
         'xref_cssimage': XrefCSSImage,
         'xref_csslength': XrefCSSLength,
+        'xref_cssnumber': XrefCSSNumber,
         'xref_csspercentage': XrefCSSPercentage,
         'xref_cssstring': XrefCSSString,
     }
