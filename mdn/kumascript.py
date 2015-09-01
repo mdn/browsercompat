@@ -755,6 +755,12 @@ class XrefCSSBase(CSSxRef):
         self.construct_crossref(*self.xref_args)
 
 
+class XrefCSSColorValue(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_csscolorvalue
+    canonical_name = 'xref_csscolorvalue'
+    xref_args = ('color_value', '&lt;color&gt;')
+
+
 class XrefCSSImage(XrefCSSBase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_cssimage
     canonical_name = 'xref_cssimage'
@@ -852,6 +858,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'not_standard_inline': NotStandardInline,
         'obsolete_inline': ObsoleteInline,
         'property_prefix': PropertyPrefix,
+        'xref_csscolorvalue': XrefCSSColorValue,
         'xref_cssimage': XrefCSSImage,
         'xref_csslength': XrefCSSLength,
         'xref_csspercentage': XrefCSSPercentage,
