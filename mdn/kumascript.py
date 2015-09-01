@@ -809,6 +809,12 @@ class XrefCSSString(XrefCSSBase):
     xref_args = ('string', '&lt;string&gt;')
 
 
+class XrefCSSVisual(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssvisual
+    canonical_name = 'xref_cssvisual'
+    xref_args = ('Media/Visual', '&lt;visual&gt;')
+
+
 class BaseKumaVisitor(HTMLVisitor):
     """Extract HTML structure from a MDN Kuma raw fragment.
 
@@ -897,6 +903,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'xref_cssnumber': XrefCSSNumber,
         'xref_csspercentage': XrefCSSPercentage,
         'xref_cssstring': XrefCSSString,
+        'xref_cssvisual': XrefCSSVisual,
     }
 
     def _kumascript_lookup(self, name):
