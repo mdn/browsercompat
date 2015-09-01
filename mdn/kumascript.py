@@ -669,6 +669,26 @@ class GeckoRelease(KnownKumaScript):
         return '(' + ' / '.join([rel + plus for rel in self.releases]) + ')'
 
 
+class HTMLAttrXRef(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:htmlattrxref
+    min_args = 1
+    max_args = 2
+    arg_names = ['attribute', 'element']
+    canonical_name = 'htmlattrxref'
+
+    def __init__(self, **kwargs):
+        super(HTMLAttrXRef, self).__init__(**kwargs)
+        self.attribute = self.arg(0)
+        self.element = self.arg(1)
+        self.text = self.arg(2)
+        if self.element:
+            self.url = '{}/Web/HTML/Element/{}'.format(MDN_DOCS, self.element)
+        else:
+            self.url = '{}/Web/HTML/Global_attributes'.format(MDN_DOCS)
+        self.url += '#attr-' + self.attribute.lower()
+        self.display = self.attribute.lower()
+
+
 class JSxRef(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:jsxref
     min_args = 1
@@ -905,6 +925,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'event': Event,
         'experimental_inline': ExperimentalInline,
         'geckoRelease': GeckoRelease,
+        'htmlattrxref': HTMLAttrXRef,
         'jsxref': JSxRef,
         'non-standard_inline': NonStandardInline,
         'not_standard_inline': NotStandardInline,

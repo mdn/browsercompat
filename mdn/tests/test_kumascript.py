@@ -10,10 +10,10 @@ from mdn.kumascript import (
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline, Event,
-    ExperimentalInline, GeckoRelease, JSxRef, KumaHTMLElement, KnownKumaScript,
-    KumaScript, KumaVisitor, NonStandardInline, NotStandardInline,
-    PropertyPrefix, Spec2, SpecName, UnknownKumaScript, WebkitBug,
-    WhyNoSpecBlock, XrefCSSLength, kumascript_grammar)
+    ExperimentalInline, GeckoRelease, HTMLAttrXRef, JSxRef, KumaHTMLElement,
+    KnownKumaScript, KumaScript, KumaVisitor, NonStandardInline,
+    NotStandardInline, PropertyPrefix, Spec2, SpecName, UnknownKumaScript,
+    WebkitBug, WhyNoSpecBlock, XrefCSSLength, kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
@@ -590,6 +590,39 @@ class TestJSxRef(TestCase):
             ks.to_html(),
             ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
              '/Reference/Global_Objects/null"><code>null</code></a>'))
+
+
+class TestHTMLAttrXRef(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:htmlattrxref
+
+    def test_feature_name(self):
+        # No current compat pages
+        raw = '{{htmlattrxref("style")}}'
+        ks = HTMLAttrXRef(
+            raw=raw, args=['style'], scope='compatibility feature')
+        self.assertEqual(ks.to_html(), '<code>style</code>')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+    def test_spec_desc_without_element(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+        raw = '{{htmlattrxref("class")}}'
+        ks = HTMLAttrXRef(
+            raw=raw, args=['class'], scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/'
+             'Global_attributes#attr-class"><code>class</code></a>'))
+
+    def test_footnote_with_element(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Element
+        raw = '{{htmlattrxref("sandbox", "iframe")}}'
+        ks = HTMLAttrXRef(
+            raw=raw, args=['sandbox', 'iframe'], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/'
+             'Element/iframe#attr-sandbox"><code>sandbox</code></a>'))
 
 
 class TestNonStandardInline(TestCase):
