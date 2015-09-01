@@ -9,11 +9,12 @@ from mdn.kumascript import (
     Bug, CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
-    CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline, Event,
-    ExperimentalInline, GeckoRelease, HTMLAttrXRef, JSxRef, KumaHTMLElement,
-    KnownKumaScript, KumaScript, KumaVisitor, NonStandardInline,
-    NotStandardInline, PropertyPrefix, Spec2, SpecName, UnknownKumaScript,
-    WebkitBug, WhyNoSpecBlock, XrefCSSLength, kumascript_grammar)
+    CompatVersionUnknown, CompatibilityTable, DOMException, DOMxRef,
+    DeprecatedInline, Event, ExperimentalInline, GeckoRelease, HTMLAttrXRef,
+    JSxRef, KumaHTMLElement, KnownKumaScript, KumaScript, KumaVisitor,
+    NonStandardInline, NotStandardInline, PropertyPrefix, Spec2, SpecName,
+    UnknownKumaScript, WebkitBug, WhyNoSpecBlock, XrefCSSLength,
+    kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
@@ -405,6 +406,21 @@ class TestDeprecatedInline(TestCase):
         raw = '{{deprecated_inline}}'
         ks = DeprecatedInline(raw=raw, scope='compatibility feature')
         self.assertEqual(ks.to_html(), '')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+
+class TestDOMException(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:exception
+
+    def test_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder/TextEncoder
+        raw = '{{exception("TypeError")}}'
+        ks = DOMException(raw=raw, args=['TypeError'], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            '<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
+            'DOMException#TypeError"><code>TypeError</code></a>')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
 

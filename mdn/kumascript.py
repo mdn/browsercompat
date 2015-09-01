@@ -569,6 +569,20 @@ class DeprecatedInline(KnownKumaScript):
     expected_scopes = set(('compatibility feature',))
 
 
+class DOMException(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:exception
+    min_args = max_args = 1
+    arg_names = ['exception_id']
+    canonical_name = 'exception'
+
+    def __init__(self, **kwargs):
+        super(DOMException, self).__init__(**kwargs)
+        self.exception_id = self.arg(0)
+        self.url = '{}/Web/API/DOMException#{}'.format(
+            MDN_DOCS, self.exception_id)
+        self.display = self.exception_id
+
+
 class DOMxRef(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:domxref
     min_args = 1
@@ -923,6 +937,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'deprecated_inline': DeprecatedInline,
         'domxref': DOMxRef,
         'event': Event,
+        'exception': DOMException,
         'experimental_inline': ExperimentalInline,
         'geckoRelease': GeckoRelease,
         'htmlattrxref': HTMLAttrXRef,
