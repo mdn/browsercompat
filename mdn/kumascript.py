@@ -558,6 +558,12 @@ class NotStandardInline(KnownKumaScript):
     expected_scopes = set(('compatibility feature',))
 
 
+class ObsoleteInline(KnownKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:obsolete_inline
+    canonical_name = 'obsolete_inline'
+    expected_scopes = set(('compatibility feature',))
+
+
 class PropertyPrefix(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:property_prefix
     min_args = max_args = 1
@@ -688,6 +694,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'experimental_inline': ExperimentalInline,
         'non-standard_inline': NonStandardInline,
         'not_standard_inline': NotStandardInline,
+        'obsolete_inline': ObsoleteInline,
         'property_prefix': PropertyPrefix,
         'xref_csslength': XrefCSSLength,
     }
