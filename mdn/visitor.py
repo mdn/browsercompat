@@ -8,10 +8,10 @@ from .data import Data
 from .issues import ISSUES
 
 
-class BaseVisitor(object):
-    """Finds information in HTML or parsed HTML."""
+class Recorder(object):
+    """Records information in HTML or parsed HTML."""
 
-    def initialize_visitor(self, offset=0, data=None):
+    def initialize_tracker(self, offset=0, data=None):
         """Setup common variables.
 
         offset - The character position that this fragment starts at.
@@ -38,20 +38,26 @@ class BaseVisitor(object):
         self.issues.append(issue)
 
 
-class Visitor(BaseVisitor, NodeVisitor):
-    """Base class for node vistors."""
+class Visitor(Recorder, NodeVisitor):
+    """Base class for node vistors.
+
+    The Parsimonious NodeVisitor works from leaf nodes up to trunk nodes.
+    """
     def __init__(self, offset=0, data=None):
         super(Visitor, self).__init__()
-        self.initialize_visitor(offset=offset, data=data)
+        self.initialize_tracker(offset=offset, data=data)
 
 
-class Extractor(BaseVisitor):
-    """Extracts information from parsed HTML."""
+class Extractor(Recorder):
+    """Extracts information from parsed HTML.
+
+    The Extractor works from trunk nodes to leaf nodes.
+    """
     extractor_name = "Extractor"
 
     def initialize_extractor(self, elements=None, debug=False, **kwargs):
         """Setup extractor plus common variables."""
-        self.initialize_visitor(**kwargs)
+        self.initialize_tracker(**kwargs)
         self.elements = elements or []
         self.debug = debug
 
