@@ -195,6 +195,10 @@ class PageExtractor(Extractor):
         else:  # pragma: no cover
             raise Exception('Unexpected state "{}"'.format(state))
 
+    def leaving_element(self, state, element):
+        """No state changes on leaving elements."""
+        return state
+
     def extracted_data(self):
         """Finalize and return extracted data."""
         if self.section:

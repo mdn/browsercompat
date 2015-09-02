@@ -75,10 +75,12 @@ class Extractor(Recorder):
 
     def setup_extract(self):
         """Setup the extraction state variables."""
-        pass  # pragma: no cover
+        raise NotImplementedError(
+            '.setup_extract method is not implemented')  # pragma: no cover
 
     def walk(self, state, element):
-        """Walk a parsed element.
+        """
+        Walk a parsed element.
 
         Keyword Attributes:
         state - A string specifying the current state
@@ -106,21 +108,33 @@ class Extractor(Recorder):
                 self.extractor_name, old_state, new_state, phase, element))
 
     def entering_element(self, state, element):
-        """Extract data (state or information) from entering an element.
+        """
+        Extract data (state or information) from entering an element.
 
         Return is a tuple of:
             - The next state
             - True if the element's children should be walked for extraction.
         """
-        return state, True  # pragma: no cover
+        raise NotImplementedError(
+            '.entering_element method is not implemented')  # pragma: no cover
 
     def leaving_element(self, state, element):
-        """Extract data (state or information) from leaving an element."""
-        return state  # pragma: no cover
+        """
+        Extract data (state or information) from leaving an element.
+
+        Return is the next state.
+        """
+        raise NotImplementedError(
+            '.leaving_element method is not implemented')  # pragma: no cover
 
     def extracted_data(self):
-        """Finalize the extracted data."""
-        return {}  # pragma: no cover
+        """
+        Finalize the extracted data.
+
+        Return is a dictionary of data items.
+        """
+        raise NotImplementedError(
+            '.extracted_data method is not implemented')  # pragma: no cover
 
     def is_tag(self, element, tag):
         """Return True if element matches the tag."""
