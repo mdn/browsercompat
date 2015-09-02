@@ -32,7 +32,7 @@ instructions, see the `Installation page on the wiki`_.
 9. Verify that tests pass with ``./manage,py test`` or ``make test``.
 10. Run it with ``./manage.py runserver`` or ``./manage.py runserver_plus``.
 
-.. _Installation page on the wiki: 
+.. _Installation page on the wiki: https://github.com/jwhitlock/web-platform-compat/wiki/Installation
 .. _Python: https://www.python.org
 .. _pip: https://pip.pypa.io/en/latest/
 .. _virtualenv: https://virtualenv.pypa.io/en/latest/

@@ -1,5 +1,11 @@
 *.py[cod]
 
+# vi backups
+*~
+
+# OSX directory info
+.DS_Store
+
 # C extensions
 *.so
 
