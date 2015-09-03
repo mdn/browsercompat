@@ -8,7 +8,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import text_type
 from parsimonious.grammar import Grammar
 
-from .html import HnElement, HTMLElement, HTMLSelfClosingElement, HTMLText
+from .html import HnElement, HTMLElement, HTMLText
 from .kumascript import (
     CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS, CompatGeckoMobile,
     CompatNightly, CompatNo, CompatUnknown, CompatVersionUnknown,
@@ -471,7 +471,8 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         processed = super(CompatFeatureVisitor, self).process(
             cls, node, **kwargs)
         if isinstance(processed, HTMLElement):
-            if processed.tag == 'td':
+            tag = processed.tag
+            if tag == 'td':
                 processed.drop_tag = True
                 if self.outer_td:
                     self.add_issue(
@@ -631,6 +632,9 @@ class CompatSupportVisitor(CompatBaseVisitor):
                 self.commit_support_and_version()
             elif tag == 'code':
                 self.inline_texts.append((processed, processed.to_html()))
+            elif tag == 'br':
+                if self.version.get('version'):
+                    self.commit_support_and_version()
         elif isinstance(processed, CellVersion):
             self.set_version(processed.version, processed)
         elif isinstance(processed, CompatVersionUnknown):
@@ -674,10 +678,6 @@ class CompatSupportVisitor(CompatBaseVisitor):
         elif isinstance(processed, HTMLText):
             if processed.cleaned:
                 self.inline_texts.append((processed, processed.cleaned))
-        elif (isinstance(processed, HTMLSelfClosingElement) and
-              processed.tag == 'br'):
-            if self.version.get('version'):
-                self.commit_support_and_version()
         return processed
 
     version_re = re.compile(r"((\d+(\.\d+)*)|current|nightly)$")
@@ -810,8 +810,8 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
                 self.gather_content(processed)
             elif tag == 'pre':
                 self.process_pre(processed)
-        elif isinstance(processed, HTMLSelfClosingElement):
-            processed.drop_tag = True
+            elif tag in ('br', 'hr'):
+                processed.drop_tag = True
         return processed
 
     def process_pre(self, pre_element):
