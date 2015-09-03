@@ -447,7 +447,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
     This is the first column of the compatibility table.
     """
     scope = 'compatibility feature'
-    _allowed_tags = ['code', 'td']
+    _allowed_tags = ['code', 'td', 'br']
 
     def __init__(self, parent_feature, **kwargs):
         """Initialize a CompatFeatureVisitor.
@@ -458,7 +458,6 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         super(CompatFeatureVisitor, self).__init__(**kwargs)
         self.parent_feature = parent_feature
         self.name = None
-        self.name_bits = []
         self.feature_id = None
         self.canonical = False
         self.experimental = False
@@ -479,6 +478,8 @@ class CompatFeatureVisitor(CompatBaseVisitor):
                         'tag_dropped', self.outer_td.open_tag, tag='td',
                         scope=self.scope)
                 self.outer_td = processed
+            elif tag == 'br':
+                processed.drop_tag = True  # Silently drop <br> tags
         elif isinstance(processed, Footnote):
             self.add_issue('footnote_feature', processed)
         elif isinstance(processed, DeprecatedInline):
