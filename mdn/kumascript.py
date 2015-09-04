@@ -467,7 +467,7 @@ class SpecName(SpecKumaScript):
     min_args = 1
     max_args = 3
     arg_names = ['SpecKey', 'Anchor', 'AnchorName']
-    expected_scopes = set(('specification name',))
+    expected_scopes = set(('specification name', 'specification description'))
 
     def __init__(self, **kwargs):
         super(SpecName, self).__init__(**kwargs)

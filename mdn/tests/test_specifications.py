@@ -380,7 +380,8 @@ class TestSpec2Visitor(TestCase):
             {'name': 'SpecName', 'args': ["HTML WHATWG"],
              'scope': 'specification maturity',
              'kumascript': '{{SpecName("HTML WHATWG")}}',
-             'expected_scopes': 'specification name'})]
+             'expected_scopes': (
+                'specification description or specification name')})]
         self.assert_spec2(html, None, issues)
         self.assertEqual(self.visitor.spec, None)
 
