@@ -34,6 +34,7 @@ from parsimonious.nodes import Node
 
 from .data import Data
 from .html import HTMLInterval, HTMLText, HTMLVisitor, html_grammar_source
+from .utils import format_version
 
 kumascript_grammar_source = html_grammar_source + r"""
 #
@@ -215,13 +216,22 @@ class CompatKumaScript(KnownKumaScript):
         return self.version
 
 
-class CompatAndroid(CompatKumaScript):
+class CompatBasicKumaScript(CompatKumaScript):
+    """Base class for KumaScript specifying the actual browser version"""
+
+    def __init__(self, **kwargs):
+        super(CompatBasicKumaScript, self).__init__(**kwargs)
+        self.version = format_version(self.arg(0))
+
+
+class CompatAndroid(CompatBasicKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatAndroid
     arg_names = ['AndroidVersion']
 
-    def __init__(self, **kwargs):
-        super(CompatAndroid, self).__init__(**kwargs)
-        self.version = self.arg(0)
+
+class CompatChrome(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatChrome
+    arg_names = ['ChromeVer']
 
 
 class CompatGeckoDesktop(CompatKumaScript):
@@ -351,14 +361,36 @@ class CompatGeckoMobile(CompatKumaScript):
             return "{}.0".format(nversion)
 
 
+class CompatIE(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatIE
+    arg_names = ['IEver']
+
+
 class CompatNightly(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNightly
+    max_args = 1
+    arg_names = ['browser']
     expected_scopes = set(('compatibility support',))
 
 
 class CompatNo(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:CompatNo
     expected_scopes = set(('compatibility support',))
+
+
+class CompatOpera(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatOpera
+    arg_names = ['OperaVer']
+
+
+class CompatOperaMobile(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatOperaMobile
+    arg_names = ['OperaVer']
+
+
+class CompatSafari(CompatBasicKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:CompatSafari
+    arg_names = ['SafariVer']
 
 
 class CompatUnknown(KnownKumaScript):
@@ -614,11 +646,16 @@ class BaseKumaVisitor(HTMLVisitor):
 
     known_kumascript = {
         'CompatAndroid': CompatAndroid,
+        'CompatChrome': CompatChrome,
         'CompatGeckoDesktop': CompatGeckoDesktop,
         'CompatGeckoFxOS': CompatGeckoFxOS,
         'CompatGeckoMobile': CompatGeckoMobile,
+        'CompatIE': CompatIE,
         'CompatNightly': CompatNightly,
         'CompatNo': CompatNo,
+        'CompatOpera': CompatOpera,
+        'CompatOperaMobile': CompatOperaMobile,
+        'CompatSafari': CompatSafari,
         'CompatUnknown': CompatUnknown,
         'CompatVersionUnknown': CompatVersionUnknown,
         'CompatibilityTable': CompatibilityTable,

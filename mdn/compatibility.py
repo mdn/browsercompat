@@ -10,12 +10,11 @@ from parsimonious.grammar import Grammar
 
 from .html import HnElement, HTMLElement, HTMLSelfClosingElement, HTMLText
 from .kumascript import (
-    CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS, CompatGeckoMobile,
-    CompatNightly, CompatNo, CompatUnknown, CompatVersionUnknown,
-    DeprecatedInline, ExperimentalInline, KumaScript, KumaVisitor,
-    NonStandardInline, NotStandardInline, PropertyPrefix,
+    CompatGeckoFxOS, CompatKumaScript, CompatNightly, CompatNo, CompatUnknown,
+    CompatVersionUnknown, DeprecatedInline, ExperimentalInline, KumaScript,
+    KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix,
     kumascript_grammar_source)
-from .utils import is_new_id, join_content
+from .utils import is_new_id, format_version, join_content
 from .visitor import Extractor
 
 compat_shared_grammar_source = r"""
@@ -527,12 +526,7 @@ class CellVersion(HTMLText):
 
     def __init__(self, version, engine_version=None, **kwargs):
         super(CellVersion, self).__init__(**kwargs)
-        if '.' in version:
-            self.version = version
-        else:
-            assert version
-            assert int(version)
-            self.version = version + '.0'
+        self.version = format_version(version)
         self.engine_version = engine_version or None
 
     def __str__(self):
@@ -643,14 +637,13 @@ class CompatSupportVisitor(CompatBaseVisitor):
             self.support['support'] = 'no'
         elif isinstance(processed, CompatUnknown):
             pass  # Don't record unknown support in API
-        elif isinstance(processed, (
-                CompatGeckoDesktop, CompatGeckoMobile, CompatAndroid)):
-            version_name = str(processed.version)
-            if self.is_valid_version(version_name):
-                self.set_version(version_name, processed)
         elif isinstance(processed, CompatGeckoFxOS):
             if not (processed.bad_version or processed.bad_override):
                 self.set_version(str(processed.version), processed)
+        elif isinstance(processed, CompatKumaScript):
+            version_name = str(processed.version)
+            if self.is_valid_version(version_name):
+                self.set_version(version_name, processed)
         elif isinstance(processed, PropertyPrefix):
             self.support['prefix'] = processed.prefix
         elif isinstance(processed, Footnote):

@@ -6,8 +6,9 @@ from django.utils.six import text_type
 
 from mdn.html import HTMLText
 from mdn.kumascript import (
-    CSSBox, CSSxRef, CompatAndroid, CompatGeckoDesktop, CompatGeckoFxOS,
-    CompatGeckoMobile, CompatNightly, CompatNo, CompatUnknown,
+    CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
+    CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
+    CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
     ExperimentalInline, KumaHTMLElement, KnownKumaScript, KumaScript,
     KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
@@ -162,6 +163,14 @@ class TestCompatNightly(TestCase):
     def test_standard(self):
         raw = '{{CompatNightly}}'
         ks = CompatNightly(raw=raw, scope='compatibility support')
+        self.assertEqual(ks.to_html(), '')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+    def test_with_arg(self):
+        raw = '{{CompatNightly("firefox")}}'
+        ks = CompatNightly(
+            raw=raw, args=['firefox'], scope='compatibility support')
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -618,3 +627,32 @@ class TestVisitor(TestHTMLVisitor):
         self.assertEqual('{{xref_csslength}}', str(ks[0]))
         self.assertEqual('{{cssxref("display")}}', str(ks[1]))
         self.assertEqual('<code>table-cell</code>', str(code))
+
+    def assert_compat_version(self, html, cls, version):
+        """Check that Compat* KumaScript is parsed correctly"""
+        parsed = kumascript_grammar['html'].parse(html)
+        out = self.visitor.visit(parsed)
+        self.assertEqual(len(out), 1)
+        ks = out[0]
+        self.assertIsInstance(ks, cls)
+        self.assertEqual(version, ks.version)
+
+    def test_compatchrome(self):
+        self.assert_compat_version(
+            '{{CompatChrome("10.0")}}', CompatChrome, '10.0')
+
+    def test_compatie(self):
+        self.assert_compat_version(
+            '{{CompatIE("9")}}', CompatIE, '9.0')
+
+    def test_compatopera(self):
+        self.assert_compat_version(
+            '{{CompatOpera("9")}}', CompatOpera, '9.0')
+
+    def test_compatoperamobile(self):
+        self.assert_compat_version(
+            '{{CompatOperaMobile("11.5")}}', CompatOperaMobile, '11.5')
+
+    def test_compatsafari(self):
+        self.assert_compat_version(
+            '{{CompatSafari("2")}}', CompatSafari, '2.0')
