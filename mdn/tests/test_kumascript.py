@@ -12,7 +12,7 @@ from mdn.kumascript import (
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
     ExperimentalInline, KumaHTMLElement, KnownKumaScript, KumaScript,
     KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
-    SpecName, UnknownKumaScript, WhyNoSpecBlock, XrefCSSLength,
+    SpecName, UnknownKumaScript, WebkitBug, WhyNoSpecBlock, XrefCSSLength,
     kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
@@ -446,6 +446,19 @@ class TestPropertyPrefix(TestCase):
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
+
+
+class TestWebkitBug(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:WebkitBug
+    def test_standard(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+        raw = '{{WebKitBug("71270")}}'
+        ks = WebkitBug(raw=raw, args=['71270'], scope='footnote')
+        expected = (
+            '<a href="https://bugs.webkit.org/show_bug.cgi?id=71270">'
+            'WebKit bug 71270</a>')
+        self.assertEqual(ks.to_html(), expected)
+        self.assertEqual(ks.issues, [])
 
 
 class TestWhyNoSpecBlock(TestCase):
