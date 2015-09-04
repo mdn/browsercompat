@@ -209,6 +209,29 @@ class KnownKumaScript(KumaScript):
         return super(KumaScript, self).issues + self._validate()
 
 
+class Bug(KnownKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:Bug
+    min_args = max_args = 1
+    arg_names = ['number']
+    canonical_name = 'bug'
+    expected_scopes = set(('footnote',))
+
+    def __init__(self, **kwargs):
+        """
+        Initialize Bug
+
+        {{bug}} macro takes 3 arguments, but only the 1-argument version is
+        supported.
+        """
+        super(Bug, self).__init__(**kwargs)
+        self.number = self.arg(0)
+
+    def to_html(self):
+        return (
+            '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id={number}">'
+            'bug {number}</a>').format(number=self.number)
+
+
 class CompatKumaScript(KnownKumaScript):
     """Base class for KumaScript specifying a browser version."""
     min_args = max_args = 1
@@ -729,6 +752,7 @@ class BaseKumaVisitor(HTMLVisitor):
     visit_text_token = _visit_multi_token
 
     known_kumascript = {
+        'Bug': Bug,
         'CompatAndroid': CompatAndroid,
         'CompatChrome': CompatChrome,
         'CompatGeckoDesktop': CompatGeckoDesktop,

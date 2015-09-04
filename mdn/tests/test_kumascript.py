@@ -6,7 +6,7 @@ from django.utils.six import text_type
 
 from mdn.html import HTMLText
 from mdn.kumascript import (
-    CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
+    Bug, CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
@@ -30,6 +30,19 @@ class TestKnownKumaScript(TestCase):
         raw = '{{CompatNo}}'
         ks = KnownKumaScript(raw=raw, scope='compatibility support')
         self.assertTrue(ks.known)
+
+
+class TestBug(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:Bug
+    def test_plain(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Node/isSupported
+        raw = '{{bug("801425")}}'
+        ks = Bug(raw=raw, args=['801425'], scope='footnote')
+        expected = (
+            '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=801425">'
+            'bug 801425</a>')
+        self.assertEqual(ks.to_html(), expected)
+        self.assertEqual(ks.issues, [])
 
 
 class TestCompatAndroid(TestCase):
