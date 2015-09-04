@@ -6,8 +6,7 @@ from django.utils.six import text_type
 
 from mdn.html import (
     HTMLAttribute, HTMLAttributes, HTMLCloseTag, HTMLElement, HTMLInterval,
-    HTMLOpenTag, HTMLBaseTag, HTMLSelfClosingElement, HTMLText, HTMLVisitor,
-    HnElement, html_grammar)
+    HTMLOpenTag, HTMLBaseTag, HTMLText, HTMLVisitor, HnElement, html_grammar)
 from .base import TestCase
 
 
@@ -189,21 +188,6 @@ class TestHTMLCloseTag(TestCase):
         self.assertEqual(raw, text_type(tag))
 
 
-class TestHTMLSelfClosingElement(TestCase):
-    def test_to_html(self):
-        raw = '<br>'
-        attrs = HTMLAttributes()
-        element = HTMLSelfClosingElement(raw=raw, tag='br', attributes=attrs)
-        self.assertEqual(raw, element.to_html())
-
-    def test_to_html_drop_tag(self):
-        raw = '<br>'
-        attrs = HTMLAttributes()
-        element = HTMLSelfClosingElement(
-            raw=raw, tag='br', attributes=attrs, drop_tag=True)
-        self.assertEqual('', element.to_html())
-
-
 class TestHTMLElement(TestCase):
     def test_str(self):
         raw = '<p class="first">A Text Element</p>'
@@ -237,6 +221,20 @@ class TestHTMLElement(TestCase):
             raw=raw, open_tag=p_open_tag, close_tag=p_close_tag,
             children=[text1, strong_elem, text2])
         self.assertEqual('A Text Element', p_elem.to_text())
+
+    def test_br_to_html(self):
+        raw = '<br>'
+        attrs = HTMLAttributes()
+        open_tag = HTMLOpenTag(raw=raw, tag='br', attributes=attrs)
+        element = HTMLElement(raw=raw, open_tag=open_tag)
+        self.assertEqual(raw, element.to_html())
+
+    def test_br_to_html_drop_tag(self):
+        raw = '<br>'
+        attrs = HTMLAttributes()
+        open_tag = HTMLOpenTag(raw=raw, tag='br', attributes=attrs)
+        element = HTMLElement(raw=raw, open_tag=open_tag, drop_tag=True)
+        self.assertEqual('', element.to_html())
 
 
 class TestGrammar(TestCase):

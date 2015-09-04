@@ -307,9 +307,7 @@ class TestFeatureVisitor(TestCase):
         feature_id = '_support for contain and cover'
         name = 'Support for <code>contain</code> and <code>cover</code>'
         slug = 'web-css-background-size_support_for_contain_and_co'
-        issue = ('tag_dropped', 16, 20,
-                 {'scope': 'compatibility feature', 'tag': 'br'})
-        self.assert_feature(cell, feature_id, name, slug, issues=[issue])
+        self.assert_feature(cell, feature_id, name, slug)
 
     def test_code_sequence(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/display
@@ -427,10 +425,9 @@ class TestFeatureVisitor(TestCase):
         feature_id = '_cross-origin resource sharing'
         name = 'Cross-Origin Resource Sharing'
         slug = 'web-css-background-size_cross-origin_resource_shar'
-        issues = [
-            ('tag_dropped', 4, 38, {'tag': 'a', 'scope': self.scope}),
-            ('tag_dropped', 71, 75, {'tag': 'br', 'scope': self.scope})]
-        self.assert_feature(cell, feature_id, name, slug, issues=issues)
+        issue = (
+            'tag_dropped', 4, 38, {'tag': 'a', 'scope': self.scope})
+        self.assert_feature(cell, feature_id, name, slug, issues=[issue])
 
     def test_p(self):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const

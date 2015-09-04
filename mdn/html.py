@@ -438,19 +438,9 @@ class HTMLCloseTag(HTMLBaseTag):
         return "</{}>".format(self.tag)
 
 
-class HTMLSelfClosingElement(HTMLOpenTag):
-    """An HTML element that is just a tag, such as <br> and <img>."""
-
-    def to_html(self):
-        if self.drop_tag:
-            return ""
-        else:
-            return super(HTMLSelfClosingElement, self).to_html()
-
-
 @python_2_unicode_compatible
 class HTMLElement(HTMLInterval):
-    """An HTML element that contains child elements"""
+    """An HTML element that may contain child elements"""
 
     def __init__(
             self, open_tag, close_tag=None, children=None, drop_tag=False,
@@ -458,16 +448,20 @@ class HTMLElement(HTMLInterval):
         super(HTMLElement, self).__init__(**kwargs)
         self.open_tag = open_tag
         self.close_tag = close_tag
-        assert self.open_tag.tag == self.close_tag.tag
+        if self.close_tag:
+            assert self.open_tag.tag == self.close_tag.tag
+        else:
+            assert not children
         self.tag = self.open_tag.tag
-        self.children = []
-        for child in (children or []):
-            self.children.append(child)
+        self.children = list(children or [])
         self.drop_tag = drop_tag
 
     def __str__(self):
         content = join_content(text_type(child) for child in self.children)
-        return "{}{}{}".format(self.open_tag, content, self.close_tag)
+        if self.close_tag:
+            return "{}{}{}".format(self.open_tag, content, self.close_tag)
+        else:
+            return "{}".format(self.open_tag)
 
     @cached_property
     def attributes(self):
@@ -480,7 +474,7 @@ class HTMLElement(HTMLInterval):
         if drop_tag:
             return content
         else:
-            return "{}{}{}".format(self.open_tag, content, self.close_tag)
+            return text_type(self)
 
     def to_text(self):
         content = join_content(child.to_text() for child in self.children)
@@ -580,8 +574,9 @@ class HTMLVisitor(Visitor):
             **kwargs)
 
     def _visit_self_closing_element(self, node, children, **kwargs):
-        return self._visit_open(
-            node, children, cls=HTMLSelfClosingElement, **kwargs)
+        open_tag = self._visit_open(node, children, **kwargs)
+        return self.process(
+            HTMLElement, node, open_tag=open_tag, scope=self.scope, **kwargs)
 
     def _visit_close(self, node, empty):
         close_tag = node.text
