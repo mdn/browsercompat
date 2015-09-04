@@ -980,11 +980,7 @@ class TestFootnoteVisitor(TestCase):
         expected = {
             '1': ('Compatibility data from <a href="http://caniuse.com">'
                   'caniuse.com</a>.', 0, 106)}
-        issue = (
-            'unexpected_attribute', 59, 85,
-            {'node_type': 'a', 'ident': 'title',
-             'value': 'http://caniuse.com', 'expected': u'the attribute href'})
-        self.assert_footnotes(footnote, expected, issues=[issue])
+        self.assert_footnotes(footnote, expected)
 
     def test_br_start(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/VRFieldOfViewReadOnly/downDegrees

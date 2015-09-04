@@ -669,3 +669,51 @@ class TestVisitor(TestHTMLVisitor):
     def test_compatsafari(self):
         self.assert_compat_version(
             '{{CompatSafari("2")}}', CompatSafari, '2.0')
+
+    def assert_a(self, html, converted, issues=None):
+        parsed = kumascript_grammar['html'].parse(html)
+        out = self.visitor.visit(parsed)
+        self.assertEqual(len(out), 1)
+        a = out[0]
+        self.assertEqual('a', a.tag)
+        self.assertEqual(converted, a.to_html())
+        self.assertEqual(issues or [], self.visitor.issues)
+
+    def test_a_missing(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/flex
+        issues = [
+            ('unexpected_attribute', 3, 13,
+             {'node_type': 'a', 'ident': 'name', 'value': 'bc1',
+              'expected': 'the attribute href'}),
+            ('missing_attribute', 0, 14, {'node_type': 'a', 'ident': 'href'})]
+        self.assert_a(
+            '<a name="bc1">[1]</a>', '<a>[1]</a>', issues=issues)
+
+    def test_a_MDN_relative(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/image
+        self.assert_a(
+            '<a href="/en-US/docs/Web/CSS/CSS3">CSS3</a>',
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS3">'
+             'CSS3</a>'))
+
+    def test_a_external(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
+        self.assert_a(
+            ('<a href="https://dvcs.w3.org/hg/speech-api/raw-file/tip/'
+             'speechapi.html" class="external external-icon">Web Speech API'
+             '</a>'),
+            ('<a href="https://dvcs.w3.org/hg/speech-api/raw-file/tip/'
+             'speechapi.html">Web Speech API</a>'))
+
+    def test_a_bad_class(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Element/getElementsByTagNameNS
+        self.assert_a(
+            ('<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=542185#c5"'
+             ' class="link-https"'
+             ' title="https://bugzilla.mozilla.org/show_bug.cgi?id=542185#c5">'
+             'comment from Henri Sivonen about the change</a>'),
+            ('<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=542185#c5"'
+             '>comment from Henri Sivonen about the change</a>'),
+            [('unexpected_attribute', 65, 83,
+              {'node_type': 'a', 'ident': 'class', 'value': 'link-https',
+               'expected': 'the attribute href'})])
