@@ -10,10 +10,10 @@ from mdn.kumascript import (
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
     CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
-    ExperimentalInline, KumaHTMLElement, KnownKumaScript, KumaScript,
-    KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
-    SpecName, UnknownKumaScript, WebkitBug, WhyNoSpecBlock, XrefCSSLength,
-    kumascript_grammar)
+    ExperimentalInline, GeckoRelease, KumaHTMLElement, KnownKumaScript,
+    KumaScript, KumaVisitor, NonStandardInline, NotStandardInline,
+    PropertyPrefix, Spec2, SpecName, UnknownKumaScript, WebkitBug,
+    WhyNoSpecBlock, XrefCSSLength, kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
@@ -415,6 +415,35 @@ class TestExperimentalInline(TestCase):
         self.assertEqual(ks.to_html(), '')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
+
+
+class TestGeckoRelease(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:geckoRelease
+    def test_early(self):
+        raw = '{{geckoRelease("1.9.2")}}'
+        ks = GeckoRelease(raw=raw, args=["1.9.2"], scope='footnote')
+        expected = "(Firefox 3.6 / Thunderbird 3.1 / Fennec 1.0)"
+        self.assertEqual(ks.to_html(), expected)
+
+    def test_recent(self):
+        raw = '{{geckoRelease("19.0")}}'
+        ks = GeckoRelease(raw=raw, args=["19.0"], scope='footnote')
+        expected = "(Firefox 19.0 / Thunderbird 19.0 / SeaMonkey 2.16)"
+        self.assertEqual(ks.to_html(), expected)
+
+    def test_fxos(self):
+        raw = '{{geckoRelease("18.0")}}'
+        ks = GeckoRelease(raw=raw, args=["18.0"], scope='footnote')
+        expected = (
+            "(Firefox 18.0 / Thunderbird 18.0 / SeaMonkey 2.15 /"
+            " Firefox OS 1.0.1 / Firefox OS 1.1)")
+        self.assertEqual(ks.to_html(), expected)
+
+    def test_with_plus(self):
+        raw = '{{geckoRelease("33.0+")}}'
+        ks = GeckoRelease(raw=raw, args=["33.0+"], scope='footnote')
+        expected = "(Firefox 33.0+ / Thunderbird 33.0+ / SeaMonkey 2.30+)"
+        self.assertEqual(ks.to_html(), expected)
 
 
 class TestNonStandardInline(TestCase):
