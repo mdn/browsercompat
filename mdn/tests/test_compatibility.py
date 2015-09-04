@@ -360,6 +360,14 @@ class TestFeatureVisitor(TestCase):
         self.assert_feature(
             cell, feature_id, name, slug, canonical=True, obsolete=True)
 
+    def test_ks_obsolete_inline(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
+        cell = 'Version -76 support {{obsolete_inline}}'
+        feature_id = '_version -76 support'
+        name = 'Version -76 support'
+        slug = 'web-css-background-size_version_-76_support'
+        self.assert_feature(cell, feature_id, name, slug, obsolete=True)
+
     def test_ks_htmlelement(self):
         cell = '{{ HTMLElement("progress") }}'
         feature_id = '_progress'

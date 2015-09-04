@@ -12,8 +12,8 @@ from .html import HnElement, HTMLElement, HTMLText
 from .kumascript import (
     CompatGeckoFxOS, CompatKumaScript, CompatNightly, CompatNo, CompatUnknown,
     CompatVersionUnknown, DeprecatedInline, ExperimentalInline, KumaScript,
-    KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix,
-    kumascript_grammar_source)
+    KumaVisitor, NonStandardInline, NotStandardInline, ObsoleteInline,
+    PropertyPrefix, kumascript_grammar_source)
 from .utils import is_new_id, format_version, join_content
 from .visitor import Extractor
 
@@ -482,6 +482,8 @@ class CompatFeatureVisitor(CompatBaseVisitor):
         elif isinstance(processed, Footnote):
             self.add_issue('footnote_feature', processed)
         elif isinstance(processed, DeprecatedInline):
+            self.obsolete = True
+        elif isinstance(processed, ObsoleteInline):
             self.obsolete = True
         elif isinstance(processed, ExperimentalInline):
             self.experimental = True
