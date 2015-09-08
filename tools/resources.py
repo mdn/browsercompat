@@ -1,4 +1,4 @@
-"""Classes for working with web-platform-compat resources."""
+"""Classes for working with browsercompat resources."""
 from __future__ import unicode_literals
 
 from collections import defaultdict, OrderedDict
@@ -66,7 +66,7 @@ class LinkList(object):
 
 
 class Resource(object):
-    """A web-platform-compat resource.
+    """A browsercompat resource.
 
     Derived classes *must* define two class-level attributes:
     _resource_type - the name of the API resource, such as 'browsers'

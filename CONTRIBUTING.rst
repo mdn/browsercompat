@@ -54,12 +54,12 @@ GitHub workflow
 ---------------
 1. `Get your environment setup`_
 2. Set up mozilla remote
-   (``$ git remote add mozilla git://github.com/mozilla/web-platform-compat.git``)
+   (``$ git remote add mozilla git://github.com/mdn/browsercompat.git``)
 3. Create a branch for a bug
    (``$ git checkout -b new-issue-888888``)
 4. Develop on bug branch.
 
-   `Time passes, the mozilla/web-platform-compat repository accumulates new commits`
+   `Time passes, the mdn/browsercompat repository accumulates new commits`
 5. Commit changes to bug branch 
    (``$ git add . ; git commit -m 'fix bug 888888 - commit message'``)
 6. Fetch mozilla

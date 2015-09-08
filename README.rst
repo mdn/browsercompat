@@ -1,26 +1,26 @@
 =============================
-web-platform-compat
+browsercompat
 =============================
 
-.. image:: https://travis-ci.org/jwhitlock/web-platform-compat.png?branch=master
-    :target: https://travis-ci.org/jwhitlock/web-platform-compat
+.. image:: https://img.shields.io/travis/mdn/browsercompat/master.svg
+    :target: https://travis-ci.org/mdn/browsercompat
     :alt: Build Status
 
-.. image:: https://coveralls.io/repos/jwhitlock/web-platform-compat/badge.png?branch=master
-    :target: https://coveralls.io/r/jwhitlock/web-platform-compat?branch=master
+.. image:: https://img.shields.io/coveralls/mdn/browsercompat/master.svg
+    :target: https://coveralls.io/r/mdn/browsercompat?branch=master
     :alt: Test Coverage
 
-.. image:: https://requires.io/github/jwhitlock/web-platform-compat/requirements.svg?branch=master
-     :target: https://requires.io/github/jwhitlock/web-platform-compat/requirements/?branch=master
+.. image:: https://img.shields.io/requires/github/mdn/browsercompat.svg
+     :target: https://requires.io/github/mdn/browsercompat/requirements/?branch=master
      :alt: Requirements Status
 
 .. image:: https://www.herokucdn.com/deploy/button.png
-    :target: https://heroku.com/deploy?template=https://github.com/jwhitlock/web-platform-compat
+    :target: https://heroku.com/deploy?template=https://github.com/mdn/browsercompat
     :alt: Deploy
 
 .. Omit badges from docs
 
-The Web Platform Compatibility API will support compatibility data on the
+The Browser Compatibility API will support compatibility data on the
 `Mozilla Developer Network`_.  This currently takes the form of browser
 compatibility tables, such as the one on the `CSS display property`_.
 The API will help centralize this data, and allow it to be kept consistant
@@ -28,10 +28,6 @@ across languages and different presentations.
 
 .. _Mozilla Developer Network: https://developer.mozilla.org
 .. _CSS display property: https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility
-
-*Note: This project will be renamed to browsercompat in the near future, to
-syncronize the project name with the planned production domain name
-https://browsercompat.org.*
 
 The project started in December 2013.  The goals, requirements, and current
 status are documented on the MozillaWiki_.
@@ -56,18 +52,15 @@ as an aid to the discussion.
 Development
 -----------
 
-:Code:           https://github.com/jwhitlock/web-platform-compat
-:Dev Server:     https://browsercompat.herokuapp.com (based on `jwhitlock/browsercompat-data`_)
+:Code:           https://github.com/mdn/browsercompat
+:Dev Server:     https://browsercompat.herokuapp.com (based on `mdn/browsercompat-data`_)
 :Issues:         https://bugzilla.mozilla.org/buglist.cgi?quicksearch=compat-data (tracking bug)
 
-                 https://github.com/jwhitlock/web-platform-compat/issues?state=open (documentation issues)
-
                  https://bugzilla.mozilla.org/showdependencytree.cgi?id=996570&hide_resolved=1 (blocking issues for v1)
-:Dev Docs:       https://web-platform-compat.readthedocs.org
+:Dev Docs:       https://browsercompat.readthedocs.org
 
-                 https://github.com/jwhitlock/web-platform-compat/wiki
+                 https://github.com/mdn/browsercompat/wiki
 :Mailing list:   https://lists.mozilla.org/listinfo/dev-mdn
 :IRC:            irc://irc.mozilla.org/mdndev
 
-.. _`webplatform/compatibility-data`: https://github.com/webplatform/compatibility-data
-.. _`jwhitlock/browsercompat-data`: https://github.com/jwhitlock/browsercompat-data
+.. _`mdn/browsercompat-data`: https://github.com/mdn/browsercompat-data

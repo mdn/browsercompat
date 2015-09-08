@@ -3,7 +3,7 @@
 History
 -------
 
-web-platform-compat has not been released to production yet.  The blocking
+browsercompat has not been released to production yet.  The blocking
 issues for version 1 are tracked on Bugzilla_.
 
 In-progess versions are periodically deployed to Heroku at
