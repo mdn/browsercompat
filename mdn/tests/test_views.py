@@ -17,9 +17,10 @@ class TestFeaturePageListView(TestCase):
         self.url = reverse('feature_page_list')
 
     def add_page(self):
+        feature = self.create(Feature, slug='web-css-display')
         return FeaturePage.objects.create(
             url="https://developer.mozilla.org/en-US/docs/Web/CSS/display",
-            feature_id=1)
+            feature=feature)
 
     def test_empty_list(self):
         response = self.client.get(self.url)
@@ -35,6 +36,32 @@ class TestFeaturePageListView(TestCase):
         self.assertEqual(1, len(pages.object_list))
         obj = pages.object_list[0]
         self.assertEqual(obj.id, feature_page.id)
+        data_counts = [
+            ('Critical errors', ('danger', 'striped'), 0, 0),
+            ('Errors', ('danger',), 0, 0),
+            ('Warnings', ('warning',), 0, 0),
+            ('No Errors', ('success',), 0, 0),
+        ]
+        self.assertEqual(data_counts, response.context_data['data_counts'])
+        status_counts = {'total': 1, 'data': 0, 'no_data': 0, 'other': 1}
+        self.assertEqual(status_counts, response.context_data['status_counts'])
+
+    def test_with_issue(self):
+        feature_page = self.add_page()
+        feature_page.issues.create(slug='halt_import', start=1, end=1)
+        feature_page.status = FeaturePage.STATUS_PARSED_CRITICAL
+        feature_page.save()
+        response = self.client.get(self.url)
+        self.assertEqual(200, response.status_code)
+        data_counts = [
+            ('Critical errors', ('danger', 'striped'), 1, '100.0'),
+            ('Errors', ('danger',), 0, 0),
+            ('Warnings', ('warning',), 0, 0),
+            ('No Errors', ('success',), 0, 0),
+        ]
+        self.assertEqual(data_counts, response.context_data['data_counts'])
+        status_counts = {'total': 1, 'data': 1, 'no_data': 0, 'other': 0}
+        self.assertEqual(status_counts, response.context_data['status_counts'])
 
     def test_topic_filter(self):
         feature_page = self.add_page()
@@ -42,6 +69,38 @@ class TestFeaturePageListView(TestCase):
             url="https://developer.mozilla.org/en-US/docs/Other",
             feature_id=2)
         url = self.url + "?topic=docs/Web"
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        pages = response.context_data['page_obj']
+        self.assertEqual(1, len(pages.object_list))
+        obj = pages.object_list[0]
+        self.assertEqual(obj.id, feature_page.id)
+
+    def test_status_filter(self):
+        feature_page = self.add_page()
+        feature_page.status = FeaturePage.STATUS_PARSED_CRITICAL
+        feature_page.save()
+        FeaturePage.objects.create(
+            url="https://developer.mozilla.org/en-US/docs/Other",
+            status=FeaturePage.STATUS_PARSED,
+            feature_id=2)
+        url = self.url + "?status=%s" % FeaturePage.STATUS_PARSED_CRITICAL
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        pages = response.context_data['page_obj']
+        self.assertEqual(1, len(pages.object_list))
+        obj = pages.object_list[0]
+        self.assertEqual(obj.id, feature_page.id)
+
+    def test_status_other_filter(self):
+        feature_page = self.add_page()
+        feature_page.status = FeaturePage.STATUS_META
+        feature_page.save()
+        FeaturePage.objects.create(
+            url="https://developer.mozilla.org/en-US/docs/Other",
+            status=FeaturePage.STATUS_PARSED,
+            feature_id=2)
+        url = self.url + "?status=other"
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
         pages = response.context_data['page_obj']
@@ -228,6 +287,16 @@ class TestIssuesDetail(TestCase):
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, response.context_data['count'])
+        self.assertEqual([], response.context_data['headers'])
+
+    def test_get_with_issue_parameters(self):
+        self.issue.params = {'text': 'inline text'}
+        self.issue.save()
+        url = reverse('issues_detail', kwargs={'slug': 'inline-text'})
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, response.context_data['count'])
+        self.assertEqual(['Page', 'text'], response.context_data['headers'])
 
     def test_get_without_issues(self):
         url = reverse('issues_detail', kwargs={'slug': 'other'})
@@ -241,3 +310,42 @@ class TestIssuesSummary(TestCase):
         url = reverse('issues_summary')
         response = self.client.get(url)
         self.assertEqual(200, response.status_code)
+
+
+class CSVTestCase(TestCase):
+    def setUp(self):
+        self.feature = self.create(Feature, slug='web-css-float')
+        self.fp = FeaturePage.objects.create(
+            url="https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+            feature_id=self.feature.id, data='{"foo": "bar"}',
+            status=FeaturePage.STATUS_PARSED)
+        self.issue = Issue.objects.create(
+            page=self.fp, slug="inline-text", start=10, end=20,
+            params='{"text": "inline"}')
+
+    def assert_csv_response(self, url, expected_lines):
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        csv_lines = response.content.decode('utf8').splitlines()
+        self.assertEqual(expected_lines, csv_lines)
+
+
+class TestIssuesDetailCSV(CSVTestCase):
+    def test_get(self):
+        url = reverse('issues_detail_csv', kwargs={'slug': 'inline-text'})
+        full_url = 'http://testserver/importer/{}'.format(self.fp.pk)
+        expected = [
+            'MDN Slug,Import URL,Source Start,Source End,text',
+            'docs/Web/CSS/float,{},10,20,inline'.format(full_url),
+        ]
+        self.assert_csv_response(url, expected)
+
+
+class TestIssuesSummaryCSV(CSVTestCase):
+    def test_get(self):
+        url = reverse('issues_summary_csv')
+        expected = [
+            'Count,Issue',
+            '1,inline-text',
+        ]
+        self.assert_csv_response(url, expected)

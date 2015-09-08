@@ -20,25 +20,66 @@
    value="Search or Filter by URL">
 </form>
 
-<h3>Filter by Topic </h3>
-<div>
-{% for topic_name in topics %}
-{% if topic == topic_name %}
-<a class="btn btn-primary"
-   href="{{ url('feature_page_list') }}">
-  {{ topic_name }} (clear)
-</a>
-{% else %}
-<a class="btn btn-default"
-   href="{{ url('feature_page_list') + '?topic=' + topic_name }}">
-  {{ topic_name }}
-</a>
-{% endif %}
+<h3>Filter</h3>
+<p><strong>By Topic</strong>:
+  <div>
+  {% for topic_name in topics %}
+    {% if topic == topic_name %}
+      <a class="btn btn-primary"
+         href="{{ drop_filter_from_current_url('topic') }}">
+        {{ topic_name }} (clear)
+      </a>
+    {% else %}
+      <a class="btn btn-default"
+         href="{{ add_filter_to_current_url('topic', topic_name) }}">
+        {{ topic_name }}
+      </a>
+    {% endif %}
+  {% endfor %}
+  {% if topic and topic not in topics %}
+      <a class="btn btn-primary"
+         href="{{ drop_filter_from_current_url('topic') }}">
+        {{ topic }} (clear)</a>
+  {% endif %}
+  </div>
+</p>
+
+<p><strong>By Status</strong>:
+{% if not status %}
+<p>
+  {{ status_counts.no_data }} pages have no compatibility data.
+  {{ status_counts.data }} pages with data by error status:
+<div class="progress">
+{% for name, classes, count, percent in data_counts %}
+  {% if count %}
+    <div class="progress-bar {% for class in classes %}progress-bar-{{ class }} {% endfor %}"
+        aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ percent }}"
+        style="width: {{ percent }}%;"
+        data-toggle="tooltip" data-placement="top"
+        title="{{ count }} ({{ percent }}%) with {{ name }}">
+        {{ percent }}%
+    </div>
+  {% endif %}
 {% endfor %}
-{% if topic and topic not in topics %}
-<a class="btn btn-primary">{{ topic }} (clear)</a>
-{% endif %}
 </div>
+</p>
+{% endif %}
+  <div>
+  {% for status_value, name, class in statuses %}
+    {% if status == status_value %}
+      <a class="btn btn-primary"
+         href="{{ drop_filter_from_current_url('status') }}">
+        {{ name }} (clear)
+      </a>
+    {% else %}
+      <a class="btn btn-{% if status %}default{% else %}{{ class }}{% endif %}"
+         href="{{ add_filter_to_current_url('status', status_value) }}">
+        {{ name }}
+      </a>
+    {% endif %}
+  {% endfor %}
+  </div>
+</p>
 
 {% if page_obj %}
 <h3>
@@ -46,7 +87,7 @@
     ({{ page_obj.paginator.count }}
     import{% if page_obj.paginator.count > 1 %}s{% endif %})
 </h3>
-{{ pagination_control(page_obj, base_url) }}
+{% if page_obj.number != 1 %}{{ pagination_control(page_obj) }}{% endif %}
 <table class="table table-condensed">
   <thead>
     <tr>
@@ -68,7 +109,7 @@
       <td><a href="{{ url('feature_page_detail', pk=page.id) }}">{{ page.get_status_display() }}</a></td>
       <td>
         <a href="{{ url('feature_page_detail', pk=page.id) }}">
-        {%- if page.status == page.STATUS_PARSED -%}
+        {%- if page.is_parsed -%}
           {%- if page.has_issues %}
             {{ page.warnings }} / {{ page.errors }} / {{ page.critical }}
           {% else %}
@@ -87,9 +128,13 @@
     {% endfor %}
   </tbody>
 </table>
-{{ pagination_control(page_obj, base_url) }}
+{{ pagination_control(page_obj) }}
 {% else %}
-<p><i>No pages imported yet.</i></p>
+  {% if topic or status %}
+    <p><i>No pages match the filter{% if topic and status %}s{% endif %}.</i></p>
+  {% else %}
+    <p><i>No pages imported yet.</i></p>
+  {% endif %}
 {% endif %}
 
 {% if can_create_mdn_import(request.user) %}
@@ -98,10 +143,10 @@
 
 {% endblock content %}
 
-{% block block_js_extra %}
+{% block body_js_extra %}
 <script>
 $(function () {
-  $('#issue-header').tooltip()
+  $('[data-toggle="tooltip"]').tooltip()
 })
 </script>
 {% endblock %}

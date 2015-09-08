@@ -1,11 +1,14 @@
 """Views for MDN migration app."""
 from collections import Counter
+from json import loads
+import csv
 
 from django import forms
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, JsonResponse
+from django.db.models import Count
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils.six.moves.urllib.parse import urlparse, urlunparse
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.base import TemplateResponseMixin, View
@@ -30,36 +33,97 @@ class FeaturePageListView(ListView):
     model = FeaturePage
     template_name = "mdn/feature_page_list.jinja2"
     paginate_by = 50
+    topics = (
+        'docs/Web/API',
+        'docs/Web/CSS',
+        'docs/Web/Events',
+        'docs/Web/Guide',
+        'docs/Web/HTML',
+        'docs/Web/JavaScript',
+        'docs/Web/MathML',
+        'docs/Web/SVG',
+    )
+    status_names = dict(FeaturePage.STATUS_CHOICES)
+    statuses = (
+        (str(FeaturePage.STATUS_PARSED_CRITICAL),
+            status_names[FeaturePage.STATUS_PARSED_CRITICAL], 'danger'),
+        (str(FeaturePage.STATUS_PARSED_ERROR),
+            status_names[FeaturePage.STATUS_PARSED_ERROR], 'danger'),
+        (str(FeaturePage.STATUS_PARSED_WARNING),
+            status_names[FeaturePage.STATUS_PARSED_WARNING], 'warning'),
+        (str(FeaturePage.STATUS_PARSED), 'No Errors', 'success'),
+        (str(FeaturePage.STATUS_NO_DATA),
+            status_names[FeaturePage.STATUS_NO_DATA], 'default'),
+        ('other', 'Other', 'info'),
+    )
+    standard_statuses = (
+        FeaturePage.STATUS_PARSED_CRITICAL,
+        FeaturePage.STATUS_PARSED_ERROR,
+        FeaturePage.STATUS_PARSED_WARNING,
+        FeaturePage.STATUS_PARSED,
+        FeaturePage.STATUS_NO_DATA)
+    progress_bar_order = (
+        (FeaturePage.STATUS_PARSED_CRITICAL, 'Critical errors',
+            ('danger', 'striped')),
+        (FeaturePage.STATUS_PARSED_ERROR, 'Errors', ('danger',)),
+        (FeaturePage.STATUS_PARSED_WARNING, 'Warnings', ('warning',)),
+        (FeaturePage.STATUS_PARSED, 'No Errors', ('success',)),
+    )
 
     def get_queryset(self):
         qs = FeaturePage.objects.order_by('url')
         topic = self.request.GET.get('topic')
         if topic:
             qs = qs.filter(url__startswith=DEV_PREFIX + topic)
+        status = self.request.GET.get('status')
+        if status:
+            if status == 'other':
+                qs = qs.exclude(status__in=self.standard_statuses)
+            else:
+                qs = qs.filter(status=status)
         return qs
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageListView, self).get_context_data(**kwargs)
-        topic = self.request.GET.get('topic')
-        base_url = reverse('feature_page_list')
-        if topic:
-            base_url += '?topic=' + topic
-        ctx['base_url'] = base_url
         ctx['request'] = self.request
-        ctx['topic'] = topic
-        ctx['topics'] = sorted((
-            'docs/Web/API',
-            'docs/Web/Accessibility',
-            'docs/Web/CSS',
-            'docs/Web/Events',
-            'docs/Web/Guide',
-            'docs/Web/HTML',
-            'docs/Web/JavaScript',
-            'docs/Web/MathML',
-            'docs/Web/SVG',
-            'docs/Web/XPath',
-            'docs/Web/XSLT',
-        ))
+
+        # Topic filter buttons
+        ctx['topic'] = self.request.GET.get('topic')
+        ctx['topics'] = self.topics
+
+        # Status filter buttons
+        ctx['status'] = self.request.GET.get('status')
+        ctx['statuses'] = self.statuses
+
+        # Status progress bar
+        raw_status_counts = self.object_list.order_by(
+            'status').values('status').annotate(total=Count('status'))
+        status_counts = {}
+        total = 0
+        for item in raw_status_counts:
+            status_counts[item['status']] = item['total']
+            total += item['total']
+        have_data_count = sum(
+            status_counts.get(item[0], 0) for item in self.progress_bar_order)
+        data_counts_list = []
+        for status, name, classes in self.progress_bar_order:
+            count = status_counts.get(status, 0)
+            if count:
+                percent = "%0.1f" % (
+                    100.0 * (float(count) / float(have_data_count)))
+            else:
+                percent = 0
+            data_counts_list.append((name, classes, count, percent))
+        ctx['data_counts'] = data_counts_list
+        no_data_count = status_counts.get(FeaturePage.STATUS_NO_DATA, 0)
+        other_count = total - have_data_count - no_data_count
+        ctx['status_counts'] = {
+            'total': total,
+            'data': have_data_count,
+            'no_data': no_data_count,
+            'other': other_count
+        }
+
         return ctx
 
 
@@ -256,6 +320,21 @@ class IssuesSummary(TemplateView):
 
 class IssuesDetail(TemplateView):
     template_name = "mdn/issues_detail.jinja2"
+    headers_by_issue = {
+        'exception': (),
+        'failed_download': (),
+        'footnote_missing': (),
+        'footnote_multiple': (),
+        'footnote_unused': (),
+        'kumascript_wrong_args': ('kumascript', 'arg_spec', 'scope'),
+        'missing_attribute': ('node_type', 'ident'),
+        'skipped_h3': (),
+        'tag_dropped': ('tag', 'scope'),
+        'unexpected_attribute': ('node_type', 'ident', 'value', 'expected'),
+        'unexpected_kumascript': ('kumascript', 'scope'),
+        'unknown_kumascript': ('kumascript', 'scope'),
+        'unknown_version': ('browser_name', 'version'),
+    }
 
     def get_context_data(self, **kwargs):
         ctx = super(IssuesDetail, self).get_context_data(**kwargs)
@@ -265,16 +344,78 @@ class IssuesDetail(TemplateView):
             ctx['sample_issue'] = issues.first()
             ctx['count'] = issues.count()
             pages = Counter()
-            for url, pid in issues.values_list('page__url', 'page_id'):
-                key = (url.replace(DEV_PREFIX, '', 1), pid)
-                pages[key] += 1
+            raw_details = []
+            raw_headers = set()
+            for url, pid, raw_params in issues.values_list(
+                    'page__url', 'page_id', 'params'):
+                mdn_slug = url.replace(DEV_PREFIX, '', 1)
+                pages[(mdn_slug, pid)] += 1
+                params = loads(raw_params)
+                raw_details.append((mdn_slug, pid, params))
+                raw_headers.update(set(params.keys()))
+            headers = list(
+                self.headers_by_issue.get(slug, sorted(raw_headers)))
+            if headers:
+                details = []
+                for mdn_slug, pid, params in raw_details:
+                    details.append(
+                        [mdn_slug, pid] +
+                        [params.get(header, '') for header in headers])
+                ctx['headers'] = ['Page'] + headers
+                ctx['details'] = details
+            else:
+                ctx['headers'] = []
+                ctx['details'] = []
             ctx['pages'] = pages
         else:
             ctx['sample_issue'] = None
             ctx['count'] = 0
+            ctx['headers'] = []
+            ctx['details'] = []
             ctx['pages'] = {}
         ctx['slug'] = slug
         return ctx
+
+
+def issues_summary_csv(request):
+    raw_counts = Issue.objects.values('slug').annotate(total=Count('slug'))
+    counts = [(raw['total'], raw['slug']) for raw in raw_counts]
+    counts.sort(reverse=True)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = (
+        'attachment; filename="import_issue_counts.csv"')
+    writer = csv.writer(response)
+    writer.writerow(['Count', 'Issue'])
+    writer.writerows(counts)
+    return response
+
+
+def issues_detail_csv(request, slug):
+    issues = Issue.objects.filter(slug=slug).select_related('page__url')
+    raw_headers = set()
+    lines = []
+    raw_params = []
+    for issue in issues:
+        full_url = request.build_absolute_uri(
+            reverse('feature_page_detail', kwargs={'pk': issue.page_id}))
+        mdn_slug = issue.page.url.replace(DEV_PREFIX, '', 1)
+        lines.append([mdn_slug, full_url, issue.start, issue.end])
+        raw_params.append(issue.params)
+        raw_headers.update(set(issue.params.keys()))
+    headers = sorted(raw_headers)
+    for line, params in zip(lines, raw_params):
+        line.extend([params.get(header, "") for header in headers])
+
+    response = HttpResponse(content_type='text/csv')
+    filename = 'import_issues_for_{}.csv'.format(slug)
+    response['Content-Disposition'] = (
+        'attachment; filename="{}"'.format(filename))
+    writer = csv.writer(response)
+    writer.writerow(
+        ['MDN Slug', 'Import URL', 'Source Start', 'Source End'] + headers)
+    writer.writerows(lines)
+    return response
 
 
 feature_page_create = user_passes_test(can_create)(

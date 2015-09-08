@@ -2,10 +2,15 @@
 """Tests for jingo/jinja2 helper functions and filters."""
 
 from __future__ import unicode_literals
+from collections import OrderedDict
+import mock
 
 from django.core.paginator import Paginator
+from django.utils.six.moves.urllib_parse import urlparse, parse_qsl
 
-from mdn.helpers import page_list, pagination_control
+from mdn.helpers import (
+    add_filter_to_current_url, drop_filter_from_current_url, page_list,
+    pagination_control)
 from webplatformcompat.tests.base import TestCase as BaseTestCase
 
 
@@ -69,15 +74,63 @@ class TestPageList(TestCase):
         self.assertEqual([1, None, 4, 5, 6, None, 9], page_list(page))
 
 
-class TestPagnationControl(TestCase):
+class CurrentURLTestCase(TestCase):
+    def mock_context(self, url):
+        mock_request = mock.Mock(spec_set=['path', 'GET'])
+        url_parts = urlparse(url)
+        mock_request.path = url_parts.path
+        mock_request.GET = OrderedDict(parse_qsl(url_parts.query))
+        return {'request': mock_request}
+
+
+class TestAddFilterToCurrentURL(CurrentURLTestCase):
+    def test_empty(self):
+        context = self.mock_context('/foo')
+        out = add_filter_to_current_url(context, 'test', 1)
+        self.assertEqual('/foo?test=1', out)
+
+    def test_change(self):
+        context = self.mock_context('/foo?test=1')
+        out = add_filter_to_current_url(context, 'test', 2)
+        self.assertEqual('/foo?test=2', out)
+
+    def test_other(self):
+        context = self.mock_context('/foo?bar=1')
+        out = add_filter_to_current_url(context, 'test', 2)
+        self.assertEqual('/foo?bar=1&test=2', out)
+
+
+class TestDropFilterFromCurrentURL(CurrentURLTestCase):
+    def test_empty(self):
+        context = self.mock_context('/foo')
+        out = drop_filter_from_current_url(context, 'test')
+        self.assertEqual('/foo', out)
+
+    def test_only(self):
+        context = self.mock_context('/foo?test=1')
+        out = drop_filter_from_current_url(context, 'test')
+        self.assertEqual('/foo', out)
+
+    def test_missing(self):
+        context = self.mock_context('/foo?bar=1')
+        out = drop_filter_from_current_url(context, 'test')
+        self.assertEqual('/foo?bar=1', out)
+
+    def test_with_others(self):
+        context = self.mock_context('/foo?bar=1&test=2')
+        out = drop_filter_from_current_url(context, 'test')
+        self.assertEqual('/foo?bar=1', out)
+
+
+class TestPaginationControl(CurrentURLTestCase):
     def test_one_page(self):
         page = self.page(1, 1)
-        out = pagination_control(None, page, '/test')
+        out = pagination_control(self.mock_context('/test'), page)
         self.assertEqual("", out)
 
     def test_first_page(self):
         page = self.page(1, 3)
-        out = pagination_control(None, page, '/test')
+        out = pagination_control(self.mock_context('/test'), page)
         expected_prev = (
             '<li class="disabled"><span aria-hidden="true">&laquo;</span>'
             '</li>')
@@ -89,7 +142,7 @@ class TestPagnationControl(TestCase):
 
     def test_middle_page(self):
         page = self.page(2, 3)
-        out = pagination_control(None, page, '/test')
+        out = pagination_control(self.mock_context('/test'), page)
         expected_prev = (
             '<li><a href="/test" aria-label="Previous">'
             '<span aria-hidden="true">&laquo;</span></a></li>')
@@ -101,7 +154,7 @@ class TestPagnationControl(TestCase):
 
     def test_last_page(self):
         page = self.page(3, 3)
-        out = pagination_control(None, page, '/test')
+        out = pagination_control(self.mock_context('/test'), page)
         expected_prev = (
             '<li><a href="/test?page=2" aria-label="Previous">'
             '<span aria-hidden="true">&laquo;</span></a></li>')
@@ -113,7 +166,7 @@ class TestPagnationControl(TestCase):
 
     def test_deep_middle_page(self):
         page = self.page(5, 9)
-        out = pagination_control(None, page, '/test')
+        out = pagination_control(self.mock_context('/test'), page)
         expected_spacer = (
             '<li class="disabled"><span aria-hidden="true">&hellip;</span>'
             '</li>')
