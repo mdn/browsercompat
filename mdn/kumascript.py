@@ -77,6 +77,7 @@ SCOPES = set((
 ))
 
 MDN_DOMAIN = "https://developer.mozilla.org"
+MDN_DOCS = MDN_DOMAIN + '/en-US/docs'
 
 
 @python_2_unicode_compatible
@@ -522,21 +523,47 @@ class CSSBox(KnownKumaScript):
     expected_scopes = set()
 
 
-class CSSxRef(KnownKumaScript):
+class XRefBase(KnownKumaScript):
+    """Base class for cross-reference KumaScript"""
+    expected_scopes = set((
+        'compatibility feature', 'specification description', 'footnote'))
+
+    def __init__(self, **kwargs):
+        super(XRefBase, self).__init__(**kwargs)
+        self.url = None
+        self.display = None
+        self.linked = self.scope in ('specification description', 'footnote')
+
+    def to_html(self):
+        """Convert macro to link or plain text."""
+        assert self.display
+        if self.linked:
+            assert self.url
+            return '<a href="{}"><code>{}</code></a>'.format(
+                self.url, self.display)
+        else:
+            return '<code>{}</code>'.format(self.display)
+
+
+class CSSxRef(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:cssxref
     min_args = 1
     max_args = 3
     arg_names = ['APIName', 'DisplayName', 'Anchor']
     canonical_name = 'cssxref'
-    expected_scopes = set(('specification description', 'footnote'))
 
     def __init__(self, **kwargs):
         super(CSSxRef, self).__init__(**kwargs)
         self.api_name = self.arg(0)
         self.display_name = self.arg(1)
+        self.anchor = self.arg(2)
+        self.construct_crossref(
+            self.api_name, self.display_name, self.anchor)
 
-    def to_html(self):
-        return '<code>{}</code>'.format(self.display_name or self.api_name)
+    def construct_crossref(self, api_name, display_name, anchor=None):
+        self.url = '{}/Web/CSS/{}{}'.format(
+            MDN_DOCS, api_name, anchor or '')
+        self.display = display_name or api_name
 
 
 class DeprecatedInline(KnownKumaScript):
@@ -545,22 +572,71 @@ class DeprecatedInline(KnownKumaScript):
     expected_scopes = set(('compatibility feature',))
 
 
-class DOMxRef(KnownKumaScript):
+class DOMEventXRef(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:domeventxref
+    min_args = max_args = 1
+    arg_names = ['api_name']
+    canonical_name = 'domeventxref'
+
+    def __init__(self, **kwargs):
+        """Initialize DOMEventXRef.
+
+        Only implements the subset of domeventxref used on current pages.
+        """
+        super(DOMEventXRef, self).__init__(**kwargs)
+        self.api_name = self.arg(0)
+        assert '()' not in self.api_name
+        self.url = '{}/DOM/DOM_event_reference/{}'.format(
+            MDN_DOCS, self.api_name)
+        self.display = self.api_name
+
+
+class DOMException(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:exception
+    min_args = max_args = 1
+    arg_names = ['exception_id']
+    canonical_name = 'exception'
+
+    def __init__(self, **kwargs):
+        super(DOMException, self).__init__(**kwargs)
+        self.exception_id = self.arg(0)
+        self.url = '{}/Web/API/DOMException#{}'.format(
+            MDN_DOCS, self.exception_id)
+        self.display = self.exception_id
+
+
+class DOMxRef(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:domxref
     min_args = 1
     max_args = 2
     arg_names = ['DOMPath', 'DOMText']
     canonical_name = 'domxref'
-    expected_scopes = set(
-        ('specification description', 'compatibility feature', 'footnote'))
 
     def __init__(self, **kwargs):
         super(DOMxRef, self).__init__(**kwargs)
         self.dom_path = self.arg(0)
         self.dom_text = self.arg(1)
+        path = self.dom_path.replace(' ', '_').replace('()', '')
+        if '.' in path and '..' not in path:
+            path = path.replace('.', '/')
+        path = path[0].upper() + path[1:]
+        self.url = '{}/Web/API/{}'.format(MDN_DOCS, path)
+        self.display = self.dom_text or self.dom_path
 
-    def to_html(self):
-        return '<code>{}</code>'.format(self.dom_text or self.dom_path)
+
+class Event(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:event
+    min_args = 1
+    max_args = 2
+    arg_names = ['api_name', 'display_name']
+    canonical_name = 'event'
+
+    def __init__(self, **kwargs):
+        super(Event, self).__init__(**kwargs)
+        self.api_name = self.arg(0)
+        self.display_name = self.arg(1)
+        self.url = '{}/Web/Events/{}'.format(MDN_DOCS, self.api_name)
+        self.display = self.display_name or self.api_name
 
 
 class ExperimentalInline(KnownKumaScript):
@@ -629,6 +705,52 @@ class GeckoRelease(KnownKumaScript):
         return '(' + ' / '.join([rel + plus for rel in self.releases]) + ')'
 
 
+class HTMLAttrXRef(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:htmlattrxref
+    min_args = 1
+    max_args = 2
+    arg_names = ['attribute', 'element']
+    canonical_name = 'htmlattrxref'
+
+    def __init__(self, **kwargs):
+        super(HTMLAttrXRef, self).__init__(**kwargs)
+        self.attribute = self.arg(0)
+        self.element = self.arg(1)
+        self.text = self.arg(2)
+        if self.element:
+            self.url = '{}/Web/HTML/Element/{}'.format(MDN_DOCS, self.element)
+        else:
+            self.url = '{}/Web/HTML/Global_attributes'.format(MDN_DOCS)
+        self.url += '#attr-' + self.attribute.lower()
+        self.display = self.attribute.lower()
+
+
+class JSxRef(XRefBase):
+    # https://developer.mozilla.org/en-US/docs/Template:jsxref
+    min_args = 1
+    max_args = 2
+    arg_names = ['API name', 'display name']
+    canonical_name = 'jsxref'
+
+    def __init__(self, **kwargs):
+        """
+        Initialize JSxRef
+
+        {{jsxref}} macro can take 4 arguments, but only handling first two.
+        """
+        super(JSxRef, self).__init__(**kwargs)
+        self.api_name = self.arg(0)
+        self.display_name = self.arg(1)
+        path_name = self.api_name.replace('.prototype.', '/').replace('()', '')
+        if path_name.startswith('Global_Objects/'):
+            path_name = path_name.replace('Global_Objects/', '', 1)
+        if '.' in path_name and '...' not in path_name:
+            path_name = path_name.replace('.', '/')
+        self.url = '{}/Web/JavaScript/Reference/Global_Objects/{}'.format(
+            MDN_DOCS, path_name)
+        self.display = self.display_name or self.api_name
+
+
 class NonStandardInline(KnownKumaScript):
     # https://developer.mozilla.org/en-US/docs/Template:non-standard_inline
     canonical_name = 'non-standard_inline'
@@ -694,13 +816,74 @@ class WhyNoSpecBlock(HTMLInterval):
         return ""
 
 
-class XrefCSSLength(KnownKumaScript):
+class XrefCSSBase(CSSxRef):
+    """Base class for xref_cssXXX macros"""
+    min_args = max_args = 0
+    arg_names = []
+
+    def __init__(self, **kwargs):
+        super(XrefCSSBase, self).__init__(**kwargs)
+        self.construct_crossref(*self.xref_args)
+
+
+class XrefCSSAngle(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssangle
+    canonical_name = 'xref_cssangle'
+    xref_args = ('angle', '&lt;angle&gt;')
+
+
+class XrefCSSColorValue(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_csscolorvalue
+    canonical_name = 'xref_csscolorvalue'
+    xref_args = ('color_value', '&lt;color&gt;')
+
+
+class XrefCSSGradient(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssgradient
+    canonical_name = 'xref_cssgradient'
+    xref_args = ('gradient', '&lt;gradient&gt;')
+
+
+class XrefCSSImage(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssimage
+    canonical_name = 'xref_cssimage'
+    xref_args = ('image', '&lt;image&gt;')
+
+
+class XrefCSSInteger(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssinteger
+    canonical_name = 'xref_cssinteger'
+    xref_args = ('integer', '&lt;integer&gt;')
+
+
+class XrefCSSLength(XrefCSSBase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
     canonical_name = 'xref_csslength'
-    expected_scopes = set(('specification description', 'footnote'))
+    xref_args = ('length', '&lt;length&gt;')
 
-    def to_html(self):
-        return '<code>&lt;length&gt;</code>'
+
+class XrefCSSNumber(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssnumber
+    canonical_name = 'xref_cssnumber'
+    xref_args = ('number', '&lt;number&gt;')
+
+
+class XrefCSSPercentage(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_csspercentage
+    canonical_name = 'xref_csspercentage'
+    xref_args = ('percentage', '&lt;percentage&gt;')
+
+
+class XrefCSSString(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssstring
+    canonical_name = 'xref_cssstring'
+    xref_args = ('string', '&lt;string&gt;')
+
+
+class XrefCSSVisual(XrefCSSBase):
+    # https://developer.mozilla.org/en-US/docs/Template:xref_cssvisual
+    canonical_name = 'xref_cssvisual'
+    xref_args = ('Media/Visual', '&lt;visual&gt;')
 
 
 class BaseKumaVisitor(HTMLVisitor):
@@ -774,14 +957,28 @@ class BaseKumaVisitor(HTMLVisitor):
         'cssbox': CSSBox,
         'cssxref': CSSxRef,
         'deprecated_inline': DeprecatedInline,
+        'domeventxref': DOMEventXRef,
         'domxref': DOMxRef,
+        'event': Event,
+        'exception': DOMException,
         'experimental_inline': ExperimentalInline,
         'geckoRelease': GeckoRelease,
+        'htmlattrxref': HTMLAttrXRef,
+        'jsxref': JSxRef,
         'non-standard_inline': NonStandardInline,
         'not_standard_inline': NotStandardInline,
         'obsolete_inline': ObsoleteInline,
         'property_prefix': PropertyPrefix,
+        'xref_cssangle': XrefCSSAngle,
+        'xref_csscolorvalue': XrefCSSColorValue,
+        'xref_cssgradient': XrefCSSGradient,
+        'xref_cssimage': XrefCSSImage,
+        'xref_cssinteger': XrefCSSInteger,
         'xref_csslength': XrefCSSLength,
+        'xref_cssnumber': XrefCSSNumber,
+        'xref_csspercentage': XrefCSSPercentage,
+        'xref_cssstring': XrefCSSString,
+        'xref_cssvisual': XrefCSSVisual,
     }
 
     def _kumascript_lookup(self, name):

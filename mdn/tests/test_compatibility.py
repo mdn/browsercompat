@@ -863,7 +863,11 @@ class TestFootnoteVisitor(TestCase):
 
     def test_kumascript_cssxref(self):
         footnotes = '<p>[1] Use {{cssxref("-moz-border-image")}}</p>'
-        expected = {'1': ('Use <code>-moz-border-image</code>', 0, 47)}
+        expected = {
+            '1': (
+                'Use <a href="https://developer.mozilla.org/en-US/docs/Web/'
+                'CSS/-moz-border-image"><code>-moz-border-image</code></a>',
+                0, 47)}
         self.assert_footnotes(footnotes, expected)
 
     def test_unknown_kumascriptscript(self):

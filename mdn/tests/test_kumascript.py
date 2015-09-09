@@ -9,11 +9,12 @@ from mdn.kumascript import (
     Bug, CSSBox, CSSxRef, CompatAndroid, CompatChrome, CompatGeckoDesktop,
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
-    CompatVersionUnknown, CompatibilityTable, DOMxRef, DeprecatedInline,
-    ExperimentalInline, GeckoRelease, KumaHTMLElement, KnownKumaScript,
-    KumaScript, KumaVisitor, NonStandardInline, NotStandardInline,
-    PropertyPrefix, Spec2, SpecName, UnknownKumaScript, WebkitBug,
-    WhyNoSpecBlock, XrefCSSLength, kumascript_grammar)
+    CompatVersionUnknown, CompatibilityTable, DOMEventXRef, DOMException,
+    DOMxRef, DeprecatedInline, Event, ExperimentalInline, GeckoRelease,
+    HTMLAttrXRef, JSxRef, KumaHTMLElement, KnownKumaScript, KumaScript,
+    KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
+    SpecName, UnknownKumaScript, WebkitBug, WhyNoSpecBlock, XrefCSSLength,
+    kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
@@ -377,17 +378,26 @@ class TestCSSxRef(TestCase):
         ks = CSSxRef(raw=raw, args=['z-index'], scope=self.scope)
         self.assertEqual(ks.api_name, 'z-index')
         self.assertIsNone(ks.display_name)
-        self.assertEqual(ks.to_html(), '<code>z-index</code>')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+             'z-index"><code>z-index</code></a>'))
         self.assertEqual(ks.issues, [])
         self.assertEqual(text_type(ks), raw)
 
     def test_display_override(self):
         raw = '{{cssxref("the-foo", "foo")}}'
         ks = CSSxRef(raw=raw, args=['the-foo', 'foo'], scope=self.scope)
-        self.assertEqual(ks.api_name, 'the-foo')
-        self.assertEqual(ks.display_name, 'foo')
-        self.assertEqual(ks.to_html(), '<code>foo</code>')
-        self.assertEqual(ks.issues, [])
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+             'the-foo"><code>foo</code></a>'))
+
+    def test_feature_name(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/attr
+        raw = '{{cssxref("content")}}'
+        ks = CSSxRef(raw=raw, args=['content'], scope='compatibility feature')
+        self.assertEqual(ks.to_html(), '<code>content</code>')
 
 
 class TestDeprecatedInline(TestCase):
@@ -400,6 +410,37 @@ class TestDeprecatedInline(TestCase):
         self.assertEqual(text_type(ks), raw)
 
 
+class TestDOMEventXRef(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:domeventxref
+
+    def test_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/compositionupdate
+        raw = '{{domeventxref("compositionstart")}}'
+        ks = DOMEventXRef(raw=raw, args=['compositionstart'], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/DOM/'
+             'DOM_event_reference/compositionstart"><code>compositionstart'
+             '</code></a>'))
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+
+class TestDOMException(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:exception
+
+    def test_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder/TextEncoder
+        raw = '{{exception("TypeError")}}'
+        ks = DOMException(raw=raw, args=['TypeError'], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            '<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
+            'DOMException#TypeError"><code>TypeError</code></a>')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+
 class TestDOMxRef(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:domxref
     scope = 'footnote'
@@ -407,7 +448,8 @@ class TestDOMxRef(TestCase):
     def test_standard(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/CharacterData
         raw = '{{domxref("ChildNode")}}'
-        ks = DOMxRef(raw=raw, args=['ChildNode'], scope=self.scope)
+        ks = DOMxRef(
+            raw=raw, args=['ChildNode'], scope='compatibility feature')
         self.assertEqual(ks.to_html(), '<code>ChildNode</code>')
         self.assertFalse(ks.issues)
         self.assertEqual(text_type(ks), raw)
@@ -417,7 +459,49 @@ class TestDOMxRef(TestCase):
         raw = '{{domxref("CustomEvent.CustomEvent", "CustomEvent()")}}'
         args = ['CustomEvent.CustomEvent', 'CustomEvent()']
         ks = DOMxRef(raw=raw, args=args, scope=self.scope)
-        self.assertEqual(ks.to_html(), '<code>CustomEvent()</code>')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
+             'CustomEvent/CustomEvent"><code>CustomEvent()</code></a>'))
+
+    def test_space(self):
+        # No current pages, but in macro definition
+        raw = '{{domxref("Notifications API")}}'
+        ks = DOMxRef(raw=raw, args=['Notifications API'], scope=self.scope)
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
+             'Notifications_API"><code>Notifications API</code></a>'))
+
+    def test_parens_dot_caps(self):
+        # https://developer.mozilla.org/en-US/docs/Web/Events/mozbrowsershowmodalprompt
+        raw = '{{domxref("window.alert()")}}'
+        ks = DOMxRef(raw=raw, args=['window.alert()'], scope=self.scope)
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
+             'Window/alert"><code>window.alert()</code></a>'))
+
+
+class TestEvent(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:event
+
+    def test_feature_name(self):
+        # No current compat pages
+        raw = '{{event("close")}}'
+        ks = Event(raw=raw, args=['close'], scope='compatibility feature')
+        self.assertEqual(ks.to_html(), '<code>close</code>')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+    def test_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/DeviceLightEvent/value
+        raw = '{{event("devicelight")}}'
+        ks = Event(raw=raw, args=['devicelight'], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/Events/'
+             'devicelight"><code>devicelight</code></a>'))
 
 
 class TestExperimentalInline(TestCase):
@@ -457,6 +541,120 @@ class TestGeckoRelease(TestCase):
         ks = GeckoRelease(raw=raw, args=["33.0+"], scope='footnote')
         expected = "(Firefox 33.0+ / Thunderbird 33.0+ / SeaMonkey 2.30+)"
         self.assertEqual(ks.to_html(), expected)
+
+
+class TestJSxRef(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:jsxref
+    def test_standard(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global
+        raw = '{{jsxref("RegExp")}}'
+        ks = JSxRef(
+            raw=raw, args=['RegExp'], scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/RegExp"><code>RegExp</code></a>'))
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+    def test_display_name(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/arguments
+        raw = '{{jsxref("Functions/arguments", "arguments")}}'
+        ks = JSxRef(
+            raw=raw, args=["Functions/arguments", "arguments"],
+            scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/Functions/arguments"><code>arguments'
+             '</code></a>'))
+
+    def test_feature_name(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SIMD
+        raw = '{{jsxref("Float32x4", "SIMD.Float32x4")}}'
+        ks = JSxRef(
+            raw=raw, args=["Float32x4", "SIMD.Float32x4"],
+            scope='compatibility feature')
+        self.assertEqual(ks.to_html(), '<code>SIMD.Float32x4</code>')
+
+    def test_footnote(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Blob
+        raw = '{{jsxref("Array/slice", "Array.slice()")}}'
+        ks = JSxRef(
+            raw=raw, args=["Array/slice", "Array.slice()"], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/Array/slice"><code>Array.slice()'
+             '</code></a>'))
+
+    def test_prototype(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+        raw = '{{jsxref("Array.prototype.lastIndexOf", "lastIndexOf")}}'
+        ks = JSxRef(
+            raw=raw, args=["Array.prototype.lastIndexOf", "lastIndexOf"],
+            scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/Array/lastIndexOf"><code>lastIndexOf'
+             '</code></a>'))
+
+    def test_dotted_function(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math
+        raw = '{{jsxref("Math.log10()", "log10()")}}'
+        ks = JSxRef(
+            raw=raw, args=["Math.log10()", "log10()"],
+            scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/Math/log10"><code>log10()'
+             '</code></a>'))
+
+    def test_global_object(self):
+        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
+        raw = '{{jsxref("Global_Objects/null", "null")}}'
+        ks = JSxRef(
+            raw=raw, args=["Global_Objects/null", "null"],
+            scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+             '/Reference/Global_Objects/null"><code>null</code></a>'))
+
+
+class TestHTMLAttrXRef(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:htmlattrxref
+
+    def test_feature_name(self):
+        # No current compat pages
+        raw = '{{htmlattrxref("style")}}'
+        ks = HTMLAttrXRef(
+            raw=raw, args=['style'], scope='compatibility feature')
+        self.assertEqual(ks.to_html(), '<code>style</code>')
+        self.assertFalse(ks.issues)
+        self.assertEqual(text_type(ks), raw)
+
+    def test_spec_desc_without_element(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Element/classList
+        raw = '{{htmlattrxref("class")}}'
+        ks = HTMLAttrXRef(
+            raw=raw, args=['class'], scope='specification description')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/'
+             'Global_attributes#attr-class"><code>class</code></a>'))
+
+    def test_footnote_with_element(self):
+        # https://developer.mozilla.org/en-US/docs/Web/API/Element
+        raw = '{{htmlattrxref("sandbox", "iframe")}}'
+        ks = HTMLAttrXRef(
+            raw=raw, args=['sandbox', 'iframe'], scope='footnote')
+        self.assertEqual(
+            ks.to_html(),
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/'
+             'Element/iframe#attr-sandbox"><code>sandbox</code></a>'))
 
 
 class TestNonStandardInline(TestCase):
@@ -515,12 +713,20 @@ class TestWhyNoSpecBlock(TestCase):
 
 class TestXrefCSSLength(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:xref_csslength
-    def test_standard(self):
+    def test_feature_name(self):
         raw = '{{xref_csslength()}}'
-        ks = XrefCSSLength(raw=raw, scope='footnote')
+        ks = XrefCSSLength(raw=raw, scope='compatibility feature')
         self.assertEqual('<code>&lt;length&gt;</code>', ks.to_html())
         self.assertEqual([], ks.issues)
         self.assertEqual(text_type(ks), '{{xref_csslength}}')
+
+    def test_footnote(self):
+        raw = '{{xref_csslength()}}'
+        ks = XrefCSSLength(raw=raw, scope='footnote')
+        self.assertEqual(
+            '<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+            'length"><code>&lt;length&gt;</code></a>',
+            ks.to_html())
 
 
 class TestGrammar(TestHTMLGrammar):

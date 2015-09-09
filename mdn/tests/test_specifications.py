@@ -443,9 +443,13 @@ class TestSpecDescVisitor(TestCase):
             ' applied to element with a {{ cssxref("display") }} type of'
             ' <code>table-cell</code>.</td>')
         expected = [
-            'Add the', '<code>&lt;length&gt;</code>',
+            'Add the',
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+             'length"><code>&lt;length&gt;</code></a>'),
             'value and allows it to be applied to element with a',
-            '<code>display</code>', 'type of', '<code>table-cell</code>', '.']
+            ('<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/'
+             'display"><code>display</code></a>'),
+            'type of', '<code>table-cell</code>', '.']
         self.assert_specdesc(html, expected, [])
 
     def test_kumascript_spec2(self):
