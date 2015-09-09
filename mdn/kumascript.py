@@ -531,11 +531,14 @@ class XRefBase(KnownKumaScript):
     def __init__(self, **kwargs):
         super(XRefBase, self).__init__(**kwargs)
         self.url = None
-        self.display = "(unset)"
+        self.display = None
         self.linked = self.scope in ('specification description', 'footnote')
 
     def to_html(self):
+        """Convert macro to link or plain text."""
+        assert self.display
         if self.linked:
+            assert self.url
             return '<a href="{}"><code>{}</code></a>'.format(
                 self.url, self.display)
         else:
