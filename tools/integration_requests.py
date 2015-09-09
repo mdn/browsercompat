@@ -168,9 +168,9 @@ class CaseRunner(object):
         out = self.format_response_for_display(response, case)
         header = "Test Case %d: %s" % (casenum, case['name'])
         print()
-        print(header)
+        print(header.encode('utf8'))
         print("*" * len(header))
-        print(out)
+        print(out.encode('utf8'))
         return []
 
     def generate(self, casenum, case, response):
