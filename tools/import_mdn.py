@@ -55,11 +55,11 @@ class ImportMDNData(Tool):
                 except RequestException as exception:
                     if attempt < max_attempt:
                         self.logger.error("%s", exception)
-                        attempt += 1
                         self.logger.info('Pausing 5 seconds...')
                         time.sleep(5)
                     else:
-                        raise
+                        self.logger.info('Giving up on %s.', uri)
+                    attempt += 1
                 else:
                     counts[import_type] += 1
                     if import_type in ('new', 'reset'):
