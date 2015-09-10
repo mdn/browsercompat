@@ -111,7 +111,10 @@ class HistoricalModelSerializer(
                     for field in historical._meta.fields:
                         attname = field.attname
                         hist_value = getattr(historical, attname)
-                        data[attname] = hist_value
+                        data_name = attname
+                        if data_name.endswith('_id'):
+                            data_name = data_name[:-len('_id')]
+                        data[data_name] = hist_value
         return super(HistoricalModelSerializer, self).to_internal_value(data)
 
 

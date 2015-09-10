@@ -207,6 +207,31 @@ class TestSpecificationSerializer(APITestCase):
         actual_sections = response.data['sections']
         self.assertEqual(expected_sections, actual_sections)
 
+    def test_set_and_revert_maturity(self):
+        old_maturity_id = self.spec.maturity.id
+        old_history_id = self.spec.history.all()[0].history_id
+        new_maturity = self.create(
+            Maturity, slug='FD', name={'en': 'Final Draft'})
+        data_set_maturity = {
+            'specifications': {
+                'links': {
+                    'maturity': str(new_maturity.id)
+                }
+            }
+        }
+        response = self.update_via_json_api(self.url, data_set_maturity)
+        self.assertEqual(response.data['maturity'], new_maturity.id)
+
+        data_revert = {
+            'specifications': {
+                'links': {
+                    'history_current': old_history_id
+                }
+            }
+        }
+        response = self.update_via_json_api(self.url, data_revert)
+        self.assertEqual(response.data['maturity'], old_maturity_id)
+
 
 class TestUserSerializer(APITestCase):
     """Test UserSerializer through the view."""
