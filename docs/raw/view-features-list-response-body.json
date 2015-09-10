@@ -37,7 +37,7 @@
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "name": null
+            "name": "flex-shrink"
         },
         {
             "href": "https://browsercompat.org/api/v1/view_features/4",
@@ -50,7 +50,7 @@
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "name": null
+            "name": "flex-wrap"
         },
         {
             "href": "https://browsercompat.org/api/v1/view_features/5",
@@ -67,7 +67,7 @@
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "name": null
+            "name": "float"
         },
         {
             "href": "https://browsercompat.org/api/v1/view_features/6",
@@ -94,7 +94,7 @@
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "name": null
+            "name": "font"
         },
         {
             "href": "https://browsercompat.org/api/v1/view_features/8",
@@ -107,7 +107,7 @@
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "name": null
+            "name": "font-family"
         },
         {
             "href": "https://browsercompat.org/api/v1/view_features/9",
@@ -120,7 +120,7 @@
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "name": null
+            "name": "font-feature-settings"
         },
         {
             "href": "https://browsercompat.org/api/v1/view_features/10",
@@ -136,7 +136,7 @@
             "standardized": true,
             "stable": true,
             "obsolete": false,
-            "name": null
+            "name": "transform-origin"
         }
     ],
     "meta": {
