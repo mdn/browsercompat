@@ -449,7 +449,7 @@ class Cache(BaseCache):
     def version_v1_loader(self, pk):
         queryset = Version.objects
         try:
-            obj = queryset.select_related('supports__pk').get(pk=pk)
+            obj = queryset.get(pk=pk)
         except Version.DoesNotExist:
             return None
         else:
