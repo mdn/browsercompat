@@ -1,11 +1,14 @@
 from collections import OrderedDict
 from json import loads
 
+from django.template import loader
 from django.utils import encoding, translation
 
 from rest_framework.relations import ManyRelatedField
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import BrowsableAPIRenderer as BaseAPIRenderer
 from rest_framework.serializers import ListSerializer
+from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.utils.serializer_helpers import ReturnList
 from rest_framework_json_api.renderers import JsonApiRenderer \
@@ -263,3 +266,35 @@ class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
         # Render HTML template w/ context
         return super(JsonApiTemplateHTMLRenderer, self).render(
             context, accepted_media_type, renderer_context)
+
+    def resolve_context(self, data, request, response):
+        """Resolve context without a RequestContext."""
+        if response.exception:  # pragma: no cover
+            data['status_code'] = response.status_code
+        return data
+
+
+class BrowsableAPIRenderer(BaseAPIRenderer):
+    """Jinja2 renderer used to self-document the API."""
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        """
+        Render the HTML for the browsable API representation.
+
+        Same as base renderer, but uses a plain dict and request instead of
+        constructing a RequestContext.
+        """
+        self.accepted_media_type = accepted_media_type or ''
+        self.renderer_context = renderer_context or {}
+
+        template = loader.get_template(self.template)
+        context = self.get_context(data, accepted_media_type, renderer_context)
+        ret = template.render(context, context.get('request'))
+
+        # Munge DELETE Response code to allow us to return content
+        # (Do this *after* we've rendered the template so that we include
+        # the normal deletion response code in the output)
+        response = renderer_context['response']
+        if response.status_code == HTTP_204_NO_CONTENT:  # pragma: no cover
+            response.status_code = HTTP_200_OK
+
+        return ret

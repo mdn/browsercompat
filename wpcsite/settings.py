@@ -82,7 +82,6 @@ SECRET_KEY = environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = environ.get("DJANGO_DEBUG", '0') in (1, '1')
-TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = environ.get('ALLOWED_HOSTS', '').split(',')
 if environ.get('SECURE_PROXY_SSL_HEADER'):
@@ -142,12 +141,6 @@ WSGI_APPLICATION = 'wpcsite.wsgi.application'
 # django-allauth requires some settings
 SITE_ID = int(environ.get('SITE_ID', '1'))
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages",
-)
-
 # Email settings
 if 'ADMIN_NAMES' in environ and 'ADMIN_EMAILS' in environ:
     names = [x.strip() for x in environ['ADMIN_NAMES'].split(',')]
@@ -176,13 +169,6 @@ if 'DEFAULT_FROM_EMAIL' in environ:
 if 'EMAIL_FILE_PATH' in environ:
     EMAIL_FILE_PATH = environ['EMAIL_FILE_PATH']
 
-# Prefer our template folders to rest_framework's, allauth's
-# Manually load Django 1.8-style jinja2 folders
-TEMPLATE_DIRS = (
-    rel_path('mdn', 'jinja2'),
-    rel_path('bcauth', 'jinja2'),
-    rel_path('webplatformcompat', 'jinja2'),
-)
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -201,6 +187,35 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+# Templates
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'wpcsite.jinja2.environment',
+        },
+    },
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': (
+            rel_path('bcauth', 'templates'),
+            rel_path('webplatformcompat', 'templates'),
+        ),
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ]
+        }
+    },
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -269,27 +284,13 @@ else:
 # 3rd Party Libraries
 #
 
-# Jingo / Jinja2 templates
-TEMPLATE_LOADERS = (
-    'jingo.Loader',
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-JINGO_INCLUDE_PATTERN = r'''(?x)  # Be verbose
-((bcauth|                         # Any of these folder names...
-  webplatformcompat|
-  mdn|
-  account|                        # (from django-allauth)
-  socialprovider
- )/[^/]*\.html)|                  # Followed by any name + .html, or
-(rest_framework/                  # rest_framework folder,
- (?!api_form)                     # except for these file names
- [^/]*\.html)                     # followed by html
-$                                 # at end of line
-'''
 
 # Django REST Framework
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'webplatformcompat.renderers.BrowsableAPIRenderer',
+    ),
     'DEFAULT_MODEL_SERIALIZER_CLASS':
         'rest_framework.serializers.HyperlinkedModelSerializer',
     'DEFAULT_PERMISSION_CLASSES': [

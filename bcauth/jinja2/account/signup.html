@@ -7,7 +7,7 @@
 <p>{% trans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endtrans %}</p>
 
 <form class="signup" id="signup_form" method="post" action="{{ url('account_signup') }}">
-  {{ csrf() }}
+  {{ csrf_input }}
   {{ form.as_p() }}
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />

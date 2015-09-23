@@ -613,8 +613,8 @@ class TestViewFeatureUpdates(APITestCase):
 
     def test_post_add_second_subfeature(self):
         from django.db import connection
-        old_debug = connection.use_debug_cursor
-        connection.use_debug_cursor = True
+        old_debug = connection.force_debug_cursor
+        connection.force_debug_cursor = True
         try:
             sf1 = self.create(
                 Feature, slug='sf1', name={'en': 'sf1'}, parent=self.feature)
@@ -655,7 +655,7 @@ class TestViewFeatureUpdates(APITestCase):
                 print('\n'.join(msg_lines))
             self.assertEqual(list(feature.children.all()), [sf1, sf2])
         finally:
-            connection.use_debug_cursor = old_debug
+            connection.force_debug_cursor = old_debug
 
     def test_post_update_existing_subfeature(self):
         subfeature = self.create(

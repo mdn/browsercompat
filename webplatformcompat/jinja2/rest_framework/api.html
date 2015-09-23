@@ -51,7 +51,7 @@
 
         {% if options_form %}
             <form class="button-form" action="{{ request.get_full_path() }}" method="POST" class="pull-right">
-                {{ csrf() }}
+                {{ csrf_input }}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
                 <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
             </form>
@@ -59,7 +59,7 @@
 
         {% if delete_form %}
             <form class="button-form" action="{{ request.get_full_path() }}" method="POST" class="pull-right">
-                {{ csrf() }}
+                {{ csrf_input }}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
                 <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
             </form>

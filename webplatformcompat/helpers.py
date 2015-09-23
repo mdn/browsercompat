@@ -1,19 +1,15 @@
-"""Helper functions for Jinja2 templates
-
-This file is loaded by jingo and must be named helpers.py
-"""
+"""Helper functions for Jinja2 templates."""
 
 from datetime import date
 
 from django.conf import settings
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.utils.html import escape
 from jinja2 import contextfunction, Markup
-from jingo import register
 from rest_framework.templatetags.rest_framework import (
     replace_query_param, urlize_quoted_links, break_long_headers, add_class)
 
 
+@contextfunction
 def pick_translation(context, trans_obj):
     """Pick a translation from a translation object.
 
@@ -33,7 +29,6 @@ def pick_translation(context, trans_obj):
     return trans_obj[lang], lang
 
 
-@register.function
 @contextfunction
 def trans_span(context, trans_obj, **attrs):
     """Pick a translation for an HTML element.
@@ -61,7 +56,6 @@ def trans_span(context, trans_obj, **attrs):
         return Markup(trans)
 
 
-@register.function
 @contextfunction
 def trans_str(context, trans_obj):
     """Pick a translation as an unescaped string.
@@ -71,24 +65,32 @@ def trans_str(context, trans_obj):
     return pick_translation(context, trans_obj)[0]
 
 
-@register.function
 def current_year():
     return date.today().year
 
 
-@register.function
 def is_debug():
     return settings.DEBUG
 
 
-@register.function
 def add_query_param(url, **query):
     for key, val in query.items():
         url = replace_query_param(url, key, val)
     return url
 
 
-register.filter(add_class)
-register.filter(urlize_quoted_links)
-register.filter(break_long_headers)
-register.function(static)
+env = {
+    'globals': {
+        'add_query_param': add_query_param,
+        'current_year': current_year,
+        'is_debug': is_debug,
+        'pick_translation': pick_translation,
+        'trans_span': trans_span,
+        'trans_str': trans_str,
+    },
+    'filters': {
+        'add_class': add_class,
+        'urlize_quoted_links': urlize_quoted_links,
+        'break_long_headers': break_long_headers,
+    }
+}
