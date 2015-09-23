@@ -41,8 +41,7 @@ class FeaturePage(models.Model):
     url = models.URLField(
         help_text="URL of the English translation of an MDN page",
         db_index=True, unique=True, validators=[validate_mdn_url])
-    feature = models.ForeignKey(
-        Feature, help_text="Feature in API", unique=True)
+    feature = models.OneToOneField(Feature, help_text="Feature in API")
 
     STATUS_STARTING = 0
     STATUS_META = 1
