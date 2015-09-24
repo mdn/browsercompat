@@ -32,7 +32,7 @@ def can_refresh(user):
 
 class FeaturePageListView(ListView):
     model = FeaturePage
-    template_name = "mdn/feature_page_list.jinja2"
+    template_name = "mdn/feature_page_list.html"
     paginate_by = 50
     topics = (
         'docs/Web/API',
@@ -130,7 +130,7 @@ class FeaturePageListView(ListView):
 
 class FeaturePageCreateView(CreateView):
     model = FeaturePage
-    template_name = "mdn/feature_page_form.jinja2"
+    template_name = "mdn/feature_page_form.html"
     fields = ['url', 'feature']
 
     def get_initial(self):
@@ -151,7 +151,7 @@ class FeaturePageCreateView(CreateView):
 
 class FeaturePageDetailView(DetailView):
     model = FeaturePage
-    template_name = "mdn/feature_page_detail.jinja2"
+    template_name = "mdn/feature_page_detail.html"
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageDetailView, self).get_context_data(**kwargs)
@@ -183,7 +183,7 @@ class SearchForm(forms.Form):
 class FeaturePageSearch(TemplateResponseMixin, View, FormMixin):
     """Search for a MDN URI via GET"""
     form_class = SearchForm
-    template_name = "mdn/feature_page_form.jinja2"
+    template_name = "mdn/feature_page_form.html"
 
     def get_form_kwargs(self):
         kwargs = super(FeaturePageSearch, self).get_form_kwargs()
@@ -245,7 +245,7 @@ class FeaturePageSearch(TemplateResponseMixin, View, FormMixin):
 class FeaturePageReParse(UpdateView):
     model = FeaturePage
     fields = []
-    template_name = "mdn/feature_page_form.jinja2"
+    template_name = "mdn/feature_page_form.html"
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageReParse, self).get_context_data(**kwargs)
@@ -274,7 +274,7 @@ class FeaturePageReParse(UpdateView):
 class FeaturePageReset(UpdateView):
     model = FeaturePage
     fields = []
-    template_name = "mdn/feature_page_form.jinja2"
+    template_name = "mdn/feature_page_form.html"
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageReset, self).get_context_data(**kwargs)
@@ -300,7 +300,7 @@ class FeaturePageReset(UpdateView):
 
 
 class IssuesSummary(TemplateView):
-    template_name = "mdn/issues_summary.jinja2"
+    template_name = "mdn/issues_summary.html"
 
     def get_context_data(self, **kwargs):
         ctx = super(IssuesSummary, self).get_context_data(**kwargs)
@@ -320,7 +320,7 @@ class IssuesSummary(TemplateView):
 
 
 class IssuesDetail(TemplateView):
-    template_name = "mdn/issues_detail.jinja2"
+    template_name = "mdn/issues_detail.html"
     headers_by_issue = {
         'exception': (),
         'failed_download': (),

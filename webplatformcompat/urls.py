@@ -9,13 +9,13 @@ from .views import RequestView, ViewFeature
 webplatformcompat_urlpatterns = patterns(
     '',
     url(r'^$', RequestView.as_view(
-        template_name='webplatformcompat/home.jinja2'),
+        template_name='webplatformcompat/home.html'),
         name='home'),
     url(r'^about/', RequestView.as_view(
-        template_name='webplatformcompat/about.jinja2'),
+        template_name='webplatformcompat/about.html'),
         name='about'),
     url(r'^browse/', RequestView.as_view(
-        template_name='webplatformcompat/browse.jinja2'),
+        template_name='webplatformcompat/browse.html'),
         name='browse'),
     url(r'^api-auth/', include('rest_framework.urls',
         namespace='rest_framework')),
@@ -26,6 +26,6 @@ webplatformcompat_urlpatterns = patterns(
         url='/importer/', permanent=False)),
     url(r'^importer/', include(mdn_urlpatterns)),
     url(r'^view_feature/(?P<feature_id>\d+)(.html)?$', ViewFeature.as_view(
-        template_name='webplatformcompat/feature.js.jinja2'),
+        template_name='webplatformcompat/feature-js.html'),
         name='view_feature'),
 )

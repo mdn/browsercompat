@@ -177,9 +177,11 @@ if 'EMAIL_FILE_PATH' in environ:
     EMAIL_FILE_PATH = environ['EMAIL_FILE_PATH']
 
 # Prefer our template folders to rest_framework's, allauth's
+# Manually load Django 1.8-style jinja2 folders
 TEMPLATE_DIRS = (
-    rel_path('bcauth', 'templates'),
-    rel_path('webplatformcompat', 'templates'),
+    rel_path('mdn', 'jinja2'),
+    rel_path('bcauth', 'jinja2'),
+    rel_path('webplatformcompat', 'jinja2'),
 )
 
 # Database
@@ -273,7 +275,18 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 )
-JINGO_INCLUDE_PATTERN = r'\.jinja2'
+JINGO_INCLUDE_PATTERN = r'''(?x)  # Be verbose
+((bcauth|                         # Any of these folder names...
+  webplatformcompat|
+  mdn|
+  account|                        # (from django-allauth)
+  socialprovider
+ )/[^/]*\.html)|                  # Followed by any name + .html, or
+(rest_framework/                  # rest_framework folder,
+ (?!api_form)                     # except for these file names
+ [^/]*\.html)                     # followed by html
+$                                 # at end of line
+'''
 
 # Django REST Framework
 REST_FRAMEWORK = {

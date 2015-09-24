@@ -1,0 +1,143 @@
+{% extends "webplatformcompat/base.html" %}
+
+{% block head_title %}Sample View for Feature{% endblock %}
+
+{% block body_title %}Sample View for Feature{% endblock %}
+
+{% block content %}
+<p>
+  Original data available on: <br>
+  <a id="mdn_link" href="https://developer.mozilla.org/">
+    https://developer.mozilla.org/
+  </a>
+</p>
+
+<p id="wpc_pagination"></p>
+
+<h2>Specifications</h2>
+<div id="wpc_specifications">
+  <p><i>Loading...</i></p>
+</div>
+
+<h2>Browser compatibility</h2>
+<div id="wpc_tables">
+  <p><i>Loading...</i></p>
+</div>
+
+<h2>Languages</h2>
+<p>
+    The data may include translations of items such as feature names,
+    specification statuses, release notes URIs, etc.  Available languages:</p>
+<div id="wpc_languages">
+  <ul>
+    <li><i>Loading...</i></li>
+  </ul>
+</div>
+
+<h2>Raw Data</h2>
+<p>
+  This is the raw JSON-API data returned from
+  <code>
+    <a id="wpc_uri" href="/api/v1/view_features/{{feature_id}}">
+      /api/v1/view_features/{{feature_id}}
+    </a>
+  </code>
+</p>
+
+<div id="wpc_data">
+  <p><i>Loading...</i></p>
+</div>
+{% endblock content %}
+
+{% block body_js_extra %}
+<script>
+function load_tables(resources, lang) {
+    var spec_table, browser_tables, langs, pagination;
+
+    spec_table = WPC.generate_specification_table(resources, lang);
+    if (spec_table) {
+    $("#wpc_specifications").html(spec_table);
+    } else {
+    $("#wpc_specifications").html("<p><i>No specifications</i></p>");
+    }
+
+    browser_tables = WPC.generate_browser_tables(resources, lang);
+    if (browser_tables) {
+    $("#wpc_tables").html(browser_tables);
+    } else {
+    $("#wpc_tables").html("<p><i>No features</i></p>");
+    }
+
+    langs = "<ul>";
+    $.each(resources.meta.compat_table.languages, function(index, value) {
+        langs += (
+            "<li><a href=\"#\" onclick=\"load_tables(resources, '" +
+            value + "')\" >" + value + "</a>");
+        if (value === lang) {
+            langs += " (<strong>current</strong>)";
+        }
+        langs += "</li>";
+    });
+    langs += '</ul>';
+    $("#wpc_languages").html($(langs));
+
+    mdn_uri = WPC.trans_str(resources.data.mdn_uri, lang);
+    if (!mdn_uri) {
+        mdn_uri = "https://developer.mozilla.org/";
+    }
+    $("#mdn_link").attr("href", mdn_uri);
+    $("#mdn_link").text(mdn_uri);
+
+    pagination = resources.meta.compat_table.pagination["linked.features"];
+    if (pagination && (pagination.next || pagination.previous)) {
+        pageText = (
+            "<p id=\"wpc_pagination\">There are " + pagination.count +
+            " sub-features, which is too many to display on one page." +
+            " Go to the ");
+        if (pagination.next) {
+            pageText += ("<a href=\"#\" onclick=\"load_json('" +
+                pagination.next + "')\">next page</a>");
+        }
+        if (pagination.next && pagination.previous) {
+            pageText += " or the ";
+        }
+        if (pagination.previous) {
+            pageText += ("<a href=\"#\" onclick=\"load_json('" +
+                pagination.previous + "')\">previous page</a>");
+        }
+        pageText += ".</p>";
+        $("#wpc_pagination").html($(pageText));
+    }
+
+    return true;
+};
+
+function load_json(uri) {
+    $.getJSON(uri).done(function( data ) {
+        var resources, json_dump, title, name;
+        json_dump = $("<pre>").text(JSON.stringify(data, null, "  "));
+        $("#wpc_data").html(json_dump);
+        window.resources = resources = WPC.parse_resources(data);
+
+        name = WPC.trans_str(resources.data.name, 'en');
+        if (name.indexOf("<code>") === 0) {
+            title = "Sample View for Feature " + name;
+        } else {
+            title = "Sample View for Feature '" + name + "'";
+        }
+        document.title = title;
+        $("#body_title").html(title);
+
+        $("#wpc_uri").attr("href", uri);
+        $("#wpc_uri").text(uri);
+
+        load_tables(window.resources, "en");
+    });
+};
+
+$( document ).ready(function () {
+    var uri = '/api/v1/view_features/{{feature_id}}';
+    load_json(uri);
+});
+</script>
+{% endblock %}

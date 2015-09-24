@@ -197,7 +197,7 @@ class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
     renderer_classes = (
         JsonApiRenderer, BrowsableAPIRenderer, JsonApiTemplateHTMLRenderer)
-    template_name = 'webplatformcompat/feature.basic.jinja2'
+    template_name = 'webplatformcompat/feature-basic.html'
 
     def get_serializer_class(self):
         """Return the serializer to use based on action and query."""

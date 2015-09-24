@@ -1,0 +1,79 @@
+{% extends "webplatformcompat/base.html" %}
+{% import "mdn/macros.html" as macros %}
+
+{% macro title() -%}
+    MDN Importer issue <code>{{ slug }}</code>
+    {% if count %}
+    {% endif %}
+{%- endmacro %}
+
+{% block head_title %}{{ title() }}{% endblock %}
+{% block body_title %}{{ title() }}{% endblock %}
+
+{% block quick_nav %}
+<p><em>back to
+    <a href="{{ url('issues_summary') }}">issues summary</a>, or the
+    <a href="{{ url('feature_page_list') }}">list of imported pages</a>, or
+    <a href="{{ url('issues_detail_csv', slug=slug) }}">download as CSV</a>
+</em></p>
+{% endblock %}
+
+{% block content %}
+{% if count %}
+<p>
+    There are
+    {{ count }} count{% if count != 1 %}s{% endif %} of this issue
+    on {{ pages | length }} page{% if pages | length > 1 %}s{% endif %}.
+<p>
+<h3>Sample</h3>
+<p>
+    Here's a sample from the import of
+    <a href="{{ url('feature_page_detail', pk=sample_issue.page_id) }}">
+      {{ sample_issue.page.slug() }}</a>:
+</p>
+<p>{{ macros.issue_div(sample_issue) }}</p>
+<h3>Imports with this issue</h3>
+<p>Here's the full list of imports where this issue was found:<p>
+
+{% if headers %}
+
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        {% for header in headers -%}
+        <th>{{ header }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+    {% if details %}
+      {% for detail in details %}
+      <tr>
+        <td><a href="{{ url('feature_page_detail', pk=detail[1]) }}">{{ detail[0] }}</a></td>
+        {% for param in detail[2:] -%}
+        <td>{{ param }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr><td rowspan=0><em>No pages with this issue</em></td></tr>
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<ul>
+{% for key, page_count in pages | dictsort -%}
+<li>
+    {{ page_count }} in
+    <a href="{{ url('feature_page_detail', pk=key[1]) }}">{{ key[0] }}</a>
+</li>
+{%- endfor %}
+</ul>
+{% endif %}
+
+{% else %}
+<p>There are no pages with this issue.</p>
+{% endif %}
+{% endblock content %}

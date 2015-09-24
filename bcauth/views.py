@@ -21,7 +21,7 @@ class AccountView(RedirectView):
 
 
 class ProfileView(RequestView):
-    template_name = 'account/profile.jinja2'
+    template_name = 'account/profile.html'
 
 
 account = AccountView.as_view()
