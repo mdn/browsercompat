@@ -39,10 +39,10 @@
 {% block content %}
     <dl>
         <dt>Username</dt>
-        <dl>{{user_display(user)}}</dl>
+        <dl>{{user_display(request.user)}}</dl>
         <dt>Password</dt>
         <dl>
-          {% if user.has_usable_password() %}
+          {% if request.user.has_usable_password() %}
             <span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span>
             You can login with
             <a href="{{url("account_change_password")}}">a password</a>.
@@ -54,7 +54,7 @@
         </dl>
         <dt>Linked Accounts</dt>
         <dl>
-          {% set social_count = user.socialaccount_set.count() %}
+          {% set social_count = request.user.socialaccount_set.count() %}
           {% if social_count > 0 %}
             <span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span>
             You can login with
@@ -68,10 +68,10 @@
         </dl>
         <dt>Email</dt>
         <dl>
-          {% if user.email %}
-            {% set primary = user.emailaddress_set.get(email=user.email) %}
-            {% set verified_cnt = user.emailaddress_set.exclude(email=user.email).filter(verified=True).count() %}
-            {% set unverified_cnt = user.emailaddress_set.exclude(email=user.email).exclude(verified=True).count() %}
+          {% if request.user.email %}
+            {% set primary = request.user.emailaddress_set.get(email=request.user.email) %}
+            {% set verified_cnt = request.user.emailaddress_set.exclude(email=request.user.email).filter(verified=True).count() %}
+            {% set unverified_cnt = request.user.emailaddress_set.exclude(email=request.user.email).exclude(verified=True).count() %}
             {% if primary.verified %}
             <span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span>
             {{primary.email}} (verified)
