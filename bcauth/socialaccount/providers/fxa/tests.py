@@ -6,6 +6,8 @@ Uses the testing infrastructure from django-allauth.
 from allauth.socialaccount.tests import create_oauth2_tests
 from allauth.tests import MockedResponse
 from allauth.socialaccount.providers import registry
+from django.core.urlresolvers import reverse
+
 
 from .provider import FirefoxAccountsProvider
 
@@ -25,3 +27,13 @@ class FirefoxAccountsTest(base_class):
             "uid":"6d940dd41e636cc156074109b8092f96",
             "email":"user@example.domain"
         }""")
+
+    def test_authentication_error(self):
+        """Test authentication errors.
+
+        Because we're using a jinja2 template, assertTemplateUsed does not
+        work.  See https://code.djangoproject.com/ticket/24622.
+        """
+        resp = self.client.get(reverse(self.provider.id + '_callback'))
+        self.assertContains(
+            resp, "<title>Social Network Login Failure</title>", html=True)
