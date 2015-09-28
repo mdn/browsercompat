@@ -2,7 +2,6 @@
 from collections import Counter
 from json import loads
 from math import floor
-import csv
 
 from django import forms
 from django.contrib.auth.decorators import user_passes_test
@@ -15,6 +14,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.edit import CreateView, FormMixin, UpdateView
+import unicodecsv as csv
 
 from .models import FeaturePage, Issue, ISSUES, SEVERITIES, validate_mdn_url
 from .tasks import start_crawl, parse_page
