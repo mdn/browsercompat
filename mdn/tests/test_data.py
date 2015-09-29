@@ -49,14 +49,14 @@ class TestLookupFeatureParams(TestDataBase):
 
     def test_feature_params_new(self):
         self.assert_feature_params(
-            'Basic Support', None, '_basic support',
-            'web-css-background-size_basic_support')
+            'Row Feature', None, '_row feature',
+            'web-css-background-size_row_feature')
 
     def test_feature_params_match(self):
         match = self.get_instance(
-            'Feature', 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-contain_and_cover')
         self.assert_feature_params(
-            'Basic Support', match, match.id, match.slug)
+            match.name['en'], match, match.id, match.slug)
 
     def test_feature_params_match_canonical(self):
         match = self.create(
@@ -111,7 +111,7 @@ class TestLookupSupportId(TestDataBase):
         super(TestLookupSupportId, self).setUp()
         self.version = self.get_instance('Version', ('firefox', 'current'))
         self.feature = self.get_instance(
-            'Feature', 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-contain_and_cover')
 
     def assert_new_support_id(self, version_id, feature_id):
         support_id = self.data.lookup_support_id(version_id, feature_id)

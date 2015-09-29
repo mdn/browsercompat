@@ -46,7 +46,7 @@ class TestCompatSectionExtractor(TestCase):
                 '<h2 id="Browser_compatibility">Browser compatibility</h2>'),
             pre_table=pre_table or '<div>{{CompatibilityTable}}</div>',
             browser=browser or 'Firefox',
-            feature=feature or 'Basic support',
+            feature=feature or '<code>contain</code> and <code>cover</code>',
             support=support or '1.0',
             after_table=after_table or '')
 
@@ -60,11 +60,12 @@ class TestCompatSectionExtractor(TestCase):
             'versions': [{
                 'browser': browser_id, 'id': version_id, 'version': '1.0'}],
             'features': [{
-                'id': '_basic support', 'name': 'Basic support',
-                'slug': 'web-css-background-size_basic_support'}],
+                'id': '_contain and cover',
+                'name': '<code>contain</code> and <code>cover</code>',
+                'slug': 'web-css-background-size_contain_and_cover'}],
             'supports': [{
-                'feature': '_basic support',
-                'id': '__basic support-%s' % version_id,
+                'feature': '_contain and cover',
+                'id': '__contain and cover-%s' % version_id,
                 'support': 'yes', 'version': version_id}]}
 
     def assert_extract(
@@ -90,9 +91,9 @@ class TestCompatSectionExtractor(TestCase):
         expected['versions'][0] = {
             'id': '_Fire-1.0', 'version': '1.0', 'browser': '_Fire'}
         expected['supports'][0] = {
-            'id': u'__basic support-_Fire-1.0',
+            'id': u'__contain and cover-_Fire-1.0',
             'support': 'yes',
-            'feature': '_basic support',
+            'feature': '_contain and cover',
             'version': '_Fire-1.0'}
         issue = ('unknown_browser', 205, 218, {'name': 'Fire'})
         self.assert_extract(html, [expected], issues=[issue])
@@ -111,7 +112,7 @@ class TestCompatSectionExtractor(TestCase):
             after_table="<p>[1] This is a footnote.</p>")
         expected = self.get_default_compat_div()
         expected['supports'][0]['footnote'] = 'This is a footnote.'
-        expected['supports'][0]['footnote_id'] = ('1', 292, 295)
+        expected['supports'][0]['footnote_id'] = ('1', 322, 325)
         self.assert_extract(html, [expected])
 
     def test_footnote_mismatch(self):
@@ -119,11 +120,11 @@ class TestCompatSectionExtractor(TestCase):
             support="1.0 [1]",
             after_table="<p>[2] Oops, footnote ID is wrong.</p>")
         expected = self.get_default_compat_div()
-        expected['supports'][0]['footnote_id'] = ('1', 292, 295)
-        footnotes = {'2': ('Oops, footnote ID is wrong.', 344, 382)}
+        expected['supports'][0]['footnote_id'] = ('1', 322, 325)
+        footnotes = {'2': ('Oops, footnote ID is wrong.', 374, 412)}
         issues = [
-            ('footnote_missing', 292, 295, {'footnote_id': '1'}),
-            ('footnote_unused', 344, 382, {'footnote_id': '2'})]
+            ('footnote_missing', 322, 325, {'footnote_id': '1'}),
+            ('footnote_unused', 374, 412, {'footnote_id': '2'})]
         self.assert_extract(
             html, [expected], footnotes=footnotes, issues=issues)
 
@@ -135,7 +136,7 @@ class TestCompatSectionExtractor(TestCase):
             "<td>1.0</td>", "<td>1.0</td><td>{{CompatUnknown()}}</td>")
         self.assertTrue('CompatUnknown' in html)
         expected = self.get_default_compat_div()
-        issue = ('extra_cell', 296, 324, {})
+        issue = ('extra_cell', 326, 354, {})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_compat_mobile_table(self):
@@ -144,7 +145,10 @@ class TestCompatSectionExtractor(TestCase):
   <table class="compat-table">
     <tbody>
       <tr><th>Feature</th><th>Safari Mobile</th></tr>
-      <tr><td>Basic support</td><td>1.0 [1]</td></tr>
+      <tr>
+        <td><code>contain</code> and <code>cover</code></td>
+        <td>1.0 [1]</td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -161,9 +165,9 @@ class TestCompatSectionExtractor(TestCase):
                 'slug': '_Safari Mobile',
             }],
             'features': [{
-                'id': '_basic support',
-                'name': 'Basic support',
-                'slug': 'web-css-background-size_basic_support',
+                'id': '_contain and cover',
+                'name': '<code>contain</code> and <code>cover</code>',
+                'slug': 'web-css-background-size_contain_and_cover',
             }],
             'versions': [{
                 'id': '_Safari Mobile-1.0',
@@ -171,15 +175,15 @@ class TestCompatSectionExtractor(TestCase):
                 'browser': '_Safari Mobile',
             }],
             'supports': [{
-                'id': '__basic support-_Safari Mobile-1.0',
-                'feature': '_basic support',
+                'id': '__contain and cover-_Safari Mobile-1.0',
+                'feature': '_contain and cover',
                 'support': 'yes',
                 'version': '_Safari Mobile-1.0',
                 'footnote': "It's really supported.",
-                'footnote_id': ('1', 503, 506),
+                'footnote_id': ('1', 581, 584),
             }],
         }
-        issue = ('unknown_browser', 435, 457, {'name': 'Safari Mobile'})
+        issue = ('unknown_browser', 465, 487, {'name': 'Safari Mobile'})
         self.assert_extract(
             html, [expected_desktop, expected_mobile], issues=[issue])
 
@@ -193,21 +197,22 @@ class TestCompatSectionExtractor(TestCase):
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_feature_issue(self):
-        html = self.construct_html(feature='Basic support [1]')
+        html = self.construct_html(
+            feature='<code>contain</code> and <code>cover</code> [1]')
         expected = self.get_default_compat_div()
-        issue = ('footnote_feature', 271, 274, {})
+        issue = ('footnote_feature', 300, 304, {})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_support_issue(self):
         html = self.construct_html(support="1.0 (or earlier)")
         expected = self.get_default_compat_div()
-        issue = ('inline_text', 292, 304, {'text': '(or earlier)'})
+        issue = ('inline_text', 322, 334, {'text': '(or earlier)'})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_footnote_issue(self):
         html = self.construct_html(after_table="<p>Here's some text.</p>")
         expected = self.get_default_compat_div()
-        issue = ('footnote_no_id', 340, 364, {})
+        issue = ('footnote_no_id', 370, 394, {})
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_table_div_wraps_h3(self):
@@ -218,8 +223,8 @@ class TestCompatSectionExtractor(TestCase):
         expected = self.get_default_compat_div()
         issues = [
             ('skipped_content', 58, 126, {}),
-            ('footnote_gap', 404, 408, {}),
-            ('footnote_no_id', 388, 403, {})]
+            ('footnote_gap', 434, 438, {}),
+            ('footnote_no_id', 418, 433, {})]
         self.assert_extract(html, [expected], issues=issues)
 
     def test_support_colspan_exceeds_table_width(self):
@@ -227,7 +232,7 @@ class TestCompatSectionExtractor(TestCase):
         html = self.construct_html()
         html = html.replace("<td>1.0", '<td colspan="2">1.0')
         expected = self.get_default_compat_div()
-        issue = ('cell_out_of_bounds', 284, 308, {})
+        issue = ('cell_out_of_bounds', 314, 338, {})
         self.assert_extract(html, [expected], issues=[issue])
 
 
@@ -248,7 +253,7 @@ class TestFootnote(TestCase):
 
 class TestFeatureGrammar(TestCase):
     def test_standard(self):
-        text = '<td>Basic Support</td>'
+        text = '<td>contain and cover</td>'
         parsed = compat_feature_grammar['html'].parse(text)
         assert parsed
 
@@ -617,7 +622,7 @@ class TestSupportVisitor(TestCase):
         version = self.get_instance('Version', ('firefox', '1.0'))
         self.set_browser(version.browser)
         feature = self.get_instance(
-            'Feature', 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-contain_and_cover')
         self.feature_id = feature.id
         support = self.create(Support, version=version, feature=feature)
         self.assert_support(
