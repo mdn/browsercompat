@@ -624,6 +624,13 @@ class DOMxRef(XRefBase):
         self.display = self.dom_text or self.dom_path
 
 
+class EmbedCompatTable(KnownKumaScript):
+    # https://developer.mozilla.org/en-US/docs/Template:EmbedCompatTable
+    min_args = max_args = 1
+    arg_names = ['slug']
+    expected_scopes = set(('footnote',))
+
+
 class Event(XRefBase):
     # https://developer.mozilla.org/en-US/docs/Template:event
     min_args = 1
@@ -950,6 +957,7 @@ class BaseKumaVisitor(HTMLVisitor):
         'CompatUnknown': CompatUnknown,
         'CompatVersionUnknown': CompatVersionUnknown,
         'CompatibilityTable': CompatibilityTable,
+        'EmbedCompatTable': EmbedCompatTable,
         'HTMLElement': KumaHTMLElement,
         'Spec2': Spec2,
         'SpecName': SpecName,

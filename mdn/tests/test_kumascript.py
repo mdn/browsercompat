@@ -10,11 +10,12 @@ from mdn.kumascript import (
     CompatGeckoFxOS, CompatGeckoMobile, CompatIE, CompatNightly, CompatNo,
     CompatOpera, CompatOperaMobile, CompatSafari, CompatUnknown,
     CompatVersionUnknown, CompatibilityTable, DOMEventXRef, DOMException,
-    DOMxRef, DeprecatedInline, Event, ExperimentalInline, GeckoRelease,
-    HTMLAttrXRef, JSxRef, KumaHTMLElement, KnownKumaScript, KumaScript,
-    KumaVisitor, NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
-    SpecName, UnknownKumaScript, WebkitBug, WhyNoSpecBlock, XrefCSSLength,
-    kumascript_grammar)
+    DOMxRef, DeprecatedInline, EmbedCompatTable, Event,
+    ExperimentalInline, GeckoRelease, HTMLAttrXRef, JSxRef,
+    KumaHTMLElement, KnownKumaScript, KumaScript, KumaVisitor,
+    NonStandardInline, NotStandardInline, PropertyPrefix, Spec2,
+    SpecName, UnknownKumaScript, WebkitBug, WhyNoSpecBlock,
+    XrefCSSLength, kumascript_grammar)
 from .base import TestCase
 from .test_html import TestGrammar as TestHTMLGrammar
 from .test_html import TestVisitor as TestHTMLVisitor
@@ -481,6 +482,18 @@ class TestDOMxRef(TestCase):
             ks.to_html(),
             ('<a href="https://developer.mozilla.org/en-US/docs/Web/API/'
              'Window/alert"><code>window.alert()</code></a>'))
+
+
+class TestEmbedCompatTable(TestCase):
+    # https://developer.mozilla.org/en-US/docs/Template:EmbedCompatTable
+    scope = 'footnote'
+
+    def test_standard(self):
+        raw = '{{EmbedCompatTable("web-css-display")}}'
+        ks = EmbedCompatTable(
+            raw=raw, args=['web-css-display'], scope=self.scope)
+        self.assertFalse(ks.issues)
+        self.assertEqual(ks.to_html(), '')
 
 
 class TestEvent(TestCase):
