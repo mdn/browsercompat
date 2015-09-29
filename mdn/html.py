@@ -234,6 +234,7 @@ class HTMLText(HTMLInterval):
     (\s|                # Any whitespace, or
      (<\s*br\s*/?>)|    # A variant of <br>, or
      \xa0|              # Unicode non-breaking space, or
+     \ufeff|            # Unicode BOM
      (\&nbsp;)          # HTML nbsp character
     )+                  # One or more in a row
     ''')

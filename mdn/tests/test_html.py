@@ -33,6 +33,10 @@ class TestHTMLText(TestCase):
         text = HTMLText(raw='\nSome Text\n')
         self.assertEqual('Some Text', text.to_text())
 
+    def test_bom_removed(self):
+        text = HTMLText(raw='BOM -> \ufeff')
+        self.assertEqual('BOM ->', text.to_text())
+
 
 class TestHTMLBaseTag(TestCase):
     def test_str(self):

@@ -2,7 +2,6 @@
 from collections import Counter
 from json import loads
 from math import floor
-import csv
 
 from django import forms
 from django.contrib.auth.decorators import user_passes_test
@@ -15,6 +14,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.edit import CreateView, FormMixin, UpdateView
+import unicodecsv as csv
 
 from .models import FeaturePage, Issue, ISSUES, SEVERITIES, validate_mdn_url
 from .tasks import start_crawl, parse_page
@@ -378,18 +378,22 @@ class IssuesDetail(TemplateView):
         return ctx
 
 
+def csv_response(filename, headers, rows):
+    """Return a CSV-for-download response."""
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = (
+        'attachment; filename="{}"'.format(filename))
+    writer = csv.writer(response)
+    writer.writerow(headers)
+    writer.writerows(rows)
+    return response
+
+
 def issues_summary_csv(request):
     raw_counts = Issue.objects.values('slug').annotate(total=Count('slug'))
     counts = [(raw['total'], raw['slug']) for raw in raw_counts]
     counts.sort(reverse=True)
-
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = (
-        'attachment; filename="import_issue_counts.csv"')
-    writer = csv.writer(response)
-    writer.writerow(['Count', 'Issue'])
-    writer.writerows(counts)
-    return response
+    return csv_response("import_issue_counts.csv", ['Count', 'Issue'], counts)
 
 
 def issues_detail_csv(request, slug):
@@ -408,15 +412,10 @@ def issues_detail_csv(request, slug):
     for line, params in zip(lines, raw_params):
         line.extend([params.get(header, "") for header in headers])
 
-    response = HttpResponse(content_type='text/csv')
     filename = 'import_issues_for_{}.csv'.format(slug)
-    response['Content-Disposition'] = (
-        'attachment; filename="{}"'.format(filename))
-    writer = csv.writer(response)
-    writer.writerow(
+    csv_headers = (
         ['MDN Slug', 'Import URL', 'Source Start', 'Source End'] + headers)
-    writer.writerows(lines)
-    return response
+    return csv_response(filename, csv_headers, lines)
 
 
 feature_page_create = user_passes_test(can_create)(

@@ -340,6 +340,19 @@ class TestIssuesDetailCSV(CSVTestCase):
         ]
         self.assert_csv_response(url, expected)
 
+    def test_get_unicode(self):
+        text = "Pas avant les éléments en-ligne"
+        self.issue.params = {"text": text}
+        self.issue.save()
+
+        url = reverse('issues_detail_csv', kwargs={'slug': 'inline-text'})
+        full_url = 'http://testserver/importer/{}'.format(self.fp.pk)
+        expected = [
+            'MDN Slug,Import URL,Source Start,Source End,text',
+            'docs/Web/CSS/float,{},10,20,{}'.format(full_url, text),
+        ]
+        self.assert_csv_response(url, expected)
+
 
 class TestIssuesSummaryCSV(CSVTestCase):
     def test_get(self):

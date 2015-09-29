@@ -84,3 +84,6 @@ requests==2.7.0
 oauthlib==1.0.3
 requests-oauthlib==0.5.0
 django-allauth==0.23.0
+
+# Unicode-aware CSVs
+unicodecsv==0.14.1
