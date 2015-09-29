@@ -1820,44 +1820,50 @@ class TestViewFeatureUpdates(APITestCase):
         self.assertEqual(list(feature.get_descendants()), [subfeature])
 
     def test_post_add_second_subfeature(self):
-        sf1 = self.create(
-            Feature, slug='sf1', name={'en': 'sf1'}, parent=self.feature)
-        sf2_data = {
-            "id": "_sf2", "slug": "sf2", "name": {"en": "Sub Feature 2"},
-            "links": {"parent": str(self.feature.pk)}}
-        json_data = self.json_api(features=[sf2_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
-        sf2 = Feature.objects.get(slug='sf2')
-        self.assertEqual(sf2.parent, self.feature)
-        feature = Feature.objects.get(id=self.feature.id)
-        actual = list(feature.children.all())
-        if actual != [sf1, sf2]:  # pragma: nocover
-            # Debug occasional test failure
-            def report(f, prefix='Feature'):
-                attrs = ['id', 'lft', 'rght', 'tree_id', 'level', 'parent']
-                return prefix + ': ' + ', '.join(
-                    ['%s=%s' % (a, getattr(f, a)) for a in attrs])
-            from django.db import connection
-            msg_lines = [
-                "=" * 70,
-                'Unexpected failure in test_post_add_second_subfeature.',
-                'Report at:',
-                ' https://bugzilla.mozilla.org/show_bug.cgi?id=1159337',
-                'DB queries:'
-            ]
-            msg_lines.extend([str(q) for q in connection.queries])
-            msg_lines.extend([
-                'Features:',
-                report(self.feature, 'parent'),
-                report(feature, 'parent from DB'),
-                report(sf1, 'sf1'),
-                report(sf2, 'sf2'),
-                "=" * 70]
-            )
-            print('\n'.join(msg_lines))
-        self.assertEqual(list(feature.children.all()), [sf1, sf2])
+        from django.db import connection
+        old_debug = connection.use_debug_cursor
+        connection.use_debug_cursor = True
+        try:
+            sf1 = self.create(
+                Feature, slug='sf1', name={'en': 'sf1'}, parent=self.feature)
+            sf2_data = {
+                "id": "_sf2", "slug": "sf2", "name": {"en": "Sub Feature 2"},
+                "links": {"parent": str(self.feature.pk)}}
+            json_data = self.json_api(features=[sf2_data])
+            response = self.client.put(
+                self.url, data=json_data,
+                content_type="application/vnd.api+json")
+            self.assertEqual(response.status_code, 200, response.content)
+            sf2 = Feature.objects.get(slug='sf2')
+            self.assertEqual(sf2.parent, self.feature)
+            feature = Feature.objects.get(id=self.feature.id)
+            actual = list(feature.children.all())
+            if actual != [sf1, sf2]:  # pragma: nocover
+                # Debug occasional test failure
+                def report(f, prefix='Feature'):
+                    attrs = ['id', 'lft', 'rght', 'tree_id', 'level', 'parent']
+                    return prefix + ': ' + ', '.join(
+                        ['%s=%s' % (a, getattr(f, a)) for a in attrs])
+                msg_lines = [
+                    "=" * 70,
+                    'Unexpected failure in test_post_add_second_subfeature.',
+                    'Report at:',
+                    ' https://bugzilla.mozilla.org/show_bug.cgi?id=1159337',
+                    'DB queries:'
+                ]
+                msg_lines.extend([str(q) for q in connection.queries])
+                msg_lines.extend([
+                    'Features:',
+                    report(self.feature, 'parent'),
+                    report(feature, 'parent from DB'),
+                    report(sf1, 'sf1'),
+                    report(sf2, 'sf2'),
+                    "=" * 70]
+                )
+                print('\n'.join(msg_lines))
+            self.assertEqual(list(feature.children.all()), [sf1, sf2])
+        finally:
+            connection.use_debug_cursor = old_debug
 
     def test_post_update_existing_subfeature(self):
         subfeature = self.create(
