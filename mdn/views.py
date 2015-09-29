@@ -1,6 +1,7 @@
 """Views for MDN migration app."""
 from collections import Counter
 from json import loads
+from math import floor
 import csv
 
 from django import forms
@@ -109,8 +110,8 @@ class FeaturePageListView(ListView):
         for status, name, classes in self.progress_bar_order:
             count = status_counts.get(status, 0)
             if count:
-                percent = "%0.1f" % (
-                    100.0 * (float(count) / float(have_data_count)))
+                raw = floor(1000.0 * (float(count) / float(have_data_count)))
+                percent = "%0.1f" % (raw / 10.0)
             else:
                 percent = 0
             data_counts_list.append((name, classes, count, percent))
