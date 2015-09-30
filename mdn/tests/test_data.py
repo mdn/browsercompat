@@ -47,6 +47,11 @@ class TestLookupFeatureParams(TestDataBase):
             new_params = self.data.lookup_feature_params(self.parent, name)
         self.assertEqual(params, new_params)
 
+    def test_feature_params_basic_support(self):
+        self.assert_feature_params(
+            'Basic Support', self.parent, self.parent.id,
+            'web-css-background-size')
+
     def test_feature_params_new(self):
         self.assert_feature_params(
             'Row Feature', None, '_row feature',

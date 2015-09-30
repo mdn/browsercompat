@@ -690,6 +690,43 @@ class TestScrapedViewFeature(FeaturePageTestCase):
             'browsers': [browser_id]})
         self.assertDataEqual(expected, out)
 
+    def test_load_compat_table_basic_support(self):
+        version = self.get_instance('Version', ('firefox', '1.0'))
+        browser = version.browser
+        feature = self.feature
+        browser_id = str(browser.id)
+        version_id = str(version.id)
+        feature_id = str(feature.id)
+        support_id = '_%s-%s' % (feature_id, version_id)
+        scraped_data = self.empty_scrape()
+        scraped_table = {
+            'name': 'desktop',
+            'browsers': [{
+                'id': browser_id, 'name': browser.name['en'],
+                'slug': browser.slug}],
+            'versions': [{
+                'id': version_id, 'browser': browser_id, 'version': '1.0'}],
+            'features': [{
+                'id': feature_id, 'name': 'Basic Support',
+                'slug': feature.slug}],
+            'supports': [{
+                'id': support_id, 'feature': feature_id, 'version': version_id,
+                'support': 'yes'}]}
+        scraped_data['compat'].append(scraped_table)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        expected = self.empty_view(scraped_data)
+        expected['linked']['browsers'].append(view.load_browser(browser.id))
+        expected['linked']['versions'].append(view.load_version(version.id))
+        support_content = view.new_support(scraped_table['supports'][0])
+        expected['linked']['supports'].append(support_content)
+        expected['meta']['compat_table']['supports'][feature_id] = {
+            browser_id: [support_id]}
+        expected['meta']['compat_table']['tabs'].append({
+            'name': {'en': 'Desktop Browsers'},
+            'browsers': [browser_id]})
+        self.assertDataEqual(expected, out)
+
     def test_load_compat_table_new_support_with_note(self):
         version = self.get_instance('Version', ('firefox', '1.0'))
         browser = version.browser
