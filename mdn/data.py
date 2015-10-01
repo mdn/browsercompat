@@ -62,6 +62,11 @@ class Data(object):
         """
         nname = normalize_name(name)
 
+        # Treat "Basic Support" rows as parent feature
+        if nname.lower() == 'basic support':
+            return self.FeatureParams(
+                parent_feature, parent_feature.id, parent_feature.slug)
+
         # Initialize subfeature data as needed
         if parent_feature.id not in self.subfeature_data:
             subfeatures = {}

@@ -13,6 +13,9 @@ from .base import TestCase
 
 
 class BaseTestCase(TestCase):
+    def setUp(self):
+        self.feature = self.get_instance('Feature', 'web-css-background-size')
+
     def get_sample_specs(self):
         sample_spec_section = """\
 <h2 id="Specifications" name="Specifications">Specifications</h2>
@@ -50,7 +53,10 @@ class BaseTestCase(TestCase):
  <table class="compat-table">
   <tbody>
    <tr><th>Feature</th><th>Firefox (Gecko)</th></tr>
-   <tr><td>Basic support</td><td>{{CompatGeckoDesktop("1")}}</td></tr>
+   <tr>
+    <td><code>contain</code> and <code>cover</code></td>
+    <td>{{CompatGeckoDesktop("1")}}</td>
+   </tr>
   </tbody>
  </table>
 </div>
@@ -65,18 +71,19 @@ class BaseTestCase(TestCase):
             'versions': [{
                 'browser': browser_id, 'id': version_id, 'version': '1.0'}],
             'features': [{
-                'id': '_basic support', 'name': 'Basic support',
-                'slug': 'web-css-background-size_basic_support'}],
+                'id': '_contain and cover',
+                'name': '<code>contain</code> and <code>cover</code>',
+                'slug': 'web-css-background-size_contain_and_cover'}],
             'supports': [{
-                'feature': '_basic support',
-                'id': '__basic support-%s' % version_id,
+                'feature': '_contain and cover',
+                'id': '__contain and cover-%s' % version_id,
                 'support': 'yes', 'version': version_id}]}]
         return sample_compat_section, expected_compat
 
 
 class TestPageExtractor(BaseTestCase):
     def setUp(self):
-        self.feature = self.get_instance('Feature', 'web-css-background-size')
+        super(TestPageExtractor, self).setUp()
         self.visitor = PageVisitor()
 
     def assert_extract(
@@ -144,7 +151,7 @@ class TestPageExtractor(BaseTestCase):
         page = (
             sample_compat_section +
             '<h3 id="Gecko Gecko">Gecko Note</h3>\n<p>A note</p>')
-        issues = [('skipped_h3', 310, 346, {'h3': 'Gecko Note'})]
+        issues = [('skipped_h3', 354, 390, {'h3': 'Gecko Note'})]
         self.assert_extract(page, compat=expected_compat, issues=issues)
 
     def test_div_wrapped(self):
@@ -163,9 +170,6 @@ class TestPageExtractor(BaseTestCase):
 
 
 class TestScrape(BaseTestCase):
-    def setUp(self):
-        self.feature = self.get_instance('Feature', 'web-css-background-size')
-
     def assertScrape(self, page, specs, issues):
         actual = scrape_page(page, self.feature)
         self.assertEqual(actual['locale'], 'en')
@@ -459,11 +463,12 @@ class TestScrapedViewFeature(FeaturePageTestCase):
 
     def test_load_feature(self):
         feature = self.get_instance(
-            'Feature', 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-contain_and_cover')
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         feature_content = view.load_feature(feature.id)
         expected = {
-            'id': str(feature.id), 'name': {'en': 'Basic support'},
+            'id': str(feature.id),
+            'name': {'en': '<code>contain</code> and <code>cover</code>'},
             'slug': feature.slug, 'mdn_uri': None, 'obsolete': False,
             'stable': True, 'standardized': True, 'experimental': False,
             'links': {
@@ -488,13 +493,15 @@ class TestScrapedViewFeature(FeaturePageTestCase):
 
     def test_new_feature(self):
         feature_entry = {
-            'id': '_feature', 'name': 'Basic support',
-            'slug': 'web-css-background-size_basic_support'}
+            'id': '_feature',
+            'name': '<code>contain</code> and <code>cover</code>',
+            'slug': 'web-css-background-size_contain_and_cover'}
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         feature_content = view.new_feature(feature_entry)
         expected = {
-            'id': '_feature', 'name': {'en': 'Basic support'},
-            'slug': 'web-css-background-size_basic_support',
+            'id': '_feature',
+            'name': {'en': '<code>contain</code> and <code>cover</code>'},
+            'slug': 'web-css-background-size_contain_and_cover',
             'mdn_uri': None, 'obsolete': False, 'stable': True,
             'standardized': True, 'experimental': False,
             'links': {
@@ -521,7 +528,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
     def test_load_support(self):
         version = self.get_instance('Version', ('firefox', '1.0'))
         feature = self.get_instance(
-            'Feature', 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-contain_and_cover')
         support = self.create(Support, version=version, feature=feature)
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         support_content = view.load_support(support.id)
@@ -609,7 +616,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
     def test_load_compat_table_new_resources(self):
         browser_id = '_Firefox (Gecko)'
         version_id = '_Firefox-1.0'
-        feature_id = '_basic_support'
+        feature_id = '_contain_and_cover'
         support_id = '_%s-%s' % (feature_id, version_id)
         scraped_data = self.empty_scrape()
         scraped_table = {
@@ -620,8 +627,9 @@ class TestScrapedViewFeature(FeaturePageTestCase):
             'versions': [{
                 'id': version_id, 'browser': browser_id, 'version': '1.0'}],
             'features': [{
-                'id': feature_id, 'name': 'Basic support',
-                'slug': 'web-css-background-size_basic_support'}],
+                'id': feature_id,
+                'name': '<code>contain</code> and <code>cover</code>',
+                'slug': 'web-css-background-size_contain_and_cover'}],
             'supports': [{
                 'id': support_id, 'feature': feature_id, 'version': version_id,
                 'support': 'yes'}]}
@@ -647,7 +655,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         version = self.get_instance('Version', ('firefox', '1.0'))
         browser = version.browser
         feature = self.get_instance(
-            'Feature', 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-contain_and_cover')
         support = self.create(Support, version=version, feature=feature)
         browser_id = str(browser.id)
         version_id = str(version.id)
@@ -682,11 +690,48 @@ class TestScrapedViewFeature(FeaturePageTestCase):
             'browsers': [browser_id]})
         self.assertDataEqual(expected, out)
 
+    def test_load_compat_table_basic_support(self):
+        version = self.get_instance('Version', ('firefox', '1.0'))
+        browser = version.browser
+        feature = self.feature
+        browser_id = str(browser.id)
+        version_id = str(version.id)
+        feature_id = str(feature.id)
+        support_id = '_%s-%s' % (feature_id, version_id)
+        scraped_data = self.empty_scrape()
+        scraped_table = {
+            'name': 'desktop',
+            'browsers': [{
+                'id': browser_id, 'name': browser.name['en'],
+                'slug': browser.slug}],
+            'versions': [{
+                'id': version_id, 'browser': browser_id, 'version': '1.0'}],
+            'features': [{
+                'id': feature_id, 'name': 'Basic Support',
+                'slug': feature.slug}],
+            'supports': [{
+                'id': support_id, 'feature': feature_id, 'version': version_id,
+                'support': 'yes'}]}
+        scraped_data['compat'].append(scraped_table)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        expected = self.empty_view(scraped_data)
+        expected['linked']['browsers'].append(view.load_browser(browser.id))
+        expected['linked']['versions'].append(view.load_version(version.id))
+        support_content = view.new_support(scraped_table['supports'][0])
+        expected['linked']['supports'].append(support_content)
+        expected['meta']['compat_table']['supports'][feature_id] = {
+            browser_id: [support_id]}
+        expected['meta']['compat_table']['tabs'].append({
+            'name': {'en': 'Desktop Browsers'},
+            'browsers': [browser_id]})
+        self.assertDataEqual(expected, out)
+
     def test_load_compat_table_new_support_with_note(self):
         version = self.get_instance('Version', ('firefox', '1.0'))
         browser = version.browser
         feature = self.get_instance(
-            'Feature', 'web-css-background-size-basic_support')
+            'Feature', 'web-css-background-size-contain_and_cover')
         browser_id = str(browser.id)
         version_id = str(version.id)
         feature_id = str(feature.id)

@@ -55,9 +55,9 @@ class TestCase(BaseTestCase):
         ('Feature', 'web-css-background-size'): {
             '_req': {'parent': ('Feature', 'web-css')},
             'name': '{"zxx": "background-size"}'},
-        ('Feature', 'web-css-background-size-basic_support'): {
+        ('Feature', 'web-css-background-size-contain_and_cover'): {
             '_req': {'parent': ('Feature', 'web-css-background-size')},
-            'name': '{"en": "Basic support"}'},
+            'name': '{"en": "<code>contain</code> and <code>cover</code>"}'},
         ('Browser', 'chrome'): {'name': '{"en": "Chrome"}'},
         ('Browser', 'firefox'): {'name': '{"en": "Firefox"}'},
         ('Version', ('chrome', '1.0')): {},

@@ -62,6 +62,7 @@ class CompatSectionExtractor(Extractor):
         <tbody>
           <tr><th>Feature</th><th>Chrome</th></tr>
           <tr><td>Basic support</td><td>1.0 [1]</td></tr>
+          <tr><td><code>contain</code></td><td>3.0</td></tr>
         </tbody>
       </table>
     </div>

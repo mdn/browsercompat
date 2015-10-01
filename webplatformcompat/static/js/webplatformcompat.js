@@ -137,7 +137,7 @@ window.WPC = {
     },
     generate_browser_tables: function (resources, lang) {
         var a, backlink, browser, browserCnt, browserId, browserIdx,
-            browserMap, feature, featureId, note, noteArray,
+            browserMap, feature, featureId, featureName, note, noteArray,
             noteCnt, noteDiv, noteId, noteIdx, noteNum,
             noteSup, idPrefix, nosupport, panel, prefix,
             releaseUri, span1, span2, support, supportCnt, supportId,
@@ -209,13 +209,18 @@ window.WPC = {
                 tbody = document.createElement('tbody');
                 supportMap = resources.meta.compat_table.supports;
                 for (featureId in supportMap) {
-                    if (supportMap.hasOwnProperty(featureId) &&
-                            featureId !== resources.data.id) {
+                    if (supportMap.hasOwnProperty(featureId)) {
                         browserMap = supportMap[featureId];
-                        feature = resources.features[featureId];
+                        if (featureId === resources.data.id) {
+                            feature = resources.data;
+                            featureName = this.trans_span(this.strings['Basic support'], lang);
+                        } else {
+                            feature = resources.features[featureId];
+                            featureName = this.trans_span(feature.name, lang);
+                        }
                         tr = document.createElement('tr');
                         td = document.createElement('td');
-                        td.appendChild(this.trans_span(feature.name, lang));
+                        td.appendChild(featureName);
                         if (feature.experimental) {
                             span1 = document.createElement('span');
                             span1.setAttribute('class', 'glyphicon glyphicon-fire');
@@ -389,4 +394,14 @@ window.WPC = {
         }
         return null;
     },
+    strings: {
+        'Basic support': {
+            'de': 'Grundlegende Unterstützung',
+            'en': 'Basic support',
+            'es': 'Soporte básico',
+            'fr': 'Support de base',
+            'ja': '基本サポート',
+            'pt-BR': 'Suporte básico',
+        },
+    }
 };

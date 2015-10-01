@@ -462,9 +462,6 @@ class TestViewFeatureViewSet(APITestCase):
                 'en': ('https://developer.mozilla.org/'
                        'en-US/docs/Web/HTML/Element/address')},
             slug='html-element-address', name={'zxx': 'address'})
-        feature_row_191 = self.create(
-            Feature, parent=feature_816, slug='html-address',
-            name={'en': 'Basic support'})
 
         browser_chrome_1 = self.create(
             Browser, slug='chrome', name={'en': 'Chrome'})
@@ -523,27 +520,27 @@ class TestViewFeatureViewSet(APITestCase):
             Version, browser=browser_operamini_11, status="current")
 
         support_chrome_358 = self.create(
-            Support, version=version_chrome_758, feature=feature_row_191)
+            Support, version=version_chrome_758, feature=feature_816)
         support_firefox_359 = self.create(
-            Support, version=version_firefox_759, feature=feature_row_191)
+            Support, version=version_firefox_759, feature=feature_816)
         support_ie_360 = self.create(
-            Support, version=version_ie_760, feature=feature_row_191)
+            Support, version=version_ie_760, feature=feature_816)
         support_opera_361 = self.create(
-            Support, version=version_opera_761, feature=feature_row_191)
+            Support, version=version_opera_761, feature=feature_816)
         support_safari_362 = self.create(
-            Support, version=version_safari_762, feature=feature_row_191)
+            Support, version=version_safari_762, feature=feature_816)
         support_android_363 = self.create(
-            Support, version=version_android_763, feature=feature_row_191)
+            Support, version=version_android_763, feature=feature_816)
         support_ffmobile_364 = self.create(
-            Support, version=version_ffmobile_764, feature=feature_row_191)
+            Support, version=version_ffmobile_764, feature=feature_816)
         support_iephone_365 = self.create(
-            Support, version=version_iephone_765, feature=feature_row_191)
+            Support, version=version_iephone_765, feature=feature_816)
         support_operamobile_366 = self.create(
-            Support, version=version_operamobile_766, feature=feature_row_191)
+            Support, version=version_operamobile_766, feature=feature_816)
         support_safarimobile_367 = self.create(
-            Support, version=version_safarimobile_767, feature=feature_row_191)
+            Support, version=version_safarimobile_767, feature=feature_816)
         support_operamini_368 = self.create(
-            Support, version=version_operamini_768, feature=feature_row_191)
+            Support, version=version_operamini_768, feature=feature_816)
 
         mat_23 = self.create(
             Maturity, slug='Living', name={'en': 'Living Standard'})
@@ -620,9 +617,21 @@ class TestViewFeatureViewSet(APITestCase):
                         str(section_421.pk),
                         str(section_70.pk),
                     ],
-                    "supports": [],
+                    "supports": [
+                        str(support_chrome_358.pk),
+                        str(support_firefox_359.pk),
+                        str(support_ie_360.pk),
+                        str(support_opera_361.pk),
+                        str(support_safari_362.pk),
+                        str(support_android_363.pk),
+                        str(support_ffmobile_364.pk),
+                        str(support_iephone_365.pk),
+                        str(support_operamobile_366.pk),
+                        str(support_safarimobile_367.pk),
+                        str(support_operamini_368.pk)
+                    ],
                     "parent": str(feature_parent_800.id),
-                    "children": [str(feature_row_191.id)],
+                    "children": [],
                     "history_current": self.history_pk_str(feature_816),
                     "history": self.history_pks_str(feature_816),
                 }
@@ -783,41 +792,7 @@ class TestViewFeatureViewSet(APITestCase):
                         }
                     }
                 ],
-                "features": [
-                    {
-                        "id": str(feature_row_191.id),
-                        "slug": "html-address",
-                        "experimental": False,
-                        "standardized": True,
-                        "stable": True,
-                        "obsolete": False,
-                        "name": {
-                            "en": "Basic support"
-                        },
-                        "mdn_uri": None,
-                        "links": {
-                            "sections": [],
-                            "supports": [
-                                str(support_chrome_358.pk),
-                                str(support_firefox_359.pk),
-                                str(support_ie_360.pk),
-                                str(support_opera_361.pk),
-                                str(support_safari_362.pk),
-                                str(support_android_363.pk),
-                                str(support_ffmobile_364.pk),
-                                str(support_iephone_365.pk),
-                                str(support_operamobile_366.pk),
-                                str(support_safarimobile_367.pk),
-                                str(support_operamini_368.pk)
-                            ],
-                            "parent": str(feature_816.id),
-                            "children": [],
-                            "history_current": self.history_pk_str(
-                                feature_row_191),
-                            "history": self.history_pks_str(feature_row_191),
-                        }
-                    }
-                ],
+                "features": [],
                 "maturities": [
                     {
                         "id": str(mat_23.id),
@@ -959,7 +934,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_chrome_758.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_chrome_358),
                             "history": self.history_pks_str(
@@ -979,7 +954,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_firefox_759.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_firefox_359),
                             "history": self.history_pks_str(
@@ -999,7 +974,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_ie_760.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_ie_360),
                             "history": self.history_pks_str(
@@ -1019,7 +994,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_opera_761.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_opera_361),
                             "history": self.history_pks_str(
@@ -1039,7 +1014,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_safari_762.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_safari_362),
                             "history": self.history_pks_str(
@@ -1059,7 +1034,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_android_763.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_android_363),
                             "history": self.history_pks_str(
@@ -1079,7 +1054,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_ffmobile_764.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_ffmobile_364),
                             "history": self.history_pks_str(
@@ -1099,7 +1074,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_iephone_765.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_iephone_365),
                             "history": self.history_pks_str(
@@ -1119,7 +1094,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_operamobile_766.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_operamobile_366),
                             "history": self.history_pks_str(
@@ -1139,7 +1114,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_safarimobile_767.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_safarimobile_367),
                             "history": self.history_pks_str(
@@ -1159,7 +1134,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "note": None,
                         "links": {
                             "version": str(version_operamini_768.id),
-                            "feature": str(feature_row_191.id),
+                            "feature": str(feature_816.id),
                             "history_current": self.history_pk_str(
                                 support_operamini_368),
                             "history": self.history_pks_str(
@@ -1527,8 +1502,7 @@ class TestViewFeatureViewSet(APITestCase):
                         }
                     ],
                     "supports": {
-                        str(feature_816.pk): {},
-                        str(feature_row_191.pk): {
+                        str(feature_816.pk): {
                             str(browser_chrome_1.pk): [
                                 str(support_chrome_358.pk)],
                             str(browser_firefox_2.pk): [
@@ -1557,7 +1531,7 @@ class TestViewFeatureViewSet(APITestCase):
                         "linked.features": {
                             "previous": None,
                             "next": None,
-                            "count": 1,
+                            "count": 0,
                         },
                     },
                     "languages": ['en', 'ja', 'jp'],

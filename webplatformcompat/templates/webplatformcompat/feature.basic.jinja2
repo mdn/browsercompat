@@ -42,6 +42,17 @@
 
 <i>No specifications</i>
 {% endif %}
+{%- set strings = {
+        'Basic support': {
+            'de': 'Grundlegende Unterstützung',
+            'en': 'Basic support',
+            'es': 'Soporte básico',
+            'fr': 'Support de base',
+            'ja': '基本サポート',
+            'pt-BR': 'Suporte básico',
+        },
+    }
+%}
 
 <h2>Browser compatibility</h2>
 {%- for tab in meta['compat_table']['tabs'] %}
@@ -62,11 +73,16 @@
   </thead>
   <tbody>
     {%- for feature_id, browser_map in meta['compat_table']['supports'].items() %}
-    {%- if feature_id != data['id'] %}
+    {%- if feature_id == data['id'] %}
+    {%- set feature = data %}
+    {%- set feature_name = trans_span(strings['Basic support']) %}
+    {%- else %}
     {%- set feature = collection['features'][feature_id] %}
+    {%- set feature_name = trans_span(feature.name) %}
+    {%- endif %}
 
     <tr>
-      <td>{{trans_span(feature.name)}}</td>
+      <td>{{feature_name}}</td>
       {%- for browser_id in tab['browsers'] %}
         {%- set browser = collection['browsers'][browser_id] %}
         {%- set supports = browser_map[browser_id] %}
@@ -110,7 +126,6 @@
       {%- endfor %}
 
     </tr>
-    {%- endif %}
     {%- endfor %}
 
   </tbody>
