@@ -115,7 +115,7 @@ class LoadSpecData(Tool):
         phase = 0
         key = None
         name = None
-        status_re = re.compile(r"\s+['\"](.*)['\"]\s+: ['\"](.*)['\"],?\s*$")
+        status_re = re.compile(r"\s+['\"](.*)['\"]\s*:\s*['\"](.*)['\"],?\s*$")
         mat_re = re.compile(r"\s+['\"](.*)['\"]\s*:\s*mdn\.localString\({\s*$")
         name_re = re.compile(r"\s+['\"](.*)['\"]\s*:\s*['\"](.*)['\"],?\s*$")
         local_specs = collection.get_resources_by_data_id('specifications')
