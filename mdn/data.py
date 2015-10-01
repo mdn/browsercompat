@@ -24,6 +24,16 @@ class Data(object):
     BrowserParams = namedtuple(
         'BrowserParams', ['browser', 'browser_id', 'name', 'slug'])
 
+    browser_name_fixes = {
+        'Firefox (Gecko)': 'Firefox',
+        'Firefox Mobile (Gecko)': 'Firefox Mobile',
+        'Firefox OS (Gecko)': 'Firefox OS',
+        'Safari (WebKit)': 'Safari',
+        'Windows Phone': 'IE Mobile',
+        'IE Phone': 'IE Mobile',
+        'IE': 'Internet Explorer',
+    }
+
     def lookup_browser_params(self, name, locale='en'):
         """Get or create the browser ID, name, and slug given a raw name.
 
@@ -41,13 +51,16 @@ class Data(object):
                 self.browser_data[key] = self.BrowserParams(
                     browser, browser.pk, key, browser.slug)
 
+        # Handle common alternate names
+        fixed_name = self.browser_name_fixes.get(name, name)
+
         # Select the Browser ID and slug
-        if name not in self.browser_data:
-            browser_id = '_' + name
+        if fixed_name not in self.browser_data:
+            browser_id = '_' + fixed_name
             # TODO: unique slugify instead of browser_id
-            self.browser_data[name] = self.BrowserParams(
-                None, browser_id, name, browser_id)
-        return self.browser_data[name]
+            self.browser_data[fixed_name] = self.BrowserParams(
+                None, browser_id, fixed_name, browser_id)
+        return self.browser_data[fixed_name]
 
     FeatureParams = namedtuple(
         'FeatureParams', ['feature', 'feature_id', 'slug'])

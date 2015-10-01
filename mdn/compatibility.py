@@ -219,21 +219,10 @@ class CompatSectionExtractor(Extractor):
             self.add_issue('feature_header', element, header=header)
         self.columns.append(header)
 
-    browser_name_fixes = {
-        'Firefox (Gecko)': 'Firefox',
-        'Firefox Mobile (Gecko)': 'Firefox Mobile',
-        'Firefox OS (Gecko)': 'Firefox OS',
-        'Safari (WebKit)': 'Safari',
-        'Windows Phone': 'IE Mobile',
-        'IE Phone': 'IE Mobile',
-        'IE': 'Internet Explorer',
-    }
-
     def extract_browser_name(self, element):
         colspan = int(element.attributes.get('colspan', 1))
         raw_name = element.to_text()
-        fixed_name = self.browser_name_fixes.get(raw_name, raw_name)
-        browser_params = self.data.lookup_browser_params(fixed_name)
+        browser_params = self.data.lookup_browser_params(raw_name)
         browser, browser_id, name, slug = browser_params
         if not browser:
             self.add_issue('unknown_browser', element, name=raw_name)
