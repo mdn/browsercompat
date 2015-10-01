@@ -58,11 +58,13 @@ class TestCase(BaseTestCase):
         ('Feature', 'web-css-background-size-contain_and_cover'): {
             '_req': {'parent': ('Feature', 'web-css-background-size')},
             'name': '{"en": "<code>contain</code> and <code>cover</code>"}'},
-        ('Browser', 'chrome'): {'name': '{"en": "Chrome"}'},
-        ('Browser', 'firefox'): {'name': '{"en": "Firefox"}'},
-        ('Version', ('chrome', '1.0')): {},
-        ('Version', ('firefox', 'current')): {},
-        ('Version', ('firefox', '1.0')): {},
+        ('Browser', 'chrome_desktop'): {
+            'name': '{"en": "Chrome for Desktop"}'},
+        ('Browser', 'firefox_desktop'): {
+            'name': '{"en": "Firefox for Desktop"}'},
+        ('Version', ('chrome_desktop', '1.0')): {},
+        ('Version', ('firefox_desktop', 'current')): {},
+        ('Version', ('firefox_desktop', '1.0')): {},
     }
 
     def get_instance(self, model_cls_name, slug):

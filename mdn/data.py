@@ -24,7 +24,8 @@ class Data(object):
     BrowserParams = namedtuple(
         'BrowserParams', ['browser', 'browser_id', 'name', 'slug'])
 
-    browser_name_fixes = {
+    # bug 1128525 changes names and slugs so that desktop isn't implied
+    pre_1128525_name_fixes = {
         'Firefox (Gecko)': 'Firefox',
         'Firefox Mobile (Gecko)': 'Firefox Mobile',
         'Firefox OS (Gecko)': 'Firefox OS',
@@ -32,6 +33,27 @@ class Data(object):
         'Windows Phone': 'IE Mobile',
         'IE Phone': 'IE Mobile',
         'IE': 'Internet Explorer',
+    }
+    post_1128525_name_fixes = {
+        'Android': 'Android Browser',
+        'BlackBerry': 'BlackBerry Browser',
+        'Chrome': 'Chrome for Desktop',
+        'Firefox (Gecko)': 'Firefox for Desktop',
+        'Firefox Mobile (Gecko)': 'Firefox for Android',
+        'Firefox Mobile': 'Firefox for Android',
+        'Firefox OS (Gecko)': 'Firefox OS',
+        'Firefox': 'Firefox for Desktop',
+        'IE Mobile': 'Internet Explorer Mobile',
+        'IE Phone': 'Internet Explorer Mobile',
+        'IE': 'Internet Explorer for Desktop',
+        'iOS Safari': 'Safari for iOS',
+        'Internet Explorer': 'Internet Explorer for Desktop',
+        'Opera': 'Opera for Desktop',
+        'Opera (Presto)': 'Opera for Desktop',
+        'Safari (WebKit)': 'Safari for Desktop',
+        'Safari Mobile': 'Safari for iOS',
+        'Safari': 'Safari for Desktop',
+        'Windows Phone': 'Internet Explorer Mobile',
     }
 
     def lookup_browser_params(self, name, locale='en'):
@@ -44,23 +66,30 @@ class Data(object):
         * slug - A unique slug for this browser
         """
         # Load existing browser data
+        # Also, detect if names and slugs have been changed by bug 1128525
         if self.browser_data is None:
             self.browser_data = {}
             for browser in Browser.objects.all():
                 key = browser.name[locale]
+                if key == 'Firefox':
+                    self.browser_name_fixes = self.pre_1128525_name_fixes
+                if key == 'Firefox for Desktop':
+                    self.browser_name_fixes = self.post_1128525_name_fixes
                 self.browser_data[key] = self.BrowserParams(
                     browser, browser.pk, key, browser.slug)
+            if not hasattr(self, 'browser_name_fixes'):
+                self.browser_name_fixes = self.pre_1128525_name_fixes
 
-        # Handle common alternate names
-        fixed_name = self.browser_name_fixes.get(name, name)
+        # Expand to full name, handle common alternate names
+        full_name = self.browser_name_fixes.get(name, name)
 
         # Select the Browser ID and slug
-        if fixed_name not in self.browser_data:
-            browser_id = '_' + fixed_name
+        if full_name not in self.browser_data:
+            browser_id = '_' + full_name
             # TODO: unique slugify instead of browser_id
-            self.browser_data[fixed_name] = self.BrowserParams(
-                None, browser_id, fixed_name, browser_id)
-        return self.browser_data[fixed_name]
+            self.browser_data[full_name] = self.BrowserParams(
+                None, browser_id, full_name, browser_id)
+        return self.browser_data[full_name]
 
     FeatureParams = namedtuple(
         'FeatureParams', ['feature', 'feature_id', 'slug'])
