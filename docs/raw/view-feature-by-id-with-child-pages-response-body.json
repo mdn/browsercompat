@@ -1,0 +1,963 @@
+{
+    "features": {
+        "id": "5",
+        "slug": "web-css-float",
+        "mdn_uri": {
+            "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+            "de": "https://developer.mozilla.org/de/docs/Web/CSS/float",
+            "es": "https://developer.mozilla.org/es/docs/Web/CSS/float",
+            "ja": "https://developer.mozilla.org/ja/docs/Web/CSS/float",
+            "ru": "https://developer.mozilla.org/ru/docs/Web/CSS/float"
+        },
+        "experimental": false,
+        "standardized": true,
+        "stable": true,
+        "obsolete": false,
+        "name": "float",
+        "links": {
+            "sections": [
+                "1",
+                "2",
+                "3"
+            ],
+            "supports": [],
+            "parent": "2",
+            "children": [
+                "6"
+            ],
+            "history_current": "5",
+            "history": [
+                "5"
+            ]
+        }
+    },
+    "links": {
+        "features.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
+        },
+        "features.parent": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.parent}"
+        },
+        "features.children": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.history_current": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history_current}"
+        },
+        "features.history": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history}"
+        },
+        "browsers.history": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+        },
+        "browsers.history_current": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
+        },
+        "versions.browser": {
+            "type": "browsers",
+            "href": "https://browsercompat.org/api/v1/browsers/{versions.browser}"
+        },
+        "versions.history": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
+        },
+        "versions.history_current": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history_current}"
+        },
+        "supports.version": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{supports.version}"
+        },
+        "supports.feature": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{supports.feature}"
+        },
+        "supports.history_current": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{supports.history_current}"
+        },
+        "supports.history": {
+            "type": "historical_supports",
+            "href": "https://browsercompat.org/api/v1/historical_supports/{supports.history}"
+        },
+        "maturities.history_current": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{maturities.history_current}"
+        },
+        "maturities.history": {
+            "type": "historical_maturities",
+            "href": "https://browsercompat.org/api/v1/historical_maturities/{maturities.history}"
+        },
+        "specifications.maturity": {
+            "type": "maturities",
+            "href": "https://browsercompat.org/api/v1/maturities/{specifications.maturity}"
+        },
+        "specifications.history_current": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history_current}"
+        },
+        "specifications.history": {
+            "type": "historical_specifications",
+            "href": "https://browsercompat.org/api/v1/historical_specifications/{specifications.history}"
+        },
+        "sections.specification": {
+            "type": "specifications",
+            "href": "https://browsercompat.org/api/v1/specifications/{sections.specification}"
+        },
+        "sections.history_current": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history_current}"
+        },
+        "sections.history": {
+            "type": "historical_sections",
+            "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history}"
+        }
+    },
+    "linked": {
+        "browsers": [
+            {
+                "id": "1",
+                "slug": "android",
+                "name": {
+                    "en": "Android"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "1"
+                    ],
+                    "history_current": "1"
+                }
+            },
+            {
+                "id": "2",
+                "slug": "blackberry",
+                "name": {
+                    "en": "BlackBerry"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "2"
+                    ],
+                    "history_current": "2"
+                }
+            },
+            {
+                "id": "3",
+                "slug": "chrome",
+                "name": {
+                    "en": "Chrome"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "3"
+                    ],
+                    "history_current": "3"
+                }
+            },
+            {
+                "id": "6",
+                "slug": "firefox",
+                "name": {
+                    "en": "Firefox"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "6"
+                    ],
+                    "history_current": "6"
+                }
+            },
+            {
+                "id": "7",
+                "slug": "firefox_mobile",
+                "name": {
+                    "en": "Firefox Mobile"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "7"
+                    ],
+                    "history_current": "7"
+                }
+            },
+            {
+                "id": "9",
+                "slug": "ie_mobile",
+                "name": {
+                    "en": "IE Mobile"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "9"
+                    ],
+                    "history_current": "9"
+                }
+            },
+            {
+                "id": "10",
+                "slug": "internet_explorer",
+                "name": {
+                    "en": "Internet Explorer"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "22",
+                        "21",
+                        "20",
+                        "19",
+                        "10"
+                    ],
+                    "history_current": "22"
+                }
+            },
+            {
+                "id": "11",
+                "slug": "opera",
+                "name": {
+                    "en": "Opera"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "11"
+                    ],
+                    "history_current": "11"
+                }
+            },
+            {
+                "id": "14",
+                "slug": "safari",
+                "name": {
+                    "en": "Safari"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "14"
+                    ],
+                    "history_current": "14"
+                }
+            },
+            {
+                "id": "15",
+                "slug": "safari_mobile",
+                "name": {
+                    "en": "Safari Mobile"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "15"
+                    ],
+                    "history_current": "15"
+                }
+            }
+        ],
+        "versions": [
+            {
+                "id": "2",
+                "version": "1.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1,
+                "links": {
+                    "browser": "1",
+                    "history": [
+                        "2"
+                    ],
+                    "history_current": "2"
+                }
+            },
+            {
+                "id": "4",
+                "version": "current",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "current",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 0,
+                "links": {
+                    "browser": "2",
+                    "history": [
+                        "4"
+                    ],
+                    "history_current": "4"
+                }
+            },
+            {
+                "id": "8",
+                "version": "1.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1,
+                "links": {
+                    "browser": "3",
+                    "history": [
+                        "8"
+                    ],
+                    "history_current": "8"
+                }
+            },
+            {
+                "id": "15",
+                "version": "1.0",
+                "release_day": "2004-11-09",
+                "retirement_day": "2005-11-29",
+                "status": "retired",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1,
+                "links": {
+                    "browser": "6",
+                    "history": [
+                        "15"
+                    ],
+                    "history_current": "15"
+                }
+            },
+            {
+                "id": "20",
+                "version": "1.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1,
+                "links": {
+                    "browser": "7",
+                    "history": [
+                        "20"
+                    ],
+                    "history_current": "20"
+                }
+            },
+            {
+                "id": "27",
+                "version": "6.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 2,
+                "links": {
+                    "browser": "9",
+                    "history": [
+                        "27"
+                    ],
+                    "history_current": "27"
+                }
+            },
+            {
+                "id": "29",
+                "version": "4.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1,
+                "links": {
+                    "browser": "10",
+                    "history": [
+                        "29"
+                    ],
+                    "history_current": "29"
+                }
+            },
+            {
+                "id": "34",
+                "version": "7.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1,
+                "links": {
+                    "browser": "11",
+                    "history": [
+                        "34"
+                    ],
+                    "history_current": "34"
+                }
+            },
+            {
+                "id": "42",
+                "version": "1.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1,
+                "links": {
+                    "browser": "14",
+                    "history": [
+                        "42"
+                    ],
+                    "history_current": "42"
+                }
+            },
+            {
+                "id": "44",
+                "version": "5.1",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 3,
+                "links": {
+                    "browser": "14",
+                    "history": [
+                        "44"
+                    ],
+                    "history_current": "44"
+                }
+            },
+            {
+                "id": "46",
+                "version": "1.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1,
+                "links": {
+                    "browser": "15",
+                    "history": [
+                        "46"
+                    ],
+                    "history_current": "46"
+                }
+            }
+        ],
+        "supports": [
+            {
+                "id": "1",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "2",
+                    "feature": "6",
+                    "history_current": "1",
+                    "history": [
+                        "1"
+                    ]
+                }
+            },
+            {
+                "id": "2",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "8",
+                    "feature": "6",
+                    "history_current": "2",
+                    "history": [
+                        "2"
+                    ]
+                }
+            },
+            {
+                "id": "3",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "15",
+                    "feature": "6",
+                    "history_current": "3",
+                    "history": [
+                        "3"
+                    ]
+                }
+            },
+            {
+                "id": "4",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "20",
+                    "feature": "6",
+                    "history_current": "4",
+                    "history": [
+                        "4"
+                    ]
+                }
+            },
+            {
+                "id": "5",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "27",
+                    "feature": "6",
+                    "history_current": "5",
+                    "history": [
+                        "5"
+                    ]
+                }
+            },
+            {
+                "id": "6",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "29",
+                    "feature": "6",
+                    "history_current": "6",
+                    "history": [
+                        "6"
+                    ]
+                }
+            },
+            {
+                "id": "7",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "34",
+                    "feature": "6",
+                    "history_current": "7",
+                    "history": [
+                        "7"
+                    ]
+                }
+            },
+            {
+                "id": "8",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "42",
+                    "feature": "6",
+                    "history_current": "8",
+                    "history": [
+                        "8"
+                    ]
+                }
+            },
+            {
+                "id": "9",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "44",
+                    "feature": "6",
+                    "history_current": "9",
+                    "history": [
+                        "9"
+                    ]
+                }
+            },
+            {
+                "id": "10",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "46",
+                    "feature": "6",
+                    "history_current": "10",
+                    "history": [
+                        "10"
+                    ]
+                }
+            },
+            {
+                "id": "27",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "4",
+                    "feature": "6",
+                    "history_current": "27",
+                    "history": [
+                        "27"
+                    ]
+                }
+            }
+        ],
+        "maturities": [
+            {
+                "id": "1",
+                "slug": "REC",
+                "name": {
+                    "en": "Recommendation",
+                    "de": "Empfehlung",
+                    "ja": "勧告",
+                    "ru": "Рекомендация"
+                },
+                "links": {
+                    "history_current": "1",
+                    "history": [
+                        "1"
+                    ]
+                }
+            },
+            {
+                "id": "2",
+                "slug": "WD",
+                "name": {
+                    "en": "Working Draft",
+                    "de": "Arbeitsentwurf",
+                    "ja": "草案",
+                    "ru": "Рабочий черновик"
+                },
+                "links": {
+                    "history_current": "2",
+                    "history": [
+                        "2"
+                    ]
+                }
+            }
+        ],
+        "specifications": [
+            {
+                "id": "1",
+                "slug": "css1",
+                "mdn_key": "CSS1",
+                "name": {
+                    "en": "CSS Level&nbsp;1"
+                },
+                "uri": {
+                    "en": "http://www.w3.org/TR/CSS1/"
+                },
+                "links": {
+                    "maturity": "1",
+                    "history_current": "1",
+                    "history": [
+                        "1"
+                    ]
+                }
+            },
+            {
+                "id": "2",
+                "slug": "css2_1",
+                "mdn_key": "CSS2.1",
+                "name": {
+                    "en": "CSS Level&nbsp;2 (Revision&nbsp;1)"
+                },
+                "uri": {
+                    "en": "http://www.w3.org/TR/CSS2/"
+                },
+                "links": {
+                    "maturity": "1",
+                    "history_current": "2",
+                    "history": [
+                        "2"
+                    ]
+                }
+            },
+            {
+                "id": "3",
+                "slug": "css3_box",
+                "mdn_key": "CSS3 Box",
+                "name": {
+                    "en": "CSS Basic Box Model"
+                },
+                "uri": {
+                    "en": "http://dev.w3.org/csswg/css3-box/"
+                },
+                "links": {
+                    "maturity": "2",
+                    "history_current": "3",
+                    "history": [
+                        "3"
+                    ]
+                }
+            }
+        ],
+        "sections": [
+            {
+                "id": "1",
+                "number": {
+                    "en": "5.5.25"
+                },
+                "name": {
+                    "en": "'float'"
+                },
+                "subpath": {
+                    "en": "#float"
+                },
+                "note": {
+                    "en": "Initial definition."
+                },
+                "links": {
+                    "specification": "1",
+                    "history_current": "1",
+                    "history": [
+                        "1"
+                    ]
+                }
+            },
+            {
+                "id": "2",
+                "number": {
+                    "en": "9.5.1"
+                },
+                "name": {
+                    "en": "Positioning the float: the 'float' property"
+                },
+                "subpath": {
+                    "en": "visuren.html#float-position"
+                },
+                "note": {
+                    "en": "No change."
+                },
+                "links": {
+                    "specification": "2",
+                    "history_current": "2",
+                    "history": [
+                        "2"
+                    ]
+                }
+            },
+            {
+                "id": "3",
+                "number": {
+                    "en": "16"
+                },
+                "name": {
+                    "en": "The float property"
+                },
+                "subpath": {
+                    "en": "#the-float-property"
+                },
+                "note": {
+                    "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+                },
+                "links": {
+                    "specification": "3",
+                    "history_current": "3",
+                    "history": [
+                        "3"
+                    ]
+                }
+            }
+        ],
+        "features": [
+            {
+                "id": "6",
+                "slug": "web-css-float_basic-support",
+                "mdn_uri": null,
+                "experimental": false,
+                "standardized": true,
+                "stable": true,
+                "obsolete": false,
+                "name": {
+                    "en": "Basic Support",
+                    "ja": "基本サポート"
+                },
+                "links": {
+                    "sections": [],
+                    "supports": [
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "27"
+                    ],
+                    "parent": "5",
+                    "children": [],
+                    "history_current": "6",
+                    "history": [
+                        "6"
+                    ]
+                }
+            }
+        ]
+    },
+    "meta": {
+        "compat_table": {
+            "supports": {
+                "5": {},
+                "6": {
+                    "1": [
+                        "1"
+                    ],
+                    "2": [
+                        "27"
+                    ],
+                    "3": [
+                        "2"
+                    ],
+                    "6": [
+                        "3"
+                    ],
+                    "7": [
+                        "4"
+                    ],
+                    "9": [
+                        "5"
+                    ],
+                    "10": [
+                        "6"
+                    ],
+                    "11": [
+                        "7"
+                    ],
+                    "14": [
+                        "8"
+                    ],
+                    "15": [
+                        "10"
+                    ]
+                }
+            },
+            "tabs": [
+                {
+                    "name": {
+                        "en": "Desktop Browsers"
+                    },
+                    "browsers": [
+                        "3",
+                        "6",
+                        "10",
+                        "11",
+                        "14"
+                    ]
+                },
+                {
+                    "name": {
+                        "en": "Mobile Browsers"
+                    },
+                    "browsers": [
+                        "1",
+                        "7",
+                        "9",
+                        "15",
+                        "2"
+                    ]
+                }
+            ],
+            "child_pages": true,
+            "pagination": {
+                "linked.features": {
+                    "previous": null,
+                    "next": null,
+                    "count": 1
+                }
+            },
+            "languages": [
+                "en",
+                "de",
+                "es",
+                "ja",
+                "ru"
+            ],
+            "notes": {}
+        }
+    }
+}
