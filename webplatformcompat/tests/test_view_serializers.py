@@ -321,6 +321,7 @@ class TestViewFeatureViewSet(APITestCase):
                             str(browser.pk): [str(support.pk)],
                         }
                     },
+                    "child_pages": False,
                     "pagination": {
                         "linked.features": {
                             "previous": None,
@@ -393,23 +394,23 @@ class TestViewFeatureViewSet(APITestCase):
     def test_large_feature_tree(self):
         feature = self.setup_feature_tree()
         url = reverse('viewfeatures-detail', kwargs={'pk': feature.pk})
-        response = self.client.get(url)
+        response = self.client.get(url, {'child_pages': True})
         actual_json = loads(response.content.decode('utf-8'))
         expected_pagination = {
             'linked.features': {
                 'previous': None,
-                'next': self.baseUrl + url + '?page=2',
+                'next': self.baseUrl + url + '?child_pages=1&page=2',
                 'count': 3,
             }
         }
         actual_pagination = actual_json['meta']['compat_table']['pagination']
         self.assertDataEqual(expected_pagination, actual_pagination)
 
-        response = self.client.get(url, {'page': 2})
+        response = self.client.get(url, {'child_pages': True, 'page': 2})
         actual_json = loads(response.content.decode('utf-8'))
         expected_pagination = {
             'linked.features': {
-                'previous': self.baseUrl + url + '?page=1',
+                'previous': self.baseUrl + url + '?child_pages=1&page=1',
                 'next': None,
                 'count': 3,
             }
@@ -422,8 +423,8 @@ class TestViewFeatureViewSet(APITestCase):
         feature = self.setup_feature_tree()
         url = reverse(
             'viewfeatures-detail', kwargs={'pk': feature.pk, 'format': 'html'})
-        response = self.client.get(url)
-        next_url = self.baseUrl + url + "?page=2"
+        response = self.client.get(url, {'child_pages': True})
+        next_url = self.baseUrl + url + "?child_pages=1&page=2"
         expected = '<a href="%s">next page</a>' % next_url
         self.assertContains(response, expected, html=True)
 
@@ -431,7 +432,7 @@ class TestViewFeatureViewSet(APITestCase):
     def test_just_right_feature_tree(self):
         feature = self.setup_feature_tree()
         url = reverse('viewfeatures-detail', kwargs={'pk': feature.pk})
-        response = self.client.get(url)
+        response = self.client.get(url, {'child_pages': True})
         actual_json = loads(response.content.decode('utf-8'))
         expected_pagination = {
             'linked.features': {

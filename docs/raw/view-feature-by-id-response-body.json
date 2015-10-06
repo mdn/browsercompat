@@ -942,6 +942,7 @@
                     ]
                 }
             ],
+            "child_pages": false,
             "pagination": {
                 "linked.features": {
                     "previous": null,

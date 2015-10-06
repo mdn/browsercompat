@@ -10,7 +10,8 @@ from django.core.paginator import Paginator
 from drf_cached_instances.models import CachedQueryset
 from rest_framework.reverse import reverse
 from rest_framework.serializers import (
-    ModelSerializer, SerializerMethodField, ValidationError)
+    ModelSerializer, PrimaryKeyRelatedField, SerializerMethodField,
+    ValidationError)
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from tools.resources import Collection, CollectionChangeset
@@ -382,23 +383,16 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         """Add the sources used by the serializer fields."""
         page = self.context['request'].GET.get('page', 1)
         per_page = settings.PAGINATE_VIEW_FEATURE
-        if isinstance(obj, Feature):
-            # It's a real Feature, not a cached proxy Feature
-            obj.descendant_count = obj.get_descendant_count()
-            descendant_pks = obj.get_descendants().values_list('pk', flat=True)
-        elif obj.descendant_count <= per_page:
-            # The cached PK list is enough to populate descendant_pks
-            descendant_pks = obj.descendants.values_list('id', flat=True)
+        if self.context['include_child_pages']:
+            # Paginate the full descendant tree
+            child_queryset = self.get_all_descendants(obj, per_page)
+            paginated_child_features = Paginator(child_queryset, per_page)
+            obj.page_child_features = paginated_child_features.page(page)
+            obj.child_features = obj.page_child_features.object_list
         else:
-            # Load the real object to get the full list of descendants
-            real_obj = Feature.objects.get(id=obj.id)
-            descendant_pks = real_obj.get_descendants().values_list(
-                'pk', flat=True)
-        descendants = CachedQueryset(
-            Cache(), Feature.objects.all(), descendant_pks)
-        obj.paginated_child_features = Paginator(descendants, per_page)
-        obj.page_child_features = obj.paginated_child_features.page(page)
-        obj.child_features = obj.page_child_features.object_list
+            # Jut the row-level descendants, but un-paginated
+            child_queryset = self.get_row_descendants(obj)
+            obj.child_features = list(child_queryset.all())
 
         # Load the remaining related instances
         section_pks = set(obj.sections.values_list('id', flat=True))
@@ -435,6 +429,41 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             browser_pks.add(version.browser.pk)
         obj.all_browsers = list(CachedQueryset(
             Cache(), Browser.objects.all(), sorted(browser_pks)))
+
+    def get_all_descendants(self, obj, per_page):
+        """Return a CachedQueryset of all the descendants
+
+        This includes row features that model rows in the MDN table,
+        and page features that model sub-pages on MDN, which may have
+        row and subpage features of their own.
+        """
+        if isinstance(obj, Feature):
+            # It's a real Feature, not a cached proxy Feature
+            obj.descendant_count = obj.get_descendant_count()
+            descendant_pks = obj.get_descendants().values_list('pk', flat=True)
+        elif obj.descendant_count <= per_page:
+            # The cached PK list is enough to populate descendant_pks
+            descendant_pks = obj.descendants.values_list('id', flat=True)
+        else:
+            # Load the real object to get the full list of descendants
+            real_obj = Feature.objects.get(id=obj.id)
+            descendant_pks = real_obj.get_descendants().values_list(
+                'pk', flat=True)
+        return CachedQueryset(
+            Cache(), Feature.objects.all(), descendant_pks)
+
+    def get_row_descendants(self, obj):
+        """Return a CachedQueryset of just the row descendants
+
+        This includes row features, and subfeatures of rows that are also
+        row features.
+
+        See http://bit.ly/1MUSEFL for one example of spliting a large table
+        into a hierarchy of features.
+        """
+        row_descendant_pks = obj.row_descendants.values_list('id', flat=True)
+        return CachedQueryset(
+            Cache(), Feature.objects.all(), row_descendant_pks)
 
     def to_representation(self, obj):
         """Add addditonal data for the ViewFeatureSerializer.
@@ -615,26 +644,38 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         return tabs
 
     def pagination(self, obj):
-        """Determine pagination for large feature trees."""
+        """
+        Determine pagination for large feature trees.
+
+        If page children are not included (the default), then no pagination is
+        used, but the pagination object remains to make client logic easier.
+        """
         pagination = OrderedDict((
             ('previous', None),
             ('next', None),
-            ('count', obj.descendant_count),
         ))
-        url_kwargs = {'pk': obj.id}
-        if self.context['format']:
-            url_kwargs['format'] = self.context['format']
-        request = self.context['request']
-        url = reverse(
-            'viewfeatures-detail', kwargs=url_kwargs, request=request)
-        if obj.page_child_features.has_previous():
-            pagination['previous'] = (
-                url + '?page=' +
-                str(obj.page_child_features.previous_page_number()))
-        if obj.page_child_features.has_next():
-            pagination['next'] = (
-                url + '?page=' +
-                str(obj.page_child_features.next_page_number()))
+        if self.context['include_child_pages']:
+            # When full descendant list, use pagination
+            # The list can get huge when asking for root features like web-css
+            pagination['count'] = obj.descendant_count
+            url_kwargs = {'pk': obj.id}
+            if self.context['format']:
+                url_kwargs['format'] = self.context['format']
+            request = self.context['request']
+            url = reverse(
+                'viewfeatures-detail', kwargs=url_kwargs, request=request)
+            if obj.page_child_features.has_previous():
+                page = obj.page_child_features.previous_page_number()
+                pagination['previous'] = (
+                    "%s?child_pages=1&page=%s" % (url, page))
+            if obj.page_child_features.has_next():
+                page = obj.page_child_features.next_page_number()
+                pagination['next'] = (
+                    "%s?child_pages=1&page=%s" % (url, page))
+        else:
+            # Don't paginate results. The client probabaly wants to generate a
+            # complete table, so pagination would get in the way.
+            pagination['count'] = len(obj.child_features)
         return {'linked.features': pagination}
 
     def ordered_notes(self, obj, sig_features, tabs):
@@ -656,6 +697,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         """Assemble the metadata for the feature view."""
         significant_changes = self.significant_changes(obj)
         browser_tabs = self.browser_tabs(obj)
+        include_child_pages = self.context['include_child_pages']
         pagination = self.pagination(obj)
         languages = self.find_languages(obj)
         notes = self.ordered_notes(
@@ -664,6 +706,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             ('compat_table', OrderedDict((
                 ('supports', significant_changes),
                 ('tabs', browser_tabs),
+                ('child_pages', include_child_pages),
                 ('pagination', pagination),
                 ('languages', languages),
                 ('notes', notes),
@@ -733,3 +776,9 @@ class ViewFeatureSerializer(FeatureSerializer):
             changeset.closed = True
             changeset.save()
         return ret
+
+
+class ViewFeatureRowChildrenSerializer(ViewFeatureSerializer):
+    """Adjust serializer when page children are omitted."""
+    children = PrimaryKeyRelatedField(
+        many=True, queryset=Feature.objects.all(), source='row_children')
