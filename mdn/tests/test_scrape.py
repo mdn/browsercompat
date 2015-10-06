@@ -61,13 +61,14 @@ class BaseTestCase(TestCase):
  </table>
 </div>
 """
-        version = self.get_instance('Version', ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox_desktop', '1.0'))
         browser_id = version.browser_id
         version_id = version.id
         expected_compat = [{
             'name': u'desktop',
             'browsers': [{
-                'id': browser_id, 'name': 'Firefox', 'slug': 'firefox'}],
+                'id': browser_id, 'name': 'Firefox for Desktop',
+                'slug': 'firefox_desktop'}],
             'versions': [{
                 'browser': browser_id, 'id': version_id, 'version': '1.0'}],
             'features': [{
@@ -395,12 +396,12 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, section_content)
 
     def test_load_browser(self):
-        browser = self.get_instance('Browser', 'firefox')
+        browser = self.get_instance('Browser', 'firefox_desktop')
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         browser_content = view.load_browser(browser.id)
         expected = {
-            'id': str(browser.id), 'name': {'en': 'Firefox'}, 'note': None,
-            'slug': browser.slug}
+            'id': str(browser.id), 'name': {'en': 'Firefox for Desktop'},
+            'note': None, 'slug': browser.slug}
         self.assertDataEqual(expected, browser_content)
 
     def test_new_browser(self):
@@ -415,7 +416,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, browser_content)
 
     def test_load_version(self):
-        version = self.get_instance('Version', ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox_desktop', '1.0'))
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         version_content = view.load_version(version.id)
         expected = {
@@ -526,7 +527,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, feature_content)
 
     def test_load_support(self):
-        version = self.get_instance('Version', ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox_desktop', '1.0'))
         feature = self.get_instance(
             'Feature', 'web-css-background-size-contain_and_cover')
         support = self.create(Support, version=version, feature=feature)
@@ -652,7 +653,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, out)
 
     def test_load_compat_table_existing_resources(self):
-        version = self.get_instance('Version', ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox_desktop', '1.0'))
         browser = version.browser
         feature = self.get_instance(
             'Feature', 'web-css-background-size-contain_and_cover')
@@ -691,7 +692,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, out)
 
     def test_load_compat_table_basic_support(self):
-        version = self.get_instance('Version', ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox_desktop', '1.0'))
         browser = version.browser
         feature = self.feature
         browser_id = str(browser.id)
@@ -728,7 +729,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         self.assertDataEqual(expected, out)
 
     def test_load_compat_table_new_support_with_note(self):
-        version = self.get_instance('Version', ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox_desktop', '1.0'))
         browser = version.browser
         feature = self.get_instance(
             'Feature', 'web-css-background-size-contain_and_cover')

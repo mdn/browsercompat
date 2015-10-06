@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from mdn.data import Data
-from webplatformcompat.models import Feature, Support
+from webplatformcompat.models import Browser, Feature, Support
 from .base import TestCase
 
 
@@ -23,14 +23,28 @@ class TestLookupBrowserParams(TestDataBase):
             new_params = self.data.lookup_browser_params(raw_name)
         self.assertEqual(params, new_params)
 
-    def test_browser_params_new(self):
+    def test_browser_params_new_pre_1128525(self):
+        self.create(Browser, slug="chrome", name='{"en": "Chrome"}')
+        self.create(Browser, slug="firefox", name='{"en": "Firefox"}')
         self.assert_browser_params(
-            'Firefox', None, '_Firefox', 'Firefox', '_Firefox')
+            'Safari', None, '_Safari', 'Safari', '_Safari')
+
+    def test_browser_params_new_defaults_to_pre_1128525(self):
+        self.assert_browser_params(
+            'Safari', None, '_Safari', 'Safari', '_Safari')
+
+    def test_browser_params_new_post_1128525(self):
+        self.get_instance('Browser', 'chrome_desktop')
+        self.get_instance('Browser', 'firefox_desktop')
+        self.assert_browser_params(
+            'Safari', None, '_Safari for Desktop', 'Safari for Desktop',
+            '_Safari for Desktop')
 
     def test_browser_params_match(self):
-        match = self.get_instance('Browser', 'firefox')
+        match = self.get_instance('Browser', 'firefox_desktop')
         self.assert_browser_params(
-            'Firefox', match, match.id, 'Firefox', 'firefox')
+            'Firefox', match, match.id, 'Firefox for Desktop',
+            'firefox_desktop')
 
 
 class TestLookupFeatureParams(TestDataBase):
@@ -114,7 +128,8 @@ class TestLookupSectionId(TestDataBase):
 class TestLookupSupportId(TestDataBase):
     def setUp(self):
         super(TestLookupSupportId, self).setUp()
-        self.version = self.get_instance('Version', ('firefox', 'current'))
+        self.version = self.get_instance(
+            'Version', ('firefox_desktop', 'current'))
         self.feature = self.get_instance(
             'Feature', 'web-css-background-size-contain_and_cover')
 
@@ -146,7 +161,7 @@ class TestLookupSupportId(TestDataBase):
 class TestLookupVersionParams(TestDataBase):
     def setUp(self):
         super(TestLookupVersionParams, self).setUp()
-        self.browser = self.get_instance('Browser', 'firefox')
+        self.browser = self.get_instance('Browser', 'firefox_desktop')
 
     def test_new_browser(self):
         params = self.data.lookup_version_params('_browser', 'Browser', '1.0')
@@ -157,10 +172,10 @@ class TestLookupVersionParams(TestDataBase):
         params = self.data.lookup_version_params(
             self.browser.id, self.browser.name['en'], '1.0')
         self.assertIsNone(params.version)
-        self.assertEqual('_Firefox-1.0', params.version_id)
+        self.assertEqual('_Firefox for Desktop-1.0', params.version_id)
 
     def test_existing_version(self):
-        version = self.get_instance('Version', ('firefox', 'current'))
+        version = self.get_instance('Version', ('firefox_desktop', 'current'))
         params = self.data.lookup_version_params(
             self.browser.id, self.browser.name['en'], 'current')
         self.assertEqual(version, params.version)

@@ -17,7 +17,7 @@ class TestCompatSectionExtractor(TestCase):
     def setUp(self):
         self.feature = self.get_instance('Feature', 'web-css-background-size')
         self.visitor = KumaVisitor()
-        self.version = self.get_instance('Version', ('firefox', '1.0'))
+        self.version = self.get_instance('Version', ('firefox_desktop', '1.0'))
 
     def construct_html(
             self, header=None, pre_table=None, feature=None,
@@ -56,7 +56,8 @@ class TestCompatSectionExtractor(TestCase):
         return {
             'name': u'desktop',
             'browsers': [{
-                'id': browser_id, 'name': 'Firefox', 'slug': 'firefox'}],
+                'id': browser_id, 'name': 'Firefox for Desktop',
+                'slug': 'firefox_desktop'}],
             'versions': [{
                 'browser': browser_id, 'id': version_id, 'version': '1.0'}],
             'features': [{
@@ -160,9 +161,9 @@ class TestCompatSectionExtractor(TestCase):
         expected_mobile = {
             'name': 'mobile',
             'browsers': [{
-                'id': '_Safari Mobile',
-                'name': 'Safari Mobile',
-                'slug': '_Safari Mobile',
+                'id': '_Safari for iOS',
+                'name': 'Safari for iOS',
+                'slug': '_Safari for iOS',
             }],
             'features': [{
                 'id': '_contain and cover',
@@ -170,15 +171,15 @@ class TestCompatSectionExtractor(TestCase):
                 'slug': 'web-css-background-size_contain_and_cover',
             }],
             'versions': [{
-                'id': '_Safari Mobile-1.0',
+                'id': '_Safari for iOS-1.0',
                 'version': '1.0',
-                'browser': '_Safari Mobile',
+                'browser': '_Safari for iOS',
             }],
             'supports': [{
-                'id': '__contain and cover-_Safari Mobile-1.0',
+                'id': '__contain and cover-_Safari for iOS-1.0',
                 'feature': '_contain and cover',
                 'support': 'yes',
-                'version': '_Safari Mobile-1.0',
+                'version': '_Safari for iOS-1.0',
                 'footnote': "It's really supported.",
                 'footnote_id': ('1', 581, 584),
             }],
@@ -602,24 +603,25 @@ class TestSupportVisitor(TestCase):
         self.assert_support('1.0', [{'version': '1.0'}], [{'support': 'yes'}])
 
     def test_version_matches(self):
-        version = self.get_instance('Version', ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox_desktop', '1.0'))
         self.set_browser(version.browser)
         self.assert_support(
             '1.0', [{'version': '1.0', 'id': version.id}],
             [{'support': 'yes'}])
 
     def test_new_version_existing_browser(self):
-        browser = self.get_instance('Browser', 'firefox')
+        browser = self.get_instance('Browser', 'firefox_desktop')
         self.set_browser(browser)
         issue = (
             'unknown_version', 4, 7,
-            {'browser_id': browser.id, 'browser_name': {"en": "Firefox"},
-             'browser_slug': 'firefox', 'version': '2.0'})
+            {'browser_id': browser.id,
+             'browser_name': {"en": "Firefox for Desktop"},
+             'browser_slug': 'firefox_desktop', 'version': '2.0'})
         self.assert_support(
             '2.0', [{'version': '2.0'}], [{'support': 'yes'}], issues=[issue])
 
     def test_support_matches(self):
-        version = self.get_instance('Version', ('firefox', '1.0'))
+        version = self.get_instance('Version', ('firefox_desktop', '1.0'))
         self.set_browser(version.browser)
         feature = self.get_instance(
             'Feature', 'web-css-background-size-contain_and_cover')
