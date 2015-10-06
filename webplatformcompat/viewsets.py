@@ -212,7 +212,10 @@ class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
             pk = int(pk_or_slug)
         except ValueError:
             try:
-                pk = Feature.objects.only('pk').get(slug=pk_or_slug).pk
+                # parent_id is needed by the MPTT model loader,
+                # including it saves a query later.
+                pk = Feature.objects.only('pk', 'parent_id').get(
+                    slug=pk_or_slug).pk
             except queryset.model.DoesNotExist:
                 raise Http404(
                     'No %s matches the given query.' % queryset.model)
