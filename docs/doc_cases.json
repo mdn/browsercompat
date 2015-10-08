@@ -458,11 +458,6 @@
             }
         }
     }, {
-        "name": "specification-delete",
-        "method": "DELETE",
-        "endpoint": "specifications/4",
-        "skip": "Generates 500, Changeset is closed"
-    }, {
         "name": "section-by-id",
         "method": "GET",
         "endpoint": "sections/3"
@@ -1034,5 +1029,9 @@
             }
         },
         "status": 400
+    }, {
+        "name": "specification-delete",
+        "method": "DELETE",
+        "endpoint": "specifications/4"
     }
 ]
