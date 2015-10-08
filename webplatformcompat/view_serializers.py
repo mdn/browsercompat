@@ -754,27 +754,11 @@ class ViewFeatureSerializer(FeatureSerializer):
         """Save the feature plus linked elements.
 
         The save is done using DRF conventions; the _view_extra field is set
-        to an object (FeatureExtra) that will same linked elements.  The only
-        wrinkle is that the changeset should not be auto-closed by any saved
-        items.
+        to an object (FeatureExtra) that will same linked elements.
         """
-        changeset = self.context['request'].changeset
-        if changeset.id:
-            # Already in an open changeset - client will close
-            close_changeset = False
-        else:
-            close_changeset = True
-            assert not changeset.user_id
-            changeset.user = self.context['request'].user
-            changeset.save()
-
         ret = super(ViewFeatureSerializer, self).save(*args, **kwargs)
         if hasattr(ret, '_view_extra'):
             ret._view_extra.save(*args, **kwargs)
-
-        if close_changeset:
-            changeset.closed = True
-            changeset.save()
         return ret
 
 

@@ -72,10 +72,11 @@ class Changeset(models.Model):
 
 
 class HistoricalRecords(BaseHistoricalRecords):
-    """simplehistory.HistoricalRecords with modifications
+    """simple_history.HistoricalRecords with modifications
 
-    Can easily add additional fields
-    References a history_changeset instead of a history_user
+    Changes from simple_history:
+    * Can add additional fields (e.g., preserve relationship order)
+    * References a history_changeset instead of a history_user
     """
     additional_fields = {}
 
@@ -99,26 +100,34 @@ class HistoricalRecords(BaseHistoricalRecords):
 
     def get_history_changeset(self, instance):
         """Get the changeset from the instance or middleware"""
-        try:
-            changeset = instance._history_changeset
-        except AttributeError:
-            changeset = self.thread.request.changeset
+        # Load user from instance or request
         user = self.get_history_user(instance)
         assert user, 'History User is required'
-        if not changeset.user_id:
-            changeset.user = user
-        else:
-            # These should be verified in the middleware before the instance
-            # is saved, but let's be sure
-            assert user == changeset.user, 'User must match changeset user'
-            assert not changeset.closed, 'Changeset is closed'
+
+        try:
+            # Load manually applied changeset
+            changeset = instance._history_changeset
+        except AttributeError:
+            # Load existing changeset
+            changeset = getattr(self.thread.request, "changeset", None)
+            if changeset is None:
+                # Create new, auto-closing changeset
+                changeset = Changeset.objects.create(user=user)
+                self.thread.request.changeset = changeset
+                self.thread.request.close_changeset = True
+
+        # These should be verified in the middleware before the instance is
+        # saved, but let's be sure
+        assert user == changeset.user, 'User must match changeset user'
+        assert not changeset.closed, 'Changeset is closed'
         return changeset
 
     def create_historical_record(self, instance, history_type):
         """Create the historical record and associated objects
 
-        Add data from additional_fields
-        Change history_user to history_changeset
+        Changes from simple_history:
+        * Add data from additional_fields
+        * Change history_user to history_changeset
         """
         history_date = getattr(instance, '_history_date', now())
         history_changeset = self.get_history_changeset(instance)
@@ -132,23 +141,23 @@ class HistoricalRecords(BaseHistoricalRecords):
             value = loader(instance, type)
             attrs[field_name] = value
 
-        if not history_changeset.id:
-            history_changeset.closed = True
-            update_cache = self.thread.request.delay_cache
-            history_changeset.save(update_cache=update_cache)
-        else:
-            update_cache = False
         manager.create(
             history_date=history_date, history_type=history_type,
             history_changeset=history_changeset, **attrs)
 
 
-class HistoryChangesetRequestMiddleware(BaseHistoryRequestMiddleware):
+class HistoryChangesetMiddleware(BaseHistoryRequestMiddleware):
     """Add a changeset to the HistoricalRecords request"""
     def process_request(self, request):
-        super(HistoryChangesetRequestMiddleware, self).process_request(request)
+        """Load requested changeset or prepare auto-changeset."""
+        super(HistoryChangesetMiddleware, self).process_request(request)
         if request.META.get('REQUEST_METHOD') in ('GET', 'HEAD'):
             return
+        request.changeset = None
+        request.close_changeset = False
+        # Default is to update cached objects as they are modified
+        request.delay_cache = False
+
         changeset_id = request.GET.get('changeset')
         if changeset_id:
             changeset = Changeset.objects.get(id=changeset_id)
@@ -160,15 +169,25 @@ class HistoryChangesetRequestMiddleware(BaseHistoryRequestMiddleware):
                 message = 'Changeset %s is closed.' % changeset_id
                 return self.bad_request(request, message)
             request.changeset = changeset
+            # Wait until changeset is manually closed to schedule cache updates
             request.delay_cache = True
-        else:
-            request.changeset = Changeset()
-            request.delay_cache = False
 
     def bad_request(self, request, message):
+        """Reject invalid request changeset."""
         if request.META.get('CONTENT_TYPE') == 'application/vnd.api+json':
             content = {'errors': {'changeset': message}}
             return HttpResponseBadRequest(
                 dumps(content), content_type='application/vnd.api+json')
         else:
             return HttpResponseBadRequest(message)
+
+    def process_response(self, request, response):
+        """Close an auto-changeset."""
+        changeset = getattr(request, "changeset", None)
+        close_changeset = getattr(request, "close_changeset", True)
+        update_cache = getattr(request, "delay_cache", False)
+        if changeset and close_changeset:
+            # Close changeset, but assume related item caches already updated
+            changeset.closed = True
+            changeset.save(update_cache=update_cache)
+        return response
