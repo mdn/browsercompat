@@ -18,6 +18,10 @@
         "method": "GET",
         "endpoint": "browsers"
     }, {
+        "name": "browser-list-page2",
+        "method": "GET",
+        "endpoint": "browsers?page=2"
+    }, {
         "name": "browser-by-id",
         "method": "GET",
         "endpoint": "browsers/6"

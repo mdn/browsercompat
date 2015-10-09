@@ -1,0 +1,122 @@
+{
+    "browsers": [
+        {
+            "id": "11",
+            "slug": "opera",
+            "name": {
+                "en": "Opera"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "11"
+                ],
+                "history_current": "11",
+                "versions": [
+                    "33",
+                    "34",
+                    "35",
+                    "36"
+                ]
+            }
+        },
+        {
+            "id": "12",
+            "slug": "opera_mini",
+            "name": {
+                "en": "Opera Mini"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "12"
+                ],
+                "history_current": "12",
+                "versions": [
+                    "37"
+                ]
+            }
+        },
+        {
+            "id": "13",
+            "slug": "opera_mobile",
+            "name": {
+                "en": "Opera Mobile"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "13"
+                ],
+                "history_current": "13",
+                "versions": [
+                    "38",
+                    "39",
+                    "40"
+                ]
+            }
+        },
+        {
+            "id": "14",
+            "slug": "safari",
+            "name": {
+                "en": "Safari"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "14"
+                ],
+                "history_current": "14",
+                "versions": [
+                    "41",
+                    "42",
+                    "43",
+                    "44"
+                ]
+            }
+        },
+        {
+            "id": "15",
+            "slug": "safari_mobile",
+            "name": {
+                "en": "Safari Mobile"
+            },
+            "note": null,
+            "links": {
+                "history": [
+                    "15"
+                ],
+                "history_current": "15",
+                "versions": [
+                    "45",
+                    "46",
+                    "47"
+                ]
+            }
+        }
+    ],
+    "links": {
+        "browsers.history": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+        },
+        "browsers.history_current": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
+        },
+        "browsers.versions": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "browsers": {
+                "previous": "https://browsercompat.org/api/v1/browsers",
+                "next": null,
+                "count": 15
+            }
+        }
+    }
+}
