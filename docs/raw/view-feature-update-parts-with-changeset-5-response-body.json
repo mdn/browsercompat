@@ -171,9 +171,9 @@
             },
             {
                 "id": "6",
-                "slug": "firefox",
+                "slug": "firefox_android",
                 "name": {
-                    "en": "Firefox for Desktop"
+                    "en": "Firefox for Android"
                 },
                 "note": null,
                 "links": {
@@ -185,9 +185,9 @@
             },
             {
                 "id": "7",
-                "slug": "firefox_mobile",
+                "slug": "firefox_desktop",
                 "name": {
-                    "en": "Firefox for Android"
+                    "en": "Firefox for Desktop"
                 },
                 "note": null,
                 "links": {
@@ -327,9 +327,9 @@
             {
                 "id": "15",
                 "version": "1.0",
-                "release_day": "2004-11-09",
-                "retirement_day": "2005-11-29",
-                "status": "retired",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
                 "release_notes_uri": null,
                 "note": null,
                 "order": 1,
@@ -342,20 +342,20 @@
                 }
             },
             {
-                "id": "20",
+                "id": "18",
                 "version": "1.0",
-                "release_day": null,
-                "retirement_day": null,
-                "status": "unknown",
+                "release_day": "2004-11-09",
+                "retirement_day": "2005-11-29",
+                "status": "retired",
                 "release_notes_uri": null,
                 "note": null,
                 "order": 1,
                 "links": {
                     "browser": "7",
                     "history": [
-                        "20"
+                        "18"
                     ],
-                    "history_current": "20"
+                    "history_current": "18"
                 }
             },
             {
@@ -534,7 +534,7 @@
                 "protected": false,
                 "note": null,
                 "links": {
-                    "version": "20",
+                    "version": "18",
                     "feature": "6",
                     "history_current": "4",
                     "history": [
@@ -922,6 +922,7 @@
                         "en": "Desktop Browsers"
                     },
                     "browsers": [
+                        "7",
                         "9",
                         "11",
                         "14"
@@ -934,6 +935,7 @@
                     "browsers": [
                         "1",
                         "2",
+                        "6",
                         "10",
                         "15"
                     ]
@@ -943,9 +945,7 @@
                         "en": "Non-Browser Environments"
                     },
                     "browsers": [
-                        "3",
-                        "6",
-                        "7"
+                        "3"
                     ]
                 }
             ],

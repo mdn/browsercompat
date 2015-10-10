@@ -206,6 +206,50 @@
         {
             "id": "15",
             "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "6",
+                "supports": [
+                    "4"
+                ]
+            }
+        },
+        {
+            "id": "16",
+            "version": "33.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 2,
+            "links": {
+                "browser": "6",
+                "supports": []
+            }
+        },
+        {
+            "id": "17",
+            "version": "current",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "current",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 0,
+            "links": {
+                "browser": "7",
+                "supports": []
+            }
+        },
+        {
+            "id": "18",
+            "version": "1.0",
             "release_day": "2004-11-09",
             "retirement_day": "2005-11-29",
             "status": "retired",
@@ -213,14 +257,14 @@
             "note": null,
             "order": 1,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [
                     "3"
                 ]
             }
         },
         {
-            "id": "16",
+            "id": "19",
             "version": "3.5",
             "release_day": "2009-06-30",
             "retirement_day": "2010-01-21",
@@ -241,14 +285,14 @@
             "note": null,
             "order": 2,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [
                     "13"
                 ]
             }
         },
         {
-            "id": "17",
+            "id": "20",
             "version": "10.0",
             "release_day": "2012-01-31",
             "retirement_day": "2012-03-13",
@@ -269,14 +313,14 @@
             "note": null,
             "order": 3,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [
                     "21"
                 ]
             }
         },
         {
-            "id": "18",
+            "id": "21",
             "version": "16.0",
             "release_day": "2012-10-09",
             "retirement_day": "2012-11-20",
@@ -297,55 +341,11 @@
             "note": null,
             "order": 4,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [
                     "12",
                     "22"
                 ]
-            }
-        },
-        {
-            "id": "19",
-            "version": "current",
-            "release_day": null,
-            "retirement_day": null,
-            "status": "current",
-            "release_notes_uri": null,
-            "note": null,
-            "order": 0,
-            "links": {
-                "browser": "7",
-                "supports": []
-            }
-        },
-        {
-            "id": "20",
-            "version": "1.0",
-            "release_day": null,
-            "retirement_day": null,
-            "status": "unknown",
-            "release_notes_uri": null,
-            "note": null,
-            "order": 1,
-            "links": {
-                "browser": "7",
-                "supports": [
-                    "4"
-                ]
-            }
-        },
-        {
-            "id": "21",
-            "version": "33.0",
-            "release_day": null,
-            "retirement_day": null,
-            "status": "unknown",
-            "release_notes_uri": null,
-            "note": null,
-            "order": 2,
-            "links": {
-                "browser": "7",
-                "supports": []
             }
         },
         {

@@ -1,22 +1,22 @@
 {
     "browsers": {
-        "id": "6",
-        "slug": "firefox",
+        "id": "7",
+        "slug": "firefox_desktop",
         "name": {
             "en": "Firefox for Desktop"
         },
         "note": null,
         "links": {
             "history": [
-                "6"
+                "7"
             ],
-            "history_current": "6",
+            "history_current": "7",
             "versions": [
-                "14",
-                "15",
-                "16",
                 "17",
-                "18"
+                "18",
+                "19",
+                "20",
+                "21"
             ]
         }
     },

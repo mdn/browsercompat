@@ -1,6 +1,6 @@
 {
     "versions": {
-        "id": "18",
+        "id": "21",
         "version": "16.0",
         "release_day": "2012-10-09",
         "retirement_day": "2012-11-20",
@@ -21,7 +21,7 @@
         "note": null,
         "order": 4,
         "links": {
-            "browser": "6",
+            "browser": "7",
             "supports": [
                 "12",
                 "22"
@@ -29,7 +29,7 @@
             "history": [
                 "51",
                 "50",
-                "18"
+                "21"
             ],
             "history_current": "51"
         }

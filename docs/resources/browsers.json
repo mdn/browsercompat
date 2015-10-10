@@ -74,34 +74,34 @@
             }
         },
         {
-            "id": "7",
-            "slug": "firefox_mobile",
+            "id": "6",
+            "slug": "firefox_android",
             "name": {
                 "en": "Firefox for Android"
             },
             "note": null,
             "links": {
                 "versions": [
-                    "19",
-                    "20",
-                    "21"
+                    "14",
+                    "15",
+                    "16"
                 ]
             }
         },
         {
-            "id": "6",
-            "slug": "firefox",
+            "id": "7",
+            "slug": "firefox_desktop",
             "name": {
                 "en": "Firefox for Desktop"
             },
             "note": null,
             "links": {
                 "versions": [
-                    "14",
-                    "15",
-                    "16",
                     "17",
-                    "18"
+                    "18",
+                    "19",
+                    "20",
+                    "21"
                 ]
             }
         },

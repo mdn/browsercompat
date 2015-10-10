@@ -61,9 +61,9 @@
         {
             "id": "15",
             "version": "1.0",
-            "release_day": "2004-11-09",
-            "retirement_day": "2005-11-29",
-            "status": "retired",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
             "release_notes_uri": null,
             "note": null,
             "order": 1,
@@ -79,11 +79,11 @@
             }
         },
         {
-            "id": "20",
+            "id": "18",
             "version": "1.0",
-            "release_day": null,
-            "retirement_day": null,
-            "status": "unknown",
+            "release_day": "2004-11-09",
+            "retirement_day": "2005-11-29",
+            "status": "retired",
             "release_notes_uri": null,
             "note": null,
             "order": 1,
@@ -93,9 +93,9 @@
                     "4"
                 ],
                 "history": [
-                    "20"
+                    "18"
                 ],
-                "history_current": "20"
+                "history_current": "18"
             }
         },
         {

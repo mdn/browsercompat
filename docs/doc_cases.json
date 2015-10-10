@@ -24,11 +24,11 @@
     }, {
         "name": "browser-by-id",
         "method": "GET",
-        "endpoint": "browsers/6"
+        "endpoint": "browsers/7"
     }, {
         "name": "browser-by-slug",
         "method": "GET",
-        "endpoint": "browsers?slug=firefox"
+        "endpoint": "browsers?slug=firefox_desktop"
     }, {
         "name": "browser-create-minimal",
         "method": "POST",
@@ -180,15 +180,15 @@
     }, {
         "name": "version-by-id",
         "method": "GET",
-        "endpoint": "versions/18"
+        "endpoint": "versions/21"
     }, {
         "name": "version-by-browser",
         "method": "GET",
-        "endpoint": "versions?browser=6"
+        "endpoint": "versions?browser=7"
     }, {
         "name": "version-by-browser-slug",
         "method": "GET",
-        "endpoint": "versions?browser__slug=firefox"
+        "endpoint": "versions?browser__slug=firefox_desktop"
     }, {
         "name": "version-by-version-1.0",
         "method": "GET",
@@ -205,7 +205,7 @@
             "versions": {
                 "version": "17.0",
                 "links": {
-                    "browser": "6"
+                    "browser": "7"
                 }
             }
         }
@@ -236,14 +236,14 @@
                     "en": "Released to beta channel on January 10, 2013"
                 },
                 "links": {
-                    "browser": "6"
+                    "browser": "7"
                 }
             }
         }
     }, {
         "name": "version-update",
         "method": "PUT",
-        "endpoint": "versions/18",
+        "endpoint": "versions/21",
         "data": {
             "versions": {
                 "status": "unknown"
@@ -252,11 +252,11 @@
     }, {
         "name": "version-revert",
         "method": "PUT",
-        "endpoint": "versions/18",
+        "endpoint": "versions/21",
         "data": {
             "versions": {
                 "links": {
-                    "history_current": "18"
+                    "history_current": "21"
                 }
             }
         }
@@ -350,7 +350,7 @@
     }, {
         "name": "support-by-version",
         "method": "GET",
-        "endpoint": "supports?version=18"
+        "endpoint": "supports?version=21"
     }, {
         "name": "support-create-minimal",
         "method": "POST",
@@ -587,28 +587,28 @@
     }, {
         "name": "historical-browser-by-id",
         "method": "GET",
-        "endpoint": "historical_browsers/6",
+        "endpoint": "historical_browsers/7",
         "standardize": {
             "date": "2015-04-20T18:44:09.905824Z"
         }
     }, {
         "name": "historical-browser-filter-by-id",
         "method": "GET",
-        "endpoint": "historical_browsers?id=6",
+        "endpoint": "historical_browsers?id=7",
         "standardize": {
             "date": "2015-04-20T18:44:09.905824Z"
         }
     }, {
         "name": "historical-version-by-id",
         "method": "GET",
-        "endpoint": "historical_versions/18",
+        "endpoint": "historical_versions/21",
         "standardize": {
             "date": "2015-04-20T18:57:09.476976Z"
         }
     }, {
         "name": "historical-version-filter-by-id",
         "method": "GET",
-        "endpoint": "historical_versions?id=18",
+        "endpoint": "historical_versions?id=21",
         "standardize": {
             "date": "2015-04-20T18:57:09.476976Z"
         }
@@ -945,7 +945,7 @@
     }, {
         "name": "version-update-error-status-future-version-numeric",
         "method": "PUT",
-        "endpoint": "versions/18",
+        "endpoint": "versions/21",
         "data": {
             "versions": {
                 "status": "future"
@@ -955,7 +955,7 @@
     }, {
         "name": "version-update-version-change-ignored",
         "method": "PUT",
-        "endpoint": "versions/18",
+        "endpoint": "versions/21",
         "data": {
             "versions": {
                 "version": "Nightly",

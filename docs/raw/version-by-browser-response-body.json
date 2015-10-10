@@ -1,7 +1,7 @@
 {
     "versions": [
         {
-            "id": "14",
+            "id": "17",
             "version": "current",
             "release_day": null,
             "retirement_day": null,
@@ -10,16 +10,16 @@
             "note": null,
             "order": 0,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [],
                 "history": [
-                    "14"
+                    "17"
                 ],
-                "history_current": "14"
+                "history_current": "17"
             }
         },
         {
-            "id": "15",
+            "id": "18",
             "version": "1.0",
             "release_day": "2004-11-09",
             "retirement_day": "2005-11-29",
@@ -28,18 +28,18 @@
             "note": null,
             "order": 1,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [
-                    "3"
+                    "4"
                 ],
                 "history": [
-                    "15"
+                    "18"
                 ],
-                "history_current": "15"
+                "history_current": "18"
             }
         },
         {
-            "id": "16",
+            "id": "19",
             "version": "3.5",
             "release_day": "2009-06-30",
             "retirement_day": "2010-01-21",
@@ -60,18 +60,18 @@
             "note": null,
             "order": 2,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [
                     "13"
                 ],
                 "history": [
-                    "16"
+                    "19"
                 ],
-                "history_current": "16"
+                "history_current": "19"
             }
         },
         {
-            "id": "17",
+            "id": "20",
             "version": "10.0",
             "release_day": "2012-01-31",
             "retirement_day": "2012-03-13",
@@ -92,18 +92,18 @@
             "note": null,
             "order": 3,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [
                     "21"
                 ],
                 "history": [
-                    "17"
+                    "20"
                 ],
-                "history_current": "17"
+                "history_current": "20"
             }
         },
         {
-            "id": "18",
+            "id": "21",
             "version": "16.0",
             "release_day": "2012-10-09",
             "retirement_day": "2012-11-20",
@@ -124,15 +124,15 @@
             "note": null,
             "order": 4,
             "links": {
-                "browser": "6",
+                "browser": "7",
                 "supports": [
                     "12",
                     "22"
                 ],
                 "history": [
-                    "18"
+                    "21"
                 ],
-                "history_current": "18"
+                "history_current": "21"
             }
         }
     ],
