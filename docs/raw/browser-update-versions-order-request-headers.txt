@@ -1,4 +1,4 @@
-PUT /api/v1/browsers/10 HTTP/1.1
+PUT /api/v1/browsers/9 HTTP/1.1
 Host: browsercompat.org
 Accept: application/vnd.api+json
 Content-Length: 205

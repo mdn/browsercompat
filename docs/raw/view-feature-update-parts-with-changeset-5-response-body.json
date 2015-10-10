@@ -199,21 +199,7 @@
             },
             {
                 "id": "9",
-                "slug": "ie_mobile",
-                "name": {
-                    "en": "Internet Explorer Mobile"
-                },
-                "note": null,
-                "links": {
-                    "history": [
-                        "9"
-                    ],
-                    "history_current": "9"
-                }
-            },
-            {
-                "id": "10",
-                "slug": "internet_explorer",
+                "slug": "ie_desktop",
                 "name": {
                     "en": "Internet Explorer for Desktop"
                 },
@@ -224,9 +210,23 @@
                         "21",
                         "20",
                         "19",
-                        "10"
+                        "9"
                     ],
                     "history_current": "22"
+                }
+            },
+            {
+                "id": "10",
+                "slug": "ie_mobile",
+                "name": {
+                    "en": "Internet Explorer Mobile"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "10"
+                    ],
+                    "history_current": "10"
                 }
             },
             {
@@ -359,24 +359,7 @@
                 }
             },
             {
-                "id": "27",
-                "version": "6.0",
-                "release_day": null,
-                "retirement_day": null,
-                "status": "unknown",
-                "release_notes_uri": null,
-                "note": null,
-                "order": 2,
-                "links": {
-                    "browser": "9",
-                    "history": [
-                        "27"
-                    ],
-                    "history_current": "27"
-                }
-            },
-            {
-                "id": "29",
+                "id": "26",
                 "version": "4.0",
                 "release_day": null,
                 "retirement_day": null,
@@ -385,11 +368,28 @@
                 "note": null,
                 "order": 1,
                 "links": {
+                    "browser": "9",
+                    "history": [
+                        "26"
+                    ],
+                    "history_current": "26"
+                }
+            },
+            {
+                "id": "32",
+                "version": "6.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 2,
+                "links": {
                     "browser": "10",
                     "history": [
-                        "29"
+                        "32"
                     ],
-                    "history_current": "29"
+                    "history_current": "32"
                 }
             },
             {
@@ -554,7 +554,7 @@
                 "protected": false,
                 "note": null,
                 "links": {
-                    "version": "27",
+                    "version": "26",
                     "feature": "6",
                     "history_current": "5",
                     "history": [
@@ -574,7 +574,7 @@
                 "protected": false,
                 "note": null,
                 "links": {
-                    "version": "29",
+                    "version": "32",
                     "feature": "6",
                     "history_current": "6",
                     "history": [
@@ -922,6 +922,7 @@
                         "en": "Desktop Browsers"
                     },
                     "browsers": [
+                        "9",
                         "11",
                         "14"
                     ]
@@ -933,7 +934,7 @@
                     "browsers": [
                         "1",
                         "2",
-                        "9",
+                        "10",
                         "15"
                     ]
                 },
@@ -944,8 +945,7 @@
                     "browsers": [
                         "3",
                         "6",
-                        "7",
-                        "10"
+                        "7"
                     ]
                 }
             ],

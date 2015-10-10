@@ -98,26 +98,26 @@
     }, {
         "name": "browser-update-full",
         "method": "PUT",
-        "endpoint": "browsers/10",
+        "endpoint": "browsers/9",
         "data": {
             "browsers": {
-                "id": "10",
-                "slug": "internet_explorer",
+                "id": "9",
+                "slug": "ie_desktop",
                 "name": {
                     "en": "Microsoft Internet Explorer"
                 },
                 "note": null,
                 "links": {
                     "history": [
-                        "10"
+                        "9"
                     ],
-                    "history_current": "10",
+                    "history_current": "9",
                     "versions": [
+                        "25",
+                        "26",
+                        "27",
                         "28",
-                        "29",
-                        "30",
-                        "31",
-                        "32"
+                        "29"
                     ]
                 }
             },
@@ -139,7 +139,7 @@
     }, {
         "name": "browser-update-partial",
         "method": "PUT",
-        "endpoint": "browsers/10",
+        "endpoint": "browsers/9",
         "data": {
             "browsers": {
                 "name": {
@@ -150,22 +150,22 @@
     }, {
         "name": "browser-update-versions-order",
         "method": "PUT",
-        "endpoint": "browsers/10",
+        "endpoint": "browsers/9",
         "data": {
             "browsers": {
                 "links": {
-                    "versions": ["28", "29", "30", "32", "31"]
+                    "versions": ["25", "26", "27", "29", "28"]
                 }
             }
         }
     }, {
         "name": "browser-revert",
         "method": "PUT",
-        "endpoint": "browsers/10",
+        "endpoint": "browsers/9",
         "data": {
             "browsers": {
                 "links": {
-                    "history_current": "10"
+                    "history_current": "9"
                 }
             }
         }

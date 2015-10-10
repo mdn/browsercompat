@@ -415,12 +415,14 @@
             "order": 1,
             "links": {
                 "browser": "9",
-                "supports": []
+                "supports": [
+                    "6"
+                ]
             }
         },
         {
             "id": "27",
-            "version": "6.0",
+            "version": "5.5",
             "release_day": null,
             "retirement_day": null,
             "status": "unknown",
@@ -430,12 +432,45 @@
             "links": {
                 "browser": "9",
                 "supports": [
-                    "5"
+                    "15"
                 ]
             }
         },
         {
             "id": "28",
+            "version": "9.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 3,
+            "links": {
+                "browser": "9",
+                "supports": [
+                    "16"
+                ]
+            }
+        },
+        {
+            "id": "29",
+            "version": "10.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 4,
+            "links": {
+                "browser": "9",
+                "supports": [
+                    "14",
+                    "23"
+                ]
+            }
+        },
+        {
+            "id": "30",
             "version": "current",
             "release_day": null,
             "retirement_day": null,
@@ -449,7 +484,7 @@
             }
         },
         {
-            "id": "29",
+            "id": "31",
             "version": "4.0",
             "release_day": null,
             "retirement_day": null,
@@ -459,14 +494,12 @@
             "order": 1,
             "links": {
                 "browser": "10",
-                "supports": [
-                    "6"
-                ]
+                "supports": []
             }
         },
         {
-            "id": "30",
-            "version": "5.5",
+            "id": "32",
+            "version": "6.0",
             "release_day": null,
             "retirement_day": null,
             "status": "unknown",
@@ -476,40 +509,7 @@
             "links": {
                 "browser": "10",
                 "supports": [
-                    "15"
-                ]
-            }
-        },
-        {
-            "id": "31",
-            "version": "9.0",
-            "release_day": null,
-            "retirement_day": null,
-            "status": "unknown",
-            "release_notes_uri": null,
-            "note": null,
-            "order": 3,
-            "links": {
-                "browser": "10",
-                "supports": [
-                    "16"
-                ]
-            }
-        },
-        {
-            "id": "32",
-            "version": "10.0",
-            "release_day": null,
-            "retirement_day": null,
-            "status": "unknown",
-            "release_notes_uri": null,
-            "note": null,
-            "order": 4,
-            "links": {
-                "browser": "10",
-                "supports": [
-                    "14",
-                    "23"
+                    "5"
                 ]
             }
         },

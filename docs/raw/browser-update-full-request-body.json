@@ -1,22 +1,22 @@
 {
     "browsers": {
-        "id": "10",
-        "slug": "internet_explorer",
+        "id": "9",
+        "slug": "ie_desktop",
         "name": {
             "en": "Microsoft Internet Explorer"
         },
         "note": null,
         "links": {
             "history": [
-                "10"
+                "9"
             ],
-            "history_current": "10",
+            "history_current": "9",
             "versions": [
+                "25",
+                "26",
+                "27",
                 "28",
-                "29",
-                "30",
-                "31",
-                "32"
+                "29"
             ]
         }
     },

@@ -154,9 +154,9 @@
         },
         {
             "id": "9",
-            "slug": "ie_mobile",
+            "slug": "ie_desktop",
             "name": {
-                "en": "Internet Explorer Mobile"
+                "en": "Internet Explorer for Desktop"
             },
             "note": null,
             "links": {
@@ -167,15 +167,17 @@
                 "versions": [
                     "25",
                     "26",
-                    "27"
+                    "27",
+                    "28",
+                    "29"
                 ]
             }
         },
         {
             "id": "10",
-            "slug": "internet_explorer",
+            "slug": "ie_mobile",
             "name": {
-                "en": "Internet Explorer for Desktop"
+                "en": "Internet Explorer Mobile"
             },
             "note": null,
             "links": {
@@ -184,8 +186,6 @@
                 ],
                 "history_current": "10",
                 "versions": [
-                    "28",
-                    "29",
                     "30",
                     "31",
                     "32"
