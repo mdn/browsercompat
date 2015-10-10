@@ -16,6 +16,19 @@
             }
         },
         {
+            "id": "5",
+            "slug": "chrome_mobile",
+            "name": {
+                "en": "Android Webview"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "13"
+                ]
+            }
+        },
+        {
             "id": "2",
             "slug": "blackberry",
             "name": {
@@ -61,15 +74,17 @@
             }
         },
         {
-            "id": "5",
-            "slug": "chrome_mobile",
+            "id": "7",
+            "slug": "firefox_mobile",
             "name": {
-                "en": "Android Webview"
+                "en": "Firefox for Android"
             },
             "note": null,
             "links": {
                 "versions": [
-                    "13"
+                    "19",
+                    "20",
+                    "21"
                 ]
             }
         },
@@ -91,21 +106,6 @@
             }
         },
         {
-            "id": "7",
-            "slug": "firefox_mobile",
-            "name": {
-                "en": "Firefox for Android"
-            },
-            "note": null,
-            "links": {
-                "versions": [
-                    "19",
-                    "20",
-                    "21"
-                ]
-            }
-        },
-        {
             "id": "8",
             "slug": "firefox_os",
             "name": {
@@ -117,21 +117,6 @@
                     "22",
                     "23",
                     "24"
-                ]
-            }
-        },
-        {
-            "id": "9",
-            "slug": "ie_mobile",
-            "name": {
-                "en": "Internet Explorer Mobile"
-            },
-            "note": null,
-            "links": {
-                "versions": [
-                    "25",
-                    "26",
-                    "27"
                 ]
             }
         },
@@ -149,6 +134,21 @@
                     "30",
                     "31",
                     "32"
+                ]
+            }
+        },
+        {
+            "id": "9",
+            "slug": "ie_mobile",
+            "name": {
+                "en": "Internet Explorer Mobile"
+            },
+            "note": null,
+            "links": {
+                "versions": [
+                    "25",
+                    "26",
+                    "27"
                 ]
             }
         },
