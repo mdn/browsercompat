@@ -4,7 +4,7 @@
             "id": "1",
             "slug": "android",
             "name": {
-                "en": "Android"
+                "en": "Android Browser"
             },
             "note": null,
             "links": {
@@ -19,7 +19,7 @@
             "id": "2",
             "slug": "blackberry",
             "name": {
-                "en": "BlackBerry"
+                "en": "BlackBerry Browser"
             },
             "note": null,
             "links": {
@@ -34,7 +34,7 @@
             "id": "3",
             "slug": "chrome",
             "name": {
-                "en": "Chrome"
+                "en": "Chrome for Desktop"
             },
             "note": null,
             "links": {
@@ -64,7 +64,7 @@
             "id": "5",
             "slug": "chrome_mobile",
             "name": {
-                "en": "Chrome Mobile"
+                "en": "Android Webview"
             },
             "note": null,
             "links": {
@@ -77,7 +77,7 @@
             "id": "6",
             "slug": "firefox",
             "name": {
-                "en": "Firefox"
+                "en": "Firefox for Desktop"
             },
             "note": null,
             "links": {
@@ -94,7 +94,7 @@
             "id": "7",
             "slug": "firefox_mobile",
             "name": {
-                "en": "Firefox Mobile"
+                "en": "Firefox for Android"
             },
             "note": null,
             "links": {
@@ -124,7 +124,7 @@
             "id": "9",
             "slug": "ie_mobile",
             "name": {
-                "en": "IE Mobile"
+                "en": "Internet Explorer Mobile"
             },
             "note": null,
             "links": {
@@ -139,7 +139,7 @@
             "id": "10",
             "slug": "internet_explorer",
             "name": {
-                "en": "Internet Explorer"
+                "en": "Internet Explorer for Desktop"
             },
             "note": null,
             "links": {
@@ -156,7 +156,7 @@
             "id": "11",
             "slug": "opera",
             "name": {
-                "en": "Opera"
+                "en": "Opera for Desktop"
             },
             "note": null,
             "links": {
@@ -200,7 +200,7 @@
             "id": "14",
             "slug": "safari",
             "name": {
-                "en": "Safari"
+                "en": "Safari for Desktop"
             },
             "note": null,
             "links": {
@@ -216,7 +216,7 @@
             "id": "15",
             "slug": "safari_mobile",
             "name": {
-                "en": "Safari Mobile"
+                "en": "Safari for iOS"
             },
             "note": null,
             "links": {

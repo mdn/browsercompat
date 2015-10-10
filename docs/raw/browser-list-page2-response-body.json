@@ -4,7 +4,7 @@
             "id": "11",
             "slug": "opera",
             "name": {
-                "en": "Opera"
+                "en": "Opera for Desktop"
             },
             "note": null,
             "links": {
@@ -60,7 +60,7 @@
             "id": "14",
             "slug": "safari",
             "name": {
-                "en": "Safari"
+                "en": "Safari for Desktop"
             },
             "note": null,
             "links": {
@@ -80,7 +80,7 @@
             "id": "15",
             "slug": "safari_mobile",
             "name": {
-                "en": "Safari Mobile"
+                "en": "Safari for iOS"
             },
             "note": null,
             "links": {
