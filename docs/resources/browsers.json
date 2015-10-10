@@ -154,7 +154,7 @@
         },
         {
             "id": "11",
-            "slug": "opera",
+            "slug": "opera_desktop",
             "name": {
                 "en": "Opera for Desktop"
             },
@@ -198,7 +198,7 @@
         },
         {
             "id": "14",
-            "slug": "safari",
+            "slug": "safari_desktop",
             "name": {
                 "en": "Safari for Desktop"
             },
@@ -214,7 +214,7 @@
         },
         {
             "id": "15",
-            "slug": "safari_mobile",
+            "slug": "safari_ios",
             "name": {
                 "en": "Safari for iOS"
             },

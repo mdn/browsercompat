@@ -231,7 +231,7 @@
             },
             {
                 "id": "11",
-                "slug": "opera",
+                "slug": "opera_desktop",
                 "name": {
                     "en": "Opera for Desktop"
                 },
@@ -245,7 +245,7 @@
             },
             {
                 "id": "14",
-                "slug": "safari",
+                "slug": "safari_desktop",
                 "name": {
                     "en": "Safari for Desktop"
                 },
@@ -259,7 +259,7 @@
             },
             {
                 "id": "15",
-                "slug": "safari_mobile",
+                "slug": "safari_ios",
                 "name": {
                     "en": "Safari for iOS"
                 },
@@ -919,12 +919,22 @@
             "tabs": [
                 {
                     "name": {
+                        "en": "Desktop Browsers"
+                    },
+                    "browsers": [
+                        "11",
+                        "14"
+                    ]
+                },
+                {
+                    "name": {
                         "en": "Mobile Browsers"
                     },
                     "browsers": [
                         "1",
                         "2",
-                        "9"
+                        "9",
+                        "15"
                     ]
                 },
                 {
@@ -935,10 +945,7 @@
                         "3",
                         "6",
                         "7",
-                        "10",
-                        "11",
-                        "14",
-                        "15"
+                        "10"
                     ]
                 }
             ],
