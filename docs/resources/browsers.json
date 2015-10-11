@@ -16,20 +16,20 @@
             }
         },
         {
-            "id": "5",
-            "slug": "chrome_mobile",
+            "id": "2",
+            "slug": "android_webview",
             "name": {
                 "en": "Android Webview"
             },
             "note": null,
             "links": {
                 "versions": [
-                    "13"
+                    "4"
                 ]
             }
         },
         {
-            "id": "2",
+            "id": "3",
             "slug": "blackberry",
             "name": {
                 "en": "BlackBerry Browser"
@@ -37,29 +37,29 @@
             "note": null,
             "links": {
                 "versions": [
-                    "4",
                     "5",
-                    "6"
+                    "6",
+                    "7"
                 ]
             }
         },
         {
-            "id": "3",
-            "slug": "chrome",
+            "id": "4",
+            "slug": "chrome_desktop",
             "name": {
                 "en": "Chrome for Desktop"
             },
             "note": null,
             "links": {
                 "versions": [
-                    "7",
                     "8",
-                    "9"
+                    "9",
+                    "10"
                 ]
             }
         },
         {
-            "id": "4",
+            "id": "5",
             "slug": "chrome_for_android",
             "name": {
                 "en": "Chrome for Android"
@@ -67,9 +67,9 @@
             "note": null,
             "links": {
                 "versions": [
-                    "10",
                     "11",
-                    "12"
+                    "12",
+                    "13"
                 ]
             }
         },

@@ -21,9 +21,9 @@
         },
         {
             "id": "2",
-            "slug": "blackberry",
+            "slug": "android_webview",
             "name": {
-                "en": "BlackBerry Browser"
+                "en": "Android Webview"
             },
             "note": null,
             "links": {
@@ -32,17 +32,15 @@
                 ],
                 "history_current": "2",
                 "versions": [
-                    "4",
-                    "5",
-                    "6"
+                    "4"
                 ]
             }
         },
         {
             "id": "3",
-            "slug": "chrome",
+            "slug": "blackberry",
             "name": {
-                "en": "Chrome for Desktop"
+                "en": "BlackBerry Browser"
             },
             "note": null,
             "links": {
@@ -51,17 +49,18 @@
                 ],
                 "history_current": "3",
                 "versions": [
+                    "5",
+                    "6",
                     "7",
-                    "8",
-                    "9"
+                    "10"
                 ]
             }
         },
         {
             "id": "4",
-            "slug": "chrome_for_android",
+            "slug": "chrome_desktop",
             "name": {
-                "en": "Chrome for Android"
+                "en": "Chrome for Desktop"
             },
             "note": null,
             "links": {
@@ -70,17 +69,16 @@
                 ],
                 "history_current": "4",
                 "versions": [
-                    "10",
-                    "11",
-                    "12"
+                    "8",
+                    "9"
                 ]
             }
         },
         {
             "id": "5",
-            "slug": "chrome_mobile",
+            "slug": "chrome_for_android",
             "name": {
-                "en": "Android Webview"
+                "en": "Chrome for Android"
             },
             "note": null,
             "links": {
@@ -89,6 +87,8 @@
                 ],
                 "history_current": "5",
                 "versions": [
+                    "11",
+                    "12",
                     "13"
                 ]
             }

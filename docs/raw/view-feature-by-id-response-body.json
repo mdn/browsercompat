@@ -143,9 +143,9 @@
             },
             {
                 "id": "2",
-                "slug": "blackberry",
+                "slug": "android_webview",
                 "name": {
-                    "en": "BlackBerry Browser"
+                    "en": "Android Webview"
                 },
                 "note": null,
                 "links": {
@@ -156,17 +156,17 @@
                 }
             },
             {
-                "id": "3",
-                "slug": "chrome",
+                "id": "4",
+                "slug": "chrome_desktop",
                 "name": {
                     "en": "Chrome for Desktop"
                 },
                 "note": null,
                 "links": {
                     "history": [
-                        "3"
+                        "4"
                     ],
-                    "history_current": "3"
+                    "history_current": "4"
                 }
             },
             {
@@ -308,7 +308,7 @@
                 }
             },
             {
-                "id": "8",
+                "id": "9",
                 "version": "1.0",
                 "release_day": null,
                 "retirement_day": null,
@@ -317,11 +317,11 @@
                 "note": null,
                 "order": 1,
                 "links": {
-                    "browser": "3",
+                    "browser": "4",
                     "history": [
-                        "8"
+                        "9"
                     ],
-                    "history_current": "8"
+                    "history_current": "9"
                 }
             },
             {
@@ -494,7 +494,7 @@
                 "protected": false,
                 "note": null,
                 "links": {
-                    "version": "8",
+                    "version": "9",
                     "feature": "6",
                     "history_current": "2",
                     "history": [
@@ -890,7 +890,7 @@
                     "2": [
                         "27"
                     ],
-                    "3": [
+                    "4": [
                         "2"
                     ],
                     "6": [
@@ -922,6 +922,7 @@
                         "en": "Desktop Browsers"
                     },
                     "browsers": [
+                        "4",
                         "7",
                         "9",
                         "11",
@@ -938,14 +939,6 @@
                         "6",
                         "10",
                         "15"
-                    ]
-                },
-                {
-                    "name": {
-                        "en": "Non-Browser Environments"
-                    },
-                    "browsers": [
-                        "3"
                     ]
                 }
             ],

@@ -28,7 +28,7 @@
             "protected": false,
             "note": null,
             "links": {
-                "version": "8",
+                "version": "9",
                 "feature": "6"
             }
         },
@@ -172,7 +172,7 @@
             "protected": false,
             "note": null,
             "links": {
-                "version": "7",
+                "version": "8",
                 "feature": "11"
             }
         },
@@ -316,7 +316,7 @@
             "protected": false,
             "note": null,
             "links": {
-                "version": "7",
+                "version": "8",
                 "feature": "13"
             }
         },

@@ -21,27 +21,7 @@
             }
         },
         {
-            "id": "8",
-            "version": "1.0",
-            "release_day": null,
-            "retirement_day": null,
-            "status": "unknown",
-            "release_notes_uri": null,
-            "note": null,
-            "order": 1,
-            "links": {
-                "browser": "3",
-                "supports": [
-                    "2"
-                ],
-                "history": [
-                    "8"
-                ],
-                "history_current": "8"
-            }
-        },
-        {
-            "id": "11",
+            "id": "9",
             "version": "1.0",
             "release_day": null,
             "retirement_day": null,
@@ -51,11 +31,31 @@
             "order": 1,
             "links": {
                 "browser": "4",
+                "supports": [
+                    "2"
+                ],
+                "history": [
+                    "9"
+                ],
+                "history_current": "9"
+            }
+        },
+        {
+            "id": "12",
+            "version": "1.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 1,
+            "links": {
+                "browser": "5",
                 "supports": [],
                 "history": [
-                    "11"
+                    "12"
                 ],
-                "history_current": "11"
+                "history_current": "12"
             }
         },
         {
