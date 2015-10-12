@@ -154,8 +154,17 @@ class Cache(BaseCache):
             self.field_to_json(
                 'PKList', 'children', model=Feature, pks=obj._children_pks),
             self.field_to_json(
+                'PKList', 'row_children', model=Feature,
+                pks=obj._row_children_pks),
+            self.field_to_json(
+                'PKList', 'page_children', model=Feature,
+                pks=obj._page_children_pks),
+            self.field_to_json(
                 'PKList', 'descendants', model=Feature,
                 pks=obj._descendant_pks),
+            self.field_to_json(
+                'PKList', 'row_descendants', model=Feature,
+                pks=obj._row_descendant_pks),
             self.field_to_json(
                 'PKList', 'history', model=obj.history.model,
                 pks=obj._history_pks),
@@ -176,11 +185,39 @@ class Cache(BaseCache):
 
     def feature_v1_add_related_pks(self, obj):
         """Add related primary keys to a Feature instance."""
+        def row_descendant_pks(row_children):
+            """Recursively gather row descendants."""
+            row_pks = []
+            for child in row_children:
+                if not child.mdn_uri:
+                    row_pks.append(child.pk)
+                    sub_row_children = child.children.only('pk', 'mdn_uri')
+                    row_pks.extend(row_descendant_pks(sub_row_children))
+            return row_pks
+
         if not hasattr(obj, '_history_pks'):
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
-        if not hasattr(obj, '_children_pks'):
-            obj._children_pks = list(obj.children.values_list('pk', flat=True))
+
+        # Gather PKs of child features that require iteration
+        # See http://browsercompat.rtfd.org/en/latest/draft/views.html,
+        #  "Including Child Pages", for a full explanation of these fields
+        if not (hasattr(obj, '_children_pks') and
+                hasattr(obj, '_row_children_pks') and
+                hasattr(obj, '_page_children_pks') and
+                hasattr(obj, '_row_descendant_pks')):
+            obj._children_pks = []
+            obj._row_children_pks = []
+            obj._page_children_pks = []
+            row_children = []
+            for child in obj.children.only('pk', 'mdn_uri'):
+                obj._children_pks.append(child.pk)
+                if child.mdn_uri:
+                    obj._page_children_pks.append(child.pk)
+                else:
+                    obj._row_children_pks.append(child.pk)
+                    row_children.append(child)
+            obj._row_descendant_pks = row_descendant_pks(row_children)
         if not hasattr(obj, '_support_pks'):
             obj._support_pks = sorted(
                 obj.supports.values_list('pk', flat=True))

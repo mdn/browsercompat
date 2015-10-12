@@ -10,7 +10,7 @@ Resources`_.  These views are written as if they are aliases for a
 fully-fleshed implementation of JSON API.
 
 View a Feature
---------------
+~~~~~~~~~~~~~~
 
 This view collects the data for a feature_, including the related
 resources needed to display it on MDN.
@@ -76,6 +76,21 @@ This can also be used by a `"caniuse" table layout`_ by ignoring the meta
 section and displaying all the included data.  This will require more
 client-side processing to generate, or additional data in the ``<meta>``
 section.
+
+Including Child Pages
+---------------------
+By default, ``view_feature`` only includes *row children*, which are
+subfeatures that are represented as rows in the MDN table.  These row children
+are identified by not having a value for ``mdn_uri``.
+
+There can also be *page children*, which are represented as more detailed
+page on MDN.  For example, *Web/CSS* has the page child *Web/CSS/Display*.
+By default, these are not included, but can be included by setting the query
+parameter ``child_pages=1``:
+
+.. literalinclude:: /raw/view-feature-by-id-with-child-pages-request-headers.txt
+    :language: http
+
 
 Updating Views with Changesets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

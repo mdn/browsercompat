@@ -706,6 +706,10 @@
         "method": "GET",
         "endpoint": "view_features/5"
     }, {
+        "name": "view-feature-by-id-with-child-pages",
+        "method": "GET",
+        "endpoint": "view_features/5?child_pages=1"
+    }, {
         "name": "view-feature-update-parts-with-changeset-1",
         "method": "POST",
         "endpoint": "changesets",

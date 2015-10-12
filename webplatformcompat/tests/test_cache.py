@@ -175,7 +175,22 @@ class TestCache(TestCase):
                 'model': 'feature',
                 'pks': [],
             },
+            'page_children:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [],
+            },
+            'row_children:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [],
+            },
             'descendants:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [],
+            },
+            'row_descendants:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'feature',
                 'pks': [],
@@ -193,21 +208,51 @@ class TestCache(TestCase):
         }
         self.assertEqual(out, expected)
 
-    def test_feature_v1_serializer_some_descendants(self):
+    def test_feature_v1_serializer_mixed_descendants(self):
         feature = self.create(
             Feature, slug='the-slug', name='{"en": "A Name"}')
         child1 = self.create(Feature, slug='child1', parent=feature)
         child2 = self.create(Feature, slug='child2', parent=feature)
-        child3 = self.create(Feature, slug='child3', parent=feature)
+        child21 = self.create(Feature, slug='child2.1', parent=child2)
+        page1 = self.create(
+            Feature, slug='page1', parent=feature,
+            mdn_uri='{"en": "https://example.com/page1"}')
+        page2 = self.create(
+            Feature, slug='page2', parent=child2,
+            mdn_uri='{"en": "https://example.com/page2"}')
         feature = Feature.objects.get(id=feature.id)
         out = self.cache.feature_v1_serializer(feature)
-        self.assertEqual(out['descendant_count'], 3)
+        self.assertEqual(out['descendant_count'], 5)
         self.assertEqual(
             out['descendants:PKList'],
             {
                 'app': u'webplatformcompat',
                 'model': 'feature',
-                'pks': [child1.pk, child2.pk, child3.pk]
+                'pks': [child1.pk, child2.pk, child21.pk, page2.pk, page1.pk]
+            }
+        )
+        self.assertEqual(
+            out['row_descendants:PKList'],
+            {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [child1.pk, child2.pk, child21.pk]
+            }
+        )
+        self.assertEqual(
+            out['page_children:PKList'],
+            {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [page1.pk]
+            }
+        )
+        self.assertEqual(
+            out['row_children:PKList'],
+            {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pks': [child1.pk, child2.pk]
             }
         )
 

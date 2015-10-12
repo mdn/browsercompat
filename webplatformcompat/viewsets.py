@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.models import User
+from django.utils.functional import cached_property
 from django.http import Http404
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -27,7 +28,8 @@ from .serializers import (
     HistoricalSpecificationSerializer, HistoricalSupportSerializer,
     HistoricalVersionSerializer)
 from .view_serializers import (
-    ViewFeatureListSerializer, ViewFeatureSerializer)
+    ViewFeatureListSerializer, ViewFeatureSerializer,
+    ViewFeatureRowChildrenSerializer)
 
 
 #
@@ -191,7 +193,6 @@ class HistoricalVersionViewSet(ReadOnlyModelViewSet):
 
 class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
     queryset = Feature.objects.order_by('id')
-    serializer_class = ViewFeatureSerializer
     filter_fields = ('slug',)
     parser_classes = (JsonApiParser, FormParser, MultiPartParser)
     renderer_classes = (
@@ -199,11 +200,30 @@ class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
     template_name = 'webplatformcompat/feature.basic.jinja2'
 
     def get_serializer_class(self):
-        """Return the list serializer when needed."""
+        """Return the serializer to use based on action and query."""
         if self.action == 'list':
             return ViewFeatureListSerializer
         else:
-            return super(ViewFeaturesViewSet, self).get_serializer_class()
+            if self.include_child_pages:
+                return ViewFeatureSerializer
+            else:
+                return ViewFeatureRowChildrenSerializer
+
+    def get_serializer_context(self):
+        """Add include_child_pages to context"""
+        context = super(ViewFeaturesViewSet, self).get_serializer_context()
+        context['include_child_pages'] = self.include_child_pages
+        return context
+
+    @cached_property
+    def include_child_pages(self):
+        """Return True if the response should include paginated child pages."""
+        if self.action != 'retrieve':
+            return True
+        request = getattr(self, 'request')
+        child_pages = request and request.query_params.get('child_pages')
+        falsy = ('0', 'false', 'no')
+        return bool(child_pages and child_pages.lower not in falsy)
 
     def get_object_or_404(self, queryset, *filter_args, **filter_kwargs):
         """The feature can be accessed by primary key or by feature slug."""
@@ -212,7 +232,10 @@ class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
             pk = int(pk_or_slug)
         except ValueError:
             try:
-                pk = Feature.objects.only('pk').get(slug=pk_or_slug).pk
+                # parent_id is needed by the MPTT model loader,
+                # including it saves a query later.
+                pk = Feature.objects.only('pk', 'parent_id').get(
+                    slug=pk_or_slug).pk
             except queryset.model.DoesNotExist:
                 raise Http404(
                     'No %s matches the given query.' % queryset.model)
