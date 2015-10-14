@@ -8,6 +8,8 @@ from django.core.urlresolvers import reverse
 
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Version)
+from webplatformcompat.serializers import (
+    BrowserSerializer, FeatureSerializer)
 
 from .base import APITestCase as BaseCase
 
@@ -99,9 +101,9 @@ class TestHistoricalModelSerializer(APITestCase):
         }
         response = self.update_via_json_api(self.url, data)
         new_history_id = self.browser.history.all()[0].history_id
-        self.assertNotEqual(new_history_id, current_history_id)
+        self.assertEqual(new_history_id, current_history_id)
         histories = self.browser.history.all()
-        self.assertEqual(3, len(histories))
+        self.assertEqual(2, len(histories))
         expected_data = {
             "id": self.browser.pk,
             "slug": "browser",
@@ -114,14 +116,53 @@ class TestHistoricalModelSerializer(APITestCase):
         self.assertDataEqual(response.data, expected_data)
 
 
-class TestBrowserSerializer(APITestCase):
-    """Test BrowserSerializer through the view."""
+class SerializerTestCase(APITestCase):
+    """Base class for Serializer tests"""
+
+    def assert_changed(self, data):
+        serializer = self.serializer_cls(self.subject, data)
+        self.assertTrue(serializer.changed(self.subject, data))
+
+    def assert_not_changed(self, data):
+        serializer = self.serializer_cls(self.subject, data)
+        self.assertFalse(serializer.changed(self.subject, data))
+
+
+class TestBrowserSerializer(SerializerTestCase):
+    """Test BrowserSerializer, directly and through the view."""
+    serializer_cls = BrowserSerializer
+
     def setUp(self):
-        self.browser = self.create(
+        self.subject = self.create(
             Browser, slug='browser', name={'en': 'Browser'})
-        self.v1 = self.create(Version, browser=self.browser, version='1.0')
-        self.v2 = self.create(Version, browser=self.browser, version='2.0')
-        self.url = reverse('browser-detail', kwargs={'pk': self.browser.pk})
+        self.v1 = self.create(Version, browser=self.subject, version='1.0')
+        self.v2 = self.create(Version, browser=self.subject, version='2.0')
+        self.url = reverse('browser-detail', kwargs={'pk': self.subject.pk})
+
+    def test_not_changed_with_no_data(self):
+        self.assert_not_changed({})
+
+    def test_not_changed_with_data(self):
+        self.assert_not_changed({
+            'name': {'en': 'Browser'},
+            'versions': [self.v1, self.v2]
+        })
+
+    def test_changed_name(self):
+        self.assert_changed({'name': {'en': 'The Browser'}})
+
+    def test_changed_added_localized_name(self):
+        self.assert_changed(
+            {'name': {'en': 'Browser', 'es': 'el Browser'}})
+
+    def test_changed_add_note(self):
+        self.assert_changed({'note': {'en': 'It Browses'}})
+
+    def test_not_changed_same_note(self):
+        self.assert_not_changed({'note': None})
+
+    def test_changed_version_order(self):
+        self.assert_changed({'versions': [self.v2, self.v1]})
 
     def test_versions_change_order(self):
         data = {
@@ -150,8 +191,8 @@ class TestBrowserSerializer(APITestCase):
         self.assertEqual(expected_versions, actual_versions)
 
 
-class TestFeatureSerializer(APITestCase):
-    """Test FeatureSerializer through the view."""
+class TestFeatureSerializerOrder(APITestCase):
+    """Test FeatureSerializer child order."""
 
     def setUp(self):
         self.parent = self.create(Feature, slug='parent')
@@ -223,6 +264,88 @@ class TestFeatureSerializer(APITestCase):
         expected_error = ['Set child.parent to add a child feature.']
         actual_error = response.data['children']
         self.assertEqual(expected_error, actual_error)
+
+
+class TestFeatureSerializer(SerializerTestCase):
+    """Test FeatureSerializer historical object creation."""
+    serializer_cls = FeatureSerializer
+
+    def setUp(self):
+        self.parent = self.create(
+            Feature, slug='parent', name={'en': 'parent'})
+        self.subject = self.create(
+            Feature, slug='feature', parent=self.parent,
+            mdn_uri={'en': 'https://example.com'},
+            name={'en': 'Feature'})
+        self.f1 = self.create(
+            Feature, slug='f1', parent=self.subject,
+            name={'en': 'Child 1'})
+        self.f2 = self.create(
+            Feature, slug='f2', parent=self.subject,
+            name={'en': 'Child 2'})
+        mat1 = self.create(Maturity, slug='M1', name={'en': 'Maturity'})
+        spec1 = self.create(
+            Specification, maturity=mat1, slug='S1',
+            name={'en': 'Specification 1'})
+        self.section1 = self.create(
+            Section, specification=spec1, name={'en': 'Section 1'},
+            subpath={"en": "#section1"})
+        self.subject.sections.add(self.section1)
+        mat2 = self.create(Maturity, slug='M2', name={'en': 'Maturity'})
+        spec2 = self.create(
+            Specification, maturity=mat2, slug='S2',
+            name={'en': 'Specification 2'})
+        self.section2 = self.create(
+            Section, specification=spec2, name={'en': 'Section 2'},
+            subpath={"en": "#section2"})
+        self.subject.sections.add(self.section2)
+
+    def test_not_changed_with_no_data(self):
+        self.assert_not_changed({})
+
+    def test_no_changes_full_data(self):
+        self.assert_not_changed({
+            'mdn_uri': {'en': 'https://example.com'},
+            'experimental': False,
+            'standardized': True,
+            'stable': True,
+            'obsolete': False,
+            'name': {'en': 'Feature'},
+            'parent': self.parent,
+            'children': [self.f1, self.f2],
+            'sections': [self.section1, self.section2]})
+
+    def test_changed_mdn_uri(self):
+        self.assert_changed({'mdn_uri': {'en': 'https://other.example.com'}})
+
+    def test_cleared_mdn_uri(self):
+        self.assert_changed({'mdn_uri': None})
+
+    def test_set_experimental(self):
+        self.assert_changed({'experimental': True})
+
+    def test_clear_standardized(self):
+        self.assert_changed({'standardized': False})
+
+    def test_clear_stable(self):
+        self.assert_changed({'stable': False})
+
+    def test_set_obsolete(self):
+        self.assert_changed({'obsolete': True})
+
+    def test_changed_name(self):
+        self.assert_changed({'name': {'en': 'The Feature'}})
+
+    def test_changed_section_order(self):
+        self.assert_changed({'sections': [self.section2, self.section1]})
+
+    def test_change_child_order(self):
+        self.assert_changed({'children': [self.f2, self.f1]})
+
+    def test_change_parent(self):
+        new_parent = self.create(
+            Feature, slug='new_parent', name={'en': 'new_parent'})
+        self.assert_changed({'parent': new_parent})
 
 
 class TestSpecificationSerializer(APITestCase):

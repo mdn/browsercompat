@@ -98,6 +98,34 @@ class HistoricalModelSerializer(
         field_args = {'read_only': read_only}
         return CurrentHistoryField, field_args
 
+    def changed(self, instance, data):
+        """Return True if the data is different than the instance."""
+        return True
+
+    def changed_attribute(self, instance, data, name):
+        """Return True if a simple attribute changed."""
+        return (
+            (name in data) and (getattr(instance, name) != data[name]))
+
+    def changed_translation(self, instance, data, name):
+        """Return True if a translation changed."""
+        if name in data:
+            orig = getattr(instance, name)
+            if orig:
+                return orig != data[name]
+            else:
+                return bool(data['note'])
+        return False
+
+    def changed_order(self, instance, data, name):
+        """Return True if the related instance order changed."""
+        if name in data:
+            new_order = [item.pk for item in data[name]]
+            current_order = list(getattr(instance, name).values_list(
+                'pk', flat=True))
+            return new_order != current_order
+        return False
+
     def to_internal_value(self, data):
         """If history_current in data, load historical data into instance"""
         if data and 'history_current' in data:
@@ -122,9 +150,24 @@ class HistoricalModelSerializer(
                         data[data_name] = hist_value
         return super(HistoricalModelSerializer, self).to_internal_value(data)
 
+    def update(self, instance, validated_data):
+        """Only save if the instance will change."""
+        if self.changed(instance, validated_data):
+            return super(HistoricalModelSerializer, self).update(
+                instance, validated_data)
+        else:
+            return instance
+
 
 class BrowserSerializer(HistoricalModelSerializer):
     """Browser Serializer"""
+
+    def changed(self, instance, data):
+        """Return True if data will update the Browser instance."""
+        return (data and (
+            self.changed_translation(instance, data, 'name') or
+            self.changed_translation(instance, data, 'note') or
+            self.changed_order(instance, data, 'versions')))
 
     def update(self, instance, validated_data):
         versions = validated_data.pop('versions', None)
@@ -184,6 +227,19 @@ class FeatureSerializer(HistoricalModelSerializer):
                 raise ValidationError(
                     "Can not set children when creating a feature.")
         return value
+
+    def changed(self, instance, data):
+        """Return True if data will update the Version instance."""
+        return (data and (
+            self.changed_translation(instance, data, 'mdn_uri') or
+            self.changed_attribute(instance, data, 'experimental') or
+            self.changed_attribute(instance, data, 'standardized') or
+            self.changed_attribute(instance, data, 'stable') or
+            self.changed_attribute(instance, data, 'obsolete') or
+            self.changed_translation(instance, data, 'name') or
+            self.changed_attribute(instance, data, 'parent') or
+            self.changed_order(instance, data, 'children') or
+            self.changed_order(instance, data, 'sections')))
 
     class Meta:
         model = Feature
