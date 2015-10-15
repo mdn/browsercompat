@@ -6,11 +6,12 @@ from collections import OrderedDict
 import mock
 
 from django.core.paginator import Paginator
+from django.test import override_settings
 from django.utils.six.moves.urllib_parse import urlparse, parse_qsl
 
 from mdn.helpers import (
     add_filter_to_current_url, drop_filter_from_current_url, page_list,
-    pagination_control)
+    pagination_control, can_reparse_mdn_import)
 from webplatformcompat.tests.base import TestCase as BaseTestCase
 
 
@@ -171,3 +172,25 @@ class TestPaginationControl(CurrentURLTestCase):
             '<li class="disabled"><span aria-hidden="true">&hellip;</span>'
             '</li>')
         self.assertInHTML(expected_spacer, out)
+
+
+class TestCanReparseMDNImport(TestCase):
+
+    def can_reparse(self, has_perm):
+        """Call can_reparse_mdn_import with mocked data."""
+        mock_user = mock.Mock(spec_set=['has_perm'])
+        mock_user.has_perm.return_value = has_perm
+        context = {}
+        return can_reparse_mdn_import(context, mock_user)
+
+    @override_settings(MDN_SHOW_REPARSE=True)
+    def test_with_permission(self):
+        self.assertTrue(self.can_reparse(True))
+
+    @override_settings(MDN_SHOW_REPARSE=True)
+    def test_without_permission(self):
+        self.assertFalse(self.can_reparse(False))
+
+    @override_settings(MDN_SHOW_REPARSE=False)
+    def test_setting_off(self):
+        self.assertFalse(self.can_reparse(True))
