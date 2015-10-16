@@ -10,8 +10,8 @@ from django.core.urlresolvers import reverse
 import mock
 
 from webplatformcompat.history import Changeset
-from webplatformcompat.models import Browser, Feature
-
+from webplatformcompat.models import (
+    Browser, Feature, Maturity, Section, Specification, Support, Version)
 from .base import APITestCase
 
 
@@ -214,10 +214,10 @@ class TestGenericViewset(APITestCase):
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         url += '?changeset=%s' % changeset.pk
         mock_update.reset_mock()
+        mock_update.side_effect = Exception("not called")
         response = self.client.put(
             url, data=data, content_type="application/vnd.api+json")
         self.assertEqual(200, response.status_code, response.data)
-        mock_update.assert_not_called()
 
     def test_put_as_json(self):
         """If content is application/json, put is full put"""
@@ -272,10 +272,75 @@ class TestGenericViewset(APITestCase):
         url = reverse('browser-detail', kwargs={'pk': browser.pk})
         url += "?changeset=%d" % self.changeset.id
         mock_update.reset_mock()
+        mock_update.side_effect = Exception("not called")
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code, response.content)
         self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())
-        mock_update.assert_not_called()
+
+
+class TestCascadeDelete(APITestCase):
+    def setUp(self):
+        super(TestCascadeDelete, self).setUp()
+        self.login_user(groups=["change-resource", "delete-resource"])
+        self.parent = self.create(Feature, slug='parent')
+        self.child = self.create(Feature, slug='doomed', parent=self.parent)
+        self.browser = self.create(Browser, slug='browser')
+        self.version = self.create(
+            Version, version='1.0', browser=self.browser)
+        self.support = self.create(
+            Support, version=self.version, feature=self.child)
+        self.maturity = self.create(Maturity, slug="MAT")
+        self.specification = self.create(
+            Specification, slug="Spec", maturity=self.maturity)
+        self.section = self.create(
+            Section, specification=self.specification)
+        self.section.features.add(self.child)
+
+    def assert_counts_after_delete(
+            self, url, browsers=1, versions=1, supports=1, maturities=1,
+            specifications=1, sections=1, features=2):
+        response = self.client.delete(url)
+        self.assertEqual(204, response.status_code)
+        self.assertEqual(browsers, Browser.objects.count())
+        self.assertEqual(versions, Version.objects.count())
+        self.assertEqual(supports, Support.objects.count())
+        self.assertEqual(maturities, Maturity.objects.count())
+        self.assertEqual(specifications, Specification.objects.count())
+        self.assertEqual(sections, Section.objects.count())
+        self.assertEqual(features, Feature.objects.count())
+
+    def test_delete_browser(self):
+        url = reverse('browser-detail', kwargs={'pk': self.browser.pk})
+        self.assert_counts_after_delete(
+            url, browsers=0, versions=0, supports=0)
+
+    def test_delete_version(self):
+        url = reverse('version-detail', kwargs={'pk': self.version.pk})
+        self.assert_counts_after_delete(url, versions=0, supports=0)
+
+    def test_delete_support(self):
+        url = reverse('support-detail', kwargs={'pk': self.support.pk})
+        self.assert_counts_after_delete(url, supports=0)
+
+    def test_delete_maturity(self):
+        url = reverse('maturity-detail', kwargs={'pk': self.maturity.pk})
+        self.assert_counts_after_delete(
+            url, maturities=0, specifications=0, sections=0)
+
+    def test_delete_specification(self):
+        url = reverse(
+            'specification-detail', kwargs={'pk': self.specification.pk})
+        self.assert_counts_after_delete(url, specifications=0, sections=0)
+
+    def test_delete_section(self):
+        url = reverse(
+            'section-detail', kwargs={'pk': self.section.pk})
+        self.assert_counts_after_delete(url, sections=0)
+
+    def test_delete_feature(self):
+        url = reverse(
+            'feature-detail', kwargs={'pk': self.parent.pk})
+        self.assert_counts_after_delete(url, features=0, supports=0)
 
 
 class TestFeatureViewSet(APITestCase):

@@ -132,7 +132,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'webplatformcompat.history.HistoryChangesetRequestMiddleware',
+    'webplatformcompat.history.HistoryChangesetMiddleware',
 )
 
 ROOT_URLCONF = 'wpcsite.urls'
