@@ -2,7 +2,7 @@
 """Model definitions for MDN migration app."""
 
 from __future__ import unicode_literals
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from json import dumps, loads
 
 from django.conf import settings
@@ -102,20 +102,34 @@ class FeaturePage(models.Model):
             'status': Content.STATUS_STARTING})
         return meta
 
+    TranslationData = namedtuple(
+        "TranslationData", ["locale", "path", "title", "obj"])
+
     def translations(self):
-        """Get the page translations, after fetching the meta data."""
+        """Get the page translations data, after fetching the meta data.
+
+        Return is a list of named tuples:
+        - locale - The locale of the localized content
+        - path - The URL path of the MDN localized page
+        - title - The localized page title
+        - obj - If the locale is English, a TranslatedContent object,
+            or None if non-English
+        """
         meta = self.meta()
         translations = []
         for locale, path, title in meta.locale_paths():
-            content, created = self.translatedcontent_set.get_or_create(
-                locale=locale, defaults={
-                    'path': path, 'raw': '', 'title': title,
-                    'status': TranslatedContent.STATUS_STARTING})
-            if content.title != title or content.path != path:
-                content.path = path
-                content.title = title
-                content.save()
-            translations.append(content)
+            if locale == 'en-US':
+                obj, created = self.translatedcontent_set.get_or_create(
+                    locale=locale, defaults={
+                        'path': path, 'raw': '', 'title': title,
+                        'status': TranslatedContent.STATUS_STARTING})
+                if obj.title != title or obj.path != path:
+                    obj.path = path
+                    obj.title = title
+                    obj.save()
+            else:
+                obj = None
+            translations.append(self.TranslationData(locale, path, title, obj))
         return translations
 
     def reset(self, delete_cache=True):
@@ -129,11 +143,11 @@ class FeaturePage(models.Model):
         meta = self.meta()
         meta.status = meta.STATUS_STARTING
         meta.save()
-        for t in self.translatedcontent_set.all():
-            if delete_cache or (t.status == t.STATUS_ERROR):
-                t.status = t.STATUS_STARTING
-                t.raw = ""
-                t.save()
+        for obj in self.translatedcontent_set.all():
+            if delete_cache or (obj.status == obj.STATUS_ERROR):
+                obj.status = obj.STATUS_STARTING
+                obj.raw = ""
+                obj.save()
 
     def reset_data(self, keep_issues=False):
         """Reset JSON data to initial state.
@@ -159,11 +173,11 @@ class FeaturePage(models.Model):
         canonical = (list(feature['name'].keys()) == ['zxx'])
         if canonical:
             feature['name'] = feature['name']['zxx']
-        for t in self.translations():
-            if t.locale != 'en-US':
-                feature['mdn_uri'][t.locale] = t.url()
+        for trans in self.translations():
+            if trans.locale != 'en-US':
+                feature['mdn_uri'][trans.locale] = self.domain() + trans.path
                 if not canonical:
-                    feature['name'][t.locale] = t.title
+                    feature['name'][trans.locale] = trans.title
 
         issues = []
         if keep_issues:
@@ -422,8 +436,9 @@ class PageMeta(Content):
             return []
         meta = self.data()
         locale_paths = [(meta['locale'], meta['url'], meta['title'])]
-        for t in meta['translations']:
-            locale_paths.append((t['locale'], t['url'], t['title']))
+        for trans in meta['translations']:
+            locale_paths.append(
+                (trans['locale'], trans['url'], trans['title']))
         return locale_paths
 
 

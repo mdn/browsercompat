@@ -45,11 +45,11 @@ class TestFeaturePageModel(TestCase):
             feature=self.feature, status=FeaturePage.STATUS_META)
         self.metadata = {
             "locale": "en-US",
-            "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+            "url": "/en-US/docs/Web/CSS/float",
             "title": "<float>",
             "translations": [{
                 "locale": "de",
-                "url": "https://developer.mozilla.org/de/docs/Web/CSS/float",
+                "url": "/de/docs/Web/CSS/float",
                 "title": "<float>",
             }],
         }
@@ -79,9 +79,15 @@ class TestFeaturePageModel(TestCase):
         PageMeta.objects.create(
             page=self.fp, path='/foo/path', status=PageMeta.STATUS_FETCHED,
             raw=dumps(self.metadata))
-        t1, t2 = self.fp.translations()
-        self.assertEqual('en-US', t1.locale)
-        self.assertEqual('de', t2.locale)
+        trans1, trans2 = self.fp.translations()
+        self.assertEqual('en-US', trans1.locale)
+        self.assertEqual('/en-US/docs/Web/CSS/float', trans1.path)
+        self.assertEqual('<float>', trans1.title)
+        self.assertIsNotNone(trans1.obj)
+        self.assertEqual('de', trans2.locale)
+        self.assertEqual('/de/docs/Web/CSS/float', trans2.path)
+        self.assertEqual('<float>', trans2.title)
+        self.assertIsNone(trans2.obj)
 
     def setup_content(self):
         PageMeta.objects.create(

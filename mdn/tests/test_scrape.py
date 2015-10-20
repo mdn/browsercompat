@@ -771,10 +771,16 @@ class TestScrapedViewFeature(FeaturePageTestCase):
 
 class TestScrapeFeaturePage(FeaturePageTestCase):
     def set_content(self, content):
-        for translation in self.page.translations():
+        found = False
+        for data in self.page.translations():
+            translation = data.obj
+            if data.obj is None:
+                continue
+            found = True
             translation.status = translation.STATUS_FETCHED
             translation.raw = content
             translation.save()
+        assert found, "No English translation object found in translations"
 
     def test_empty_page(self):
         self.set_content('  ')

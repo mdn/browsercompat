@@ -5,7 +5,7 @@ from json import dumps
 import mock
 
 
-from mdn.models import FeaturePage
+from mdn.models import FeaturePage, TranslatedContent
 
 from mdn.tasks import (
     start_crawl, fetch_meta, fetch_all_translations, fetch_translation,
@@ -211,29 +211,35 @@ class TestFetchAllTranslationsTask(TestCase):
         self.patcher_fetch_trans.stop()
         self.patcher_parse_page.stop()
 
+    def set_content(self, status, raw=None):
+        found = False
+        for data in self.fp.translations():
+            obj = data.obj
+            if obj:
+                found = True
+                obj.status = status
+                if raw is not None:
+                    obj.raw = raw
+                obj.save()
+        assert found, "No English translation object found in translations"
+
     def test_fetch_all_start(self):
         self.mocked_fetch_trans.side_effect = None
 
         fetch_all_translations(self.fp.id)
         fp = FeaturePage.objects.get(id=self.fp.id)
         self.assertEqual(fp.STATUS_PAGES, fp.status)
-        self.mocked_fetch_trans.assert_any_call(self.fp.id, 'en-US')
-        self.mocked_fetch_trans.assert_any_call(self.fp.id, 'es')
-        self.assertEqual(2, self.mocked_fetch_trans.call_count)
+        self.mocked_fetch_trans.assert_called_once_with(self.fp.id, 'en-US')
 
     def test_fetch_all_in_progress(self):
-        for t in self.fp.translations():
-            t.status = t.STATUS_FETCHING
-            t.save()
+        self.set_content(TranslatedContent.STATUS_FETCHING)
 
         fetch_all_translations(self.fp.id)
         fp = FeaturePage.objects.get(id=self.fp.id)
         self.assertEqual(fp.STATUS_PAGES, fp.status)
 
     def test_fetch_all_complete(self):
-        for t in self.fp.translations():
-            t.status = t.STATUS_FETCHED
-            t.save()
+        self.set_content(TranslatedContent.STATUS_FETCHED)
         self.mocked_parse_page.side_effect = None
 
         fetch_all_translations(self.fp.id)
@@ -242,10 +248,9 @@ class TestFetchAllTranslationsTask(TestCase):
         self.mocked_parse_page.assert_called_once_with(self.fp.id)
 
     def test_fetch_one_issue(self):
-        t = self.fp.translations()[-1]
-        t.status = t.STATUS_ERROR
-        t.raw = "Status 500, Content:\nServer Error"
-        t.save()
+        self.set_content(
+            TranslatedContent.STATUS_ERROR,
+            "Status 500, Content:\nServer Error")
 
         fetch_all_translations(self.fp.id)
         fp = FeaturePage.objects.get(id=self.fp.id)
