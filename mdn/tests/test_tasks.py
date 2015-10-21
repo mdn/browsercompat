@@ -256,6 +256,12 @@ class TestFetchAllTranslationsTask(TestCase):
         fp = FeaturePage.objects.get(id=self.fp.id)
         self.assertEqual(fp.STATUS_ERROR, fp.status)
 
+    def test_fetch_all_after_parsed(self):
+        self.set_content(TranslatedContent.STATUS_FETCHED)
+        self.fp.status = self.fp.STATUS_PARSED_ERROR
+        self.fp.save()
+        fetch_all_translations(self.fp.id)
+
 
 class TestFetchTranslationTask(TestCase):
     def setUp(self):

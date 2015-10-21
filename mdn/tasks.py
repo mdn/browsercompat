@@ -102,7 +102,9 @@ def fetch_meta(featurepage_id):
 def fetch_all_translations(featurepage_id):
     """Fetch all translations for an MDN page."""
     fp = FeaturePage.objects.get(id=featurepage_id)
-    assert fp.status == fp.STATUS_PAGES, fp.get_status_display()
+    if fp.status != fp.STATUS_PAGES:
+        # Exit early if not called after fetch_meta
+        return
     translations = fp.translations()
     assert translations, translations
 
