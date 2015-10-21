@@ -322,7 +322,7 @@ class FeaturePageTestCase(TestCase):
                 'scrape': {
                     'phase': 'Starting Import',
                     'issues': [],
-                    'raw': scraped_data}}}
+                }}}
 
 
 class TestScrapedViewFeature(FeaturePageTestCase):
@@ -810,8 +810,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         scrape_feature_page(self.page)
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_NO_DATA, fp.status)
-        self.assertEqual(
-            [], fp.data['meta']['scrape']['raw']['issues'])
+        self.assertEqual([], fp.data['meta']['scrape']['issues'])
         self.assertFalse(fp.has_issues)
 
     def test_parse_warning(self):
@@ -824,10 +823,9 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         scrape_feature_page(self.page)
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_PARSED_WARNING, fp.status)
-        expected_issues = [['skipped_content', 93, 108, {}]]
         self.assertEqual(
-            expected_issues,
-            fp.data['meta']['scrape']['raw']['issues'])
+            [['skipped_content', 93, 108, {}, 'en-US']],
+            fp.data['meta']['scrape']['issues'])
         self.assertTrue(fp.has_issues)
 
     def test_parse_error(self):

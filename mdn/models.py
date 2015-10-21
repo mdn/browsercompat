@@ -213,7 +213,7 @@ class FeaturePage(models.Model):
                 ("scrape", OrderedDict((
                     ("phase", "Starting Import"),
                     ("issues", issues),
-                    ("raw", None)))))))))
+                ))))))))
 
         self.data = view_feature
         return view_feature
@@ -243,10 +243,6 @@ class FeaturePage(models.Model):
     def issue_counts(self):
         counts = {WARNING: 0, ERROR: 0, CRITICAL: 0}
         issues = self.data['meta']['scrape']['issues']
-        if not issues:
-            # Legacy - get from raw data
-            raw = self.data['meta']['scrape']['raw'] or {}
-            issues = raw.get('issues', [])
         for issue in issues:
             slug = issue[0]
             severity = ISSUES.get(slug, UNKNOWN_ISSUE)[0]

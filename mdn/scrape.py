@@ -289,7 +289,6 @@ class ScrapedViewFeature(object):
     def generate_data(self):
         """Combine the page and scraped data into view_feature structure."""
         fp_data = self.feature_page.reset_data()
-        fp_data['meta']['scrape']['raw'] = self.scraped_data
 
         for spec_row in self.scraped_data['specs']:
             self.load_specification_row(spec_row)
