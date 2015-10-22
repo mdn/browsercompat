@@ -178,6 +178,7 @@ class TestScrape(BaseTestCase):
         self.assertDataEqual(actual['compat'], [])
         self.assertDataEqual(actual['footnotes'], None)
         self.assertDataEqual(actual['issues'], issues)
+        self.assertDataEqual(actual['embedded_compat'], None)
 
     def test_empty(self):
         page = ""
@@ -322,6 +323,7 @@ class FeaturePageTestCase(TestCase):
                 'scrape': {
                     'phase': 'Starting Import',
                     'issues': [],
+                    'embedded_compat': None,
                 }}}
 
 
@@ -812,6 +814,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         self.assertEqual(fp.STATUS_NO_DATA, fp.status)
         self.assertEqual([], fp.data['meta']['scrape']['issues'])
         self.assertFalse(fp.has_issues)
+        self.assertEqual(fp.CONVERTED_NO_DATA, fp.converted_compat)
 
     def test_parse_warning(self):
         bad_content = '''\
@@ -858,3 +861,30 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_PARSED, fp.status)
         self.assertFalse(fp.has_issues)
+        self.assertEqual(fp.CONVERTED_NO, fp.converted_compat)
+
+    def test_parse_embedcompattable(self):
+        self.get_instance('Specification', 'css3_backgrounds')
+        content = self.good_content + '''\
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+<div>{{EmbedCompatTable("web-css-background-size")}}</div>
+'''
+        self.set_content(content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED, fp.status, fp.get_status_display())
+        self.assertFalse(fp.has_issues)
+        self.assertEqual(fp.CONVERTED_YES, fp.converted_compat)
+
+    def test_parse_embedcompattable_mismatch(self):
+        self.get_instance('Specification', 'css3_backgrounds')
+        content = self.good_content + '''\
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+<div>{{EmbedCompatTable("other-slug")}}</div>
+'''
+        self.set_content(content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED, fp.status, fp.get_status_display())
+        self.assertFalse(fp.has_issues)
+        self.assertEqual(fp.CONVERTED_MISMATCH, fp.converted_compat)

@@ -248,6 +248,7 @@ class FeaturePage(models.Model):
                 ("scrape", OrderedDict((
                     ("phase", "Starting Import"),
                     ("issues", issues),
+                    ("embedded_compat", None),
                 ))))))))
 
         self.data = view_feature

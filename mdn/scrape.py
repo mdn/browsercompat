@@ -53,6 +53,19 @@ def scrape_feature_page(feature_page):
     else:
         feature_page.status = feature_page.STATUS_NO_DATA
     merged_data['meta']['scrape']['phase'] = feature_page.get_status_display()
+
+    # Is compatibility table converted?
+    embedded_compat = scraped_data['embedded_compat']
+    if embedded_compat:
+        if feature_page.feature.slug in embedded_compat:
+            feature_page.converted_compat = feature_page.CONVERTED_YES
+        else:
+            feature_page.converted_compat = feature_page.CONVERTED_MISMATCH
+    elif has_data:
+        feature_page.converted_compat = feature_page.CONVERTED_NO
+    else:
+        feature_page.converted_compat = feature_page.CONVERTED_NO_DATA
+
     feature_page.data = merged_data
     feature_page.save()
 
@@ -71,6 +84,7 @@ def scrape_page(mdn_page, feature, locale='en', data=None):
         ('compat', []),
         ('footnotes', None),
         ('issues', []),
+        ('embedded_compat', None),
     ))
 
     # Quick check for data in page
@@ -177,6 +191,7 @@ class PageExtractor(Extractor):
         self.specs = []
         self.compat = []
         self.footnotes = OrderedDict()
+        self.embedded_compat = []
 
     def entering_element(self, state, element):
         """Extract and change state when entering an element.
@@ -218,6 +233,7 @@ class PageExtractor(Extractor):
             ('compat', self.compat),
             ('issues', self.issues),
             ('footnotes', self.footnotes or None),
+            ('embedded_compat', self.embedded_compat or None),
         ))
 
     def process_current_section(self):
@@ -236,6 +252,7 @@ class PageExtractor(Extractor):
             self.compat.extend(extracted['compat_divs'])
             self.footnotes.update(extracted['footnotes'])
             self.issues.extend(extracted['issues'])
+            self.embedded_compat.extend(extracted['embedded'])
 
         # Should this become the new "previous section"?
         # If the same level (<h2> vs previous <h2>), yes
@@ -305,6 +322,7 @@ class ScrapedViewFeature(object):
         fp_data['meta']['compat_table']['supports'] = (
             self.compat_table_supports)
         fp_data['meta']['compat_table']['notes'] = self.notes
+
         return fp_data
 
     def load_specification_row(self, spec_row):
