@@ -67,10 +67,45 @@ class FeaturePage(models.Model):
     )
     status = models.IntegerField(
         help_text="Status of MDN Parsing process",
-        default=STATUS_STARTING, choices=STATUS_CHOICES)
+        default=STATUS_STARTING, choices=STATUS_CHOICES, db_index=True)
+
     modified = models.DateTimeField(
-        help_text="Last modification time", db_index=True, auto_now=True)
+        help_text="Last modification time", auto_now=True)
     raw_data = models.TextField(help_text="JSON-encoded parsed content")
+
+    COMMITTED_UNKNOWN = 0
+    COMMITTED_NO = 1
+    COMMITTED_YES = 2
+    COMMITTED_NEEDS_UPDATE = 3
+    COMMITTED_NEEDS_FIXES = 4
+    COMMITTED_NO_DATA = 5
+    COMMITTED_CHOICES = (
+        (COMMITTED_UNKNOWN, "Unknown"),
+        (COMMITTED_NO, "Not Committed"),
+        (COMMITTED_YES, "Committed"),
+        (COMMITTED_NEEDS_UPDATE, "New Data"),
+        (COMMITTED_NEEDS_FIXES, "Blocking Issues"),
+        (COMMITTED_NO_DATA, "No Data"),
+    )
+    committed = models.IntegerField(
+        help_text="Is the data committed to the API?",
+        default=COMMITTED_UNKNOWN, choices=COMMITTED_CHOICES, db_index=True)
+
+    CONVERSION_UNKNOWN = 0
+    CONVERTED_NO = 1
+    CONVERTED_YES = 2
+    CONVERTED_MISMATCH = 3
+    CONVERTED_NO_DATA = 4
+    CONVERTED_CHOICES = (
+        (CONVERSION_UNKNOWN, "Unknown"),
+        (CONVERTED_NO, "Not Converted"),
+        (CONVERTED_YES, "Converted"),
+        (CONVERTED_MISMATCH, "Slug Mismatch"),
+        (CONVERTED_NO_DATA, "No Data"),
+    )
+    converted_compat = models.IntegerField(
+        help_text="Does the MDN page include {{EmbedCompatTable}}?",
+        default=CONVERSION_UNKNOWN, choices=CONVERTED_CHOICES, db_index=True)
 
     def __str__(self):
         return "%s for %s" % (self.get_status_display(), self.slug())
