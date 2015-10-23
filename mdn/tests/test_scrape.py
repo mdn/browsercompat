@@ -815,6 +815,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         self.assertEqual([], fp.data['meta']['scrape']['issues'])
         self.assertFalse(fp.has_issues)
         self.assertEqual(fp.CONVERTED_NO_DATA, fp.converted_compat)
+        self.assertEqual(fp.COMMITTED_NO_DATA, fp.committed)
 
     def test_parse_warning(self):
         bad_content = '''\
@@ -830,6 +831,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
             [['skipped_content', 93, 108, {}, 'en-US']],
             fp.data['meta']['scrape']['issues'])
         self.assertTrue(fp.has_issues)
+        self.assertEqual(fp.COMMITTED_NO_DATA, fp.committed)
 
     def test_parse_error(self):
         self.get_instance('Specification', 'css3_backgrounds')
@@ -839,6 +841,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_PARSED_ERROR, fp.status)
         self.assertTrue(fp.has_issues)
+        self.assertEqual(fp.COMMITTED_NEEDS_FIXES, fp.committed)
 
     def test_parse_critical(self):
         # A page with a div element wrapping the content
@@ -862,6 +865,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         self.assertEqual(fp.STATUS_PARSED, fp.status)
         self.assertFalse(fp.has_issues)
         self.assertEqual(fp.CONVERTED_NO, fp.converted_compat)
+        self.assertEqual(fp.COMMITTED_NO, fp.committed)
 
     def test_parse_embedcompattable(self):
         self.get_instance('Specification', 'css3_backgrounds')
@@ -875,6 +879,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         self.assertEqual(fp.STATUS_PARSED, fp.status, fp.get_status_display())
         self.assertFalse(fp.has_issues)
         self.assertEqual(fp.CONVERTED_YES, fp.converted_compat)
+        self.assertEqual(fp.COMMITTED_NO, fp.committed)
 
     def test_parse_embedcompattable_mismatch(self):
         self.get_instance('Specification', 'css3_backgrounds')
@@ -888,3 +893,26 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         self.assertEqual(fp.STATUS_PARSED, fp.status, fp.get_status_display())
         self.assertFalse(fp.has_issues)
         self.assertEqual(fp.CONVERTED_MISMATCH, fp.converted_compat)
+
+    def test_committed(self):
+        self.get_instance("Section", "background-size")  # Create existing data
+        self.set_content(self.good_content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.COMMITTED_YES, fp.committed)
+
+    def test_updated(self):
+        self.get_instance("Section", "background-size")
+        spec = self.get_instance("Specification", "css3_ui")
+        content = self.good_content.replace(' </tbody>\n', '''\
+   <tr>
+     <td>{{SpecName('%(key)s', '#anchor', 'new section')}}</td>
+     <td>{{Spec2('%(key)s')}}</td>
+     <td></td>
+   </tr>
+ </tbody>
+ ''' % {'key': spec.mdn_key})
+        self.set_content(content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.COMMITTED_NEEDS_UPDATE, fp.committed)

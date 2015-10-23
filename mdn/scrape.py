@@ -66,6 +66,33 @@ def scrape_feature_page(feature_page):
     else:
         feature_page.converted_compat = feature_page.CONVERTED_NO_DATA
 
+    # Is compatibility table comitted to the API?
+    if feature_page.status in (
+            feature_page.STATUS_PARSED,
+            feature_page.STATUS_PARSED_WARNING):
+        feature_page.committed = feature_page.COMMITTED_YES
+        has_new_items = False
+        has_old_items = False
+        for resource_type in ('supports', 'features', 'sections'):
+            for resource in merged_data['linked'][resource_type]:
+                if is_new_id(resource['id']):
+                    has_new_items = True
+                else:
+                    has_old_items = True
+        if has_new_items:
+            if has_old_items:
+                feature_page.committed = feature_page.COMMITTED_NEEDS_UPDATE
+            else:
+                feature_page.committed = feature_page.COMMITTED_NO
+        elif has_old_items:
+            feature_page.committed = feature_page.COMMITTED_YES
+        else:
+            feature_page.committed = feature_page.COMMITTED_NO_DATA
+    elif has_data:
+        feature_page.committed = feature_page.COMMITTED_NEEDS_FIXES
+    else:
+        feature_page.committed = feature_page.COMMITTED_NO_DATA
+
     feature_page.data = merged_data
     feature_page.save()
 
