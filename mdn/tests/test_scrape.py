@@ -389,7 +389,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         section_content = view.new_section(spec_row, '_CSS3_UI')
         expected = {
-            'id': '_CSS3_UI_#section',
+            'id': '__CSS3_UI_#section',
             'name': {'en': 'section'}, 'note': {'en': 'section note'},
             'number': None, 'subpath': {'en': '#section'},
             'links': {'specification': '_CSS3_UI'}}

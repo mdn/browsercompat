@@ -462,7 +462,8 @@ class ScrapedViewFeature(object):
 
     def new_section(self, spec_row, spec_id):
         """Serialize a new section."""
-        section_id = text_type(spec_id) + '_' + spec_row['section.subpath']
+        section_id = (
+            '_' + text_type(spec_id) + '_' + spec_row['section.subpath'])
         section_content = OrderedDict((
             ('id', section_id),
             ('number', None),
