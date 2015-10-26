@@ -2,6 +2,7 @@
 
 This file is loaded by jingo and must be named helpers.py
 """
+from django.conf import settings
 from django.utils.six.moves.urllib_parse import urlencode
 from jinja2 import contextfunction, Markup
 
@@ -155,7 +156,7 @@ def can_refresh_mdn_import(context, user):
 
 @contextfunction
 def can_reparse_mdn_import(context, user):
-    return can_create(user)
+    return settings.MDN_SHOW_REPARSE and can_create(user)
 
 
 @contextfunction

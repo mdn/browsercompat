@@ -44,6 +44,7 @@ FXA_OAUTH_ENDPOINT - Override for Firefox Account OAuth2 endpoint
 FXA_PROFILE_ENDPOINT - Override for Firefox Account profile endpoint
 MDN_ALLOWED_URL_PREFIXES - comma-separated list of URL prefixes allowed by
   the scraper
+MDN_SHOW_REPARSE - 1 to show Reparse button, defaults to DEBUG
 MEMCACHE_SERVERS - semicolon-separated list of memcache servers
 MEMCACHE_USERNAME - username for memcache servers
 MEMCACHE_PASSWORD - password for memcache servers
@@ -67,6 +68,14 @@ BASE_DIR = path.dirname(path.dirname(__file__))
 
 def rel_path(*subpaths):
     return path.join(BASE_DIR, *subpaths)
+
+
+def env_to_bool(environ_key, default):
+    """Convert an environment string to a bool."""
+    if environ_key in environ:
+        return environ[environ_key] in (1, '1')
+    else:
+        return default
 
 
 # Detect that we're running tests
@@ -279,6 +288,8 @@ if environ.get('MDN_ALLOWED_URL_PREFIXES') and not TESTING:
     MDN_ALLOWED_URLS = tuple(raw.split(','))
 else:
     MDN_ALLOWED_URLS = ('https://developer.mozilla.org/en-US/', )
+
+MDN_SHOW_REPARSE = env_to_bool('MDN_SHOW_REPARSE', DEBUG)
 
 #
 # 3rd Party Libraries
