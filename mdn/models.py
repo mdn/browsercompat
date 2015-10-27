@@ -13,7 +13,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.six import text_type
 from django.utils.six.moves import zip
-from django.utils.six.moves.urllib_parse import urlparse
+from django.utils.six.moves.urllib_parse import urlparse, unquote
 from django.utils.timesince import timesince
 from django_extensions.db.fields.json import JSONField
 
@@ -88,7 +88,7 @@ class FeaturePage(models.Model):
         path = self.path()
         prefix = '/en-US/'
         assert path.startswith(prefix)
-        return path[len(prefix):]
+        return unquote(path[len(prefix):])
 
     def same_since(self):
         """Return a string indicating when the object was changes"""

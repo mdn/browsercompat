@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.utils.six.moves.urllib.parse import urlparse, urlunparse
+from django.utils.six.moves.urllib.parse import urlparse, urlunparse, quote
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.detail import BaseDetailView
@@ -175,6 +175,8 @@ class SearchForm(forms.Form):
     def clean_url(self):
         data = self.cleaned_data['url']
         scheme, netloc, path, params, query, fragment = urlparse(data)
+        if "%" not in path:
+            path = quote(path)
         cleaned = urlunparse((scheme, netloc, path, '', '', ''))
         validate_mdn_url(cleaned)
         return cleaned

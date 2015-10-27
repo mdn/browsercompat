@@ -6,6 +6,7 @@ import mock
 
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
+from django.utils.six.moves.urllib.parse import unquote
 
 from mdn.models import FeaturePage, Issue
 from webplatformcompat.models import Feature
@@ -193,6 +194,24 @@ class TestFeaturePageSearch(TestCase):
         url = "https://developer.mozilla.org/en-US/docs/Web/"
         response = self.client.get(self.url, {'url': url})
         next_url = reverse('feature_page_list') + '?topic=docs/Web'
+        self.assertRedirects(response, next_url)
+
+    def test_post_urlencoded(self):
+        url = (
+            "https://developer.mozilla.org/en-US/docs/"
+            "Web/CSS/%3A-moz-ui-invalid")
+        fp = FeaturePage.objects.create(url=url, feature_id=self.feature.id)
+        response = self.client.get(self.url, {'url': url})
+        next_url = reverse('feature_page_detail', kwargs={'pk': fp.id})
+        self.assertRedirects(response, next_url)
+
+    def test_post_not_urlencoded(self):
+        url = (
+            "https://developer.mozilla.org/en-US/docs/"
+            "Web/CSS/%3A-moz-ui-invalid")
+        fp = FeaturePage.objects.create(url=url, feature_id=self.feature.id)
+        response = self.client.get(self.url, {'url': unquote(url)})
+        next_url = reverse('feature_page_detail', kwargs={'pk': fp.id})
         self.assertRedirects(response, next_url)
 
     def test_not_found_with_perms(self):
