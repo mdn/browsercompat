@@ -10,10 +10,9 @@ from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils.six.moves.urllib.parse import urlparse, urlunparse, quote
-from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic import DetailView, FormView, ListView, TemplateView
 from django.views.generic.detail import BaseDetailView
-from django.views.generic.edit import CreateView, FormMixin, UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 import unicodecsv as csv
 
 from .models import FeaturePage, Issue, ISSUES, SEVERITIES, validate_mdn_url
@@ -167,6 +166,24 @@ class FeaturePageJSONView(BaseDetailView):
         return JsonResponse(obj.data)
 
 
+class GetFormView(FormView):
+    """A FormView that also submits with GET and URL parameters."""
+
+    def get(self, request, *args, **kwargs):
+        get_params = self.request.GET.dict()
+        if get_params:
+            return self.post(request, *args, **kwargs)
+        else:
+            return super(GetFormView, self).get(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(GetFormView, self).get_form_kwargs()
+        get_params = self.request.GET.dict()
+        if self.request.method == 'GET' and get_params:
+            kwargs.setdefault('data', {}).update(get_params)
+        return kwargs
+
+
 class SearchForm(forms.Form):
     url = forms.URLField(
         label='MDN URL',
@@ -182,23 +199,10 @@ class SearchForm(forms.Form):
         return cleaned
 
 
-class FeaturePageSearch(TemplateResponseMixin, View, FormMixin):
+class FeaturePageSearch(GetFormView):
     """Search for a MDN URI via GET"""
     form_class = SearchForm
     template_name = "mdn/feature_page_form.html"
-
-    def get_form_kwargs(self):
-        kwargs = super(FeaturePageSearch, self).get_form_kwargs()
-        kwargs.setdefault('data', {}).update(self.request.GET.dict())
-        return kwargs
-
-    def get(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageSearch, self).get_context_data(**kwargs)
