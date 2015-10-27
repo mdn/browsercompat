@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<form class="form-inline" action="{{ url("feature_page_search") }}" method="GET">
+<form class="form-inline listsearch" action="{{ url("feature_page_url_search") }}" method="GET">
   <div class="form-group">
     <label class="sr-only" for="id-url">MDN URL</label>
     <input type="url" class="form-control" id="id-url" name="url"
@@ -18,6 +18,15 @@
   </div>
   <input id="fp-search" class="btn btn-primary" type="submit"
    value="Search or Filter by URL">
+</form>
+<form class="form-inline listsearch" action="{{ url("feature_page_slug_search") }}" method="POST">
+  <div class="form-group">
+    <label class="sr-only" for="id-slug">Feature Slug</label>
+    <input type="slug" class="form-control" id="id-slug" name="slug"
+     placeholder="web-css-display">
+  </div>
+  <input id="fp-search" class="btn btn-primary" type="submit"
+   value="Search by Feature Slug">
 </form>
 
 <h3>Filter</h3>

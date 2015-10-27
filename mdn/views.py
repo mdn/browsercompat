@@ -184,7 +184,40 @@ class GetFormView(FormView):
         return kwargs
 
 
-class SearchForm(forms.Form):
+class SlugSearchForm(forms.Form):
+    slug = forms.SlugField(label='Feature Slug')
+
+    def clean_slug(self):
+        slug = self.cleaned_data['slug']
+        try:
+            fp = FeaturePage.objects.get(feature__slug=slug)
+        except FeaturePage.DoesNotExist:
+            raise forms.ValidationError("No Feature with this slug.")
+        else:
+            self.feature_id = fp.feature_id
+            return slug
+
+
+class FeaturePageSlugSearch(GetFormView):
+    """Search for an importer page by Feature slug"""
+    form_class = SlugSearchForm
+    template_name = "mdn/feature_page_form.html"
+
+    def form_valid(self, form):
+        slug = form.cleaned_data['slug']
+        fp = FeaturePage.objects.get(feature__slug=slug)
+        next_url = reverse('feature_page_detail', kwargs={'pk': fp.pk})
+        return HttpResponseRedirect(next_url)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(FeaturePageSlugSearch, self).get_context_data(**kwargs)
+        ctx['action'] = "Search by Feature Slug"
+        ctx['action_url'] = reverse('feature_page_slug_search')
+        ctx['method'] = 'get'
+        return ctx
+
+
+class URLSearchForm(forms.Form):
     url = forms.URLField(
         label='MDN URL',
         widget=forms.URLInput(attrs={'placeholder': DEV_PREFIX + '...'}))
@@ -199,15 +232,15 @@ class SearchForm(forms.Form):
         return cleaned
 
 
-class FeaturePageSearch(GetFormView):
+class FeaturePageURLSearch(GetFormView):
     """Search for a MDN URI via GET"""
-    form_class = SearchForm
+    form_class = URLSearchForm
     template_name = "mdn/feature_page_form.html"
 
     def get_context_data(self, **kwargs):
-        ctx = super(FeaturePageSearch, self).get_context_data(**kwargs)
+        ctx = super(FeaturePageURLSearch, self).get_context_data(**kwargs)
         ctx['action'] = "Search by URL"
-        ctx['action_url'] = reverse('feature_page_search')
+        ctx['action_url'] = reverse('feature_page_url_search')
         ctx['method'] = 'get'
         return ctx
 
@@ -428,7 +461,8 @@ feature_page_create = user_passes_test(can_create)(
     FeaturePageCreateView.as_view())
 feature_page_detail = FeaturePageDetailView.as_view()
 feature_page_json = FeaturePageJSONView.as_view()
-feature_page_search = FeaturePageSearch.as_view()
+feature_page_slug_search = FeaturePageSlugSearch.as_view()
+feature_page_url_search = FeaturePageURLSearch.as_view()
 feature_page_list = FeaturePageListView.as_view()
 feature_page_reset = user_passes_test(can_refresh)(
     FeaturePageReset.as_view())

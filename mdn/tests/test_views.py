@@ -154,9 +154,37 @@ class TestFeaturePageJSONView(TestCase):
         self.assertEqual(expected, response.content)
 
 
-class TestFeaturePageSearch(TestCase):
+class TestFeaturePageSlugSearch(TestCase):
     def setUp(self):
-        self.url = reverse('feature_page_search')
+        self.url = reverse('feature_page_slug_search')
+        self.mdn_url = (
+            "https://developer.mozilla.org/en-US/docs/Web/CSS/display")
+        self.slug = 'web-css-display'
+        self.feature = self.create(Feature, slug=self.slug)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(
+            "Search by Feature Slug", response.context_data['action'])
+
+    def test_post_found(self):
+        fp = FeaturePage.objects.create(
+            url=self.mdn_url, feature_id=self.feature.id)
+        response = self.client.get(self.url, {'slug': self.slug})
+        next_url = reverse('feature_page_detail', kwargs={'pk': fp.id})
+        self.assertRedirects(response, next_url)
+
+    def test_post_not_found(self):
+        response = self.client.get(self.url, {'slug': 'other-slug'})
+        self.assertEqual(200, response.status_code)
+        expected_errors = {'slug': ['No Feature with this slug.']}
+        self.assertEqual(expected_errors, response.context_data['form'].errors)
+
+
+class TestFeaturePageURLSearch(TestCase):
+    def setUp(self):
+        self.url = reverse('feature_page_url_search')
         self.mdn_url = "https://developer.mozilla.org/en-US/docs/Web/CSS/float"
         self.feature = self.create(Feature, slug='web_css_float')
 
