@@ -69,18 +69,33 @@ class FeaturePageListView(ListView):
         (FeaturePage.STATUS_PARSED_WARNING, 'Warnings', ('warning',)),
         (FeaturePage.STATUS_PARSED, 'No Errors', ('success',)),
     )
+    committed_options = [
+        (str(value), name) for value, name in FeaturePage.COMMITTED_CHOICES]
+    converted_options = [
+        (str(value), name) for value, name in FeaturePage.CONVERTED_CHOICES]
 
     def get_queryset(self):
         qs = FeaturePage.objects.order_by('url')
+
         topic = self.request.GET.get('topic')
         if topic:
             qs = qs.filter(url__startswith=DEV_PREFIX + topic)
+
         status = self.request.GET.get('status')
         if status:
             if status == 'other':
                 qs = qs.exclude(status__in=self.standard_statuses)
             else:
                 qs = qs.filter(status=status)
+
+        committed = self.request.GET.get('committed')
+        if committed:
+            qs = qs.filter(committed=committed)
+
+        converted_compat = self.request.GET.get('converted_compat')
+        if converted_compat:
+            qs = qs.filter(converted_compat=converted_compat)
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -94,6 +109,14 @@ class FeaturePageListView(ListView):
         # Status filter buttons
         ctx['status'] = self.request.GET.get('status')
         ctx['statuses'] = self.statuses
+
+        # Committed status buttons
+        ctx['committed'] = self.request.GET.get('committed')
+        ctx['committed_options'] = self.committed_options
+
+        # Converted status buttons
+        ctx['converted_compat'] = self.request.GET.get('converted_compat')
+        ctx['converted_options'] = self.converted_options
 
         # Status progress bar
         raw_status_counts = self.object_list.order_by(

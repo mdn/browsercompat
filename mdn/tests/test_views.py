@@ -94,6 +94,19 @@ class TestFeaturePageListView(TestCase):
         url = self.url + "?status=other"
         self.assert_filter_only_feature(url, feature_page.id)
 
+    def test_committed_filter(self):
+        feature_page = self.add_page(committed=FeaturePage.COMMITTED_YES)
+        self.add_page(slug='other', subpath='Other')
+        url = self.url + "?committed=%s" % FeaturePage.COMMITTED_YES
+        self.assert_filter_only_feature(url, feature_page.id)
+
+    def test_converted_compat_filter(self):
+        feature_page = self.add_page(
+            converted_compat=FeaturePage.CONVERTED_YES)
+        self.add_page(slug='other', subpath='Other')
+        url = self.url + "?converted_compat=%s" % FeaturePage.CONVERTED_YES
+        self.assert_filter_only_feature(url, feature_page.id)
+
 
 class TestFeaturePageCreateView(TestCase):
     def setUp(self):

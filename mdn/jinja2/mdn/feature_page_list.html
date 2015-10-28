@@ -53,11 +53,11 @@
   </div>
 </p>
 
-<p><strong>By Status</strong>:
+<p><strong>By Parse Status</strong>:
 {% if not status %}
 <p>
-  {{ status_counts.no_data }} pages have no compatibility data.
-  {{ status_counts.data }} pages with data by error status:
+  {{ status_counts.no_data }} page{% if status_counts.no_data != 1 %}s{% endif %} have no compatibility data.
+  {{ status_counts.data }} page{% if status_counts.data != 1 %}s{% endif %} with data by error status:
 <div class="progress">
 {% for name, classes, count, percent in data_counts %}
   {% if count %}
@@ -90,6 +90,42 @@
   </div>
 </p>
 
+<p><strong>By Committed Status</strong>:
+  <div>
+  {% for value, name in committed_options %}
+    {% if committed == value %}
+      <a class="btn btn-primary"
+         href="{{ drop_filter_from_current_url('committed') }}">
+        {{ name }} (clear)
+      </a>
+    {% else %}
+      <a class="btn btn-default"
+         href="{{ add_filter_to_current_url('committed', value) }}">
+        {{ name }}
+      </a>
+    {% endif %}
+  {% endfor %}
+  </div>
+</p>
+
+<p><strong>By Conversion Status</strong>:
+  <div>
+  {% for value, name in converted_options %}
+    {% if converted_compat == value %}
+      <a class="btn btn-primary"
+         href="{{ drop_filter_from_current_url('converted_compat') }}">
+        {{ name }} (clear)
+      </a>
+    {% else %}
+      <a class="btn btn-default"
+         href="{{ add_filter_to_current_url('converted_compat', value) }}">
+        {{ name }}
+      </a>
+    {% endif %}
+  {% endfor %}
+  </div>
+</p>
+
 {% if page_obj %}
 <h3>
     Import Results
@@ -101,7 +137,7 @@
   <thead>
     <tr>
       <th>MDN Slug</th>
-      <th>Status</th>
+      <th>Parse Status</th>
       <th>
         <span id="issue-header"
               data-toggle="tooltip" data-placement="top"
@@ -109,6 +145,8 @@
           Issues
         </span>
       </th>
+      <th>Committed?</th>
+      <th>Converted?</th>
     </tr>
   </thead>
   <tbody>
@@ -133,6 +171,8 @@
         {%- endif -%}
         </a>
       </td>
+      <td>{{ page.get_committed_display() }}</td>
+      <td>{{ page.get_converted_compat_display() }}</td>
     </tr>
     {% endfor %}
   </tbody>
