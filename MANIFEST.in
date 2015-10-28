@@ -6,16 +6,16 @@ include env.dist
 
 recursive-include bcauth *.py
 recursive-include bcauth/static *.css *.png
-recursive-include bcauth/templates *.jinja2 *.txt *.html
+recursive-include bcauth/jinja2 *.html
 recursive-include data README.txt
 recursive-include docs Makefile *.gv *.svg conf.py *.rst make.bat *.py doc_cases.json
 recursive-include docs/raw *.txt *.json .keep
 recursive-include docs/resources *.json README.txt
 recursive-include tools *.py *.sh
 recursive-include mdn *.py
-recursive-include mdn/templates *.jinja2
+recursive-include mdn/jinja2 *.html
 recursive-include webplatformcompat/migrations *.py
 recursive-include webplatformcompat/static *.css *.map *.eot *.svg *.ttf *.woff *.js .keep
-recursive-include webplatformcompat/templates *.html *.jinja2
+recursive-include webplatformcompat/jinja2 *.html
 recursive-include webplatformcompat/tests *.py
 recursive-include wpcsite *.py
