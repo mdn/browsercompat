@@ -7,6 +7,7 @@ from django.db.models.signals import post_delete, post_save, m2m_changed
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django_extensions.db.fields.json import JSONField
+from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from sortedm2m.fields import SortedManyToManyField
 
@@ -15,8 +16,8 @@ from .history import register, HistoricalRecords
 from .validators import VersionAndStatusValidator
 
 
-class CachingManager(models.Manager):
-    def create(self, **kwargs):
+class CachingManagerMixin(object):
+    def delay_create(self, **kwargs):
         """Add the _delay_cache value to the object before saving"""
         delay_cache = kwargs.pop('_delay_cache', False)
         obj = self.model(**kwargs)
@@ -24,6 +25,16 @@ class CachingManager(models.Manager):
         obj._delay_cache = delay_cache
         obj.save(force_insert=True, using=self.db)
         return obj
+
+
+class CachingManager(models.Manager, CachingManagerMixin):
+    # Django magic prevents a standard override of create
+    create = CachingManagerMixin.delay_create
+
+
+class CachingTreeManager(TreeManager, CachingManagerMixin):
+    # Django magic prevents a standard override of create
+    create = CachingManagerMixin.delay_create
 
 #
 # "Regular" (non-historical) models
@@ -85,7 +96,7 @@ class Feature(MPTTModel):
         null=True, blank=True, related_name='children')
     sections = SortedManyToManyField(
         'Section', related_name='features', blank=True)
-    objects = CachingManager()
+    objects = CachingTreeManager()
     # history = HistoricalFeatureRecords()  # Registered below
 
     def __str__(self):
