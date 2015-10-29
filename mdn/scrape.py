@@ -324,7 +324,7 @@ class ScrapedViewFeature(object):
         for resource_type in (
                 'specifications', 'maturities', 'sections', 'browsers',
                 'versions', 'features', 'supports'):
-            self.resources[resource_type] = {}
+            self.resources[resource_type] = OrderedDict()
         self.tabs = []
         self.compat_table_supports = OrderedDict(
             ((text_type(self.feature.id), {}),))
@@ -338,11 +338,23 @@ class ScrapedViewFeature(object):
             self.load_specification_row(spec_row)
         for table in self.scraped_data['compat']:
             self.load_compat_table(table)
-        for section in self.resources['sections'].values():
-            fp_data['features']['links']['sections'].append(section['id'])
 
+        # Set linked resources
         for resource_type, resources in self.resources.items():
             fp_data['linked'][resource_type] = self.sort_values(resources)
+
+        # Set relations on subject feature
+        main_id = str(self.feature.id)
+        fp_data['features']['links']['children'] = list(
+            f_id for f_id in self.compat_table_supports.keys()
+            if f_id != main_id)
+        fp_data['features']['links']['sections'] = list(
+            self.resources['sections'].keys())
+        fp_data['features']['links']['supports'] = sorted(
+            support['id'] for support in fp_data['linked']['supports']
+            if support['links']['feature'] == main_id)
+
+        # Set view_feature metadata
         languages = fp_data['features']['mdn_uri'].keys()
         fp_data['meta']['compat_table']['languages'] = list(languages)
         fp_data['meta']['compat_table']['tabs'] = self.tabs
