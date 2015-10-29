@@ -191,7 +191,7 @@ class Cache(BaseCache):
             for child in row_children:
                 if not child.mdn_uri:
                     row_pks.append(child.pk)
-                    sub_row_children = child.children.only('pk', 'mdn_uri')
+                    sub_row_children = child.get_children()
                     row_pks.extend(row_descendant_pks(sub_row_children))
             return row_pks
 
@@ -210,7 +210,7 @@ class Cache(BaseCache):
             obj._row_children_pks = []
             obj._page_children_pks = []
             row_children = []
-            for child in obj.children.only('pk', 'mdn_uri'):
+            for child in obj.get_children():
                 obj._children_pks.append(child.pk)
                 if child.mdn_uri:
                     obj._page_children_pks.append(child.pk)
