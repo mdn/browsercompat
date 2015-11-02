@@ -159,6 +159,24 @@ class FeatureSerializer(HistoricalModelSerializer):
             instance.set_children_order(children)
         return instance
 
+    def validate_children(self, value):
+        if self.instance:
+            current_children = list(self.instance.get_children())
+            current_set = set([child.pk for child in current_children])
+            new_set = set([child.pk for child in value])
+            if current_set - new_set:
+                raise ValidationError(
+                    "All child features must be included in children.")
+            if new_set - current_set:
+                raise ValidationError(
+                    "Set child.parent to add a child feature.")
+        else:
+            if value != []:  # pragma: no cover
+                # Because children is in update_only_fields, never happens
+                raise ValidationError(
+                    "Can not set children when creating a feature.")
+        return value
+
     class Meta:
         model = Feature
         fields = (
@@ -167,6 +185,7 @@ class FeatureSerializer(HistoricalModelSerializer):
             'sections', 'supports', 'parent', 'children',
             'history_current', 'history')
         read_only_fields = ('supports',)
+        update_only_fields = ('children',)
 
 
 class MaturitySerializer(HistoricalModelSerializer):

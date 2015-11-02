@@ -1056,5 +1056,45 @@
                 }
             }
         }
+    }, {
+        "name": "feature-set-children-order-omit-fails",
+        "method": "PUT",
+        "endpoint": "features/2",
+        "data": {
+            "features": {
+                "links": {
+                    "children": [
+                        "3",
+                        "4",
+                        "5",
+                        "7",
+                        "8",
+                        "9",
+                        "12"]
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "feature-set-children-order-add-fails",
+        "method": "PUT",
+        "endpoint": "features/2",
+        "data": {
+            "features": {
+                "links": {
+                    "children": [
+                        "3",
+                        "4",
+                        "5",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "12",
+                        "14"]
+                }
+            }
+        },
+        "status": 400
     }
 ]

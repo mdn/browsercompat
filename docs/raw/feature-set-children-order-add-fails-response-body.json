@@ -1,0 +1,9 @@
+{
+    "errors": [
+        {
+            "status": "400",
+            "detail": "Set child.parent to add a child feature.",
+            "path": "/children"
+        }
+    ]
+}

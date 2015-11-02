@@ -192,6 +192,38 @@ class TestFeatureSerializer(APITestCase):
         actual_children = response.data['children']
         self.assertEqual(expected_children, actual_children)
 
+    def test_children_remove_element_fails(self):
+        data = {
+            'features': {
+                'links': {
+                    'children': [str(self.child1.pk)]
+                }
+            }
+        }
+        response = self.update_via_json_api(
+            self.url, data, expected_status=400)
+        expected_error = ['All child features must be included in children.']
+        actual_error = response.data['children']
+        self.assertEqual(expected_error, actual_error)
+
+    def test_children_add_element_fails(self):
+        new_child = self.create(Feature, slug='nkotb')
+        data = {
+            'features': {
+                'links': {
+                    'children': [
+                        str(self.child1.pk),
+                        str(self.child2.pk),
+                        str(new_child.pk)]
+                }
+            }
+        }
+        response = self.update_via_json_api(
+            self.url, data, expected_status=400)
+        expected_error = ['Set child.parent to add a child feature.']
+        actual_error = response.data['children']
+        self.assertEqual(expected_error, actual_error)
+
 
 class TestSpecificationSerializer(APITestCase):
     """Test SpecificationSerializer through the view."""
