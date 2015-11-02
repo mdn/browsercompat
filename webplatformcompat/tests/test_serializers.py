@@ -150,6 +150,49 @@ class TestBrowserSerializer(APITestCase):
         self.assertEqual(expected_versions, actual_versions)
 
 
+class TestFeatureSerializer(APITestCase):
+    """Test FeatureSerializer through the view."""
+
+    def setUp(self):
+        self.parent = self.create(Feature, slug='parent')
+        self.feature = self.create(Feature, slug='feature', parent=self.parent)
+        self.child1 = self.create(Feature, slug='child1', parent=self.feature)
+        self.child2 = self.create(Feature, slug='child2', parent=self.feature)
+        self.url = reverse('feature-detail', kwargs={'pk': self.feature.pk})
+
+    def test_original_order(self):
+        response = self.get_via_json_api(self.url)
+        expected_children = [v.pk for v in (self.child1, self.child2)]
+        actual_children = response.data['children']
+        self.assertEqual(expected_children, actual_children)
+
+    def test_children_change_order(self):
+        data = {
+            'features': {
+                'links': {
+                    'children': [str(self.child2.pk), str(self.child1.pk)]
+                }
+            }
+        }
+        response = self.update_via_json_api(self.url, data)
+        expected_children = [v.pk for v in (self.child2, self.child1)]
+        actual_children = response.data['children']
+        self.assertEqual(expected_children, actual_children)
+
+    def test_children_same_order(self):
+        data = {
+            'features': {
+                'links': {
+                    'children': [str(self.child1.pk), str(self.child2.pk)]
+                }
+            }
+        }
+        response = self.update_via_json_api(self.url, data)
+        expected_children = [v.pk for v in (self.child1, self.child2)]
+        actual_children = response.data['children']
+        self.assertEqual(expected_children, actual_children)
+
+
 class TestSpecificationSerializer(APITestCase):
     """Test SpecificationSerializer through the view."""
 

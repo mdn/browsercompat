@@ -1037,5 +1037,24 @@
         "name": "specification-delete",
         "method": "DELETE",
         "endpoint": "specifications/4"
+    }, {
+        "name": "feature-set-children-order",
+        "method": "PUT",
+        "endpoint": "features/2",
+        "data": {
+            "features": {
+                "links": {
+                    "children": [
+                        "3",
+                        "4",
+                        "5",
+                        "7",
+                        "8",
+                        "9",
+                        "12",
+                        "10"]
+                }
+            }
+        }
     }
 ]

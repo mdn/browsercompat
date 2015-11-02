@@ -143,7 +143,21 @@ class BrowserSerializer(HistoricalModelSerializer):
 class FeatureSerializer(HistoricalModelSerializer):
     """Feature Serializer"""
 
-    children = MPTTRelationField(many=True, read_only=True)
+    children = MPTTRelationField(
+        many=True, queryset=Feature.objects.all(), required=False)
+
+    def update(self, instance, validated_data):
+        children = validated_data.pop('children', None)
+        if children:
+            current_order = list(instance.get_children())
+            if current_order == children:
+                children = None
+        instance = super(FeatureSerializer, self).update(
+            instance, validated_data)
+
+        if children:
+            instance.set_children_order(children)
+        return instance
 
     class Meta:
         model = Feature

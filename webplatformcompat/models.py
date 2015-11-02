@@ -102,6 +102,33 @@ class Feature(MPTTModel):
     def __str__(self):
         return self.slug
 
+    def set_children_order(self, children):
+        """Set the child features in the given order.
+
+        django-mptt doesn't have a function to do this, and uses direct SQL
+        to change the tree, so a lot of reloading is required to get it right.
+        """
+        # Verify that all children are present
+        current_children = list(self.get_children())
+        current_set = set([child.pk for child in current_children])
+        new_set = set([child.pk for child in children])
+        assert current_set == new_set, "Can not add/remove child features."
+
+        # Set order, refreshing as we go
+        prev_child = None
+        moved = False
+        for pos, next_child in enumerate(children):
+            if current_children[pos].pk != next_child.pk:
+                if moved:
+                    next_child.refresh_from_db()
+                if prev_child is None:
+                    next_child.move_to(self, "first-child")
+                else:
+                    next_child.move_to(prev_child, "right")
+                current_children = list(self.get_children())
+                moved = True
+            prev_child = next_child
+
 
 @python_2_unicode_compatible
 class Maturity(models.Model):

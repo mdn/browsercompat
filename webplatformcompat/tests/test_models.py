@@ -47,11 +47,40 @@ class TestBrowser(unittest.TestCase):
         self.assertEqual('browser', str(browser))
 
 
-class TestFeature(unittest.TestCase):
+class TestFeature(TestCase):
 
     def test_str(self):
         feature = Feature(slug="feature")
         self.assertEqual('feature', str(feature))
+
+    def add_family(self):
+        parent = self.create(Feature, slug="parent")
+        children = [
+            self.create(Feature, slug="child%d" % i, parent=parent)
+            for i in range(5)]
+        return parent, children
+
+    def test_natural_child_order(self):
+        parent, children = self.add_family()
+        self.assertEqual(list(parent.children.all()), children)
+
+    def test_set_children_order_same(self):
+        parent, children = self.add_family()
+        parent.set_children_order(children)
+        self.assertEqual(list(parent.children.all()), children)
+
+    def test_set_children_order_rotated(self):
+        parent, children = self.add_family()
+        new_order = children[1:] + children[:1]
+        parent.set_children_order(new_order)
+        self.assertEqual(list(parent.children.all()), new_order)
+
+    def test_set_children_swap_middle(self):
+        parent, children = self.add_family()
+        new_order = [
+            children[0], children[1], children[3], children[2], children[4]]
+        parent.set_children_order(new_order)
+        self.assertEqual(list(parent.children.all()), new_order)
 
 
 class TestMaturity(unittest.TestCase):
