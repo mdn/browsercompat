@@ -589,7 +589,7 @@ class CollectionChangeset(object):
             sorted_links = []
             for link_name, lmeta in resource._writeable_link_fields.items():
                 is_sorted = (lmeta[1] == Resource.SORTED)
-                link_attr = getattr(item, link_name, None)
+                link_attr = getattr(resource, link_name, None)
 
                 if isinstance(link_attr, Link):
                     links = [link_attr]
