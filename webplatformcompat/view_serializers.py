@@ -743,13 +743,12 @@ class ViewFeatureSerializer(FeatureSerializer):
         fields = FeatureSerializer.Meta.fields + ('_view_extra',)
 
     def to_internal_value(self, data):
-        self._in_extra = {
-            'sections': data.pop('sections', []),
-            'supports': data.pop('supports', []),
-            'children': data.pop('children', []),
-        }
-        data = super(ViewFeatureSerializer, self).to_internal_value(data)
-        return data
+        self._in_extra = {}
+        if '_view_extra' in data:
+            for link_name in ('sections', 'supports', 'children'):
+                if link_name in data:
+                    self._in_extra[link_name] = data.pop(link_name)
+        return super(ViewFeatureSerializer, self).to_internal_value(data)
 
     def save(self, *args, **kwargs):
         """Save the feature plus linked elements.

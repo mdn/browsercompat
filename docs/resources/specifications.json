@@ -72,11 +72,11 @@
     "links": {
         "specifications.maturity": {
             "type": "maturities",
-            "href": "http://localhost:8000/api/v1/maturities/{specifications.maturity}"
+            "href": "http://127.0.0.1:8081/api/v1/maturities/{specifications.maturity}"
         },
         "specifications.sections": {
             "type": "sections",
-            "href": "http://localhost:8000/api/v1/sections/{specifications.sections}"
+            "href": "http://127.0.0.1:8081/api/v1/sections/{specifications.sections}"
         }
     },
     "meta": {

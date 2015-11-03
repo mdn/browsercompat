@@ -38,7 +38,7 @@ class CaseRunner(object):
 
     def __init__(
             self, cases=None, api=None, raw_dir=None, mode=None,
-            username=None, password=None):
+            username=None, password=None, stop=False):
         self.cases = cases or default_cases_file
         self.api = api or default_api
         self.raw_dir = raw_dir or default_raw_dir
@@ -51,6 +51,7 @@ class CaseRunner(object):
         self._user_session = None
         self.csrftoken = None
         self.sessionid = None
+        self.stop = stop
 
     def uri(self, endpoint):
         return self.api + "/api/v1/" + endpoint
@@ -119,6 +120,8 @@ class CaseRunner(object):
                     if num != 0:
                         print()
                     print(issue)
+                if self.stop:
+                    break
             else:
                 success += 1
         return success, failure, skipped
@@ -422,6 +425,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '--include-mod', action="store_true",
         help="In display mode, include cases that modify data")
+    parser.add_argument(
+        '-x', '--stop', action="store_true",
+        help="In verify mode, stop after first failure")
     args = parser.parse_args()
     api = args.api
     mode = args.mode
@@ -440,7 +446,7 @@ if __name__ == '__main__':
         cases = json.load(cases_file, object_pairs_hook=OrderedDict)
     runner = CaseRunner(
         cases=cases, api=api, raw_dir=args.raw, mode=mode,
-        username=args.user, password=password)
+        username=args.user, password=password, stop=args.stop)
     success, failure, skipped = runner.run(args.casenames, include_mod)
 
     if skipped:

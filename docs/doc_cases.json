@@ -267,7 +267,7 @@
     }, {
         "name": "feature-by-id",
         "method": "GET",
-        "endpoint": "features/13"
+        "endpoint": "features/12"
     }, {
         "name": "feature-by-id-canonical",
         "method": "GET",
@@ -317,7 +317,7 @@
     }, {
         "name": "feature-update",
         "method": "PUT",
-        "endpoint": "features/13",
+        "endpoint": "features/12",
         "data": {
             "features": {
                 "stable": false
@@ -326,12 +326,12 @@
     }, {
         "name": "feature-revert",
         "method": "PUT",
-        "endpoint": "features/13",
+        "endpoint": "features/12",
         "skip": "Generates 500, 'sections' is an invalid keyword argument for this function",
         "data": {
             "features": {
                 "links": {
-                    "history_current": "13"
+                    "history_current": "12"
                 }
             }
         }
@@ -346,7 +346,7 @@
     }, {
         "name": "support-by-feature",
         "method": "GET",
-        "endpoint": "supports?feature=13"
+        "endpoint": "supports?feature=12"
     }, {
         "name": "support-by-version",
         "method": "GET",
@@ -615,14 +615,14 @@
     }, {
         "name": "historical-feature-by-id",
         "method": "GET",
-        "endpoint": "historical_features/13",
+        "endpoint": "historical_features/12",
         "standardize": {
             "date": "2015-04-20T18:57:11.029709Z"
         }
     }, {
         "name": "historical-feature-filter-by-id",
         "method": "GET",
-        "endpoint": "historical_features?id=13",
+        "endpoint": "historical_features?id=12",
         "standardize": {
             "date": "2015-04-20T18:57:11.029709Z"
         }
@@ -1051,7 +1051,7 @@
                         "7",
                         "8",
                         "9",
-                        "12",
+                        "13",
                         "10"]
                 }
             }
@@ -1070,7 +1070,7 @@
                         "7",
                         "8",
                         "9",
-                        "12"]
+                        "10"]
                 }
             }
         },
@@ -1090,7 +1090,7 @@
                         "8",
                         "9",
                         "10",
-                        "12",
+                        "13",
                         "14"]
                 }
             }

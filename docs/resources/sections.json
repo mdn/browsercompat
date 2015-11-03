@@ -86,11 +86,11 @@
     "links": {
         "sections.specification": {
             "type": "specifications",
-            "href": "http://localhost:8000/api/v1/specifications/{sections.specification}"
+            "href": "http://127.0.0.1:8081/api/v1/specifications/{sections.specification}"
         },
         "sections.features": {
             "type": "features",
-            "href": "http://localhost:8000/api/v1/features/{sections.features}"
+            "href": "http://127.0.0.1:8081/api/v1/features/{sections.features}"
         }
     },
     "meta": {

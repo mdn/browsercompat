@@ -622,7 +622,9 @@ class TestViewFeatureUpdates(APITestCase):
             sf2_data = {
                 "id": "_sf2", "slug": "sf2", "name": {"en": "Sub Feature 2"},
                 "links": {"parent": str(self.feature.pk)}}
-            json_data = self.json_api(features=[sf2_data])
+            json_data = self.json_api(
+                feature_data={'links': {'children': [str(sf1.pk), '_sf2']}},
+                features=[sf2_data])
             response = self.client.put(
                 self.url, data=json_data,
                 content_type="application/vnd.api+json")
@@ -666,7 +668,9 @@ class TestViewFeatureUpdates(APITestCase):
             "id": str(subfeature.id), "slug": "subfeature",
             "name": {"en": "subfeature 1"},
             "links": {"parent": str(self.feature.pk)}}
-        json_data = self.json_api(features=[subfeature_data])
+        json_data = self.json_api(
+            feature_data={'links': {'children': [str(subfeature.pk)]}},
+            features=[subfeature_data])
         response = self.client.put(
             self.url, data=json_data, content_type="application/vnd.api+json")
         self.assertEqual(response.status_code, 200, response.content)
@@ -707,7 +711,10 @@ class TestViewFeatureUpdates(APITestCase):
             'slug': 'subfeature', 'mdn_uri': None,
             'experimental': False, 'standardized': True, 'stable': True,
             'obsolete': False, 'name': {'en': 'subfeature'},
-            'links': {'parent': str(self.feature.id), 'sections': []}}
+            'links': {
+                'parent': str(self.feature.id),
+                'sections': [],
+                'children': []}}
         json_data = self.json_api(
             features=[subfeature_data], meta={'not': 'used'})
         response = self.client.put(

@@ -122,7 +122,7 @@
     "links": {
         "maturities.specifications": {
             "type": "specifications",
-            "href": "http://localhost:8000/api/v1/specifications/{maturities.specifications}"
+            "href": "http://127.0.0.1:8081/api/v1/specifications/{maturities.specifications}"
         }
     },
     "meta": {

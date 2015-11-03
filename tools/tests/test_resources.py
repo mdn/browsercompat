@@ -904,6 +904,35 @@ New:
         self.assertEqual(expected_order.keys(), cc.changes['new'].keys())
         self.assertEqual(expected, cc.changes)
 
+    def test_new_section_with_dependencies(self):
+        feature = Feature(
+            id='feature', slug='feature', name={'en': 'Feature'},
+            sections=['section'])
+        section = Section(
+            id='section', features=['feature'], specification='spec')
+        spec = Specification(
+            id='spec', mdn_key='SPEC', slug='spec', maturity='maturity')
+        maturity = Maturity(id='maturity', slug='mat')
+        self.new_col.add(feature)
+        self.new_col.add(section)
+        self.new_col.add(spec)
+        self.new_col.add(maturity)
+        cc = CollectionChangeset(self.orig_col, self.new_col)
+        expected_order = OrderedDict([
+            (('maturities', 'mat'), maturity),
+            (('specifications', 'SPEC'), spec),
+            (('sections', 'SPEC', ''), section),
+            (('features', 'feature'), feature),
+        ])
+        expected = {
+            "new": expected_order,
+            "same": OrderedDict(),
+            "changed": OrderedDict(),
+            "deleted": OrderedDict(),
+        }
+        self.assertEqual(expected_order.keys(), cc.changes['new'].keys())
+        self.assertEqual(expected, cc.changes)
+
     def test_change_original_new_items_with_dependencies(self):
         _, cc = self.setup_new_with_dependencies()
 

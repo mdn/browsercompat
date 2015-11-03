@@ -84,8 +84,21 @@ class Resource(object):
         that can't / shouldn't be written by the client.
     """
 
-    # A writable linked field has many elements and is a sort field
+    # A writable linked field has many elements where order matters
+    # Write order of resource.sorted is:
+    # 1) New resource w/o sorted list
+    # 2) New sorted
+    # 3) Updated resource w/ sorted list
+    # 4) Updated sorted
     SORTED = "SORTED"
+
+    # A writable linked field is an order association (many to many)
+    # Write order of resource.sorted is:
+    # 1) New sorted
+    # 2) New resource w/ sorted list
+    # 3) Updated sorted
+    # 4) Updated resource w/ sorted list
+    SORTED_M2M = "SORTED_M2M"
 
     def __init__(self, collection=None, **properties):
         """Initialize a Resource.
@@ -286,10 +299,10 @@ class Feature(Resource):
         'obsolete', 'name')
     _writeable_link_fields = {
         'parent': ('features', False),
-        'sections': ('sections', True),
+        'sections': ('sections', Resource.SORTED_M2M),
+        'children': ('features', Resource.SORTED),
     }
     _readonly_link_fields = {
-        'children': ('features', True),
         'supports': ('supports', True),
         'history': ('historical_features', True),
         'history_current': ('historical_features', False),
@@ -575,7 +588,18 @@ class CollectionChangeset(object):
         }
 
         def new_resource_keys_with_dependencies(resource, new_keys):
-            """Get dependencies needed to add a resource"""
+            """
+            Select new keys in desired creation order.
+
+            Order is:
+            1) Any non-sorted linked resources (i.e., browser before version),
+               or sorted M2M linked resources (i.e., sections before feature)
+            2) The resource
+            3) Any sorted linked resources (i.e., child features after parent)
+
+            As they are ordered, keys are removed from new_keys to avoid double
+            creation.
+            """
             if not resource:
                 return []
             else:
@@ -585,8 +609,8 @@ class CollectionChangeset(object):
                 else:
                     new_keys.remove(my_key)
 
-            keys = []
-            sorted_links = []
+            pre_links = []
+            post_links = []
             for link_name, lmeta in resource._writeable_link_fields.items():
                 is_sorted = (lmeta[1] == Resource.SORTED)
                 link_attr = getattr(resource, link_name, None)
@@ -604,11 +628,11 @@ class CollectionChangeset(object):
                     link_keys = new_resource_keys_with_dependencies(
                         linked, new_keys)
                     if is_sorted:
-                        sorted_links.extend(link_keys)
+                        post_links.extend(link_keys)
                     else:
-                        keys.extend(link_keys)
-            keys.append(my_key)
-            keys.extend(sorted_links)
+                        pre_links.extend(link_keys)
+            keys = pre_links + [my_key] + post_links
+            logger.debug("  DEPS %s -> %s", my_key, keys)
             return keys
 
         # Handle new items with sort fields
@@ -621,6 +645,7 @@ class CollectionChangeset(object):
                     has_sorted = True
             if has_sorted:
                 item_keys = new_resource_keys_with_dependencies(item, new_keys)
+                logger.debug("  SORT %s -> %s", item.get_data_id(), item_keys)
                 for ik in item_keys:
                     self.changes['new'][ik] = my_index[ik]
 

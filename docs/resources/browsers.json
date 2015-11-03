@@ -231,7 +231,7 @@
     "links": {
         "browsers.versions": {
             "type": "versions",
-            "href": "http://localhost:8000/api/v1/versions/{browsers.versions}"
+            "href": "http://127.0.0.1:8081/api/v1/versions/{browsers.versions}"
         }
     },
     "meta": {
