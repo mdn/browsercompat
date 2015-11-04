@@ -178,6 +178,7 @@ class TestScrape(BaseTestCase):
         self.assertDataEqual(actual['compat'], [])
         self.assertDataEqual(actual['footnotes'], None)
         self.assertDataEqual(actual['issues'], issues)
+        self.assertDataEqual(actual['embedded_compat'], None)
 
     def test_empty(self):
         page = ""
@@ -322,7 +323,8 @@ class FeaturePageTestCase(TestCase):
                 'scrape': {
                     'phase': 'Starting Import',
                     'issues': [],
-                    'raw': scraped_data}}}
+                    'embedded_compat': None,
+                }}}
 
 
 class TestScrapedViewFeature(FeaturePageTestCase):
@@ -389,7 +391,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         section_content = view.new_section(spec_row, '_CSS3_UI')
         expected = {
-            'id': '_CSS3_UI_#section',
+            'id': '__CSS3_UI_#section',
             'name': {'en': 'section'}, 'note': {'en': 'section note'},
             'number': None, 'subpath': {'en': '#section'},
             'links': {'specification': '_CSS3_UI'}}
@@ -770,84 +772,9 @@ class TestScrapedViewFeature(FeaturePageTestCase):
 
 
 class TestScrapeFeaturePage(FeaturePageTestCase):
-    def set_content(self, content):
-        for translation in self.page.translations():
-            translation.status = translation.STATUS_FETCHED
-            translation.raw = content
-            translation.save()
 
-    def test_empty_page(self):
-        self.set_content('  ')
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_NO_DATA, fp.status)
-        self.assertEqual(
-            [], fp.data['meta']['scrape']['raw']['issues'])
-        self.assertFalse(fp.has_issues)
-
-    def test_parse_warning(self):
-        bad_page = '''\
-<p>The page has a bad specification section.</p>
-<h2 id="Specifications">Specifications</h2>
-<p>No specs</p>
-'''
-        self.set_content(bad_page)
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED_WARNING, fp.status)
-        expected_issues = [['skipped_content', 93, 108, {}]]
-        self.assertEqual(
-            expected_issues,
-            fp.data['meta']['scrape']['raw']['issues'])
-        self.assertTrue(fp.has_issues)
-
-    def test_parse_error(self):
-        self.get_instance('Specification', 'css3_backgrounds')
-        bad_page = '''\
-<p>The page has an error in the specification section.</p>
-<h2 id="Specifications">Specifications</h2>
-<table class="standard-table">
- <thead>
-  <tr>
-   <th scope="col">Specification</th>
-   <th scope="col">Status</th>
-   <th scope="col">Comment</th>
-  </tr>
- </thead>
- <tbody>
-   <tr>
-     <td>{{SpecName('CSS3 Backgrounds', '#the-background-size',\
- 'background-size')}}</td>
-     <td>{{SpecName('CSS3 Backgrounds')}}</td>
-     <td></td>
-   </tr>"
- </tbody>
-</table>
-'''
-        self.set_content(bad_page)
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED_ERROR, fp.status)
-        self.assertTrue(fp.has_issues)
-
-    def test_parse_critical(self):
-        bad_page = '''\
-<p>The page has a div element wrapping the content.</p>
-<div>
-  <h2 id="Specifications">Specifications</h2>
-  <p>No specs</p>
-</div>
-'''
-        self.set_content(bad_page)
-        scrape_feature_page(self.page)
-        fp = FeaturePage.objects.get(id=self.page.id)
-        self.assertEqual(fp.STATUS_PARSED_CRITICAL, fp.status)
-        self.assertTrue(fp.has_issues)
-
-    def test_parse_ok(self):
-        self.get_instance('Specification', 'css3_backgrounds')
-        good_page = '''\
-<p>This page is OK.</p>
+    # MDN raw content with minimal specification data
+    good_content = '''\
 <h2 id="Specifications">Specifications</h2>
 <table class="standard-table">
  <thead>
@@ -863,12 +790,129 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
  'background-size')}}</td>
      <td>{{Spec2('CSS3 Backgrounds')}}</td>
      <td></td>
-   </tr>"
+   </tr>
  </tbody>
 </table>
 '''
-        self.set_content(good_page)
+
+    def set_content(self, content):
+        found = False
+        for data in self.page.translations():
+            translation = data.obj
+            if data.obj is None:
+                continue
+            found = True
+            translation.status = translation.STATUS_FETCHED
+            translation.raw = content
+            translation.save()
+        assert found, "No English translation object found in translations"
+
+    def test_empty_page(self):
+        self.set_content('  ')
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_NO_DATA, fp.status)
+        self.assertEqual([], fp.data['meta']['scrape']['issues'])
+        self.assertFalse(fp.has_issues)
+        self.assertEqual(fp.CONVERTED_NO_DATA, fp.converted_compat)
+        self.assertEqual(fp.COMMITTED_NO_DATA, fp.committed)
+
+    def test_parse_warning(self):
+        bad_content = '''\
+<p>The page has a bad specification section.</p>
+<h2 id="Specifications">Specifications</h2>
+<p>No specs</p>
+'''
+        self.set_content(bad_content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED_WARNING, fp.status)
+        self.assertEqual(
+            [['skipped_content', 93, 108, {}, 'en-US']],
+            fp.data['meta']['scrape']['issues'])
+        self.assertTrue(fp.has_issues)
+        self.assertEqual(fp.COMMITTED_NO_DATA, fp.committed)
+
+    def test_parse_error(self):
+        self.get_instance('Specification', 'css3_backgrounds')
+        bad_content = self.good_content.replace('Spec2', 'SpecName')
+        self.set_content(bad_content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED_ERROR, fp.status)
+        self.assertTrue(fp.has_issues)
+        self.assertEqual(fp.COMMITTED_NEEDS_FIXES, fp.committed)
+
+    def test_parse_critical(self):
+        # A page with a div element wrapping the content
+        bad_content = '''\
+<div>
+  <h2 id="Specifications">Specifications</h2>
+  <p>No specs</p>
+</div>
+'''
+        self.set_content(bad_content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED_CRITICAL, fp.status)
+        self.assertTrue(fp.has_issues)
+
+    def test_parse_ok(self):
+        self.get_instance('Specification', 'css3_backgrounds')
+        self.set_content(self.good_content)
         scrape_feature_page(self.page)
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.STATUS_PARSED, fp.status)
         self.assertFalse(fp.has_issues)
+        self.assertEqual(fp.CONVERTED_NO, fp.converted_compat)
+        self.assertEqual(fp.COMMITTED_NO, fp.committed)
+
+    def test_parse_embedcompattable(self):
+        self.get_instance('Specification', 'css3_backgrounds')
+        content = self.good_content + '''\
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+<div>{{EmbedCompatTable("web-css-background-size")}}</div>
+'''
+        self.set_content(content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED, fp.status, fp.get_status_display())
+        self.assertFalse(fp.has_issues)
+        self.assertEqual(fp.CONVERTED_YES, fp.converted_compat)
+        self.assertEqual(fp.COMMITTED_NO, fp.committed)
+
+    def test_parse_embedcompattable_mismatch(self):
+        self.get_instance('Specification', 'css3_backgrounds')
+        content = self.good_content + '''\
+<h2 id="Browser_compatibility">Browser compatibility</h2>
+<div>{{EmbedCompatTable("other-slug")}}</div>
+'''
+        self.set_content(content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.STATUS_PARSED, fp.status, fp.get_status_display())
+        self.assertFalse(fp.has_issues)
+        self.assertEqual(fp.CONVERTED_MISMATCH, fp.converted_compat)
+
+    def test_committed(self):
+        self.get_instance("Section", "background-size")  # Create existing data
+        self.set_content(self.good_content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.COMMITTED_YES, fp.committed)
+
+    def test_updated(self):
+        self.get_instance("Section", "background-size")
+        spec = self.get_instance("Specification", "css3_ui")
+        content = self.good_content.replace(' </tbody>\n', '''\
+   <tr>
+     <td>{{SpecName('%(key)s', '#anchor', 'new section')}}</td>
+     <td>{{Spec2('%(key)s')}}</td>
+     <td></td>
+   </tr>
+ </tbody>
+ ''' % {'key': spec.mdn_key})
+        self.set_content(content)
+        scrape_feature_page(self.page)
+        fp = FeaturePage.objects.get(id=self.page.id)
+        self.assertEqual(fp.COMMITTED_NEEDS_UPDATE, fp.committed)

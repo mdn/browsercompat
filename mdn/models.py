@@ -2,7 +2,7 @@
 """Model definitions for MDN migration app."""
 
 from __future__ import unicode_literals
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from json import dumps, loads
 
 from django.conf import settings
@@ -13,7 +13,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.six import text_type
 from django.utils.six.moves import zip
-from django.utils.six.moves.urllib_parse import urlparse
+from django.utils.six.moves.urllib_parse import urlparse, unquote
 from django.utils.timesince import timesince
 from django_extensions.db.fields.json import JSONField
 
@@ -67,10 +67,45 @@ class FeaturePage(models.Model):
     )
     status = models.IntegerField(
         help_text="Status of MDN Parsing process",
-        default=STATUS_STARTING, choices=STATUS_CHOICES)
+        default=STATUS_STARTING, choices=STATUS_CHOICES, db_index=True)
+
     modified = models.DateTimeField(
-        help_text="Last modification time", db_index=True, auto_now=True)
+        help_text="Last modification time", auto_now=True)
     raw_data = models.TextField(help_text="JSON-encoded parsed content")
+
+    COMMITTED_UNKNOWN = 0
+    COMMITTED_NO = 1
+    COMMITTED_YES = 2
+    COMMITTED_NEEDS_UPDATE = 3
+    COMMITTED_NEEDS_FIXES = 4
+    COMMITTED_NO_DATA = 5
+    COMMITTED_CHOICES = (
+        (COMMITTED_UNKNOWN, "Unknown"),
+        (COMMITTED_NO, "Not Committed"),
+        (COMMITTED_YES, "Committed"),
+        (COMMITTED_NEEDS_UPDATE, "New Data"),
+        (COMMITTED_NEEDS_FIXES, "Blocking Issues"),
+        (COMMITTED_NO_DATA, "No Data"),
+    )
+    committed = models.IntegerField(
+        help_text="Is the data committed to the API?",
+        default=COMMITTED_UNKNOWN, choices=COMMITTED_CHOICES, db_index=True)
+
+    CONVERSION_UNKNOWN = 0
+    CONVERTED_NO = 1
+    CONVERTED_YES = 2
+    CONVERTED_MISMATCH = 3
+    CONVERTED_NO_DATA = 4
+    CONVERTED_CHOICES = (
+        (CONVERSION_UNKNOWN, "Unknown"),
+        (CONVERTED_NO, "Not Converted"),
+        (CONVERTED_YES, "Converted"),
+        (CONVERTED_MISMATCH, "Slug Mismatch"),
+        (CONVERTED_NO_DATA, "No Data"),
+    )
+    converted_compat = models.IntegerField(
+        help_text="Does the MDN page include {{EmbedCompatTable}}?",
+        default=CONVERSION_UNKNOWN, choices=CONVERTED_CHOICES, db_index=True)
 
     def __str__(self):
         return "%s for %s" % (self.get_status_display(), self.slug())
@@ -88,7 +123,7 @@ class FeaturePage(models.Model):
         path = self.path()
         prefix = '/en-US/'
         assert path.startswith(prefix)
-        return path[len(prefix):]
+        return unquote(path[len(prefix):])
 
     def same_since(self):
         """Return a string indicating when the object was changes"""
@@ -102,20 +137,34 @@ class FeaturePage(models.Model):
             'status': Content.STATUS_STARTING})
         return meta
 
+    TranslationData = namedtuple(
+        "TranslationData", ["locale", "path", "title", "obj"])
+
     def translations(self):
-        """Get the page translations, after fetching the meta data."""
+        """Get the page translations data, after fetching the meta data.
+
+        Return is a list of named tuples:
+        - locale - The locale of the localized content
+        - path - The URL path of the MDN localized page
+        - title - The localized page title
+        - obj - If the locale is English, a TranslatedContent object,
+            or None if non-English
+        """
         meta = self.meta()
         translations = []
         for locale, path, title in meta.locale_paths():
-            content, created = self.translatedcontent_set.get_or_create(
-                locale=locale, defaults={
-                    'path': path, 'raw': '', 'title': title,
-                    'status': TranslatedContent.STATUS_STARTING})
-            if content.title != title or content.path != path:
-                content.path = path
-                content.title = title
-                content.save()
-            translations.append(content)
+            if locale == 'en-US':
+                obj, created = self.translatedcontent_set.get_or_create(
+                    locale=locale, defaults={
+                        'path': path, 'raw': '', 'title': title,
+                        'status': TranslatedContent.STATUS_STARTING})
+                if obj.title != title or obj.path != path:
+                    obj.path = path
+                    obj.title = title
+                    obj.save()
+            else:
+                obj = None
+            translations.append(self.TranslationData(locale, path, title, obj))
         return translations
 
     def reset(self, delete_cache=True):
@@ -129,11 +178,11 @@ class FeaturePage(models.Model):
         meta = self.meta()
         meta.status = meta.STATUS_STARTING
         meta.save()
-        for t in self.translatedcontent_set.all():
-            if delete_cache or (t.status == t.STATUS_ERROR):
-                t.status = t.STATUS_STARTING
-                t.raw = ""
-                t.save()
+        for obj in self.translatedcontent_set.all():
+            if delete_cache or (obj.status == obj.STATUS_ERROR):
+                obj.status = obj.STATUS_STARTING
+                obj.raw = ""
+                obj.save()
 
     def reset_data(self, keep_issues=False):
         """Reset JSON data to initial state.
@@ -159,11 +208,11 @@ class FeaturePage(models.Model):
         canonical = (list(feature['name'].keys()) == ['zxx'])
         if canonical:
             feature['name'] = feature['name']['zxx']
-        for t in self.translations():
-            if t.locale != 'en-US':
-                feature['mdn_uri'][t.locale] = t.url()
+        for trans in self.translations():
+            if trans.locale != 'en-US':
+                feature['mdn_uri'][trans.locale] = self.domain() + trans.path
                 if not canonical:
-                    feature['name'][t.locale] = t.title
+                    feature['name'][trans.locale] = trans.title
 
         issues = []
         if keep_issues:
@@ -199,7 +248,8 @@ class FeaturePage(models.Model):
                 ("scrape", OrderedDict((
                     ("phase", "Starting Import"),
                     ("issues", issues),
-                    ("raw", None)))))))))
+                    ("embedded_compat", None),
+                ))))))))
 
         self.data = view_feature
         return view_feature
@@ -229,10 +279,6 @@ class FeaturePage(models.Model):
     def issue_counts(self):
         counts = {WARNING: 0, ERROR: 0, CRITICAL: 0}
         issues = self.data['meta']['scrape']['issues']
-        if not issues:
-            # Legacy - get from raw data
-            raw = self.data['meta']['scrape']['raw'] or {}
-            issues = raw.get('issues', [])
         for issue in issues:
             slug = issue[0]
             severity = ISSUES.get(slug, UNKNOWN_ISSUE)[0]
@@ -422,8 +468,9 @@ class PageMeta(Content):
             return []
         meta = self.data()
         locale_paths = [(meta['locale'], meta['url'], meta['title'])]
-        for t in meta['translations']:
-            locale_paths.append((t['locale'], t['url'], t['title']))
+        for trans in meta['translations']:
+            locale_paths.append(
+                (trans['locale'], trans['url'], trans['title']))
         return locale_paths
 
 

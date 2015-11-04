@@ -11,9 +11,10 @@ from parsimonious.grammar import Grammar
 from .html import HnElement, HTMLElement, HTMLText
 from .kumascript import (
     CompatGeckoFxOS, CompatKumaScript, CompatNightly, CompatNo, CompatUnknown,
-    CompatVersionUnknown, DeprecatedInline, ExperimentalInline, KumaScript,
-    KumaVisitor, NonStandardInline, NotStandardInline, ObsoleteInline,
-    PropertyPrefix, kumascript_grammar_source)
+    CompatVersionUnknown, DeprecatedInline, EmbedCompatTable,
+    ExperimentalInline, KumaScript, KumaVisitor, NonStandardInline,
+    NotStandardInline, ObsoleteInline, PropertyPrefix,
+    kumascript_grammar_source)
 from .utils import is_new_id, format_version, join_content
 from .visitor import Extractor
 
@@ -79,6 +80,7 @@ class CompatSectionExtractor(Extractor):
         self.compat_divs = []
         self.footnote_elems = []
         self.footnotes = OrderedDict()
+        self.embedded = []
         self.reset_compat_div()
 
     def reset_compat_div(self):
@@ -183,7 +185,8 @@ class CompatSectionExtractor(Extractor):
         return {
             'compat_divs': self.compat_divs,
             'footnotes': self.footnotes,
-            'issues': self.issues
+            'issues': self.issues,
+            'embedded': self.embedded,
         }
 
     def extract_pre_compat_element(self, element):
@@ -192,6 +195,7 @@ class CompatSectionExtractor(Extractor):
         Looking for:
         <div id="compat-section"> - Start parsing
         <p>{{CompatibilityTable}}</p> - Ignore
+        <p>{{EmbedCompatTable("slug")}}</p> - Extract slug
         Others - If has content, issue warning
         """
         # Is it a compatibility div?
@@ -199,6 +203,9 @@ class CompatSectionExtractor(Extractor):
         if div_name is not None:
             self.compat_div = {'name': div_name}
             return True
+
+        # Look for {{EmbedCompatTable("slug")}} macros
+        self.embedded.extend(self.extract_embedcompattable_div(element))
 
         # Is there visible content?
         if element.to_html(drop_tag=True):
@@ -212,6 +219,16 @@ class CompatSectionExtractor(Extractor):
             if div_id.startswith('compat-'):
                 _, name = div_id.split('-', 1)
                 return name
+
+    def extract_embedcompattable_div(self, element):
+        """Extract slugs from {{EmbedCompatTable}} macros."""
+        slugs = []
+        for child in element.children:
+            if isinstance(child, EmbedCompatTable):
+                slugs.append(child.arg(0))
+            elif hasattr(child, 'children'):
+                slugs.extend(self.extract_embedcompattable_div(child))
+        return slugs
 
     def extract_feature_header(self, element):
         header = element.to_text()
@@ -335,6 +352,9 @@ class CompatSectionExtractor(Extractor):
             self.extract_footnotes(element)
             return 'in_footnotes', False
 
+        # Is there an EmbedCompatTable() macro?
+        self.embedded.extend(self.extract_embedcompattable_div(element))
+
         # Keep looking for compatibility div or footnotes
         return 'after_compat_div', False
 
@@ -362,6 +382,7 @@ class CompatSectionExtractor(Extractor):
             footnotes = visitor.finalize_footnotes()
             for issue in visitor.issues:
                 self.add_raw_issue(issue)
+            self.embedded.extend(visitor.embedded)
         else:
             footnotes = {}
 
@@ -716,12 +737,13 @@ class CompatSupportVisitor(CompatBaseVisitor):
 
 class CompatFootnoteVisitor(CompatBaseVisitor):
     scope = 'footnote'
-    _allowed_tags = ['a', 'br', 'code', 'p', 'pre']
+    _allowed_tags = ['a', 'br', 'code', 'div', 'p', 'pre']
 
     def __init__(self, **kwargs):
         super(CompatFootnoteVisitor, self).__init__(**kwargs)
         self._footnote_data = OrderedDict()
         self._current_footnote_id = None
+        self.embedded = []
 
     def finalize_footnotes(self):
         """Finalize and return footnotes."""
@@ -768,6 +790,8 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
                 footnote_id = child.footnote_id
                 assert footnote_id not in footnotes
                 footnotes[footnote_id] = []
+            elif isinstance(child, EmbedCompatTable):
+                self.embedded.append(child.arg(0))
             elif child.to_html():
                 footnotes[footnote_id].append(child)
 
@@ -792,7 +816,7 @@ class CompatFootnoteVisitor(CompatBaseVisitor):
             cls, node, **kwargs)
         if isinstance(processed, HTMLElement):
             tag = processed.tag
-            if tag == 'p':
+            if tag in ('p', 'div'):
                 self.gather_content(processed)
             elif tag == 'pre':
                 self.process_pre(processed)

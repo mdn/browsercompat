@@ -102,7 +102,9 @@ def fetch_meta(featurepage_id):
 def fetch_all_translations(featurepage_id):
     """Fetch all translations for an MDN page."""
     fp = FeaturePage.objects.get(id=featurepage_id)
-    assert fp.status == fp.STATUS_PAGES, fp.get_status_display()
+    if fp.status != fp.STATUS_PAGES:
+        # Exit early if not called after fetch_meta
+        return
     translations = fp.translations()
     assert translations, translations
 
@@ -110,15 +112,18 @@ def fetch_all_translations(featurepage_id):
     to_fetch = []
     fetching = 0
     errored = 0
-    for t in translations:
-        if t.status == t.STATUS_STARTING:
-            to_fetch.append(t)
-        elif t.status == t.STATUS_FETCHING:
+    for trans in translations:
+        obj = trans.obj
+        if obj is None:
+            continue
+        if obj.status == obj.STATUS_STARTING:
+            to_fetch.append(trans.locale)
+        elif obj.status == obj.STATUS_FETCHING:
             fetching += 1
-        elif t.status == t.STATUS_ERROR:
+        elif obj.status == obj.STATUS_ERROR:
             errored += 1
         else:
-            assert t.status == t.STATUS_FETCHED, t.get_status_display()
+            assert obj.status == obj.STATUS_FETCHED, obj.get_status_display()
 
     # Determine next status / task
     if errored:
@@ -129,8 +134,7 @@ def fetch_all_translations(featurepage_id):
         fp.save()
         parse_page.delay(fp.id)
     elif to_fetch:
-        for t in to_fetch:
-            fetch_translation.delay(fp.id, t.locale)
+        fetch_translation.delay(fp.id, to_fetch[0])
 
 
 @shared_task(ignore_result=True)

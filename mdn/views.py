@@ -9,11 +9,10 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.utils.six.moves.urllib.parse import urlparse, urlunparse
-from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.base import TemplateResponseMixin, View
+from django.utils.six.moves.urllib.parse import urlparse, urlunparse, quote
+from django.views.generic import DetailView, FormView, ListView, TemplateView
 from django.views.generic.detail import BaseDetailView
-from django.views.generic.edit import CreateView, FormMixin, UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 import unicodecsv as csv
 
 from .models import FeaturePage, Issue, ISSUES, SEVERITIES, validate_mdn_url
@@ -70,18 +69,33 @@ class FeaturePageListView(ListView):
         (FeaturePage.STATUS_PARSED_WARNING, 'Warnings', ('warning',)),
         (FeaturePage.STATUS_PARSED, 'No Errors', ('success',)),
     )
+    committed_options = [
+        (str(value), name) for value, name in FeaturePage.COMMITTED_CHOICES]
+    converted_options = [
+        (str(value), name) for value, name in FeaturePage.CONVERTED_CHOICES]
 
     def get_queryset(self):
         qs = FeaturePage.objects.order_by('url')
+
         topic = self.request.GET.get('topic')
         if topic:
             qs = qs.filter(url__startswith=DEV_PREFIX + topic)
+
         status = self.request.GET.get('status')
         if status:
             if status == 'other':
                 qs = qs.exclude(status__in=self.standard_statuses)
             else:
                 qs = qs.filter(status=status)
+
+        committed = self.request.GET.get('committed')
+        if committed:
+            qs = qs.filter(committed=committed)
+
+        converted_compat = self.request.GET.get('converted_compat')
+        if converted_compat:
+            qs = qs.filter(converted_compat=converted_compat)
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -95,6 +109,14 @@ class FeaturePageListView(ListView):
         # Status filter buttons
         ctx['status'] = self.request.GET.get('status')
         ctx['statuses'] = self.statuses
+
+        # Committed status buttons
+        ctx['committed'] = self.request.GET.get('committed')
+        ctx['committed_options'] = self.committed_options
+
+        # Converted status buttons
+        ctx['converted_compat'] = self.request.GET.get('converted_compat')
+        ctx['converted_options'] = self.converted_options
 
         # Status progress bar
         raw_status_counts = self.object_list.order_by(
@@ -167,7 +189,58 @@ class FeaturePageJSONView(BaseDetailView):
         return JsonResponse(obj.data)
 
 
-class SearchForm(forms.Form):
+class GetFormView(FormView):
+    """A FormView that also submits with GET and URL parameters."""
+
+    def get(self, request, *args, **kwargs):
+        get_params = self.request.GET.dict()
+        if get_params:
+            return self.post(request, *args, **kwargs)
+        else:
+            return super(GetFormView, self).get(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(GetFormView, self).get_form_kwargs()
+        get_params = self.request.GET.dict()
+        if self.request.method == 'GET' and get_params:
+            kwargs.setdefault('data', {}).update(get_params)
+        return kwargs
+
+
+class SlugSearchForm(forms.Form):
+    slug = forms.SlugField(label='Feature Slug')
+
+    def clean_slug(self):
+        slug = self.cleaned_data['slug']
+        try:
+            fp = FeaturePage.objects.get(feature__slug=slug)
+        except FeaturePage.DoesNotExist:
+            raise forms.ValidationError("No Feature with this slug.")
+        else:
+            self.feature_id = fp.feature_id
+            return slug
+
+
+class FeaturePageSlugSearch(GetFormView):
+    """Search for an importer page by Feature slug"""
+    form_class = SlugSearchForm
+    template_name = "mdn/feature_page_form.html"
+
+    def form_valid(self, form):
+        slug = form.cleaned_data['slug']
+        fp = FeaturePage.objects.get(feature__slug=slug)
+        next_url = reverse('feature_page_detail', kwargs={'pk': fp.pk})
+        return HttpResponseRedirect(next_url)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(FeaturePageSlugSearch, self).get_context_data(**kwargs)
+        ctx['action'] = "Search by Feature Slug"
+        ctx['action_url'] = reverse('feature_page_slug_search')
+        ctx['method'] = 'get'
+        return ctx
+
+
+class URLSearchForm(forms.Form):
     url = forms.URLField(
         label='MDN URL',
         widget=forms.URLInput(attrs={'placeholder': DEV_PREFIX + '...'}))
@@ -175,33 +248,22 @@ class SearchForm(forms.Form):
     def clean_url(self):
         data = self.cleaned_data['url']
         scheme, netloc, path, params, query, fragment = urlparse(data)
+        if "%" not in path:
+            path = quote(path)
         cleaned = urlunparse((scheme, netloc, path, '', '', ''))
         validate_mdn_url(cleaned)
         return cleaned
 
 
-class FeaturePageSearch(TemplateResponseMixin, View, FormMixin):
+class FeaturePageURLSearch(GetFormView):
     """Search for a MDN URI via GET"""
-    form_class = SearchForm
+    form_class = URLSearchForm
     template_name = "mdn/feature_page_form.html"
 
-    def get_form_kwargs(self):
-        kwargs = super(FeaturePageSearch, self).get_form_kwargs()
-        kwargs.setdefault('data', {}).update(self.request.GET.dict())
-        return kwargs
-
-    def get(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
     def get_context_data(self, **kwargs):
-        ctx = super(FeaturePageSearch, self).get_context_data(**kwargs)
+        ctx = super(FeaturePageURLSearch, self).get_context_data(**kwargs)
         ctx['action'] = "Search by URL"
-        ctx['action_url'] = reverse('feature_page_search')
+        ctx['action_url'] = reverse('feature_page_url_search')
         ctx['method'] = 'get'
         return ctx
 
@@ -422,7 +484,8 @@ feature_page_create = user_passes_test(can_create)(
     FeaturePageCreateView.as_view())
 feature_page_detail = FeaturePageDetailView.as_view()
 feature_page_json = FeaturePageJSONView.as_view()
-feature_page_search = FeaturePageSearch.as_view()
+feature_page_slug_search = FeaturePageSlugSearch.as_view()
+feature_page_url_search = FeaturePageURLSearch.as_view()
 feature_page_list = FeaturePageListView.as_view()
 feature_page_reset = user_passes_test(can_refresh)(
     FeaturePageReset.as_view())

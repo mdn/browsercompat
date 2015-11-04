@@ -70,7 +70,8 @@ class TestCompatSectionExtractor(TestCase):
                 'support': 'yes', 'version': version_id}]}
 
     def assert_extract(
-            self, html, compat_divs=None, footnotes=None, issues=None):
+            self, html, compat_divs=None, footnotes=None, issues=None,
+            embedded=None):
         parsed = kumascript_grammar['html'].parse(html)
         out = self.visitor.visit(parsed)
         extractor = CompatSectionExtractor(feature=self.feature, elements=out)
@@ -78,6 +79,7 @@ class TestCompatSectionExtractor(TestCase):
         self.assertEqual(extracted['compat_divs'], compat_divs or [])
         self.assertEqual(extracted['footnotes'], footnotes or {})
         self.assertEqual(extracted['issues'], issues or [])
+        self.assertEqual(extracted['embedded'], embedded or [])
 
     def test_standard(self):
         html = self.construct_html()
@@ -235,6 +237,12 @@ class TestCompatSectionExtractor(TestCase):
         expected = self.get_default_compat_div()
         issue = ('cell_out_of_bounds', 314, 338, {})
         self.assert_extract(html, [expected], issues=[issue])
+
+    def test_embedded(self):
+        html = self.construct_html(
+            after_table="<div>{{EmbedCompatTable('foo-bar')}}</div>")
+        expected = self.get_default_compat_div()
+        self.assert_extract(html, [expected], embedded=['foo-bar'])
 
 
 class TestFootnote(TestCase):
@@ -840,12 +848,13 @@ class TestFootnoteVisitor(TestCase):
     def setUp(self):
         self.visitor = CompatFootnoteVisitor()
 
-    def assert_footnotes(self, content, expected, issues=None):
+    def assert_footnotes(self, content, expected, issues=None, embedded=None):
         parsed = compat_footnote_grammar['html'].parse(content)
         self.visitor.visit(parsed)
         footnotes = self.visitor.finalize_footnotes()
         self.assertEqual(expected, footnotes)
         self.assertEqual(issues or [], self.visitor.issues)
+        self.assertEqual(embedded or [], self.visitor.embedded)
 
     def test_empty(self):
         footnotes = '\n'
@@ -1018,3 +1027,7 @@ class TestFootnoteVisitor(TestCase):
         footnote = "<p>[1] Footnote 1.<br>[2] Footnote 2.</p>"
         expected = {'1': ("Footnote 1.", 7, 18), '2': ("Footnote 2.", 26, 37)}
         self.assert_footnotes(footnote, expected)
+
+    def test_embedcompattable(self):
+        footnote = '<div>{{EmbedCompatTable("foo")}}</div>'
+        self.assert_footnotes(footnote, {}, embedded=["foo"])

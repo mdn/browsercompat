@@ -6,6 +6,7 @@ import mock
 
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
+from django.utils.six.moves.urllib.parse import unquote
 
 from mdn.models import FeaturePage, Issue
 from webplatformcompat.models import Feature
@@ -16,11 +17,23 @@ class TestFeaturePageListView(TestCase):
     def setUp(self):
         self.url = reverse('feature_page_list')
 
-    def add_page(self):
-        feature = self.create(Feature, slug='web-css-display')
+    def add_page(
+            self, slug='web-css-display', subpath='Web/CSS/display',
+            **featurepage_kwargs):
+        """Add a Feature and associated FeaturePage."""
+        feature = self.create(Feature, slug=slug)
         return FeaturePage.objects.create(
-            url="https://developer.mozilla.org/en-US/docs/Web/CSS/display",
-            feature=feature)
+            url="https://developer.mozilla.org/en-US/docs/" + subpath,
+            feature=feature, **featurepage_kwargs)
+
+    def assert_filter_only_feature(self, url, featurepage_id):
+        """Assert that only the one feature was reuturned."""
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code)
+        pages = response.context_data['page_obj']
+        self.assertEqual(1, len(pages.object_list))
+        obj = pages.object_list[0]
+        self.assertEqual(obj.id, featurepage_id)
 
     def test_empty_list(self):
         response = self.client.get(self.url)
@@ -47,10 +60,8 @@ class TestFeaturePageListView(TestCase):
         self.assertEqual(status_counts, response.context_data['status_counts'])
 
     def test_with_issue(self):
-        feature_page = self.add_page()
+        feature_page = self.add_page(status=FeaturePage.STATUS_PARSED_CRITICAL)
         feature_page.issues.create(slug='halt_import', start=1, end=1)
-        feature_page.status = FeaturePage.STATUS_PARSED_CRITICAL
-        feature_page.save()
         response = self.client.get(self.url)
         self.assertEqual(200, response.status_code)
         data_counts = [
@@ -65,48 +76,36 @@ class TestFeaturePageListView(TestCase):
 
     def test_topic_filter(self):
         feature_page = self.add_page()
-        FeaturePage.objects.create(
-            url="https://developer.mozilla.org/en-US/docs/Other",
-            feature_id=2)
+        self.add_page(slug='other', subpath='Other')
         url = self.url + "?topic=docs/Web"
-        response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-        pages = response.context_data['page_obj']
-        self.assertEqual(1, len(pages.object_list))
-        obj = pages.object_list[0]
-        self.assertEqual(obj.id, feature_page.id)
+        self.assert_filter_only_feature(url, feature_page.id)
 
     def test_status_filter(self):
-        feature_page = self.add_page()
-        feature_page.status = FeaturePage.STATUS_PARSED_CRITICAL
-        feature_page.save()
-        FeaturePage.objects.create(
-            url="https://developer.mozilla.org/en-US/docs/Other",
-            status=FeaturePage.STATUS_PARSED,
-            feature_id=2)
+        feature_page = self.add_page(status=FeaturePage.STATUS_PARSED_CRITICAL)
+        self.add_page(
+            slug='other', subpath='Other', status=FeaturePage.STATUS_PARSED)
         url = self.url + "?status=%s" % FeaturePage.STATUS_PARSED_CRITICAL
-        response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-        pages = response.context_data['page_obj']
-        self.assertEqual(1, len(pages.object_list))
-        obj = pages.object_list[0]
-        self.assertEqual(obj.id, feature_page.id)
+        self.assert_filter_only_feature(url, feature_page.id)
 
     def test_status_other_filter(self):
-        feature_page = self.add_page()
-        feature_page.status = FeaturePage.STATUS_META
-        feature_page.save()
-        FeaturePage.objects.create(
-            url="https://developer.mozilla.org/en-US/docs/Other",
-            status=FeaturePage.STATUS_PARSED,
-            feature_id=2)
+        feature_page = self.add_page(status=FeaturePage.STATUS_META)
+        self.add_page(
+            slug='other', subpath='Other', status=FeaturePage.STATUS_PARSED)
         url = self.url + "?status=other"
-        response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-        pages = response.context_data['page_obj']
-        self.assertEqual(1, len(pages.object_list))
-        obj = pages.object_list[0]
-        self.assertEqual(obj.id, feature_page.id)
+        self.assert_filter_only_feature(url, feature_page.id)
+
+    def test_committed_filter(self):
+        feature_page = self.add_page(committed=FeaturePage.COMMITTED_YES)
+        self.add_page(slug='other', subpath='Other')
+        url = self.url + "?committed=%s" % FeaturePage.COMMITTED_YES
+        self.assert_filter_only_feature(url, feature_page.id)
+
+    def test_converted_compat_filter(self):
+        feature_page = self.add_page(
+            converted_compat=FeaturePage.CONVERTED_YES)
+        self.add_page(slug='other', subpath='Other')
+        url = self.url + "?converted_compat=%s" % FeaturePage.CONVERTED_YES
+        self.assert_filter_only_feature(url, feature_page.id)
 
 
 class TestFeaturePageCreateView(TestCase):
@@ -168,9 +167,37 @@ class TestFeaturePageJSONView(TestCase):
         self.assertEqual(expected, response.content)
 
 
-class TestFeaturePageSearch(TestCase):
+class TestFeaturePageSlugSearch(TestCase):
     def setUp(self):
-        self.url = reverse('feature_page_search')
+        self.url = reverse('feature_page_slug_search')
+        self.mdn_url = (
+            "https://developer.mozilla.org/en-US/docs/Web/CSS/display")
+        self.slug = 'web-css-display'
+        self.feature = self.create(Feature, slug=self.slug)
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(
+            "Search by Feature Slug", response.context_data['action'])
+
+    def test_post_found(self):
+        fp = FeaturePage.objects.create(
+            url=self.mdn_url, feature_id=self.feature.id)
+        response = self.client.get(self.url, {'slug': self.slug})
+        next_url = reverse('feature_page_detail', kwargs={'pk': fp.id})
+        self.assertRedirects(response, next_url)
+
+    def test_post_not_found(self):
+        response = self.client.get(self.url, {'slug': 'other-slug'})
+        self.assertEqual(200, response.status_code)
+        expected_errors = {'slug': ['No Feature with this slug.']}
+        self.assertEqual(expected_errors, response.context_data['form'].errors)
+
+
+class TestFeaturePageURLSearch(TestCase):
+    def setUp(self):
+        self.url = reverse('feature_page_url_search')
         self.mdn_url = "https://developer.mozilla.org/en-US/docs/Web/CSS/float"
         self.feature = self.create(Feature, slug='web_css_float')
 
@@ -208,6 +235,24 @@ class TestFeaturePageSearch(TestCase):
         url = "https://developer.mozilla.org/en-US/docs/Web/"
         response = self.client.get(self.url, {'url': url})
         next_url = reverse('feature_page_list') + '?topic=docs/Web'
+        self.assertRedirects(response, next_url)
+
+    def test_post_urlencoded(self):
+        url = (
+            "https://developer.mozilla.org/en-US/docs/"
+            "Web/CSS/%3A-moz-ui-invalid")
+        fp = FeaturePage.objects.create(url=url, feature_id=self.feature.id)
+        response = self.client.get(self.url, {'url': url})
+        next_url = reverse('feature_page_detail', kwargs={'pk': fp.id})
+        self.assertRedirects(response, next_url)
+
+    def test_post_not_urlencoded(self):
+        url = (
+            "https://developer.mozilla.org/en-US/docs/"
+            "Web/CSS/%3A-moz-ui-invalid")
+        fp = FeaturePage.objects.create(url=url, feature_id=self.feature.id)
+        response = self.client.get(self.url, {'url': unquote(url)})
+        next_url = reverse('feature_page_detail', kwargs={'pk': fp.id})
         self.assertRedirects(response, next_url)
 
     def test_not_found_with_perms(self):
