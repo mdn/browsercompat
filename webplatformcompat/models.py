@@ -363,9 +363,9 @@ def feature_sections_changed_update_order(
 
     from .tasks import update_cache_for_instance
     for feature in features:
-        update_cache_for_instance('Feature', feature.pk, feature, False)
+        update_cache_for_instance('Feature', feature.pk, feature)
     for section in sections:
-        update_cache_for_instance('Section', section.pk, section, False)
+        update_cache_for_instance('Section', section.pk, section)
 
 
 @receiver(post_delete, dispatch_uid='post_delete_update_cache')
@@ -375,7 +375,7 @@ def post_delete_update_cache(sender, instance, **kwargs):
         delay_cache = getattr(instance, '_delay_cache', False)
         if not delay_cache:
             from .tasks import update_cache_for_instance
-            update_cache_for_instance(name, instance.pk, instance, False)
+            update_cache_for_instance(name, instance.pk, instance)
 
 
 @receiver(post_save, dispatch_uid='post_save_update_cache')
@@ -387,7 +387,7 @@ def post_save_update_cache(sender, instance, created, raw, **kwargs):
         delay_cache = getattr(instance, '_delay_cache', False)
         if not delay_cache:
             from .tasks import update_cache_for_instance
-            update_cache_for_instance(name, instance.pk, instance, False)
+            update_cache_for_instance(name, instance.pk, instance)
 
 
 #
@@ -401,4 +401,6 @@ def add_user_to_change_resource_group(
     if created and not raw:
         from django.contrib.auth.models import Group
         instance.groups.add(Group.objects.get(name='change-resource'))
+        if hasattr(instance, "group_names"):
+            del instance.group_names
         post_save_update_cache(sender, instance, created, raw, **kwargs)

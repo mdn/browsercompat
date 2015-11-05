@@ -344,6 +344,8 @@ class TestViewFeatureViewSet(APITestCase):
         feature = resources['feature']
         del self.changeset
         self.create(Feature, parent=feature, name='{"zxx": "canonical"}')
+        self.changeset.closed = True
+        self.changeset.save()
         url = reverse(
             'viewfeatures-detail', kwargs={'pk': feature.pk})
         response = self.client.get(url)

@@ -26,7 +26,7 @@ class TestUpdateCacheForInstance(TestCase):
         self.mock_cache.update_instance.return_value = []
         update_cache_for_instance('Maturity', self.mat.id)
         self.mock_cache.update_instance.assert_called_once_with(
-            'Maturity', self.mat.id, None, None, update_only=True)
+            'Maturity', self.mat.id, None, None, update_only=False)
 
     @override_settings(DRF_INSTANCE_CACHE_POPULATE_COLD=True)
     def test_update_cache_with_invalidation(self):
@@ -41,9 +41,8 @@ class TestUpdateCacheForInstance(TestCase):
         self.mock_cache.update_instance.side_effect = side_effect
         update_cache_for_instance('Specification', self.spec.id)
         expected_calls = [
-            mock.call('Specification', self.spec.id, None, None,
-                      update_only=True),
-            mock.call('Maturity', self.mat.id, None, 'v1',
-                      update_only=False)]
+            mock.call(
+                'Specification', self.spec.id, None, None, update_only=False),
+            mock.call('Maturity', self.mat.id, None, 'v1', update_only=False)]
         actual_calls = self.mock_cache.update_instance.call_args_list
         self.assertEqual(expected_calls, actual_calls)

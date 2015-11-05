@@ -642,7 +642,7 @@ class TestCache(TestCase):
             },
             'group_names': ['change-resource'],
         }
-        self.assertEqual(out, expected)
+        self.assertEqual(expected, out)
 
     def test_user_v1_serializer_empty(self):
         self.assertEqual(None, self.cache.user_v1_serializer(None))
