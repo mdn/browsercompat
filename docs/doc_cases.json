@@ -765,27 +765,6 @@
         "method": "GET",
         "endpoint": "view_features/5"
     }, {
-        "name": "view-feature-update-put-subfeature",
-        "method": "PUT",
-        "endpoint": "view_features/5",
-        "skip": "Returns 500, AssertionError: When looking up \"browser.slug\", could not find ID '14' in browsers.",
-        "data": {
-            "linked": {
-                "features": [
-                    {
-                        "id": "_New Subfeature",
-                        "slug": "web-css-float_new-subfeature",
-                        "name": {
-                            "en": "New Subfeature"
-                        },
-                        "links": {
-                            "parent": "5"
-                        }
-                    }
-                ]
-            }
-        }
-    }, {
         "name": "feature-add-sections-01",
         "method": "POST",
         "endpoint": "specifications",
@@ -1096,5 +1075,25 @@
             }
         },
         "status": 400
+    }, {
+        "name": "view-feature-update-put-subfeature",
+        "method": "PUT",
+        "endpoint": "view_features/5",
+        "data": {
+            "linked": {
+                "features": [
+                    {
+                        "id": "_New Subfeature",
+                        "slug": "web-css-float_new-subfeature",
+                        "name": {
+                            "en": "New Subfeature"
+                        },
+                        "links": {
+                            "parent": "5"
+                        }
+                    }
+                ]
+            }
+        }
     }
 ]

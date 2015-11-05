@@ -662,6 +662,25 @@ class TestViewFeatureUpdates(APITestCase):
         finally:
             connection.force_debug_cursor = old_debug
 
+    def test_post_add_second_subfeature_with_existing_support(self):
+        detail1 = self.create(
+            Feature, slug='detail1', name={'en': 'Detail 1'},
+            parent=self.feature)
+        self.create(Support, version=self.version, feature=detail1)
+        detail2_data = {
+            "id": "_detail2", "slug": "detail2",
+            "name": {"en": "Detail 2"},
+            "links": {"parent": str(self.feature.pk)}}
+        json_data = self.json_api(features=[detail2_data])
+        response = self.client.put(
+            self.url, data=json_data,
+            content_type="application/vnd.api+json")
+        self.assertEqual(response.status_code, 200, response.content)
+        detail2 = Feature.objects.get(slug='detail2')
+        self.assertEqual(detail2.parent, self.feature)
+        feature = Feature.objects.get(id=self.feature.id)
+        self.assertEqual(list(feature.children.all()), [detail1, detail2])
+
     def test_post_update_existing_subfeature(self):
         subfeature = self.create(
             Feature, slug='subfeature', name={'en': 'subfeature'},

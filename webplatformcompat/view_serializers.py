@@ -221,8 +221,11 @@ class FeatureExtra(object):
         new_items = new_collection.get_all_by_data_id()
         for data_id, item in current_collection.get_all_by_data_id().items():
             if data_id not in new_items:
-                resource = r_by_t[item._resource_type]()
-                resource.from_json_api(item.to_json_api())
+                rtype = item._resource_type
+                resource = r_by_t[rtype]()
+                json_api_rep = item.to_json_api()
+                json_api_rep[rtype]["id"] = item.id.id
+                resource.from_json_api(json_api_rep)
                 resource._seq = None
                 new_collection.add(resource)
 
