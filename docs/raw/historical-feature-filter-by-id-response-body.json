@@ -19,6 +19,7 @@
                 },
                 "links": {
                     "parent": "10",
+                    "children": [],
                     "sections": [],
                     "history_current": "12"
                 }
@@ -47,6 +48,7 @@
                 },
                 "links": {
                     "parent": "10",
+                    "children": [],
                     "sections": [],
                     "history_current": "16"
                 }

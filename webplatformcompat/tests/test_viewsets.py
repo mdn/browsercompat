@@ -403,6 +403,7 @@ class TestHistoricaViewset(APITestCase):
                     'note': None,
                     'links': {
                         'history_current': str(history.pk),
+                        'versions': [],
                     },
                 },
                 'links': {

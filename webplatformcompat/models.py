@@ -53,7 +53,7 @@ class Browser(models.Model):
         help_text="Extended information about browser, client, or platform.",
         blank=True, null=True)
     objects = CachingManager()
-    history = HistoricalRecords()
+    # history = HistoricalRecords()  # Registered below
 
     def __str__(self):
         return self.slug
@@ -195,7 +195,7 @@ class Specification(models.Model):
     uri = TranslatedField(
         help_text="Specification URI, without subpath and anchor")
     objects = CachingManager()
-    history = HistoricalRecords()
+    # history = HistoricalRecords()  # Registered below
 
     def __str__(self):
         return self.slug
@@ -301,15 +301,29 @@ class Version(models.Model):
 # Customized historical models and registration
 #
 
+class HistoricalBrowserRecords(HistoricalRecords):
+    additional_fields = {
+        'versions': JSONField(default=[])
+    }
+
+    def get_versions_value(self, instance, mtype):
+        return list(
+            instance.versions.values_list('pk', flat=True))
+
+
 class HistoricalFeatureRecords(HistoricalRecords):
     additional_fields = {
-        'sections': JSONField(default=[])
+        'sections': JSONField(default=[]),
+        'children': JSONField(default=[])
     }
 
     def get_sections_value(self, instance, mtype):
-        section_pks = list(
+        return list(
             instance.sections.values_list('pk', flat=True))
-        return section_pks
+
+    def get_children_value(self, instance, mtype):
+        return list(
+            instance.get_children().values_list('pk', flat=True))
 
 
 class HistoricalMaturityRecords(HistoricalRecords):
@@ -320,8 +334,20 @@ class HistoricalMaturityRecords(HistoricalRecords):
         return meta_fields
 
 
+class HistoricalSpecificationRecords(HistoricalRecords):
+    additional_fields = {
+        'sections': JSONField(default=[])
+    }
+
+    def get_sections_value(self, instance, mtype):
+        return list(
+            instance.sections.values_list('pk', flat=True))
+
+
+register(Browser, records_class=HistoricalBrowserRecords)
 register(Feature, records_class=HistoricalFeatureRecords)
 register(Maturity, records_class=HistoricalMaturityRecords)
+register(Specification, records_class=HistoricalSpecificationRecords)
 
 
 #

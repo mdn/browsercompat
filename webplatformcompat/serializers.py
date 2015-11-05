@@ -416,6 +416,7 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
             fields = omit_some(
                 BrowserSerializer.Meta.fields,
                 'history_current', 'history', 'versions')
+            archive_cached_links_fields = ('versions',)
 
     browser = HistoricalObjectField()
     browsers = SerializerMethodField('get_archive')
@@ -437,7 +438,7 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
             read_only_fields = omit_some(
                 FeatureSerializer.Meta.read_only_fields, 'supports')
             archive_link_fields = ('parent',)
-            archive_cached_links_fields = ('sections',)
+            archive_cached_links_fields = ('children', 'sections')
 
     feature = HistoricalObjectField()
     features = SerializerMethodField('get_archive')
@@ -490,6 +491,7 @@ class HistoricalSpecificationSerializer(HistoricalObjectSerializer):
             fields = omit_some(
                 SpecificationSerializer.Meta.fields,
                 'sections', 'history_current', 'history')
+            archive_cached_links_fields = ('sections',)
             archive_link_fields = ('maturity',)
 
     specification = HistoricalObjectField()
