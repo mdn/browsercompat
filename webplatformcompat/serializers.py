@@ -73,6 +73,9 @@ class FieldMapMixin(object):
 class HistoricalModelSerializer(
         WriteRestrictedMixin, FieldMapMixin, ModelSerializer):
     """Model serializer with history manager"""
+    omit_historical_fields = (
+        'id', 'history_id', 'history_date', 'history_user', 'history_type',
+        'history_changeset')
 
     def build_property_field(self, field_name, model_class):
         """Handle history field.
@@ -103,12 +106,14 @@ class HistoricalModelSerializer(
             if current_history.history_id != history_id:
                 try:
                     historical = self.instance.history.get(
-                        history_id=history_id).instance
+                        history_id=history_id)
                 except self.instance.history.model.DoesNotExist:
                     err = 'Invalid history ID for this object'
                     raise ValidationError({'history_current': [err]})
                 else:
                     for field in historical._meta.fields:
+                        if field.attname in self.omit_historical_fields:
+                            continue
                         attname = field.attname
                         hist_value = getattr(historical, attname)
                         data[attname] = hist_value

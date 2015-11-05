@@ -324,18 +324,6 @@
             }
         }
     }, {
-        "name": "feature-revert",
-        "method": "PUT",
-        "endpoint": "features/12",
-        "skip": "Generates 500, 'sections' is an invalid keyword argument for this function",
-        "data": {
-            "features": {
-                "links": {
-                    "history_current": "12"
-                }
-            }
-        }
-    }, {
         "name": "feature-delete",
         "method": "DELETE",
         "endpoint": "features/15"
@@ -1093,6 +1081,17 @@
                         }
                     }
                 ]
+            }
+        }
+    }, {
+        "name": "feature-revert",
+        "method": "PUT",
+        "endpoint": "features/12",
+        "data": {
+            "features": {
+                "links": {
+                    "history_current": "12"
+                }
             }
         }
     }
