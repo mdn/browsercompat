@@ -284,7 +284,7 @@ window.WPC = {
                                     if (supportIdx !== 0) {
                                         td.appendChild(document.createElement('br'));
                                     }
-                                    if (version.version) {
+                                    if (version.version !== 'current') {
                                         releaseUri = this.trans_str(version.release_notes_uri, lang);
                                         if (releaseUri) {
                                             versionLink = document.createElement('a');
@@ -297,14 +297,14 @@ window.WPC = {
                                         }
                                     }
                                     if (support.support === 'no') {
-                                        if (version.version) {
+                                        if (version.version !== 'current') {
                                             td.appendChild(document.createTextNode(' '));
                                         }
                                         nosupport = document.createElement('span');
                                         nosupport.setAttribute('style', 'color: #f00;');
                                         nosupport.appendChild(document.createTextNode('Not supported'));
                                         td.appendChild(nosupport);
-                                    } else if (support.support !== 'yes' || (!version.version)) {
+                                    } else if (support.support !== 'yes' || (version.version === 'current')) {
                                         td.appendChild(document.createTextNode(' (' + support.support + ')'));
                                     }
 
