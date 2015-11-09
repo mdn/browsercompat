@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from json import loads
 
-from django.template import loader
+from django.template import loader, Context
 from django.utils import encoding, translation
 
 from rest_framework.relations import ManyRelatedField
@@ -235,6 +235,12 @@ class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
             data, accepted_media_type, renderer_context)
         context = loads(
             json_api.decode('utf-8'), object_pairs_hook=OrderedDict)
+
+        # Is it an error?
+        if 'errors' in context:
+            error_context = Context(context)
+            return super(JsonApiTemplateHTMLRenderer, self).render(
+                error_context, accepted_media_type, renderer_context)
 
         # Copy main item to generic 'data' key
         other_keys = ('linked', 'links', 'meta')
