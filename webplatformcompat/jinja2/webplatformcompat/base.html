@@ -70,6 +70,7 @@
         {%- endblock body_title_elem %}
         {% block quick_nav %}{% endblock %}
         {% block messages %}
+          {% set messages = get_messages(request) %}
           {% if messages %}
             {% for message in messages %}
             <div class="alert alert-{{message.tags}} alert-dismissible fade in" role="alert">
