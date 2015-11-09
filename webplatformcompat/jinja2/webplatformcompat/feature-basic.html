@@ -93,20 +93,20 @@
           {%- set version_id = support['links']['version'] %}
           {%- set version = collection['versions'][version_id] %}
           {%- if not loop.first %}<br>{% endif %}
-          {%- if version.version %}
-          {%- if version.release_notes_uri %}
+            {%- if version.version %}
+              {%- if version.release_notes_uri %}
 
         <a href="{{trans_str(version.release_notes_uri)}}" title="Release Notes">{{version.version}}</a>
-          {%- else %}
+              {%- else %}
 
         {{version.version}}
-          {%- endif %}
+              {%- endif %}
 
-          {%- if support.support != 'yes'%} ({{support.support}}){% endif %}
-          {%- else %}
+              {%- if support.support != 'yes'%} ({{support.support}}){% endif %}
+            {%- else %}
 
         ({{ support.support }})
-          {%- endif %}
+            {%- endif %}
           {%- if support.prefix and support.prefix_mandatory %}
 
         <code>{{support.prefix}}</code>
