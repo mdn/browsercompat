@@ -265,7 +265,12 @@ function commit_json() {
         contentType: "application/vnd.api+json",
         headers: {'X-CSRFToken': csrf},
         success: function(data, textStatus, jqXHR) {
-            $("#form-reparse").submit();
+            var form = $("#form-reparse");
+            if (form.length) {
+                form.submit();
+            } else {
+                 $("#form-reset").submit();
+            }
         },
         error: function(jqXHR, textStatus, errorThrown) {
             $("#pre-commit-errors").html(jqXHR.responseText);
