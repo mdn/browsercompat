@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.contrib.messages import get_messages
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext, ungettext
 from jinja2 import Environment
@@ -27,6 +28,7 @@ def environment(**options):
         '_': ugettext,
         'gettext': ugettext,
         'ngettext': ungettext,
+        'get_messages': get_messages,
     })
     for app_env in (wp_env, bcauth_env, mdn_env):
         for group, to_add in app_env.items():
