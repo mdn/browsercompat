@@ -529,6 +529,13 @@ class TestViewFeatureViewSet(APITestCase):
         response = self.client.get(url)
         self.assertEqual(404, response.status_code)
 
+    def test_feature_not_found_html(self):
+        self.assertFalse(Feature.objects.filter(id=666).exists())
+        url = reverse('viewfeatures-detail', kwargs={'pk': '666'}) + '.html'
+        response = self.client.get(url)
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('404 Not Found', response.content.decode('utf8'))
+
 
 class TestViewFeatureUpdates(APITestCase):
     """Test PUT to a ViewFeature detail"""
