@@ -407,7 +407,7 @@ class ScrapedViewFeature(object):
                 feature_content = self.new_feature(feature_entry)
             else:
                 feature_content = self.load_feature(feature_entry['id'])
-            if str(feature_entry['id']) != str(self.feature.id):
+            if text_type(feature_entry['id']) != text_type(self.feature.id):
                 self.add_resource_if_new('features', feature_content)
             self.compat_table_supports.setdefault(
                 text_type(feature_content['id']), OrderedDict())

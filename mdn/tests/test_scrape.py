@@ -720,18 +720,9 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         scraped_data['compat'].append(scraped_table)
         view = ScrapedViewFeature(self.page, scraped_data)
         out = view.generate_data()
-        expected = self.empty_view(scraped_data)
-        expected['features']['links']['supports'] = [support_id]
-        expected['linked']['browsers'].append(view.load_browser(browser.id))
-        expected['linked']['versions'].append(view.load_version(version.id))
-        support_content = view.new_support(scraped_table['supports'][0])
-        expected['linked']['supports'].append(support_content)
-        expected['meta']['compat_table']['supports'][feature_id] = {
-            browser_id: [support_id]}
-        expected['meta']['compat_table']['tabs'].append({
-            'name': {'en': 'Desktop Browsers'},
-            'browsers': [browser_id]})
-        self.assertDataEqual(expected, out)
+        expected_tabs = [
+            {'name': {'en': 'Desktop Browsers'}, 'browsers': [browser_id]}]
+        self.assertEqual(expected_tabs, out['meta']['compat_table']['tabs'])
 
     def test_load_compat_table_new_support_with_note(self):
         version = self.get_instance('Version', ('firefox_desktop', '1.0'))
@@ -759,20 +750,33 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         scraped_data['compat'].append(scraped_table)
         view = ScrapedViewFeature(self.page, scraped_data)
         out = view.generate_data()
-        expected = self.empty_view(scraped_data)
-        support_content = view.new_support(scraped_table['supports'][0])
-        expected['features']['links']['children'] = [feature_id]
-        expected['linked']['browsers'].append(view.load_browser(browser.id))
-        expected['linked']['versions'].append(view.load_version(version.id))
-        expected['linked']['features'].append(view.load_feature(feature.id))
-        expected['linked']['supports'].append(support_content)
-        expected['meta']['compat_table']['supports'][feature_id] = {
-            browser_id: [support_id]}
-        expected['meta']['compat_table']['tabs'].append({
-            'name': {'en': 'Desktop Browsers'},
-            'browsers': [browser_id]})
-        expected['meta']['compat_table']['notes'][support_id] = 1
-        self.assertDataEqual(expected, out)
+        self.assertEqual(1, out['meta']['compat_table']['notes'][support_id])
+
+    def test_load_compat_table_unicode_feature_name(self):
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/timing-function
+        browser_id = '_Firefox (Gecko)'
+        version_id = '_Firefox-1.0'
+        feature_id = '_cubic-bezier() w/ ordinate ∉[0,1]'
+        support_id = '_%s-%s' % (feature_id, version_id)
+        scraped_data = self.empty_scrape()
+        scraped_table = {
+            'name': 'desktop',
+            'browsers': [{
+                'id': browser_id, 'name': 'Firefox',
+                'slug': '_Firefox (Gecko)'}],
+            'versions': [{
+                'id': version_id, 'browser': browser_id, 'version': '1.0'}],
+            'features': [{
+                'id': feature_id,
+                'name': '<code>cubic-bezier()</code> w/ ordinate ∉[0,1]',
+                'slug': 'web-css-background-size_unicode'}],
+            'supports': [{
+                'id': support_id, 'feature': feature_id, 'version': version_id,
+                'support': 'yes'}]}
+        scraped_data['compat'].append(scraped_table)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        self.assertEqual(feature_id, out['linked']['features'][0]['id'])
 
 
 class TestScrapeFeaturePage(FeaturePageTestCase):
