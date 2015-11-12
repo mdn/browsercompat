@@ -19,7 +19,7 @@
   <input id="fp-search" class="btn btn-primary" type="submit"
    value="Search or Filter by URL">
 </form>
-<form class="form-inline listsearch" action="{{ url("feature_page_slug_search") }}" method="POST">
+<form class="form-inline listsearch" action="{{ url("feature_page_slug_search") }}" method="GET">
   <div class="form-group">
     <label class="sr-only" for="id-slug">Feature Slug</label>
     <input type="slug" class="form-control" id="id-slug" name="slug"

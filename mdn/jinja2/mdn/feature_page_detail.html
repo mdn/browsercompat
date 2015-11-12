@@ -44,34 +44,36 @@
 </dl>
 <h3>Actions</h3>
 <p class="bg-info nextaction">
+<strong>Next Action</strong>:
 {% if object.committed == object.COMMITTED_UNKNOWN %}
   {% if can_reparse_mdn_import(request.user) %}
-    <strong>Next Action</strong>: Reparse to update the status
+    Reparse to update the status.
   {% elif can_refresh_mdn_import(request.user) %}
-    <strong>Next Action</strong>: Reset to update the status
+    Reset to update the status.
   {% else %}
-    No futher actions can be taken.
+    Sign In as an editor to update the status.
   {% endif %}
 {% elif object.committed in (object.COMMITTED_NO, object.COMMITTED_NEEDS_UPDATE) %}
   {% if can_commit_mdn_import(request.user) %}
-    <strong>Next Action</strong>: Commit data to the API
+    Commit data to the API
   {% else %}
-    No futher actions needed.
+    Sign In as an editor to commit data to the API,
     {% if can_refresh_mdn_import(request.user) %}
-    Reset to update with the latest changes from MDN.
+    or Reset to update with the latest changes from MDN.
+    {% else %}
+    or to update with the latest changes from MDN.
     {% endif %}
   {% endif %}
 {% elif object.committed == object.COMMITTED_YES %}
   {% if object.converted_compat == object.CONVERTED_UNKNOWN %}
     {% if can_reparse_mdn_import(request.user) %}
-      <strong>Next Action</strong>: Reparse to update the status
+      Reparse to update the status.
     {% elif can_refresh_mdn_import(request.user) %}
-      <strong>Next Action</strong>: Reset to update the status
+      Reset to update the status.
     {% else %}
-      No futher actions can be taken.
+      Sign In as an editor to update the status.
     {% endif %}
   {% elif object.converted_compat == object.CONVERTED_NO %}
-    <strong>Next Action</strong>:
     <a href="{{ object.feature.mdn_uri['en'] + '$edit#Browser_compatibility' }}" target="_blank">Edit the MDN page</a>
     and add the following macro:
     </p>
@@ -86,6 +88,8 @@
      The MDN page is converted.
     {% if can_refresh_mdn_import(request.user) %}
       Use Reset if the MDN page changes.
+    {% else %}
+      Sign In as an editor to update with the latest changes from MDN.
     {% endif %}
   {% elif object.converted_compat == object.CONVERTED_MISMATCH %}
      The MDN page is converted. The following macro was expected:
@@ -94,21 +98,24 @@
      <a href="{{ object.feature.mdn_uri['en'] + '$edit' }}" target="_blank">Fix the MDN page</a>
      {% if can_refresh_mdn_import(request.user) %}
      and use Reset to download the new page and reparse.
+     {% else %}
+     and Sign In as an editor to download the new page and reparse.
      {% endif %}
   {% elif object.converted_compat == object.CONVERTED_NO_DATA %}
-    This page has no specification or compatibility data. No further action required.
+  This page has no specification or compatibility data.
+  <a href="{{ '%s?status=%s' % (url('feature_page_list'), object.STATUS_PARSED_ERROR) }}">Find a more interesting page</a>.
   {% else %}
-    <strong>Next Action</strong>: Unexpected condition. Please
+    Unexpected condition. Please
     <a href="https://bugzilla.mozilla.org/enter_bug.cgi?product=Mozilla%20Developer%20Network&component=BrowserCompat">file a bug report</a>.
   {% endif %}
 {% elif object.committed == object.COMMITTED_NEEDS_FIXES %}
-    <strong>Next Action</strong>:
     <a href="{{ object.feature.mdn_uri['en'] + '$edit' }}" target="_blank">Edit the MDN page</a>
     to fix the blocking issues.
 {% elif object.committed == object.COMMITTED_NO_DATA %}
-  This page has no specification or compatibility data. No further action required.
+  This page has no specification or compatibility data.
+  <a href="{{ '%s?status=%s' % (url('feature_page_list'), object.STATUS_PARSED_ERROR) }}">Find a more interesting page</a>.
 {% else %}
-  <strong>Next Action</strong>: Unexpected condition. Please
+  Unexpected condition. Please
   <a href="https://bugzilla.mozilla.org/enter_bug.cgi?product=Mozilla%20Developer%20Network&component=BrowserCompat">file a bug report</a>.
 {% endif %}
 </p>
@@ -265,7 +272,12 @@ function commit_json() {
         contentType: "application/vnd.api+json",
         headers: {'X-CSRFToken': csrf},
         success: function(data, textStatus, jqXHR) {
-            $("#form-reparse").submit();
+            var form = $("#form-reparse");
+            if (form.length) {
+                form.submit();
+            } else {
+                 $("#form-reset").submit();
+            }
         },
         error: function(jqXHR, textStatus, errorThrown) {
             $("#pre-commit-errors").html(jqXHR.responseText);
