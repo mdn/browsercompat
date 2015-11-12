@@ -64,7 +64,7 @@ django-mptt==0.7.4
 django-sortedm2m==1.0.2
 
 # Cached instances for Django REST Framework
-drf-cached-instances==0.3.2
+drf-cached-instances==0.3.3
 
 # CORS headers in middleware
 # django-cors-headers==1.1.0

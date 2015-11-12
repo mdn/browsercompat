@@ -33,7 +33,7 @@ class TestManager(TestCase):
     def test_create(self):
         browser = Browser.objects.create()
         self.mocked_update_cache.assert_called_once_with(
-            'Browser', browser.id, browser, False)
+            'Browser', browser.id, browser)
 
     def test_create_delay(self):
         Browser.objects.create(_delay_cache=True)
@@ -47,11 +47,40 @@ class TestBrowser(unittest.TestCase):
         self.assertEqual('browser', str(browser))
 
 
-class TestFeature(unittest.TestCase):
+class TestFeature(TestCase):
 
     def test_str(self):
         feature = Feature(slug="feature")
         self.assertEqual('feature', str(feature))
+
+    def add_family(self):
+        parent = self.create(Feature, slug="parent")
+        children = [
+            self.create(Feature, slug="child%d" % i, parent=parent)
+            for i in range(5)]
+        return parent, children
+
+    def test_natural_child_order(self):
+        parent, children = self.add_family()
+        self.assertEqual(list(parent.children.all()), children)
+
+    def test_set_children_order_same(self):
+        parent, children = self.add_family()
+        parent.set_children_order(children)
+        self.assertEqual(list(parent.children.all()), children)
+
+    def test_set_children_order_rotated(self):
+        parent, children = self.add_family()
+        new_order = children[1:] + children[:1]
+        parent.set_children_order(new_order)
+        self.assertEqual(list(parent.children.all()), new_order)
+
+    def test_set_children_swap_middle(self):
+        parent, children = self.add_family()
+        new_order = [
+            children[0], children[1], children[3], children[2], children[4]]
+        parent.set_children_order(new_order)
+        self.assertEqual(list(parent.children.all()), new_order)
 
 
 class TestMaturity(unittest.TestCase):
@@ -121,7 +150,7 @@ class TestSaveSignal(unittest.TestCase):
     def test_create(self):
         post_save_update_cache(Browser, self.browser, created=True, raw=False)
         self.mocked_update_cache.assert_called_once_with(
-            'Browser', 666, self.browser, False)
+            'Browser', 666, self.browser)
 
     def test_create_delayed(self):
         self.browser._delay_cache = True
@@ -151,8 +180,8 @@ class TestM2MChangedSignal(TestCase):
     def test_add_section_to_feature(self):
         self.feature.sections.add(self.section)
         self.mocked_update_cache.assert_has_calls([
-            mock.call('Feature', self.feature.pk, self.feature, False),
-            mock.call('Section', self.section.pk, self.section, False)])
+            mock.call('Feature', self.feature.pk, self.feature),
+            mock.call('Section', self.section.pk, self.section)])
         self.assertEqual(self.mocked_update_cache.call_count, 2)
 
     def test_add_section_to_feature_delayed(self):
@@ -163,8 +192,8 @@ class TestM2MChangedSignal(TestCase):
     def test_add_feature_to_section(self):
         self.section.features.add(self.feature)
         self.mocked_update_cache.assert_has_calls([
-            mock.call('Feature', self.feature.pk, self.feature, False),
-            mock.call('Section', self.section.pk, self.section, False)])
+            mock.call('Feature', self.feature.pk, self.feature),
+            mock.call('Section', self.section.pk, self.section)])
         self.assertEqual(self.mocked_update_cache.call_count, 2)
 
     def test_clear_features_from_section(self):
@@ -172,7 +201,7 @@ class TestM2MChangedSignal(TestCase):
         self.mocked_update_cache.reset_mock()
         self.section.features.clear()
         self.mocked_update_cache.assert_called_once_with(
-            'Section', self.section.pk, self.section, False)
+            'Section', self.section.pk, self.section)
 
 
 class TestDeleteSignal(TestCase):
@@ -189,7 +218,7 @@ class TestDeleteSignal(TestCase):
         pk = self.maturity.pk
         self.maturity.delete()
         self.mocked_update_cache.assert_called_once_with(
-            'Maturity', pk, self.maturity, False)
+            'Maturity', pk, self.maturity)
 
     def test_delete_delayed(self):
         self.maturity._delay_cache = True

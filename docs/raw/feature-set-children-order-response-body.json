@@ -1,0 +1,60 @@
+{
+    "features": {
+        "id": "2",
+        "slug": "web-css",
+        "mdn_uri": null,
+        "experimental": false,
+        "standardized": true,
+        "stable": true,
+        "obsolete": false,
+        "name": {
+            "en": "CSS"
+        },
+        "links": {
+            "sections": [],
+            "supports": [],
+            "parent": "1",
+            "children": [
+                "3",
+                "4",
+                "5",
+                "7",
+                "8",
+                "9",
+                "13",
+                "10"
+            ],
+            "history_current": "24",
+            "history": [
+                "24",
+                "2"
+            ]
+        }
+    },
+    "links": {
+        "features.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
+        },
+        "features.parent": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.parent}"
+        },
+        "features.children": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.history_current": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history_current}"
+        },
+        "features.history": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history}"
+        }
+    }
+}

@@ -644,6 +644,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         feature_content = view.new_feature(scraped_table['features'][0])
         support_content = view.new_support(scraped_table['supports'][0])
         expected = self.empty_view(scraped_data)
+        expected['features']['links']['children'] = [feature_id]
         expected['linked']['browsers'].append(browser_content)
         expected['linked']['versions'].append(version_content)
         expected['linked']['features'].append(feature_content)
@@ -682,6 +683,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         view = ScrapedViewFeature(self.page, scraped_data)
         out = view.generate_data()
         expected = self.empty_view(scraped_data)
+        expected['features']['links']['children'] = [feature_id]
         expected['linked']['browsers'].append(view.load_browser(browser.id))
         expected['linked']['versions'].append(view.load_version(version.id))
         expected['linked']['features'].append(view.load_feature(feature.id))
@@ -719,6 +721,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         view = ScrapedViewFeature(self.page, scraped_data)
         out = view.generate_data()
         expected = self.empty_view(scraped_data)
+        expected['features']['links']['supports'] = [support_id]
         expected['linked']['browsers'].append(view.load_browser(browser.id))
         expected['linked']['versions'].append(view.load_version(version.id))
         support_content = view.new_support(scraped_table['supports'][0])
@@ -758,6 +761,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         out = view.generate_data()
         expected = self.empty_view(scraped_data)
         support_content = view.new_support(scraped_table['supports'][0])
+        expected['features']['links']['children'] = [feature_id]
         expected['linked']['browsers'].append(view.load_browser(browser.id))
         expected['linked']['versions'].append(view.load_version(version.id))
         expected['linked']['features'].append(view.load_feature(feature.id))

@@ -7,7 +7,7 @@ from .cache import Cache
 @shared_task(ignore_result=True)
 def update_cache_for_instance(
         model_name, instance_pk, instance=None, version=None,
-        update_only=True):
+        update_only=False):
     cache = Cache()
     invalid = cache.update_instance(
         model_name, instance_pk, instance, version, update_only=update_only)

@@ -43,7 +43,7 @@
                     "8",
                     "9",
                     "10",
-                    "12"
+                    "13"
                 ]
             }
         },
@@ -217,7 +217,7 @@
                 "parent": "2",
                 "children": [
                     "11",
-                    "13"
+                    "12"
                 ]
             }
         },
@@ -254,24 +254,6 @@
         },
         {
             "id": "12",
-            "slug": "web-css-transform-style",
-            "mdn_uri": {
-                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style"
-            },
-            "experimental": false,
-            "standardized": true,
-            "stable": true,
-            "obsolete": false,
-            "name": "transform-style",
-            "links": {
-                "sections": [],
-                "supports": [],
-                "parent": "2",
-                "children": []
-            }
-        },
-        {
-            "id": "13",
             "slug": "web-css-transform-three-value-syntax",
             "mdn_uri": null,
             "experimental": false,
@@ -297,24 +279,42 @@
                 "parent": "10",
                 "children": []
             }
+        },
+        {
+            "id": "13",
+            "slug": "web-css-transform-style",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": "transform-style",
+            "links": {
+                "sections": [],
+                "supports": [],
+                "parent": "2",
+                "children": []
+            }
         }
     ],
     "links": {
         "features.sections": {
             "type": "sections",
-            "href": "http://localhost:8000/api/v1/sections/{features.sections}"
+            "href": "http://127.0.0.1:8081/api/v1/sections/{features.sections}"
         },
         "features.supports": {
             "type": "supports",
-            "href": "http://localhost:8000/api/v1/supports/{features.supports}"
+            "href": "http://127.0.0.1:8081/api/v1/supports/{features.supports}"
         },
         "features.parent": {
             "type": "features",
-            "href": "http://localhost:8000/api/v1/features/{features.parent}"
+            "href": "http://127.0.0.1:8081/api/v1/features/{features.parent}"
         },
         "features.children": {
             "type": "features",
-            "href": "http://localhost:8000/api/v1/features/{features.children}"
+            "href": "http://127.0.0.1:8081/api/v1/features/{features.children}"
         }
     },
     "meta": {

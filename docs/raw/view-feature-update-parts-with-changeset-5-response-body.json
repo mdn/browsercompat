@@ -156,6 +156,20 @@
                 }
             },
             {
+                "id": "3",
+                "slug": "blackberry",
+                "name": {
+                    "en": "BlackBerry Browser"
+                },
+                "note": null,
+                "links": {
+                    "history": [
+                        "3"
+                    ],
+                    "history_current": "3"
+                }
+            },
+            {
                 "id": "4",
                 "slug": "chrome_desktop",
                 "name": {
@@ -459,6 +473,23 @@
                     ],
                     "history_current": "46"
                 }
+            },
+            {
+                "id": "50",
+                "version": "2.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "retired",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 3,
+                "links": {
+                    "browser": "3",
+                    "history": [
+                        "53"
+                    ],
+                    "history_current": "53"
+                }
             }
         ],
         "supports": [
@@ -681,6 +712,26 @@
                         "27"
                     ]
                 }
+            },
+            {
+                "id": "29",
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null,
+                "links": {
+                    "version": "50",
+                    "feature": "6",
+                    "history_current": "32",
+                    "history": [
+                        "32"
+                    ]
+                }
             }
         ],
         "maturities": [
@@ -867,7 +918,8 @@
                         "8",
                         "9",
                         "10",
-                        "27"
+                        "27",
+                        "29"
                     ],
                     "parent": "5",
                     "children": [],
@@ -889,6 +941,9 @@
                     ],
                     "2": [
                         "27"
+                    ],
+                    "3": [
+                        "29"
                     ],
                     "4": [
                         "2"
@@ -936,6 +991,7 @@
                     "browsers": [
                         "1",
                         "2",
+                        "3",
                         "6",
                         "10",
                         "15"

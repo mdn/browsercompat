@@ -121,15 +121,12 @@ class MPTTRelationField(PrimaryKeyRelatedField):
         def ancestors(self):
             return self.get_ancestors(include_self=True)
 
-    ancestors = MPTTRelationField(many=True, source="ancestors")
+    ancestors = MPTTRelationField(many=True, queryset=MyModel.objects.all())
     """
 
     def __init__(self, **kwargs):
         self.relation = kwargs.pop('source', None)
-        read_only = kwargs.pop('read_only', True)
-        assert read_only, 'read_only must be True'
-        super(MPTTRelationField, self).__init__(
-            read_only=read_only, **kwargs)
+        super(MPTTRelationField, self).__init__(**kwargs)
 
 
 class OptionalCharField(CharField):

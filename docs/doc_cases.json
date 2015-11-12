@@ -267,7 +267,7 @@
     }, {
         "name": "feature-by-id",
         "method": "GET",
-        "endpoint": "features/13"
+        "endpoint": "features/12"
     }, {
         "name": "feature-by-id-canonical",
         "method": "GET",
@@ -317,22 +317,10 @@
     }, {
         "name": "feature-update",
         "method": "PUT",
-        "endpoint": "features/13",
+        "endpoint": "features/12",
         "data": {
             "features": {
                 "stable": false
-            }
-        }
-    }, {
-        "name": "feature-revert",
-        "method": "PUT",
-        "endpoint": "features/13",
-        "skip": "Generates 500, 'sections' is an invalid keyword argument for this function",
-        "data": {
-            "features": {
-                "links": {
-                    "history_current": "13"
-                }
             }
         }
     }, {
@@ -346,7 +334,7 @@
     }, {
         "name": "support-by-feature",
         "method": "GET",
-        "endpoint": "supports?feature=13"
+        "endpoint": "supports?feature=12"
     }, {
         "name": "support-by-version",
         "method": "GET",
@@ -615,14 +603,14 @@
     }, {
         "name": "historical-feature-by-id",
         "method": "GET",
-        "endpoint": "historical_features/13",
+        "endpoint": "historical_features/12",
         "standardize": {
             "date": "2015-04-20T18:57:11.029709Z"
         }
     }, {
         "name": "historical-feature-filter-by-id",
         "method": "GET",
-        "endpoint": "historical_features?id=13",
+        "endpoint": "historical_features?id=12",
         "standardize": {
             "date": "2015-04-20T18:57:11.029709Z"
         }
@@ -764,27 +752,6 @@
         "name": "view-feature-update-parts-with-changeset-5",
         "method": "GET",
         "endpoint": "view_features/5"
-    }, {
-        "name": "view-feature-update-put-subfeature",
-        "method": "PUT",
-        "endpoint": "view_features/5",
-        "skip": "Returns 500, AssertionError: When looking up \"browser.slug\", could not find ID '14' in browsers.",
-        "data": {
-            "linked": {
-                "features": [
-                    {
-                        "id": "_New Subfeature",
-                        "slug": "web-css-float_new-subfeature",
-                        "name": {
-                            "en": "New Subfeature"
-                        },
-                        "links": {
-                            "parent": "5"
-                        }
-                    }
-                ]
-            }
-        }
     }, {
         "name": "feature-add-sections-01",
         "method": "POST",
@@ -1037,5 +1004,95 @@
         "name": "specification-delete",
         "method": "DELETE",
         "endpoint": "specifications/4"
+    }, {
+        "name": "feature-set-children-order",
+        "method": "PUT",
+        "endpoint": "features/2",
+        "data": {
+            "features": {
+                "links": {
+                    "children": [
+                        "3",
+                        "4",
+                        "5",
+                        "7",
+                        "8",
+                        "9",
+                        "13",
+                        "10"]
+                }
+            }
+        }
+    }, {
+        "name": "feature-set-children-order-omit-fails",
+        "method": "PUT",
+        "endpoint": "features/2",
+        "data": {
+            "features": {
+                "links": {
+                    "children": [
+                        "3",
+                        "4",
+                        "5",
+                        "7",
+                        "8",
+                        "9",
+                        "10"]
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "feature-set-children-order-add-fails",
+        "method": "PUT",
+        "endpoint": "features/2",
+        "data": {
+            "features": {
+                "links": {
+                    "children": [
+                        "3",
+                        "4",
+                        "5",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "13",
+                        "14"]
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "view-feature-update-put-subfeature",
+        "method": "PUT",
+        "endpoint": "view_features/5",
+        "data": {
+            "linked": {
+                "features": [
+                    {
+                        "id": "_New Subfeature",
+                        "slug": "web-css-float_new-subfeature",
+                        "name": {
+                            "en": "New Subfeature"
+                        },
+                        "links": {
+                            "parent": "5"
+                        }
+                    }
+                ]
+            }
+        }
+    }, {
+        "name": "feature-revert",
+        "method": "PUT",
+        "endpoint": "features/12",
+        "data": {
+            "features": {
+                "links": {
+                    "history_current": "12"
+                }
+            }
+        }
     }
 ]

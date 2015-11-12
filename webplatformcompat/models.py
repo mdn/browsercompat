@@ -7,6 +7,7 @@ from django.db.models.signals import post_delete, post_save, m2m_changed
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django_extensions.db.fields.json import JSONField
+from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from sortedm2m.fields import SortedManyToManyField
 
@@ -15,8 +16,8 @@ from .history import register, HistoricalRecords
 from .validators import VersionAndStatusValidator
 
 
-class CachingManager(models.Manager):
-    def create(self, **kwargs):
+class CachingManagerMixin(object):
+    def delay_create(self, **kwargs):
         """Add the _delay_cache value to the object before saving"""
         delay_cache = kwargs.pop('_delay_cache', False)
         obj = self.model(**kwargs)
@@ -24,6 +25,16 @@ class CachingManager(models.Manager):
         obj._delay_cache = delay_cache
         obj.save(force_insert=True, using=self.db)
         return obj
+
+
+class CachingManager(models.Manager, CachingManagerMixin):
+    # Django magic prevents a standard override of create
+    create = CachingManagerMixin.delay_create
+
+
+class CachingTreeManager(TreeManager, CachingManagerMixin):
+    # Django magic prevents a standard override of create
+    create = CachingManagerMixin.delay_create
 
 #
 # "Regular" (non-historical) models
@@ -42,7 +53,7 @@ class Browser(models.Model):
         help_text="Extended information about browser, client, or platform.",
         blank=True, null=True)
     objects = CachingManager()
-    history = HistoricalRecords()
+    # history = HistoricalRecords()  # Registered below
 
     def __str__(self):
         return self.slug
@@ -85,11 +96,38 @@ class Feature(MPTTModel):
         null=True, blank=True, related_name='children')
     sections = SortedManyToManyField(
         'Section', related_name='features', blank=True)
-    objects = CachingManager()
+    objects = CachingTreeManager()
     # history = HistoricalFeatureRecords()  # Registered below
 
     def __str__(self):
         return self.slug
+
+    def set_children_order(self, children):
+        """Set the child features in the given order.
+
+        django-mptt doesn't have a function to do this, and uses direct SQL
+        to change the tree, so a lot of reloading is required to get it right.
+        """
+        # Verify that all children are present
+        current_children = list(self.get_children())
+        current_set = set([child.pk for child in current_children])
+        new_set = set([child.pk for child in children])
+        assert current_set == new_set, "Can not add/remove child features."
+
+        # Set order, refreshing as we go
+        prev_child = None
+        moved = False
+        for pos, next_child in enumerate(children):
+            if current_children[pos].pk != next_child.pk:
+                if moved:
+                    next_child.refresh_from_db()
+                if prev_child is None:
+                    next_child.move_to(self, "first-child")
+                else:
+                    next_child.move_to(prev_child, "right")
+                current_children = list(self.get_children())
+                moved = True
+            prev_child = next_child
 
 
 @python_2_unicode_compatible
@@ -157,7 +195,7 @@ class Specification(models.Model):
     uri = TranslatedField(
         help_text="Specification URI, without subpath and anchor")
     objects = CachingManager()
-    history = HistoricalRecords()
+    # history = HistoricalRecords()  # Registered below
 
     def __str__(self):
         return self.slug
@@ -263,15 +301,29 @@ class Version(models.Model):
 # Customized historical models and registration
 #
 
+class HistoricalBrowserRecords(HistoricalRecords):
+    additional_fields = {
+        'versions': JSONField(default=[])
+    }
+
+    def get_versions_value(self, instance, mtype):
+        return list(
+            instance.versions.values_list('pk', flat=True))
+
+
 class HistoricalFeatureRecords(HistoricalRecords):
     additional_fields = {
-        'sections': JSONField(default=[])
+        'sections': JSONField(default=[]),
+        'children': JSONField(default=[])
     }
 
     def get_sections_value(self, instance, mtype):
-        section_pks = list(
+        return list(
             instance.sections.values_list('pk', flat=True))
-        return section_pks
+
+    def get_children_value(self, instance, mtype):
+        return list(
+            instance.get_children().values_list('pk', flat=True))
 
 
 class HistoricalMaturityRecords(HistoricalRecords):
@@ -282,8 +334,20 @@ class HistoricalMaturityRecords(HistoricalRecords):
         return meta_fields
 
 
+class HistoricalSpecificationRecords(HistoricalRecords):
+    additional_fields = {
+        'sections': JSONField(default=[])
+    }
+
+    def get_sections_value(self, instance, mtype):
+        return list(
+            instance.sections.values_list('pk', flat=True))
+
+
+register(Browser, records_class=HistoricalBrowserRecords)
 register(Feature, records_class=HistoricalFeatureRecords)
 register(Maturity, records_class=HistoricalMaturityRecords)
+register(Specification, records_class=HistoricalSpecificationRecords)
 
 
 #
@@ -325,9 +389,9 @@ def feature_sections_changed_update_order(
 
     from .tasks import update_cache_for_instance
     for feature in features:
-        update_cache_for_instance('Feature', feature.pk, feature, False)
+        update_cache_for_instance('Feature', feature.pk, feature)
     for section in sections:
-        update_cache_for_instance('Section', section.pk, section, False)
+        update_cache_for_instance('Section', section.pk, section)
 
 
 @receiver(post_delete, dispatch_uid='post_delete_update_cache')
@@ -337,7 +401,7 @@ def post_delete_update_cache(sender, instance, **kwargs):
         delay_cache = getattr(instance, '_delay_cache', False)
         if not delay_cache:
             from .tasks import update_cache_for_instance
-            update_cache_for_instance(name, instance.pk, instance, False)
+            update_cache_for_instance(name, instance.pk, instance)
 
 
 @receiver(post_save, dispatch_uid='post_save_update_cache')
@@ -349,7 +413,7 @@ def post_save_update_cache(sender, instance, created, raw, **kwargs):
         delay_cache = getattr(instance, '_delay_cache', False)
         if not delay_cache:
             from .tasks import update_cache_for_instance
-            update_cache_for_instance(name, instance.pk, instance, False)
+            update_cache_for_instance(name, instance.pk, instance)
 
 
 #
@@ -363,4 +427,6 @@ def add_user_to_change_resource_group(
     if created and not raw:
         from django.contrib.auth.models import Group
         instance.groups.add(Group.objects.get(name='change-resource'))
+        if hasattr(instance, "group_names"):
+            del instance.group_names
         post_save_update_cache(sender, instance, created, raw, **kwargs)

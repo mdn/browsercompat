@@ -1,5 +1,5 @@
 "use strict";
-/*global window: false, document: false */
+/*global window: false, document: false, WPC: false */
 
 window.WPC = {
     parse_resources: function (obj) {
@@ -136,14 +136,11 @@ window.WPC = {
         return null;
     },
     generate_browser_tables: function (resources, lang) {
-        var a, backlink, browser, browserCnt, browserId, browserIdx,
-            browserMap, feature, featureId, featureName, note, noteArray,
-            noteCnt, noteDiv, noteId, noteIdx, noteNum,
-            noteSup, idPrefix, nosupport, panel, prefix,
-            releaseUri, span1, span2, support, supportCnt, supportId,
-            supportIdx, supportMap, supports, tab, tabCnt, tabContent,
+        var a, backlink, browser, browserCnt, browserId, browserIdx, note,
+            noteArray, noteCnt, noteDiv, noteId, noteIdx, noteNum, idPrefix,
+            panel, support, supportId, supportMap, tab, tabCnt, tabContent,
             tabContentItem, tabId, tabIdx, tabList, tabListItem, table, tabs,
-            tbody, td, th, thead, tr, unknown, version, versionId, versionLink;
+            tbody, th, thead, tr;
         if (resources.meta.compat_table.tabs) {
             idPrefix = 'wpc-compat-' + resources.data.id;
             tabs = resources.meta.compat_table.tabs;
@@ -207,148 +204,7 @@ window.WPC = {
 
                 // Add the compat table body (rows of sub-features)
                 tbody = document.createElement('tbody');
-                supportMap = resources.meta.compat_table.supports;
-                for (featureId in supportMap) {
-                    if (supportMap.hasOwnProperty(featureId)) {
-                        browserMap = supportMap[featureId];
-                        if (featureId === resources.data.id) {
-                            feature = resources.data;
-                            featureName = this.trans_span(this.strings['Basic support'], lang);
-                        } else {
-                            feature = resources.features[featureId];
-                            featureName = this.trans_span(feature.name, lang);
-                        }
-                        tr = document.createElement('tr');
-                        td = document.createElement('td');
-                        td.appendChild(featureName);
-                        if (feature.experimental) {
-                            span1 = document.createElement('span');
-                            span1.setAttribute('class', 'glyphicon glyphicon-fire');
-                            span1.setAttribute('style', 'color: #09d;');
-                            span1.setAttribute('aria-hidden', 'true');
-                            span1.setAttribute('data-toggle', 'tooltip');
-                            span1.setAttribute('data-placement', 'top');
-                            span1.setAttribute('title', 'This is an experimental API that should not be used in production code.');
-                            span2 = document.createElement('span');
-                            span2.setAttribute('class', 'sr-only');
-                            span2.appendChild(document.createTextNode('This is an experimental API that should not be used in production code.'));
-                            td.appendChild(span1);
-                            td.appendChild(span2);
-                        }
-                        if (!feature.standardized) {
-                            span1 = document.createElement('span');
-                            span1.setAttribute('class', 'glyphicon glyphicon-warning-sign');
-                            span1.setAttribute('style', 'color: #db0;');
-                            span1.setAttribute('aria-hidden', 'true');
-                            span1.setAttribute('data-toggle', 'tooltip');
-                            span1.setAttribute('data-placement', 'top');
-                            span1.setAttribute('title', 'This API has not been standardized.');
-                            span2 = document.createElement('span');
-                            span2.setAttribute('class', 'sr-only');
-                            span2.appendChild(document.createTextNode('This API has not been standardized.'));
-                            td.appendChild(span1);
-                            td.appendChild(span2);
-                        }
-                        if (feature.obsolete) {
-                            span1 = document.createElement('span');
-                            span1.setAttribute('class', 'glyphicon glyphicon-thumbs-down');
-                            span1.setAttribute('style', 'color: #000;');
-                            span1.setAttribute('aria-hidden', 'true');
-                            span1.setAttribute('data-toggle', 'tooltip');
-                            span1.setAttribute('data-placement', 'top');
-                            span1.setAttribute('title', 'This deprecated API should no longer be used, but will probably still work.');
-                            span2 = document.createElement('span');
-                            span2.setAttribute('class', 'sr-only');
-                            span2.appendChild(document.createTextNode('This deprecated API should no longer be used, but will probably still work.'));
-                            td.appendChild(span1);
-                            td.appendChild(span2);
-                        }
-                        tr.appendChild(td);
-
-                        for (browserIdx = 0; browserIdx < browserCnt; browserIdx += 1) {
-                            browserId = tab.browsers[browserIdx];
-                            browser = resources.browsers[browserId];
-
-                            // Add each version / support for sub-feature / browser
-                            td = document.createElement('td');
-                            supports = browserMap[browserId];
-                            if (supports) {
-                                supportCnt = supports.length;
-                                for (supportIdx = 0; supportIdx < supportCnt; supportIdx += 1) {
-                                    supportId = supports[supportIdx];
-                                    support = resources.supports[supportId];
-                                    versionId = support.links.version;
-                                    version = resources.versions[versionId];
-
-                                    // Version with support text
-                                    if (supportIdx !== 0) {
-                                        td.appendChild(document.createElement('br'));
-                                    }
-                                    if (version.version !== 'current') {
-                                        releaseUri = this.trans_str(version.release_notes_uri, lang);
-                                        if (releaseUri) {
-                                            versionLink = document.createElement('a');
-                                            versionLink.setAttribute('href', releaseUri);
-                                            versionLink.setAttribute('title', 'Release Notes');
-                                            versionLink.appendChild(document.createTextNode(version.version));
-                                            td.appendChild(versionLink);
-                                        } else {
-                                            td.appendChild(document.createTextNode(version.version));
-                                        }
-                                    }
-                                    if (support.support === 'no') {
-                                        if (version.version !== 'current') {
-                                            td.appendChild(document.createTextNode(' '));
-                                        }
-                                        nosupport = document.createElement('span');
-                                        nosupport.setAttribute('style', 'color: #f00;');
-                                        nosupport.appendChild(document.createTextNode('Not supported'));
-                                        td.appendChild(nosupport);
-                                    } else if (support.support !== 'yes' || (version.version === 'current')) {
-                                        td.appendChild(document.createTextNode(' (' + support.support + ')'));
-                                    }
-
-                                    // Prefix
-                                    if (support.prefix && support.prefix_mandatory) {
-                                        td.appendChild(document.createTextNode(' '));
-                                        prefix = document.createElement('code');
-                                        prefix.setAttribute('style', 'white-space: nowrap;');
-                                        prefix.appendChild(document.createTextNode(support.prefix));
-                                        td.appendChild(prefix);
-                                    } else {
-                                        prefix = null;
-                                    }
-
-                                    // Note
-                                    if (support.note) {
-                                        td.appendChild(document.createTextNode(' '));
-                                        noteNum = resources.meta.compat_table.notes[supportId];
-                                        noteId = 'wpc-compat-' + resources.data.id + '-note-' + noteNum;
-                                        noteSup = document.createElement('sup');
-                                        note = document.createElement('a');
-                                        note.setAttribute('id', noteId + '-back');
-                                        note.setAttribute('href', '#' + noteId);
-                                        note.appendChild(document.createTextNode("[" + noteNum + "]"));
-                                        noteSup.appendChild(note);
-                                        td.appendChild(noteSup);
-                                    } else {
-                                        note = null;
-                                    }
-                                }
-                            } else {
-                                unknown = document.createElement('span');
-                                unknown.setAttribute('style', 'color: rgb(255, 153, 0);');
-                                unknown.setAttribute('title', "Compatibility unknown; please update this.");
-                                unknown.appendChild(document.createTextNode('?'));
-                                td.appendChild(unknown);
-                            }
-                            tr.appendChild(td);
-                        }
-
-                        tbody.appendChild(tr);
-                    }
-                }
-
+                WPC.generate_browser_rows(resources.data.id, resources, lang, tab, tbody);
                 table.appendChild(thead);
                 table.appendChild(tbody);
                 tabContentItem.appendChild(table);
@@ -393,6 +249,164 @@ window.WPC = {
             return panel;
         }
         return null;
+    },
+    generate_browser_rows: function (featureId, resources, lang, tab, tbody) {
+        // Add row for feature and children when they have support
+        var browserCnt, browserId, browserIdx, browserMap, childCnt, childId,
+            childIdx, feature, featureName, hasSupports, note, noteId, noteNum,
+            noteSup, nosupport, prefix, releaseUri, span1, span2, support,
+            supportCnt, supportId, supportIdx, supportMap, supports, td, tr,
+            unknown, version, versionId, versionLink;
+        if (featureId === resources.data.id) {
+            feature = resources.data;
+            featureName = this.trans_span(this.strings['Basic support'], lang);
+        } else {
+            feature = resources.features[featureId];
+            featureName = this.trans_span(feature.name, lang);
+        }
+        supportMap = resources.meta.compat_table.supports;
+        if (supportMap.hasOwnProperty(featureId)) {
+            browserMap = supportMap[featureId];
+            hasSupports = (feature.links.supports && feature.links.supports.length > 0);
+        } else {
+            hasSupports = false;
+        }
+        if (hasSupports) {
+            tr = document.createElement('tr');
+            td = document.createElement('td');
+            td.appendChild(featureName);
+            if (feature.experimental) {
+                span1 = document.createElement('span');
+                span1.setAttribute('class', 'glyphicon glyphicon-fire');
+                span1.setAttribute('style', 'color: #09d;');
+                span1.setAttribute('aria-hidden', 'true');
+                span1.setAttribute('data-toggle', 'tooltip');
+                span1.setAttribute('data-placement', 'top');
+                span1.setAttribute('title', 'This is an experimental API that should not be used in production code.');
+                span2 = document.createElement('span');
+                span2.setAttribute('class', 'sr-only');
+                span2.appendChild(document.createTextNode('This is an experimental API that should not be used in production code.'));
+                td.appendChild(span1);
+                td.appendChild(span2);
+            }
+            if (!feature.standardized) {
+                span1 = document.createElement('span');
+                span1.setAttribute('class', 'glyphicon glyphicon-warning-sign');
+                span1.setAttribute('style', 'color: #db0;');
+                span1.setAttribute('aria-hidden', 'true');
+                span1.setAttribute('data-toggle', 'tooltip');
+                span1.setAttribute('data-placement', 'top');
+                span1.setAttribute('title', 'This API has not been standardized.');
+                span2 = document.createElement('span');
+                span2.setAttribute('class', 'sr-only');
+                span2.appendChild(document.createTextNode('This API has not been standardized.'));
+                td.appendChild(span1);
+                td.appendChild(span2);
+            }
+            if (feature.obsolete) {
+                span1 = document.createElement('span');
+                span1.setAttribute('class', 'glyphicon glyphicon-thumbs-down');
+                span1.setAttribute('style', 'color: #000;');
+                span1.setAttribute('aria-hidden', 'true');
+                span1.setAttribute('data-toggle', 'tooltip');
+                span1.setAttribute('data-placement', 'top');
+                span1.setAttribute('title', 'This deprecated API should no longer be used, but will probably still work.');
+                span2 = document.createElement('span');
+                span2.setAttribute('class', 'sr-only');
+                span2.appendChild(document.createTextNode('This deprecated API should no longer be used, but will probably still work.'));
+                td.appendChild(span1);
+                td.appendChild(span2);
+            }
+            tr.appendChild(td);
+
+            browserCnt = tab.browsers.length;
+            for (browserIdx = 0; browserIdx < browserCnt; browserIdx += 1) {
+                // Add each version / support for sub-feature / browser
+                td = document.createElement('td');
+                browserId = tab.browsers[browserIdx];
+                supports = browserMap[browserId];
+                supportCnt = supports && supports.length;
+                if (supportCnt) {
+                    for (supportIdx = 0; supportIdx < supportCnt; supportIdx += 1) {
+                        supportId = supports[supportIdx];
+                        support = resources.supports[supportId];
+                        versionId = support.links.version;
+                        version = resources.versions[versionId];
+
+                        // Version with support text
+                        if (supportIdx !== 0) {
+                            td.appendChild(document.createElement('br'));
+                        }
+                        if (version.version !== 'current') {
+                            releaseUri = this.trans_str(version.release_notes_uri, lang);
+                            if (releaseUri) {
+                                versionLink = document.createElement('a');
+                                versionLink.setAttribute('href', releaseUri);
+                                versionLink.setAttribute('title', 'Release Notes');
+                                versionLink.appendChild(document.createTextNode(version.version));
+                                td.appendChild(versionLink);
+                            } else {
+                                td.appendChild(document.createTextNode(version.version));
+                            }
+                        }
+                        if (support.support === 'no') {
+                            if (version.version !== 'current') {
+                                td.appendChild(document.createTextNode(' '));
+                            }
+                            nosupport = document.createElement('span');
+                            nosupport.setAttribute('style', 'color: #f00;');
+                            nosupport.appendChild(document.createTextNode('Not supported'));
+                            td.appendChild(nosupport);
+                        } else if (support.support !== 'yes' || (version.version === 'current')) {
+                            td.appendChild(document.createTextNode(' (' + support.support + ')'));
+                        }
+
+                        // Prefix
+                        if (support.prefix && support.prefix_mandatory) {
+                            td.appendChild(document.createTextNode(' '));
+                            prefix = document.createElement('code');
+                            prefix.setAttribute('style', 'white-space: nowrap;');
+                            prefix.appendChild(document.createTextNode(support.prefix));
+                            td.appendChild(prefix);
+                        } else {
+                            prefix = null;
+                        }
+
+                        // Note
+                        if (support.note) {
+                            td.appendChild(document.createTextNode(' '));
+                            noteNum = resources.meta.compat_table.notes[supportId];
+                            noteId = 'wpc-compat-' + resources.data.id + '-note-' + noteNum;
+                            noteSup = document.createElement('sup');
+                            note = document.createElement('a');
+                            note.setAttribute('id', noteId + '-back');
+                            note.setAttribute('href', '#' + noteId);
+                            note.appendChild(document.createTextNode("[" + noteNum + "]"));
+                            noteSup.appendChild(note);
+                            td.appendChild(noteSup);
+                        } else {
+                            note = null;
+                        }
+                    }
+                } else {
+                    unknown = document.createElement('span');
+                    unknown.setAttribute('style', 'color: rgb(255, 153, 0);');
+                    unknown.setAttribute('title', "Compatibility unknown; please update this.");
+                    unknown.appendChild(document.createTextNode('?'));
+                    td.appendChild(unknown);
+                }
+                tr.appendChild(td);
+            }
+
+            tbody.appendChild(tr);
+        }
+
+        // Recursively add children
+        childCnt = feature.links.children.length;
+        for (childIdx = 0; childIdx < childCnt; childIdx += 1) {
+            childId = feature.links.children[childIdx];
+            WPC.generate_browser_rows(childId, resources, lang, tab, tbody);
+        }
     },
     strings: {
         'Basic support': {

@@ -73,6 +73,9 @@ class FieldMapMixin(object):
 class HistoricalModelSerializer(
         WriteRestrictedMixin, FieldMapMixin, ModelSerializer):
     """Model serializer with history manager"""
+    omit_historical_fields = (
+        'id', 'history_id', 'history_date', 'history_user', 'history_type',
+        'history_changeset')
 
     def build_property_field(self, field_name, model_class):
         """Handle history field.
@@ -103,12 +106,14 @@ class HistoricalModelSerializer(
             if current_history.history_id != history_id:
                 try:
                     historical = self.instance.history.get(
-                        history_id=history_id).instance
+                        history_id=history_id)
                 except self.instance.history.model.DoesNotExist:
                     err = 'Invalid history ID for this object'
                     raise ValidationError({'history_current': [err]})
                 else:
                     for field in historical._meta.fields:
+                        if field.attname in self.omit_historical_fields:
+                            continue
                         attname = field.attname
                         hist_value = getattr(historical, attname)
                         data[attname] = hist_value
@@ -143,7 +148,39 @@ class BrowserSerializer(HistoricalModelSerializer):
 class FeatureSerializer(HistoricalModelSerializer):
     """Feature Serializer"""
 
-    children = MPTTRelationField(many=True, read_only=True)
+    children = MPTTRelationField(
+        many=True, queryset=Feature.objects.all(), required=False)
+
+    def update(self, instance, validated_data):
+        children = validated_data.pop('children', None)
+        if children:
+            current_order = list(instance.get_children())
+            if current_order == children:
+                children = None
+        instance = super(FeatureSerializer, self).update(
+            instance, validated_data)
+
+        if children:
+            instance.set_children_order(children)
+        return instance
+
+    def validate_children(self, value):
+        if self.instance:
+            current_children = list(self.instance.get_children())
+            current_set = set([child.pk for child in current_children])
+            new_set = set([child.pk for child in value])
+            if current_set - new_set:
+                raise ValidationError(
+                    "All child features must be included in children.")
+            if new_set - current_set:
+                raise ValidationError(
+                    "Set child.parent to add a child feature.")
+        else:
+            if value != []:  # pragma: no cover
+                # Because children is in update_only_fields, never happens
+                raise ValidationError(
+                    "Can not set children when creating a feature.")
+        return value
 
     class Meta:
         model = Feature
@@ -153,6 +190,7 @@ class FeatureSerializer(HistoricalModelSerializer):
             'sections', 'supports', 'parent', 'children',
             'history_current', 'history')
         read_only_fields = ('supports',)
+        update_only_fields = ('children',)
 
 
 class MaturitySerializer(HistoricalModelSerializer):
@@ -378,6 +416,7 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
             fields = omit_some(
                 BrowserSerializer.Meta.fields,
                 'history_current', 'history', 'versions')
+            archive_cached_links_fields = ('versions',)
 
     browser = HistoricalObjectField()
     browsers = SerializerMethodField('get_archive')
@@ -399,7 +438,7 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
             read_only_fields = omit_some(
                 FeatureSerializer.Meta.read_only_fields, 'supports')
             archive_link_fields = ('parent',)
-            archive_cached_links_fields = ('sections',)
+            archive_cached_links_fields = ('children', 'sections')
 
     feature = HistoricalObjectField()
     features = SerializerMethodField('get_archive')
@@ -452,6 +491,7 @@ class HistoricalSpecificationSerializer(HistoricalObjectSerializer):
             fields = omit_some(
                 SpecificationSerializer.Meta.fields,
                 'sections', 'history_current', 'history')
+            archive_cached_links_fields = ('sections',)
             archive_link_fields = ('maturity',)
 
     specification = HistoricalObjectField()

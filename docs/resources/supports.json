@@ -44,7 +44,7 @@
             "protected": false,
             "note": null,
             "links": {
-                "version": "18",
+                "version": "15",
                 "feature": "6"
             }
         },
@@ -60,7 +60,7 @@
             "protected": false,
             "note": null,
             "links": {
-                "version": "15",
+                "version": "18",
                 "feature": "6"
             }
         },
@@ -76,7 +76,7 @@
             "protected": false,
             "note": null,
             "links": {
-                "version": "32",
+                "version": "26",
                 "feature": "6"
             }
         },
@@ -92,7 +92,7 @@
             "protected": false,
             "note": null,
             "links": {
-                "version": "26",
+                "version": "32",
                 "feature": "6"
             }
         },
@@ -317,7 +317,7 @@
             "note": null,
             "links": {
                 "version": "8",
-                "feature": "13"
+                "feature": "12"
             }
         },
         {
@@ -333,7 +333,7 @@
             "note": null,
             "links": {
                 "version": "20",
-                "feature": "13"
+                "feature": "12"
             }
         },
         {
@@ -349,7 +349,7 @@
             "note": null,
             "links": {
                 "version": "21",
-                "feature": "13"
+                "feature": "12"
             }
         },
         {
@@ -365,7 +365,7 @@
             "note": null,
             "links": {
                 "version": "29",
-                "feature": "13"
+                "feature": "12"
             }
         },
         {
@@ -381,7 +381,7 @@
             "note": null,
             "links": {
                 "version": "33",
-                "feature": "13"
+                "feature": "12"
             }
         },
         {
@@ -397,7 +397,7 @@
             "note": null,
             "links": {
                 "version": "38",
-                "feature": "13"
+                "feature": "12"
             }
         },
         {
@@ -413,18 +413,18 @@
             "note": null,
             "links": {
                 "version": "41",
-                "feature": "13"
+                "feature": "12"
             }
         }
     ],
     "links": {
         "supports.version": {
             "type": "versions",
-            "href": "http://localhost:8000/api/v1/versions/{supports.version}"
+            "href": "http://127.0.0.1:8081/api/v1/versions/{supports.version}"
         },
         "supports.feature": {
             "type": "features",
-            "href": "http://localhost:8000/api/v1/features/{supports.feature}"
+            "href": "http://127.0.0.1:8081/api/v1/features/{supports.feature}"
         }
     },
     "meta": {

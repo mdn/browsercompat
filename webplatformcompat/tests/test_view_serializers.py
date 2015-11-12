@@ -344,6 +344,8 @@ class TestViewFeatureViewSet(APITestCase):
         feature = resources['feature']
         del self.changeset
         self.create(Feature, parent=feature, name='{"zxx": "canonical"}')
+        self.changeset.closed = True
+        self.changeset.save()
         url = reverse(
             'viewfeatures-detail', kwargs={'pk': feature.pk})
         response = self.client.get(url)
@@ -629,7 +631,9 @@ class TestViewFeatureUpdates(APITestCase):
             sf2_data = {
                 "id": "_sf2", "slug": "sf2", "name": {"en": "Sub Feature 2"},
                 "links": {"parent": str(self.feature.pk)}}
-            json_data = self.json_api(features=[sf2_data])
+            json_data = self.json_api(
+                feature_data={'links': {'children': [str(sf1.pk), '_sf2']}},
+                features=[sf2_data])
             response = self.client.put(
                 self.url, data=json_data,
                 content_type="application/vnd.api+json")
@@ -665,6 +669,25 @@ class TestViewFeatureUpdates(APITestCase):
         finally:
             connection.force_debug_cursor = old_debug
 
+    def test_post_add_second_subfeature_with_existing_support(self):
+        detail1 = self.create(
+            Feature, slug='detail1', name={'en': 'Detail 1'},
+            parent=self.feature)
+        self.create(Support, version=self.version, feature=detail1)
+        detail2_data = {
+            "id": "_detail2", "slug": "detail2",
+            "name": {"en": "Detail 2"},
+            "links": {"parent": str(self.feature.pk)}}
+        json_data = self.json_api(features=[detail2_data])
+        response = self.client.put(
+            self.url, data=json_data,
+            content_type="application/vnd.api+json")
+        self.assertEqual(response.status_code, 200, response.content)
+        detail2 = Feature.objects.get(slug='detail2')
+        self.assertEqual(detail2.parent, self.feature)
+        feature = Feature.objects.get(id=self.feature.id)
+        self.assertEqual(list(feature.children.all()), [detail1, detail2])
+
     def test_post_update_existing_subfeature(self):
         subfeature = self.create(
             Feature, slug='subfeature', name={'en': 'subfeature'},
@@ -673,7 +696,9 @@ class TestViewFeatureUpdates(APITestCase):
             "id": str(subfeature.id), "slug": "subfeature",
             "name": {"en": "subfeature 1"},
             "links": {"parent": str(self.feature.pk)}}
-        json_data = self.json_api(features=[subfeature_data])
+        json_data = self.json_api(
+            feature_data={'links': {'children': [str(subfeature.pk)]}},
+            features=[subfeature_data])
         response = self.client.put(
             self.url, data=json_data, content_type="application/vnd.api+json")
         self.assertEqual(response.status_code, 200, response.content)
@@ -714,7 +739,10 @@ class TestViewFeatureUpdates(APITestCase):
             'slug': 'subfeature', 'mdn_uri': None,
             'experimental': False, 'standardized': True, 'stable': True,
             'obsolete': False, 'name': {'en': 'subfeature'},
-            'links': {'parent': str(self.feature.id), 'sections': []}}
+            'links': {
+                'parent': str(self.feature.id),
+                'sections': [],
+                'children': []}}
         json_data = self.json_api(
             features=[subfeature_data], meta={'not': 'used'})
         response = self.client.put(

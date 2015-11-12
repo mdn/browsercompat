@@ -1,6 +1,6 @@
 {
     "features": {
-        "id": "13",
+        "id": "12",
         "slug": "web-css-transform-three-value-syntax",
         "mdn_uri": null,
         "experimental": false,
@@ -28,7 +28,7 @@
             "history_current": "16",
             "history": [
                 "16",
-                "13"
+                "12"
             ]
         }
     },

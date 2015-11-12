@@ -280,7 +280,7 @@ class TestCache(TestCase):
 
     def test_feature_v1_loader(self):
         feature = self.create(Feature)
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(4):
             obj = self.cache.feature_v1_loader(feature.pk)
         with self.assertNumQueries(0):
             serialized = self.cache.feature_v1_serializer(obj)
@@ -642,7 +642,7 @@ class TestCache(TestCase):
             },
             'group_names': ['change-resource'],
         }
-        self.assertEqual(out, expected)
+        self.assertEqual(expected, out)
 
     def test_user_v1_serializer_empty(self):
         self.assertEqual(None, self.cache.user_v1_serializer(None))

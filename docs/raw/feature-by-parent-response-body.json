@@ -36,7 +36,7 @@
             }
         },
         {
-            "id": "13",
+            "id": "12",
             "slug": "web-css-transform-three-value-syntax",
             "mdn_uri": null,
             "experimental": false,
@@ -61,9 +61,9 @@
                 ],
                 "parent": "10",
                 "children": [],
-                "history_current": "13",
+                "history_current": "12",
                 "history": [
-                    "13"
+                    "12"
                 ]
             }
         }

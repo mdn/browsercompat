@@ -157,12 +157,18 @@ do
 done
 
 # Add the documentation resources
-    tools/upload_data.py \
-        --api=$DOC_API_URL \
-        --user=$DOC_USER_NAME \
-        --password=$DOC_USER_PASSWORD \
-        --data=docs/resources/ \
-        --noinput
+tools/upload_data.py \
+    --api=$DOC_API_URL \
+    --user=$DOC_USER_NAME \
+    --password=$DOC_USER_PASSWORD \
+    --data=docs/resources/ \
+    --noinput
+
+# If tools/resources.py changes resource creation order,
+# uncomment this command to refresh resources
+# tools/download_data.py \
+#     --api=$DOC_API_URL \
+#     --data=docs/resources/
 
 # Make the documentation requests
 tools/integration_requests.py\

@@ -9,9 +9,7 @@
             "delete-resource"
         ],
         "links": {
-            "changesets": [
-                "1"
-            ]
+            "changesets": []
         }
     },
     "links": {
