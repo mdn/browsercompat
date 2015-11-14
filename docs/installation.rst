@@ -18,8 +18,9 @@ instructions, see the `Installation page on the wiki`_.
 2. Optionally, provision a PostgreSQL database, recommended to match
    production.  The default Django database settings will use a
    SQLite_ database named ``db.sqlite3``.
-3. Optionally, run Memcached_ for improved read performance and to match
-   production.  The default settings will run without a cache.
+3. Optionally, run Redis_ or Memcached_ for improved read performance
+   (production uses Redis for caching and for the Celery_ backend)
+   The default settings will run without a cache or asynchronous tasks.
 4. `Clone project locally`_.
 5. `Create a virtualenv`_.
 6. Install dependencies with
@@ -37,8 +38,9 @@ instructions, see the `Installation page on the wiki`_.
 .. _pip: https://pip.pypa.io/en/latest/
 .. _virtualenv: https://virtualenv.pypa.io/en/latest/
 .. _PostgreSQL: http://www.postgresql.org
+.. _Redis: http://redis.io
 .. _Memcached: http://memcached.org
-.. _memcached: http://memcached.org
+.. _Celery: http://www.celeryproject.org
 .. _virtualenvwrapper: http://virtualenvwrapper.readthedocs.org/en/latest/
 .. _autoenv: https://github.com/kennethreitz/autoenv
 .. _`Create a virtualenv`: https://virtualenv.pypa.io/en/latest/userguide.html

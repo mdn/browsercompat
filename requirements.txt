@@ -50,6 +50,10 @@ pylibmc==1.5.0
 django-pylibmc==0.6.0
 django-pylibmc-sasl==0.2.4
 
+# Redis for caching, celery backend
+redis==2.10.5
+django-redis==4.3.0
+
 # Celery - async task management
 billiard==3.3.0.20
 amqp==1.4.6
