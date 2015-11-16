@@ -22,7 +22,7 @@
   <dt>Feature ID</dt>
     <dd><a href="/view_feature/{{ object.feature_id }}">{{ object.feature_id }}</a></td>
   <dt>Feature Slug</dt>
-        <dd><code>{{ object.feature.slug }}</code></dd>
+    <dd><code>{{ object.feature.slug }}</code></dd>
   <dt>Parse Status</dt>
     <dd>{{ object.get_status_display() }}</dd>
   <dt>Commit Status</dt>
@@ -288,6 +288,15 @@ function commit_json() {
     return false;
 };
 
+function isProcessing(data) {
+    var phase = data && data.meta.scrape && data.meta.scrape.phase;
+    return (phase === undefined ||
+        phase === "{{ object.STATUS_CHOICES[object.STATUS_STARTING][1] }}" ||
+        phase === "{{ object.STATUS_CHOICES[object.STATUS_META][1] }}" ||
+        phase === "{{ object.STATUS_CHOICES[object.STATUS_PAGES][1] }}" ||
+        phase === "{{ object.STATUS_CHOICES[object.STATUS_PARSING][1] }}");
+}
+
 function load_json(data) {
     var resources, json_dump, title;
     json_dump = $("<pre>").text(JSON.stringify(data, null, "  "));
@@ -295,9 +304,25 @@ function load_json(data) {
     window.resources = resources = WPC.parse_resources(data);
     load_tables(window.resources, "en");
     $("#form-commit").on('submit', commit_json);
+
+    if (isProcessing(data)) {
+        pollServer();
+    }
+};
+
+function pollServer() {
+    $.getJSON(import_uri).done(function( data ) {
+        load_json(data);
+        if (isProcessing(data)) {
+            setTimeout(fetch_json, 1000);
+        } else {
+            window.location.reload(true);
+        }
+    });
 };
 
 data = {{ object.raw_data | default('null', True) | safe }};
+import_uri = "{{ url('feature_page_json', pk=object.id) }}";
 
 $( document ).ready(function () {
     if (data) {
