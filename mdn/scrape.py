@@ -471,9 +471,6 @@ class ScrapedViewFeature(object):
     def load_specification(self, spec_id):
         """Serialize an existing specification."""
         spec = Specification.objects.get(id=spec_id)
-        section_ids = [
-            text_type(s_id) for s_id in spec.sections.values_list(
-                'id', flat=True)]
         spec_content = OrderedDict((
             ('id', text_type(spec_id)),
             ('slug', spec.slug),
@@ -482,7 +479,6 @@ class ScrapedViewFeature(object):
             ('uri', spec.uri),
             ('links', OrderedDict((
                 ('maturity', text_type(spec.maturity_id)),
-                ('sections', section_ids)
             )))))
         mat = spec.maturity
         mat_content = OrderedDict((
@@ -500,7 +496,6 @@ class ScrapedViewFeature(object):
             ('mdn_key', spec_row['specification.mdn_key']),
             ('links', OrderedDict((
                 ('maturity', mat_id),
-                ('sections', [])
             )))))
         mat_content = self.add_resource_if_new(
             'maturities', OrderedDict((

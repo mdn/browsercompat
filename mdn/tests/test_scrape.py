@@ -343,7 +343,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         expected_spec = {
             'id': str(spec.id), 'slug': spec.slug, 'mdn_key': spec.mdn_key,
             'uri': spec.uri, 'name': spec.name,
-            'links': {'maturity': str(maturity.id), 'sections': []}}
+            'links': {'maturity': str(maturity.id)}}
         self.assertDataEqual(expected_spec, spec_content)
         expected_mat = {
             'id': str(maturity.id), 'slug': maturity.slug,
@@ -362,7 +362,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         spec_content, mat_content = view.new_specification(spec_row)
         expected_spec = {
             'id': '_CSS3 UI', 'mdn_key': 'CSS3 UI',
-            'links': {'maturity': '_unknown', 'sections': []}}
+            'links': {'maturity': '_unknown'}}
         self.assertDataEqual(expected_spec, spec_content)
         expected_mat = {
             'id': '_unknown', 'slug': '', 'name': {'en': 'Unknown'},
