@@ -642,6 +642,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         browser_content = view.new_browser(scraped_table['browsers'][0])
         version_content = view.new_version(scraped_table['versions'][0])
         feature_content = view.new_feature(scraped_table['features'][0])
+        feature_content['links']['supports'].append(support_id)
         support_content = view.new_support(scraped_table['supports'][0])
         expected = self.empty_view(scraped_data)
         expected['features']['links']['children'] = [feature_id]

@@ -426,7 +426,14 @@ class ScrapedViewFeature(object):
                 support_content = self.new_support(support_entry)
             else:
                 support_content = self.load_support(support_entry['id'])
-            self.add_resource_if_new('supports', support_content)
+            support = self.add_resource_if_new('supports', support_content)
+            feature_id = support_content['links']['feature']
+            if text_type(feature_id) != text_type(self.feature.id):
+                # Subject feature supports are populated in generate_data
+                feature = self.resources['features'][feature_id]
+                if support['id'] not in feature['links']['supports']:
+                    feature['links']['supports'].append(support['id'])
+
             if support_content['note']:
                 note_id = len(self.notes) + 1
                 self.notes[support_content['id']] = note_id
