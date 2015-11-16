@@ -141,7 +141,7 @@
  action="{{ url('viewfeatures-detail', pk=object.feature_id) }}">
 {{ csrf_input }}
 <input id="submit-commit" class="btn btn-primary" type="submit" value="Commit">
-<label for="submit-commit">Commit data to the API</label>
+<label for="submit-commit" id="submit-commit-label">Commit data to the API</label>
 </form>
 <div id="commit-errors" class="hide">
     <h4>Errors returned from API:</h4>
@@ -261,7 +261,11 @@ function load_tables(resources, lang) {
 };
 
 function commit_json() {
-    var frm, ajaxSettings, jsonData;
+    var button, label, frm, ajaxSettings, jsonData;
+    button = $("#submit-commit");
+    button.removeClass("btn-primary").addClass("btn-disabled");
+    label = $("#submit-commit-label");
+    label.html("<i>Committing data to the API...</i>");
     frm = $("#form-commit");
     csrf = $("input[name='csrfmiddlewaretoken']").val();
     jsonData = JSON.stringify(data);
