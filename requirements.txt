@@ -92,3 +92,6 @@ git+git://github.com/pennersr/django-allauth@6393b45#egg=django-allauth
 
 # Unicode-aware CSVs
 unicodecsv==0.14.1
+
+# New Relic, monitoring agent
+newrelic==2.58.0.43

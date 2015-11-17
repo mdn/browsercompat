@@ -57,6 +57,8 @@ the add-ons:
 - `heroku-postgresql`_ (`hobby-basic tier`_, $9/month, required for size
   of dataset)
 - `memcachier`_ (free dev tier)
+- `heroku-redis`_ (free `hobby-dev tier`_)
+- Mozilla's New Relic account (`Heroku New Relic`_ available, including free `Wayne tier`_)
 
 
 To deploy with Heroku, you'll need to `signup for a free account`_ and
@@ -76,6 +78,10 @@ install the `Heroku Toolbelt`_.   Then you can:
 .. _`heroku-postgresql`: https://devcenter.heroku.com/articles/heroku-postgresql
 .. _`hobby-basic tier`: https://devcenter.heroku.com/articles/heroku-postgres-plans
 .. _`memcachier`: https://devcenter.heroku.com/articles/memcachier
+.. _`heroku-redis`: https://devcenter.heroku.com/articles/heroku-redis
+.. _`hobby-dev tier`: https://elements.heroku.com/addons/heroku-redis
+.. _`Heroku New Relic`: https://devcenter.heroku.com/articles/newrelic
+.. _`Wayne tier`: https://elements.heroku.com/addons/newrelic#plan_selector
 
 Configuring authentication
 --------------------------
