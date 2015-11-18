@@ -82,6 +82,13 @@ class TestFeature(TestCase):
         parent.set_children_order(new_order)
         self.assertEqual(list(parent.children.all()), new_order)
 
+    def test_set_children_swapped(self):
+        parent, children = self.add_family()
+        new_order = [
+            children[1], children[0], children[3], children[2], children[4]]
+        parent.set_children_order(new_order)
+        self.assertEqual(list(parent.children.all()), new_order)
+
 
 class TestMaturity(unittest.TestCase):
     def test_str(self):

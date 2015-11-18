@@ -120,6 +120,7 @@ class Feature(MPTTModel):
         for pos, next_child in enumerate(children):
             if current_children[pos].pk != next_child.pk:
                 if moved:
+                    prev_child.refresh_from_db()
                     next_child.refresh_from_db()
                 if prev_child is None:
                     next_child.move_to(self, "first-child")
