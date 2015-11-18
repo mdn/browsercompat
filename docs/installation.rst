@@ -18,8 +18,9 @@ instructions, see the `Installation page on the wiki`_.
 2. Optionally, provision a PostgreSQL database, recommended to match
    production.  The default Django database settings will use a
    SQLite_ database named ``db.sqlite3``.
-3. Optionally, run Memcached_ for improved read performance and to match
-   production.  The default settings will run without a cache.
+3. Optionally, run Redis_ or Memcached_ for improved read performance
+   (production uses Redis for caching and for the Celery_ backend)
+   The default settings will run without a cache or asynchronous tasks.
 4. `Clone project locally`_.
 5. `Create a virtualenv`_.
 6. Install dependencies with
@@ -37,8 +38,9 @@ instructions, see the `Installation page on the wiki`_.
 .. _pip: https://pip.pypa.io/en/latest/
 .. _virtualenv: https://virtualenv.pypa.io/en/latest/
 .. _PostgreSQL: http://www.postgresql.org
+.. _Redis: http://redis.io
 .. _Memcached: http://memcached.org
-.. _memcached: http://memcached.org
+.. _Celery: http://www.celeryproject.org
 .. _virtualenvwrapper: http://virtualenvwrapper.readthedocs.org/en/latest/
 .. _autoenv: https://github.com/kennethreitz/autoenv
 .. _`Create a virtualenv`: https://virtualenv.pypa.io/en/latest/userguide.html
@@ -55,6 +57,8 @@ the add-ons:
 - `heroku-postgresql`_ (`hobby-basic tier`_, $9/month, required for size
   of dataset)
 - `memcachier`_ (free dev tier)
+- `heroku-redis`_ (free `hobby-dev tier`_)
+- Mozilla's New Relic account (`Heroku New Relic`_ available, including free `Wayne tier`_)
 
 
 To deploy with Heroku, you'll need to `signup for a free account`_ and
@@ -74,6 +78,10 @@ install the `Heroku Toolbelt`_.   Then you can:
 .. _`heroku-postgresql`: https://devcenter.heroku.com/articles/heroku-postgresql
 .. _`hobby-basic tier`: https://devcenter.heroku.com/articles/heroku-postgres-plans
 .. _`memcachier`: https://devcenter.heroku.com/articles/memcachier
+.. _`heroku-redis`: https://devcenter.heroku.com/articles/heroku-redis
+.. _`hobby-dev tier`: https://elements.heroku.com/addons/heroku-redis
+.. _`Heroku New Relic`: https://devcenter.heroku.com/articles/newrelic
+.. _`Wayne tier`: https://elements.heroku.com/addons/newrelic#plan_selector
 
 Configuring authentication
 --------------------------

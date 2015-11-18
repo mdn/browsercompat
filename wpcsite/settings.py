@@ -27,6 +27,10 @@ $ heroku config:set DJANGO_DEBUG=1
 Environment variables:
 ADMIN_NAMES, ADMIN_EMAILS - comma-separted list of names and emails of admins
 ALLOWED_HOSTS - comma-separated list of allowed hosts
+BROKER_URL - Broker URL string for Celery
+CELERY_ALWAYS_EAGER - 1 to run all tasks synchronosly. Defaults to 1 if
+    BROKER_URL is undefined, or 0 if defined
+CELERY_RESULT_BACKEND - Backend URL string for Celery
 DATABASE_URL - See https://github.com/kennethreitz/dj-database-url
 DEFAULT_FROM_EMAIL - "From" email for emails to users
 DJANGO_DEBUG - 1 to enable, 0 to disable, default disabled
@@ -48,6 +52,7 @@ MDN_SHOW_REPARSE - 1 to show Reparse button, defaults to DEBUG
 MEMCACHE_SERVERS - semicolon-separated list of memcache servers
 MEMCACHE_USERNAME - username for memcache servers
 MEMCACHE_PASSWORD - password for memcache servers
+REDIS_URL - Redis URL string to use Redis for caching
 USE_DRF_INSTANCE_CACHE - 1 to enable, 0 to disable, default enabled
 DRF_INSTANCE_CACHE_POPULATE_COLD - 1 to recursively populate a cold cache on
   updates, 0 to be eventually consistent, default enabled
@@ -267,6 +272,17 @@ if environ.get('MEMCACHE_SERVERS') and not TESTING:
             },
         },
     }
+elif environ.get('REDIS_URL') and not TESTING:
+    # Use redis
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': environ['REDIS_URL'],
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+            }
+        }
+    }
 else:
     # Use local cache
     CACHES = {
@@ -334,8 +350,20 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = True
-CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
+
+if TESTING:
+    CELERY_ALWAYS_EAGER = True
+else:
+    if environ.get('BROKER_URL'):
+        BROKER_URL = environ['BROKER_URL']
+        _eager_default = 0
+    else:
+        _eager_default = 1
+    CELERY_ALWAYS_EAGER = (
+        environ.get('CELERY_ALWAYS_EAGER', _eager_default) not in (0, '0'))
+    if environ.get('CELERY_RESULT_BACKEND'):
+        CELERY_RESULT_BACKEND = environ['CELERY_RESULT_BACKEND']
 
 # DRF Cached Instances - avoid DB reads for Django REST Framework
 USE_DRF_INSTANCE_CACHE = (

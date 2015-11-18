@@ -142,8 +142,12 @@ class JsonApiRenderer(BaseJsonApiRender):
         for rname, error_dict in view_extra.items():
             assert rname != 'meta'
             for seq, errors in error_dict.items():
+                if seq is None:  # pragma: no cover
+                    # TODO: diagnose how subject feature errors are getting
+                    # into view_extra.
+                    seq = "subject"
                 for fieldname, error in errors.items():
-                    name = 'linked.%s.%d.%s' % (rname, seq, fieldname)
+                    name = 'linked.%s.%s.%s' % (rname, seq, fieldname)
                     converted[name] = error
         data.update(converted)
 

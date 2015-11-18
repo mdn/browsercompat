@@ -116,6 +116,7 @@ html_elements = OrderedDict((
     ('td', CONTAINER),
     ('th', CONTAINER),
     ('thead', CONTAINER),
+    ('tfoot', CONTAINER),
     ('tr', CONTAINER),
     ('u', CONTAINER),
     ('ul', CONTAINER),

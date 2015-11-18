@@ -426,7 +426,14 @@ class ScrapedViewFeature(object):
                 support_content = self.new_support(support_entry)
             else:
                 support_content = self.load_support(support_entry['id'])
-            self.add_resource_if_new('supports', support_content)
+            support = self.add_resource_if_new('supports', support_content)
+            feature_id = support_content['links']['feature']
+            if text_type(feature_id) != text_type(self.feature.id):
+                # Subject feature supports are populated in generate_data
+                feature = self.resources['features'][feature_id]
+                if support['id'] not in feature['links']['supports']:
+                    feature['links']['supports'].append(support['id'])
+
             if support_content['note']:
                 note_id = len(self.notes) + 1
                 self.notes[support_content['id']] = note_id
@@ -464,9 +471,6 @@ class ScrapedViewFeature(object):
     def load_specification(self, spec_id):
         """Serialize an existing specification."""
         spec = Specification.objects.get(id=spec_id)
-        section_ids = [
-            text_type(s_id) for s_id in spec.sections.values_list(
-                'id', flat=True)]
         spec_content = OrderedDict((
             ('id', text_type(spec_id)),
             ('slug', spec.slug),
@@ -475,7 +479,6 @@ class ScrapedViewFeature(object):
             ('uri', spec.uri),
             ('links', OrderedDict((
                 ('maturity', text_type(spec.maturity_id)),
-                ('sections', section_ids)
             )))))
         mat = spec.maturity
         mat_content = OrderedDict((
@@ -493,7 +496,6 @@ class ScrapedViewFeature(object):
             ('mdn_key', spec_row['specification.mdn_key']),
             ('links', OrderedDict((
                 ('maturity', mat_id),
-                ('sections', [])
             )))))
         mat_content = self.add_resource_if_new(
             'maturities', OrderedDict((

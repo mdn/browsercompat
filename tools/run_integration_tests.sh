@@ -16,10 +16,12 @@ IFS=$'\n\t'  # Stricter for loops
 #
 
 # Display usage
+REDIS_DB=7
 usage () {
   local errnum=${1:-0}
   echo "Make requests against a local API server with known data. Usage:"
   echo "${0##/} [-g] [-h]"
+  echo " -c - Run with Celery and local Redis (database $REDIS_DB)."
   echo " -g - Generate documentation samples. If omitted, then tests"
   echo "      responses against documentation samples."
   echo " -h - This usage statement."
@@ -31,13 +33,24 @@ usage () {
 
 # Cleanup on exit
 DJANGO_PID=
+CELERY_PID=
 DATABASE_NAME="integration.sqlite3"
 cleanup_local () {
   echo "Cleaning up..."
   rm -f $DATABASE_NAME
   if [ ! -z $DJANGO_PID ]
   then
+    echo "Killing Django ($DJANGO_PID)"
     kill -TERM $DJANGO_PID
+    DJANGO_PID=
+  fi
+  if [ ! -z $CELERY_PID ]
+  then
+    echo "Killing Celery ($CELERY_PID)"
+    kill -TERM $CELERY_PID
+    CELERY_PID=
+    echo "Flushing Redis DB $REDIS_DB"
+    redis-cli -n $REDIS_DB flushdb
   fi
   echo "Done."
 }
@@ -80,9 +93,13 @@ user.groups.add(delete_group);\
 # Parse command line
 #
 DOC_MODE="verify"
+WITH_CELERY=0
 VERBOSITY=1
-while getopts ":ghqv" opt; do
+while getopts ":cghqv" opt; do
   case $opt in
+    c)
+      WITH_CELERY=1
+      ;;
     g)
       DOC_MODE="generate"
       ;;
@@ -124,6 +141,21 @@ cd "$SCRIPT_DIR/.."
 # Set Django environment variables
 DATABASE_URL="sqlite:///$DATABASE_NAME"
 unset MEMCACHE_SERVERS
+if [ $WITH_CELERY -eq 0 ]; then
+    unset REDIS_URL
+    unset CELERY_RESULT_BACKEND
+    unset BROKER_URL
+    export CELERY_ALWAYS_EAGER=1
+else
+    REDIS_DB=7
+    export REDIS_URL="redis://localhost/$REDIS_DB"
+    export CELERY_RESULT_BACKEND=$REDIS_URL
+    export BROKER_URL=$REDIS_URL
+    export CELERY_ALWAYS_EAGER=0
+    echo "Flushing Redis DB $REDIS_DB"
+    redis-cli -n $REDIS_DB flushdb
+fi
+
 if [ $VERBOSITY -gt 1 ]; then
     export DJANGO_DEBUG=1
 else
@@ -155,6 +187,13 @@ do
         echo "Server is not running yet..."
     fi
 done
+
+# Start the celery worker
+if [ $WITH_CELERY -eq 1 ]; then
+    celery -A wpcsite.celery worker --loglevel=info &
+    CELERY_PID=$!
+    sleep 2
+fi
 
 # Add the documentation resources
 tools/upload_data.py \

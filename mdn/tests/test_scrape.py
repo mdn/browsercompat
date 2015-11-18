@@ -343,7 +343,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         expected_spec = {
             'id': str(spec.id), 'slug': spec.slug, 'mdn_key': spec.mdn_key,
             'uri': spec.uri, 'name': spec.name,
-            'links': {'maturity': str(maturity.id), 'sections': []}}
+            'links': {'maturity': str(maturity.id)}}
         self.assertDataEqual(expected_spec, spec_content)
         expected_mat = {
             'id': str(maturity.id), 'slug': maturity.slug,
@@ -362,7 +362,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         spec_content, mat_content = view.new_specification(spec_row)
         expected_spec = {
             'id': '_CSS3 UI', 'mdn_key': 'CSS3 UI',
-            'links': {'maturity': '_unknown', 'sections': []}}
+            'links': {'maturity': '_unknown'}}
         self.assertDataEqual(expected_spec, spec_content)
         expected_mat = {
             'id': '_unknown', 'slug': '', 'name': {'en': 'Unknown'},
@@ -642,6 +642,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         browser_content = view.new_browser(scraped_table['browsers'][0])
         version_content = view.new_version(scraped_table['versions'][0])
         feature_content = view.new_feature(scraped_table['features'][0])
+        feature_content['links']['supports'].append(support_id)
         support_content = view.new_support(scraped_table['supports'][0])
         expected = self.empty_view(scraped_data)
         expected['features']['links']['children'] = [feature_id]
