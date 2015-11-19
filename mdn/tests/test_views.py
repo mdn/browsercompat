@@ -153,6 +153,11 @@ class TestFeaturePageDetailView(TestCase):
         obj = response.context_data['object']
         self.assertEqual(obj.id, feature_page.id)
 
+    def test_can_commit_parsed(self):
+        # When accessed with privileged user, adds links to API
+        self.login_user(groups=['import-mdn', 'change-resource'])
+        self.test_get()
+
 
 class TestFeaturePageJSONView(TestCase):
     def test_get(self):
