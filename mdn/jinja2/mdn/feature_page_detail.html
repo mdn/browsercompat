@@ -308,17 +308,13 @@ function load_json(data) {
     window.resources = resources = WPC.parse_resources(data);
     load_tables(window.resources, "en");
     $("#form-commit").on('submit', commit_json);
-
-    if (isProcessing(data)) {
-        pollServer();
-    }
 };
 
 function pollServer() {
     $.getJSON(import_uri).done(function( data ) {
         load_json(data);
         if (isProcessing(data)) {
-            setTimeout(fetch_json, 1000);
+            setTimeout(pollServer, 1000);
         } else {
             window.location.reload(true);
         }
@@ -331,6 +327,9 @@ import_uri = "{{ url('feature_page_json', pk=object.id) }}";
 $( document ).ready(function () {
     if (data) {
         load_json(data);
+        if (isProcessing(data)) {
+            pollServer();
+        }
     }
 });
 </script>
