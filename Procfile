@@ -1,2 +1,2 @@
 web: newrelic-admin run-program gunicorn wpcsite.wsgi
-worker: celery worker --app=wpcsite.celery
+worker: newrelic-admin run-program celery worker --app=wpcsite.celery

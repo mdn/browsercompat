@@ -60,6 +60,8 @@ the add-ons:
 - `heroku-redis`_ (free `hobby-dev tier`_)
 - Mozilla's New Relic account (`Heroku New Relic`_ available, including free `Wayne tier`_)
 
+For more details of the beta server, see `Beta Server`_ on the github wiki.
+
 
 To deploy with Heroku, you'll need to `signup for a free account`_ and
 install the `Heroku Toolbelt`_.   Then you can:
@@ -82,6 +84,7 @@ install the `Heroku Toolbelt`_.   Then you can:
 .. _`hobby-dev tier`: https://elements.heroku.com/addons/heroku-redis
 .. _`Heroku New Relic`: https://devcenter.heroku.com/articles/newrelic
 .. _`Wayne tier`: https://elements.heroku.com/addons/newrelic#plan_selector
+.. _`Beta Server`: https://github.com/mdn/browsercompat/wiki/Beta-Server
 
 Configuring authentication
 --------------------------
