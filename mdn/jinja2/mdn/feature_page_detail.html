@@ -138,7 +138,7 @@
 {% endif %}
 {% if can_commit_mdn_import(request.user) and object.errors == 0 and object.critical == 0 %}
 <form id="form-commit" method="put"
- action="{{ url('viewfeatures-detail', pk=object.feature_id) }}">
+ action="{{ url('v1:viewfeatures-detail', pk=object.feature_id) }}">
 {{ csrf_input }}
 <input id="submit-commit" class="btn btn-primary" type="submit" value="Commit">
 <label for="submit-commit" id="submit-commit-label">Commit data to the API</label>
@@ -179,8 +179,8 @@
   <a href="{{ url('feature_page_json', pk=object.pk) }}">raw JSON-API data</a>
   resembles that returned from
   <code>
-    <a id="wpc_uri" href="/api/v1/view_features/{{ object.feature.id }}">
-      /api/v1/view_features/{{ object.feature.id }}
+    <a id="wpc_uri" href="{{ url('v1:viewfeatures-detail', pk=object.feature.id) }}">
+      {{ url('v1:viewfeatures-detail', pk=object.feature.id) }}
     </a>
   </code>
 </p>
