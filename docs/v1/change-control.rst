@@ -29,15 +29,15 @@ The representation includes:
 
 To get a single **user** representation:
 
-.. literalinclude:: /raw/user-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/user-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/user-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/user-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/user-by-id-response-body.json
+.. literalinclude:: /v1/raw/user-by-id-response-body.json
     :language: json
 
 If a client is authenticated, the logged-in user's account can be retrieved with:
@@ -94,15 +94,15 @@ The representation includes:
 
 To get a single **changeset** representation:
 
-.. literalinclude:: /raw/changeset-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/changeset-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/changeset-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/changeset-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/changeset-by-id-response-body.json
+.. literalinclude:: /v1/raw/changeset-by-id-response-body.json
     :language: json
 
 .. _user: Users_

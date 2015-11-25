@@ -1,7 +1,5 @@
-API (DRAFT)
-===========
-
-**This is a draft document**
+v1 API
+======
 
 The `MDN community`_ maintains information about web technologies such as HTML
 and CSS.  This includes information about which specifications define the

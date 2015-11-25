@@ -54,15 +54,15 @@ List
 
 To request the paginated list of **browsers**:
 
-.. literalinclude:: /raw/browser-list-request-headers.txt
+.. literalinclude:: /v1/raw/browser-list-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/browser-list-response-headers.txt
+.. literalinclude:: /v1/raw/browser-list-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-list-response-body.json
+.. literalinclude:: /v1/raw/browser-list-response-body.json
     :language: json
 
 Retrieve by ID
@@ -70,15 +70,15 @@ Retrieve by ID
 
 To request a single **browser** with a known ID:
 
-.. literalinclude:: /raw/browser-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/browser-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/browser-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/browser-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-by-id-response-body.json
+.. literalinclude:: /v1/raw/browser-by-id-response-body.json
     :language: json
 
 Retrieve by Slug
@@ -86,15 +86,15 @@ Retrieve by Slug
 
 To request a **browser** by slug:
 
-.. literalinclude:: /raw/browser-by-slug-request-headers.txt
+.. literalinclude:: /v1/raw/browser-by-slug-request-headers.txt
     :language: http
 
 The response includes the desired browser, in list format:
 
-.. literalinclude:: /raw/browser-by-slug-response-headers.txt
+.. literalinclude:: /v1/raw/browser-by-slug-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-by-slug-response-body.json
+.. literalinclude:: /v1/raw/browser-by-slug-response-body.json
     :language: json
 
 Create
@@ -108,36 +108,36 @@ included.
 
 Here's an example of creating a **browser** instance:
 
-.. literalinclude:: /raw/browser-create-minimal-request-headers.txt
+.. literalinclude:: /v1/raw/browser-create-minimal-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-create-minimal-request-body.json
+.. literalinclude:: /v1/raw/browser-create-minimal-request-body.json
     :language: json
 
 A sample response is:
 
-.. literalinclude:: /raw/browser-create-minimal-response-headers.txt
+.. literalinclude:: /v1/raw/browser-create-minimal-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-create-minimal-response-body.json
+.. literalinclude:: /v1/raw/browser-create-minimal-response-body.json
     :language: json
 
 This, and other methods that change resources, will create a new changeset_,
 and associate the new historical_browsers_ with that changeset_.  To assign to an
 existing changeset, add it to the URI:
 
-.. literalinclude:: /raw/browser-create-in-changeset-2-request-headers.txt
+.. literalinclude:: /v1/raw/browser-create-in-changeset-2-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-create-in-changeset-2-request-body.json
+.. literalinclude:: /v1/raw/browser-create-in-changeset-2-request-body.json
     :language: json
 
 A sample response is:
 
-.. literalinclude:: /raw/browser-create-in-changeset-2-response-headers.txt
+.. literalinclude:: /v1/raw/browser-create-in-changeset-2-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-create-in-changeset-2-response-body.json
+.. literalinclude:: /v1/raw/browser-create-in-changeset-2-response-body.json
     :language: json
 
 Update
@@ -152,18 +152,18 @@ changed, and will be ignored if included.  A successful update will return a
 This update changes the English name from "Internet Explorer" to "Microsoft Internet Explorer":
 
 
-.. literalinclude:: /raw/browser-update-full-request-headers.txt
+.. literalinclude:: /v1/raw/browser-update-full-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-full-request-body.json
+.. literalinclude:: /v1/raw/browser-update-full-request-body.json
     :language: json
 
 With this response:
 
-.. literalinclude:: /raw/browser-update-full-response-headers.txt
+.. literalinclude:: /v1/raw/browser-update-full-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-full-response-body.json
+.. literalinclude:: /v1/raw/browser-update-full-response-body.json
     :language: json
 
 Partial Update
@@ -172,18 +172,18 @@ Partial Update
 An update can just update the target fields.  This is a further request to
 change the English name for the Internet Explorer browser.
 
-.. literalinclude:: /raw/browser-update-partial-request-headers.txt
+.. literalinclude:: /v1/raw/browser-update-partial-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-partial-request-body.json
+.. literalinclude:: /v1/raw/browser-update-partial-request-body.json
     :language: json
 
 With this response:
 
-.. literalinclude:: /raw/browser-update-partial-response-headers.txt
+.. literalinclude:: /v1/raw/browser-update-partial-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-partial-response-body.json
+.. literalinclude:: /v1/raw/browser-update-partial-response-body.json
     :language: json
 
 Update order of related resources
@@ -195,18 +195,18 @@ by updating the order on the **browser** object:
 
 To change just the versions_ order:
 
-.. literalinclude:: /raw/browser-update-versions-order-request-headers.txt
+.. literalinclude:: /v1/raw/browser-update-versions-order-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-versions-order-request-body.json
+.. literalinclude:: /v1/raw/browser-update-versions-order-request-body.json
     :language: json
 
 With this response:
 
-.. literalinclude:: /raw/browser-update-versions-order-response-headers.txt
+.. literalinclude:: /v1/raw/browser-update-versions-order-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-versions-order-response-body.json
+.. literalinclude:: /v1/raw/browser-update-versions-order-response-body.json
     :language: json
 
 Reverting to a previous instance
@@ -216,18 +216,18 @@ To revert to an earlier instance, set the ``history_current`` link to a
 previous value.  This resets the content and creates a new
 historical_browsers_ object:
 
-.. literalinclude:: /raw/browser-revert-request-headers.txt
+.. literalinclude:: /v1/raw/browser-revert-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-revert-request-body.json
+.. literalinclude:: /v1/raw/browser-revert-request-body.json
     :language: json
 
 With this response:
 
-.. literalinclude:: /raw/browser-revert-response-headers.txt
+.. literalinclude:: /v1/raw/browser-revert-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-revert-response-body.json
+.. literalinclude:: /v1/raw/browser-revert-response-body.json
     :language: json
 
 Deletion
@@ -235,12 +235,12 @@ Deletion
 
 To delete a **browser**:
 
-.. literalinclude:: /raw/browser-delete-request-headers.txt
+.. literalinclude:: /v1/raw/browser-delete-request-headers.txt
     :language: http
 
 The response has no body:
 
-.. literalinclude:: /raw/browser-delete-response-headers.txt
+.. literalinclude:: /v1/raw/browser-delete-response-headers.txt
     :language: http
 
 Reverting a deletion
@@ -302,15 +302,15 @@ The version is either a numeric value, such as ``"11.0"``, or text, such as
 
 To get a single **version**:
 
-.. literalinclude:: /raw/version-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/version-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/version-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/version-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/version-by-id-response-body.json
+.. literalinclude:: /v1/raw/version-by-id-response-body.json
     :language: json
 
 Features
@@ -368,29 +368,29 @@ The **features** representation includes:
 To get a specific **feature** (in this case, a leaf feature with a translated
 name):
 
-.. literalinclude:: /raw/feature-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/feature-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/feature-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/feature-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/feature-by-id-response-body.json
+.. literalinclude:: /v1/raw/feature-by-id-response-body.json
     :language: json
 
 Here's an example of a branch feature with a canonical name (the parent of the
 previous example):
 
-.. literalinclude:: /raw/feature-by-id-canonical-request-headers.txt
+.. literalinclude:: /v1/raw/feature-by-id-canonical-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/feature-by-id-canonical-response-headers.txt
+.. literalinclude:: /v1/raw/feature-by-id-canonical-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/feature-by-id-canonical-response-body.json
+.. literalinclude:: /v1/raw/feature-by-id-canonical-response-body.json
     :language: json
 
 Supports
@@ -434,15 +434,15 @@ The **support** representation includes:
 
 To get a single **support**:
 
-.. literalinclude:: /raw/support-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/support-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/support-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/support-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/support-by-id-response-body.json
+.. literalinclude:: /v1/raw/support-by-id-response-body.json
     :language: json
 
 Specifications
@@ -471,15 +471,15 @@ The **specification** representation includes:
 
 To get a single **specification**:
 
-.. literalinclude:: /raw/specification-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/specification-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/specification-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/specification-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/specification-by-id-response-body.json
+.. literalinclude:: /v1/raw/specification-by-id-response-body.json
     :language: json
 
 Sections
@@ -509,15 +509,15 @@ The **section** representation includes:
 
 To get a single **section**:
 
-.. literalinclude:: /raw/section-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/section-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/section-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/section-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/section-by-id-response-body.json
+.. literalinclude:: /v1/raw/section-by-id-response-body.json
     :language: json
 
 Maturities
@@ -543,15 +543,15 @@ The **maturity** representation includes:
 
 To get a single **maturity**:
 
-.. literalinclude:: /raw/maturity-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/maturity-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/maturity-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/maturity-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/maturity-by-id-response-body.json
+.. literalinclude:: /v1/raw/maturity-by-id-response-body.json
     :language: json
 
 .. _feature: Features_

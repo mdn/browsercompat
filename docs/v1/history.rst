@@ -26,15 +26,15 @@ in time, and who is responsible for that state.  The representation includes:
 
 To get a single **historical_browsers** representation:
 
-.. literalinclude:: /raw/historical-browser-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/historical-browser-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/historical-browser-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/historical-browser-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/historical-browser-by-id-response-body.json
+.. literalinclude:: /v1/raw/historical-browser-by-id-response-body.json
     :language: json
 
 Historical Versions

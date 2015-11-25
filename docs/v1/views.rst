@@ -17,15 +17,15 @@ resources needed to display it on MDN.
 
 Here is a simple example, the view for the CSS property float_:
 
-.. literalinclude:: /raw/view-feature-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/view-feature-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/view-feature-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-by-id-response-body.json
+.. literalinclude:: /v1/raw/view-feature-by-id-response-body.json
     :language: json
 
 The process for using this representation is:
@@ -88,7 +88,7 @@ page on MDN.  For example, *Web/CSS* has the page child *Web/CSS/Display*.
 By default, these are not included, but can be included by setting the query
 parameter ``child_pages=1``:
 
-.. literalinclude:: /raw/view-feature-by-id-with-child-pages-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-by-id-with-child-pages-request-headers.txt
     :language: http
 
 
@@ -102,50 +102,50 @@ then add the support_ for the support.
 
 The first step is to create a changeset_ as an authenticated user:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-1-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-1-request-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-1-response-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-1-response-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-response-body.json
     :language: json
 
 Next, use the changeset_ ID when creating the version_:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-2-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-2-request-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-2-response-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-2-response-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-response-body.json
     :language: json
 
 Finally, create the support_:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-3-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-3-request-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-3-response-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-3-response-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-response-body.json
     :language: json
 
 The historical_versions_ and historical_supports_

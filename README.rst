@@ -40,14 +40,23 @@ and related resources.
 Status
 ------
 
-We're defining the API and the split between API-side and client-side
-functionality - see the `draft API docs`_.
+The initial v1 API has been implemented.  It uses release candidate 2 (RC2)
+of the JSON API specification, which was the current version at the time
+(Summer 2014).  This API is compatibile with `Ember.js`_ tools that were current
+at the time (1.7.0 with Ember Data 1.0.0 beta 9). The v1 API is being used
+to store data scraped from MDN. This process has suggested design
+improvements, and the API is being incrementally adjusted.
+See the `v1 API docs`_ for details.
 
-.. _`draft API docs`: draft/intro.html
+`JSON API v1.0`_ was released May 2015, and is quite different from RC2.
+Ember 2.0 was released August 2015, integrating Ember Data and supporting the
+new JSON API specification.  JSON API v1.0 will be supported in the v2 API,
+and both v1 and v2 will be supported until tools have been migrated to the
+v2 API.
 
-The next step is to implement some of the API with sample data,
-as an aid to the discussion.
-
+.. _`Ember.js`: http://emberjs.com
+.. _`v1 API docs`: v1/intro.html
+.. _`JSON API v1.0`: https://jsonapi.org/format/1.0/
 
 Development
 -----------

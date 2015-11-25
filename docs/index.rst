@@ -17,7 +17,7 @@ Contents:
 
    installation
    contributing
-   draft/intro
+   v1/intro
    tools
    history
 

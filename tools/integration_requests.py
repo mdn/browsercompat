@@ -15,7 +15,7 @@ import requests
 logger = logging.getLogger('tools.integration_requests')
 
 my_dir = os.path.dirname(os.path.realpath(__file__))
-doc_dir = os.path.realpath(os.path.join(my_dir, '..', 'docs'))
+doc_dir = os.path.realpath(os.path.join(my_dir, '..', 'docs', 'v1'))
 default_api = 'http://localhost:8000'
 default_cases_file = os.path.realpath(os.path.join(doc_dir, 'doc_cases.json'))
 default_raw_dir = os.path.realpath(os.path.join(doc_dir, 'raw'))
