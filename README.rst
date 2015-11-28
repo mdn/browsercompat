@@ -1,5 +1,5 @@
 =============================
-browsercompat
+BrowserCompat API
 =============================
 
 .. image:: https://img.shields.io/travis/mdn/browsercompat/master.svg
@@ -20,49 +20,46 @@ browsercompat
 
 .. Omit badges from docs
 
-The Browser Compatibility API will support compatibility data on the
-`Mozilla Developer Network`_.  This currently takes the form of browser
-compatibility tables, such as the one on the `CSS display property`_.
-The API will help centralize this data, and allow it to be kept consistant
-across languages and different presentations.
+The Browser Compatibility API will support compatibility data on the `Mozilla
+Developer Network`_.  This currently takes the form of browser compatibility
+tables, such as the one on the `CSS display property`_ page.  The API will
+centralize this data, and allow it to be kept consistant across languages and
+presentations.
 
 .. _Mozilla Developer Network: https://developer.mozilla.org
 .. _CSS display property: https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility
 
-The project started in December 2013.  The goals, requirements, and current
-status are documented on the MozillaWiki_.
+The project started in December 2013.  The initial goals and requirements are
+documented on the MozillaWiki_.
 
 .. _MozillaWiki: https://wiki.mozilla.org/index.php?title=MDN/Projects/Development/CompatibilityTables
-
-This project will implement the data store and API for compatibility data
-and related resources.
 
 Status
 ------
 
-The initial v1 API has been implemented.  It uses release candidate 2 (RC2)
-of the JSON API specification, which was the current version at the time
-(Summer 2014).  This API is compatibile with `Ember.js`_ tools that were current
-at the time (1.7.0 with Ember Data 1.0.0 beta 9). The v1 API is being used
-to store data scraped from MDN. This process has suggested design
-improvements, and the API is being incrementally adjusted.
-See the `v1 API docs`_ for details.
+The beta v1 API is being served at https://browsercompat.herokuapp.com/api/v1/.
+Alpha users are using the importer_ to find and fix data issues on MDN. A small
+number of pages on MDN have been converted to use API-backed compatibility
+tables. Beta users can view the new tables, and non-beta users see the
+traditional wiki-backed tables.  As the beta is expanded to more pages and more
+users, the API is changed to handle new use cases. See the `issues page`_ for
+details of planned changes.
 
-`JSON API v1.0`_ was released May 2015, and is quite different from RC2.
-Ember 2.0 was released August 2015, integrating Ember Data and supporting the
-new JSON API specification.  JSON API v1.0 will be supported in the v2 API,
-and both v1 and v2 will be supported until tools have been migrated to the
-v2 API.
+The v1 API uses release candidate 1 (RC1) of the JSON API specification, which
+was released July 2014, but is currently undocumented. See the `v1 API docs`_
+for details of the API implementation.
 
-.. _`Ember.js`: http://emberjs.com
+.. _`importer`: https://browsercompat.herokuapp.com/importer
 .. _`v1 API docs`: v1/intro.html
+.. _`issues page`: issues.html
 .. _`JSON API v1.0`: https://jsonapi.org/format/1.0/
+.. _`Ember.js`: http://emberjs.com
 
 Development
 -----------
 
 :Code:           https://github.com/mdn/browsercompat
-:Dev Server:     https://browsercompat.herokuapp.com (based on `mdn/browsercompat-data`_)
+:Server:         https://browsercompat.herokuapp.com (based on `mdn/browsercompat-data`_)
 :Issues:         https://bugzilla.mozilla.org/buglist.cgi?quicksearch=compat-data (tracking bug)
 
                  https://bugzilla.mozilla.org/showdependencytree.cgi?id=996570&hide_resolved=1 (blocking issues for v1)

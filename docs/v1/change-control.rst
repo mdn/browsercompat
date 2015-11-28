@@ -40,7 +40,8 @@ A sample response is:
 .. literalinclude:: /v1/raw/user-by-id-response-body.json
     :language: json
 
-If a client is authenticated, the logged-in user's account can be retrieved with:
+
+*Note:* `bug 1216786`_ *proposes this method for retrieving the authenticated user*:
 
 .. code-block:: http
 
@@ -117,4 +118,5 @@ A sample response is:
 .. _historical_supports: history.html#historical-supports
 .. _historical_versions: history.html#historical-versions
 
+.. _`bug 1216786`: https://bugzilla.mozilla.org/show_bug.cgi?id=1216786
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601

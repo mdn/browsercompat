@@ -2,12 +2,9 @@ Views
 =====
 
 A **View** is a combination of resources for a particular presentation.  It is
-suitable for anonymous viewing of content.
-
-It is possible that views are unnecessary, and could be constructed by
-supporting optional parts of the JSON API spec, such as `Inclusion of Linked
-Resources`_.  These views are written as if they are aliases for a
-fully-fleshed implementation of JSON API.
+suitable for anonymous viewing of content. It uses the flexibility of the
+JSON API specification to include a basket of related resources in a response,
+but doesn't use the offical method of `Inclusion of Related Resources`_.
 
 View a Feature
 ~~~~~~~~~~~~~~
@@ -28,7 +25,7 @@ A sample response is:
 .. literalinclude:: /v1/raw/view-feature-by-id-response-body.json
     :language: json
 
-The process for using this representation is:
+One way to use this representation is:
 
 1. Parse into an in-memory object store,
 2. Create the "Specifications" section:
@@ -47,7 +44,7 @@ The process for using this representation is:
     4. Close the table, and add an edit button.
 3. Create the Browser Compatibility section:
     1. Add The "Browser compatibility" header
-    2. For each item in meta.compat-table.tabs, create a table with the proper
+    2. For each item in meta.compat_table.tabs, create a table with the proper
        name ("Desktop", "Mobile")
     3. For each browser id in meta.compat-table.tabs.browsers, add a column with
        the translated browser name.
@@ -158,7 +155,7 @@ vandalism.
 Updating View with PUT
 ~~~~~~~~~~~~~~~~~~~~~~
 
-`view_features` supports PUT for bulk updates of support data.  Here is a simple
+``view_features`` supports PUT for bulk updates of support data.  Here is a simple
 example that adds a new subfeature without support:
 
 .. code-block:: http
@@ -240,5 +237,5 @@ favor of direct POST and PUT to the standard resource API.
 .. _historical_supports: history.html#historical-supports
 
 .. _float: https://developer.mozilla.org/en-US/docs/Web/CSS/float
-.. _`Inclusion of Linked Resources`: http://jsonapi.org/format/#fetching-includes
+.. _`Inclusion of Related Resources`: http://jsonapi.org/format/#fetching-includes
 .. _`"caniuse" table layout`: https://wiki.mozilla.org/MDN/Development/CompatibilityTables/Data_Requirements#1._CanIUse_table_layout
