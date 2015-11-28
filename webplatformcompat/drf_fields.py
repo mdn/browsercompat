@@ -22,7 +22,7 @@ class CurrentHistoryField(PrimaryKeyRelatedField):
 
     def __init__(self, *args, **kwargs):
         self.manager = kwargs.pop('manager', 'history')
-        read_only = kwargs.pop('read_only', None)
+        read_only = kwargs.pop('read_only', False)
         queryset = None if read_only else 'to do'
         required = kwargs.pop('required', False)
         assert not required, 'required must be False'

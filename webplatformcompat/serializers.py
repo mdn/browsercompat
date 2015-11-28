@@ -35,17 +35,25 @@ class WriteRestrictedMixin(object):
     def get_fields(self):
         """Add read_only flag for write-restricted fields"""
         fields = super(WriteRestrictedMixin, self).get_fields()
+
+        # Some fields are read-only based on view action
         view = self.context.get('view', None)
-
         if view and view.action in ('list', 'create'):
-            update_only_fields = getattr(self.Meta, 'update_only_fields', [])
-            for field_name in update_only_fields:
-                fields[field_name].read_only = True
+            set_to_readonly = 'update_only'
+        elif view and view.action in ('update', 'partial_update'):
+            set_to_readonly = 'create_only'
+        else:
+            set_to_readonly = None
 
-        if view and view.action in ('update', 'partial_update'):
-            write_once_fields = getattr(self.Meta, 'write_once_fields', [])
-            for field_name in write_once_fields:
-                fields[field_name].read_only = True
+        # Set fields to read-only based on view action
+        if set_to_readonly:
+            fields_extra = getattr(self.Meta, 'fields_extra', {})
+            for field_name, field in fields.items():
+                field_extra = fields_extra.get(field_name, {})
+                writable = field_extra.get('writable', True)
+                if writable == set_to_readonly:
+                    assert not field.read_only
+                    field.read_only = True
 
         return fields
 
@@ -93,10 +101,7 @@ class HistoricalModelSerializer(
         It is treated as read-only unless it is an update view.
         """
         assert field_name == 'history_current'
-        view = self.context.get('view', None)
-        read_only = view and view.action in ('list', 'create')
-        field_args = {'read_only': read_only}
-        return CurrentHistoryField, field_args
+        return CurrentHistoryField, {}
 
     def to_internal_value(self, data):
         """If history_current in data, load historical data into instance"""
@@ -143,9 +148,17 @@ class BrowserSerializer(HistoricalModelSerializer):
         fields = (
             'id', 'slug', 'name', 'note', 'history', 'history_current',
             'versions')
-        update_only_fields = (
-            'history', 'history_current', 'versions')
-        write_once_fields = ('slug',)
+        fields_extra = {
+            'slug': {
+                'writable': 'create_only',
+            },
+            'history_current': {
+                'writable': 'update_only',
+            },
+            'versions': {
+                'writable': 'update_only',
+            }
+        }
 
 
 class FeatureSerializer(HistoricalModelSerializer):
@@ -193,7 +206,6 @@ class FeatureSerializer(HistoricalModelSerializer):
             'sections', 'supports', 'parent', 'children',
             'history_current', 'history')
         read_only_fields = ('supports',)
-        update_only_fields = ('children',)
 
 
 class MaturitySerializer(HistoricalModelSerializer):
@@ -279,8 +291,12 @@ class VersionSerializer(HistoricalModelSerializer):
             }
         }
         read_only_fields = ('supports',)
-        write_once_fields = ('version',)
         validators = [VersionAndStatusValidator()]
+        fields_extra = {
+            "version": {
+                "writable": "create_only",
+            }
+        }
 
 
 #
@@ -302,8 +318,6 @@ class ChangesetSerializer(ModelSerializer):
             'historical_maturities', 'historical_sections',
             'historical_specifications', 'historical_supports',
             'historical_versions')
-        update_only_fields = (
-            'user', 'target_resource_type', 'target_resource_id')
         read_only_fields = (
             'id', 'created', 'modified',
             'historical_browsers', 'historical_features',
@@ -313,6 +327,17 @@ class ChangesetSerializer(ModelSerializer):
         extra_kwargs = {
             'user': {
                 'default': CurrentUserDefault()
+            }
+        }
+        fields_extra = {
+            "user": {
+                "writable": "update_only",
+            },
+            "target_resource_type": {
+                "writable": "update_only",
+            },
+            "target_resource_id": {
+                "writable": "update_only",
             }
         }
 
