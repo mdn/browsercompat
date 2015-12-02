@@ -15,15 +15,15 @@
             "obsolete": false,
             "name": "transform-origin",
             "links": {
-                "sections": [
-                    "4"
-                ],
-                "supports": [],
                 "parent": "2",
                 "children": [
                     "11",
                     "12"
                 ],
+                "sections": [
+                    "4"
+                ],
+                "supports": [],
                 "history_current": "10",
                 "history": [
                     "10"
@@ -32,14 +32,6 @@
         }
     ],
     "links": {
-        "features.sections": {
-            "type": "sections",
-            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
-        },
-        "features.supports": {
-            "type": "supports",
-            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
-        },
         "features.parent": {
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.parent}"
@@ -47,6 +39,14 @@
         "features.children": {
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
         },
         "features.history_current": {
             "type": "historical_features",

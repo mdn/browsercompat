@@ -26,12 +26,12 @@
                 "12",
                 "22"
             ],
+            "history_current": "51",
             "history": [
                 "51",
                 "50",
                 "21"
-            ],
-            "history_current": "51"
+            ]
         }
     },
     "links": {
@@ -43,13 +43,13 @@
             "type": "supports",
             "href": "https://browsercompat.org/api/v1/supports/{versions.supports}"
         },
-        "versions.history": {
-            "type": "historical_versions",
-            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
-        },
         "versions.history_current": {
             "type": "historical_versions",
             "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history_current}"
+        },
+        "versions.history": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
         }
     }
 }

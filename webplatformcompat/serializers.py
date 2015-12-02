@@ -146,8 +146,8 @@ class BrowserSerializer(HistoricalModelSerializer):
     class Meta:
         model = Browser
         fields = (
-            'id', 'slug', 'name', 'note', 'history', 'history_current',
-            'versions')
+            'id', 'slug', 'name', 'note', 'versions', 'history_current',
+            'history')
         fields_extra = {
             'id': {
                 'link': 'self',
@@ -155,18 +155,18 @@ class BrowserSerializer(HistoricalModelSerializer):
             'slug': {
                 'writable': 'create_only',
             },
-            'history': {
-                'archive': 'omit',
+            'versions': {
                 'link': 'from_many',
+                'writable': 'update_only',
             },
             'history_current': {
                 'archive': 'history_id',
                 'link': 'from_one',
                 'writable': 'update_only',
             },
-            'versions': {
+            'history': {
+                'archive': 'omit',
                 'link': 'from_many',
-                'writable': 'update_only',
             },
         }
 
@@ -212,20 +212,12 @@ class FeatureSerializer(HistoricalModelSerializer):
         model = Feature
         fields = (
             'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
-            'stable', 'obsolete', 'name',
-            'sections', 'supports', 'parent', 'children',
-            'history_current', 'history')
+            'stable', 'obsolete', 'name', 'parent', 'children',
+            'sections', 'supports', 'history_current', 'history')
         read_only_fields = ('supports',)
         fields_extra = {
             'id': {
                 'link': 'self',
-            },
-            'sections': {
-                'link': 'from_many',
-            },
-            'supports': {
-                'archive': 'omit',
-                'link': 'from_many',
             },
             'parent': {
                 'link': 'to_one',
@@ -233,6 +225,13 @@ class FeatureSerializer(HistoricalModelSerializer):
             'children': {
                 'link': 'from_many',
                 'writable': 'update_only'
+            },
+            'sections': {
+                'link': 'from_many',
+            },
+            'supports': {
+                'archive': 'omit',
+                'link': 'from_many',
             },
             'history_current': {
                 'archive': 'history_id',
@@ -365,10 +364,10 @@ class SupportSerializer(HistoricalModelSerializer):
     class Meta:
         model = Support
         fields = (
-            'id', 'version', 'feature', 'support', 'prefix',
+            'id', 'support', 'prefix',
             'prefix_mandatory', 'alternate_name', 'alternate_mandatory',
             'requires_config', 'default_config', 'protected', 'note',
-            'history_current', 'history')
+            'version', 'feature', 'history_current', 'history')
         fields_extra = {
             'id': {
                 'link': 'self',
@@ -399,9 +398,9 @@ class VersionSerializer(HistoricalModelSerializer):
     class Meta:
         model = Version
         fields = (
-            'id', 'browser', 'version', 'release_day', 'retirement_day',
-            'status', 'release_notes_uri', 'note', 'order',
-            'supports', 'history', 'history_current')
+            'id', 'version', 'release_day', 'retirement_day',
+            'status', 'release_notes_uri', 'note', 'order', 'browser',
+            'supports', 'history_current', 'history')
         extra_kwargs = {
             'version': {
                 'allow_blank': False
@@ -413,11 +412,11 @@ class VersionSerializer(HistoricalModelSerializer):
             'id': {
                 'link': 'self',
             },
-            'browser': {
-                'link': 'to_one',
-            },
             'version': {
                 'writable': 'create_only',
+            },
+            'browser': {
+                'link': 'to_one',
             },
             'supports': {
                 'archive': 'omit',
@@ -627,10 +626,7 @@ class HistoricalObjectSerializer(ModelSerializer):
 class HistoricalBrowserSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(ArchiveMixin, BrowserSerializer):
-        class Meta(BrowserSerializer.Meta):
-            fields = (
-                'id', 'slug', 'name', 'note', 'versions', 'history',
-                'history_current')
+        pass
 
     browser = HistoricalObjectField()
     browsers = SerializerMethodField('get_archive')
@@ -644,12 +640,7 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
 class HistoricalFeatureSerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(ArchiveMixin, FeatureSerializer):
-        class Meta(FeatureSerializer.Meta):
-            fields = (
-                'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
-                'stable', 'obsolete', 'name',
-                'supports', 'parent', 'children', 'sections',
-                'history_current', 'history')
+        pass
 
     feature = HistoricalObjectField()
     features = SerializerMethodField('get_archive')
@@ -663,8 +654,7 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
 class HistoricalMaturitySerializer(HistoricalObjectSerializer):
 
     class ArchivedObject(ArchiveMixin, MaturitySerializer):
-        class Meta(MaturitySerializer.Meta):
-            pass
+        pass
 
     maturity = HistoricalObjectField()
     maturities = SerializerMethodField('get_archive')

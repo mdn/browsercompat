@@ -8,25 +8,25 @@
         },
         "note": null,
         "links": {
+            "versions": [],
+            "history_current": "18",
             "history": [
                 "18"
-            ],
-            "history_current": "18",
-            "versions": []
+            ]
         }
     },
     "links": {
-        "browsers.history": {
-            "type": "historical_browsers",
-            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+        "browsers.versions": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
         },
         "browsers.history_current": {
             "type": "historical_browsers",
             "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
         },
-        "browsers.versions": {
-            "type": "versions",
-            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
+        "browsers.history": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
         }
     }
 }

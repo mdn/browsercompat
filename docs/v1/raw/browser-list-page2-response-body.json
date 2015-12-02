@@ -8,15 +8,15 @@
             },
             "note": null,
             "links": {
-                "history": [
-                    "11"
-                ],
-                "history_current": "11",
                 "versions": [
                     "33",
                     "34",
                     "35",
                     "36"
+                ],
+                "history_current": "11",
+                "history": [
+                    "11"
                 ]
             }
         },
@@ -28,12 +28,12 @@
             },
             "note": null,
             "links": {
-                "history": [
-                    "12"
-                ],
-                "history_current": "12",
                 "versions": [
                     "37"
+                ],
+                "history_current": "12",
+                "history": [
+                    "12"
                 ]
             }
         },
@@ -45,14 +45,14 @@
             },
             "note": null,
             "links": {
-                "history": [
-                    "13"
-                ],
-                "history_current": "13",
                 "versions": [
                     "38",
                     "39",
                     "40"
+                ],
+                "history_current": "13",
+                "history": [
+                    "13"
                 ]
             }
         },
@@ -64,15 +64,15 @@
             },
             "note": null,
             "links": {
-                "history": [
-                    "14"
-                ],
-                "history_current": "14",
                 "versions": [
                     "41",
                     "42",
                     "43",
                     "44"
+                ],
+                "history_current": "14",
+                "history": [
+                    "14"
                 ]
             }
         },
@@ -84,30 +84,30 @@
             },
             "note": null,
             "links": {
-                "history": [
-                    "15"
-                ],
-                "history_current": "15",
                 "versions": [
                     "45",
                     "46",
                     "47"
+                ],
+                "history_current": "15",
+                "history": [
+                    "15"
                 ]
             }
         }
     ],
     "links": {
-        "browsers.history": {
-            "type": "historical_browsers",
-            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
+        "browsers.versions": {
+            "type": "versions",
+            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
         },
         "browsers.history_current": {
             "type": "historical_browsers",
             "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history_current}"
         },
-        "browsers.versions": {
-            "type": "versions",
-            "href": "https://browsercompat.org/api/v1/versions/{browsers.versions}"
+        "browsers.history": {
+            "type": "historical_browsers",
+            "href": "https://browsercompat.org/api/v1/historical_browsers/{browsers.history}"
         }
     },
     "meta": {

@@ -15,6 +15,8 @@
                 "ja": "基本サポート"
             },
             "links": {
+                "parent": "10",
+                "children": [],
                 "sections": [],
                 "supports": [
                     "11",
@@ -27,8 +29,6 @@
                     "18",
                     "19"
                 ],
-                "parent": "10",
-                "children": [],
                 "history_current": "11",
                 "history": [
                     "11"
@@ -49,6 +49,8 @@
                 "ja": "3-値構文"
             },
             "links": {
+                "parent": "10",
+                "children": [],
                 "sections": [],
                 "supports": [
                     "20",
@@ -59,8 +61,6 @@
                     "25",
                     "26"
                 ],
-                "parent": "10",
-                "children": [],
                 "history_current": "12",
                 "history": [
                     "12"
@@ -69,14 +69,6 @@
         }
     ],
     "links": {
-        "features.sections": {
-            "type": "sections",
-            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
-        },
-        "features.supports": {
-            "type": "supports",
-            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
-        },
         "features.parent": {
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.parent}"
@@ -84,6 +76,14 @@
         "features.children": {
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
         },
         "features.history_current": {
             "type": "historical_features",

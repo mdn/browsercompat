@@ -12,10 +12,10 @@
             "links": {
                 "browser": "7",
                 "supports": [],
+                "history_current": "17",
                 "history": [
                     "17"
-                ],
-                "history_current": "17"
+                ]
             }
         },
         {
@@ -32,10 +32,10 @@
                 "supports": [
                     "4"
                 ],
+                "history_current": "18",
                 "history": [
                     "18"
-                ],
-                "history_current": "18"
+                ]
             }
         },
         {
@@ -64,10 +64,10 @@
                 "supports": [
                     "13"
                 ],
+                "history_current": "19",
                 "history": [
                     "19"
-                ],
-                "history_current": "19"
+                ]
             }
         },
         {
@@ -96,10 +96,10 @@
                 "supports": [
                     "21"
                 ],
+                "history_current": "20",
                 "history": [
                     "20"
-                ],
-                "history_current": "20"
+                ]
             }
         },
         {
@@ -129,10 +129,10 @@
                     "12",
                     "22"
                 ],
+                "history_current": "21",
                 "history": [
                     "21"
-                ],
-                "history_current": "21"
+                ]
             }
         }
     ],
@@ -145,13 +145,13 @@
             "type": "supports",
             "href": "https://browsercompat.org/api/v1/supports/{versions.supports}"
         },
-        "versions.history": {
-            "type": "historical_versions",
-            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
-        },
         "versions.history_current": {
             "type": "historical_versions",
             "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history_current}"
+        },
+        "versions.history": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
         }
     },
     "meta": {
