@@ -21,7 +21,14 @@ from .models import (
 from .serializers import (
     BrowserSerializer, FieldMapMixin, FeatureSerializer, MaturitySerializer,
     SectionSerializer, SpecificationSerializer, SupportSerializer,
-    VersionSerializer, omit_some)
+    VersionSerializer)
+
+
+def omit_some(source_list, *omitted):
+    """Return a list with some items omitted"""
+    for item in omitted:
+        assert item in source_list, '%r not in %r' % (item, source_list)
+    return [x for x in source_list if x not in omitted]
 
 
 class ViewBrowserSerializer(BrowserSerializer):

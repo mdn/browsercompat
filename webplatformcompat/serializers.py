@@ -20,13 +20,6 @@ from .models import (
 from .validators import VersionAndStatusValidator
 
 
-def omit_some(source_list, *omitted):
-    """Return a list with some items omitted"""
-    for item in omitted:
-        assert item in source_list, '%r not in %r' % (item, source_list)
-    return [x for x in source_list if x not in omitted]
-
-
 #
 # "Regular" Serializers
 #
