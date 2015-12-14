@@ -15,9 +15,9 @@ from .history import Changeset
 from .mixins import PartialPutMixin
 from .models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
-from .parsers import JsonApiParser
+from .parsers import JsonApiRC1Parser
 from .renderers import (
-    BrowsableAPIRenderer, JsonApiRenderer, JsonApiTemplateHTMLRenderer)
+    BrowsableAPIRenderer, JsonApiRC1Renderer, JsonApiTemplateHTMLRenderer)
 from .serializers import (
     BrowserSerializer, FeatureSerializer, MaturitySerializer,
     SectionSerializer, SpecificationSerializer, SupportSerializer,
@@ -57,20 +57,40 @@ class CachedViewMixin(BaseCacheViewMixin):
         instance.delete()
 
 
-class ModelViewSet(PartialPutMixin, CachedViewMixin, BaseModelViewSet):
-    renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
-    parser_classes = (JsonApiParser, FormParser, MultiPartParser)
+class FieldsExtraMixin(object):
+
+    def initialize_request(self, request, *args, **kwargs):
+        irequest = super(FieldsExtraMixin, self).initialize_request(
+            request, *args, **kwargs)
+        self.request = irequest
+        irequest.parser_context['fields_extra'] = self.get_fields_extra()
+        return irequest
+
+    def get_renderer_context(self):
+        context = super(FieldsExtraMixin, self).get_renderer_context()
+        context['fields_extra'] = self.get_fields_extra()
+        return context
+
+    def get_fields_extra(self):
+        serializer_cls = self.get_serializer_class()
+        return serializer_cls.get_fields_extra()
 
 
-class ReadOnlyModelViewSet(BaseROModelViewSet):
-    renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
+class ModelViewSet(
+        PartialPutMixin, CachedViewMixin, FieldsExtraMixin, BaseModelViewSet):
+    renderer_classes = (JsonApiRC1Renderer, BrowsableAPIRenderer)
+    parser_classes = (JsonApiRC1Parser, FormParser, MultiPartParser)
+
+
+class ReadOnlyModelViewSet(FieldsExtraMixin, BaseROModelViewSet):
+    renderer_classes = (JsonApiRC1Renderer, BrowsableAPIRenderer)
 
 
 class UpdateOnlyModelViewSet(
         PartialPutMixin, CachedViewMixin, UpdateModelMixin,
         ReadOnlyModelViewSet):
-    renderer_classes = (JsonApiRenderer, BrowsableAPIRenderer)
-    parser_classes = (JsonApiParser, FormParser, MultiPartParser)
+    renderer_classes = (JsonApiRC1Renderer, BrowsableAPIRenderer)
+    parser_classes = (JsonApiRC1Parser, FormParser, MultiPartParser)
 
 
 #
@@ -194,9 +214,9 @@ class HistoricalVersionViewSet(ReadOnlyModelViewSet):
 class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
     queryset = Feature.objects.order_by('id')
     filter_fields = ('slug',)
-    parser_classes = (JsonApiParser, FormParser, MultiPartParser)
+    parser_classes = (JsonApiRC1Parser, FormParser, MultiPartParser)
     renderer_classes = (
-        JsonApiRenderer, BrowsableAPIRenderer, JsonApiTemplateHTMLRenderer)
+        JsonApiRC1Renderer, BrowsableAPIRenderer, JsonApiTemplateHTMLRenderer)
     template_name = 'webplatformcompat/feature-basic.html'
 
     def get_serializer_class(self):

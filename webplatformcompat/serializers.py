@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """API Serializers"""
 from collections import OrderedDict
+from copy import deepcopy
 
 from django.db.models import CharField
 from django.contrib.auth.models import User
@@ -71,8 +72,17 @@ class FieldMapMixin(object):
         return field_class, field_kwargs
 
 
+class FieldsExtraMixin(object):
+    """Add fields_extra property to serializer."""
+
+    @classmethod
+    def get_fields_extra(cls):
+        return getattr(cls.Meta, 'fields_extra', {})
+
+
 class HistoricalModelSerializer(
-        WriteRestrictedMixin, FieldMapMixin, ModelSerializer):
+        WriteRestrictedMixin, FieldMapMixin, FieldsExtraMixin,
+        ModelSerializer):
     """Model serializer with history manager"""
     omit_historical_fields = (
         'id', 'history_id', 'history_date', 'history_user', 'history_type',
@@ -144,6 +154,7 @@ class BrowserSerializer(HistoricalModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'browsers',
             },
             'slug': {
                 'writable': 'create_only',
@@ -155,11 +166,13 @@ class BrowserSerializer(HistoricalModelSerializer):
             'history_current': {
                 'archive': 'history_id',
                 'link': 'from_one',
+                'resource': 'historical_browsers',
                 'writable': 'update_only',
             },
             'history': {
                 'archive': 'omit',
                 'link': 'from_many',
+                'resource': 'historical_browsers',
             },
         }
 
@@ -211,12 +224,15 @@ class FeatureSerializer(HistoricalModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'features',
             },
             'parent': {
                 'link': 'to_one',
+                'resource': 'features',
             },
             'children': {
                 'link': 'from_many',
+                'resource': 'features',
                 'writable': 'update_only'
             },
             'sections': {
@@ -229,11 +245,13 @@ class FeatureSerializer(HistoricalModelSerializer):
             'history_current': {
                 'archive': 'history_id',
                 'link': 'from_one',
+                'resource': 'historical_features',
                 'writable': 'update_only',
             },
             'history': {
                 'archive': 'omit',
                 'link': 'from_many',
+                'resource': 'historical_features',
             },
         }
 
@@ -250,6 +268,7 @@ class MaturitySerializer(HistoricalModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'maturities',
             },
             'specifications': {
                 'archive': 'omit',
@@ -258,11 +277,13 @@ class MaturitySerializer(HistoricalModelSerializer):
             'history_current': {
                 'archive': 'history_id',
                 'link': 'from_one',
+                'resource': 'historical_maturities',
                 'writable': 'update_only',
             },
             'history': {
                 'archive': 'omit',
                 'link': 'from_many',
+                'resource': 'historical_maturities',
             },
         }
 
@@ -283,9 +304,11 @@ class SectionSerializer(HistoricalModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'sections',
             },
             'specification': {
                 'link': 'to_one',
+                'resource': 'specifications',
             },
             'features': {
                 'archive': 'omit',
@@ -294,11 +317,13 @@ class SectionSerializer(HistoricalModelSerializer):
             'history_current': {
                 'archive': 'history_id',
                 'link': 'from_one',
+                'resource': 'historical_sections',
                 'writable': 'update_only',
             },
             'history': {
                 'archive': 'omit',
                 'link': 'from_many',
+                'resource': 'historical_sections',
             },
         }
 
@@ -332,9 +357,11 @@ class SpecificationSerializer(HistoricalModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'specifications',
             },
             'maturity': {
                 'link': 'to_one',
+                'resource': 'maturities',
             },
             'sections': {
                 'link': 'from_many',
@@ -342,11 +369,13 @@ class SpecificationSerializer(HistoricalModelSerializer):
             'history_current': {
                 'archive': 'history_id',
                 'link': 'from_one',
+                'resource': 'historical_specifications',
                 'writable': 'update_only',
             },
             'history': {
                 'archive': 'omit',
                 'link': 'from_many',
+                'resource': 'historical_specifications',
             },
         }
 
@@ -364,21 +393,26 @@ class SupportSerializer(HistoricalModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'supports',
             },
             'version': {
                 'link': 'to_one',
+                'resource': 'versions',
             },
             'feature': {
                 'link': 'to_one',
+                'resource': 'features',
             },
             'history_current': {
                 'archive': 'history_id',
                 'link': 'from_one',
+                'resource': 'historical_supports',
                 'writable': 'update_only',
             },
             'history': {
                 'archive': 'omit',
                 'link': 'from_many',
+                'resource': 'historical_supports',
             },
         }
 
@@ -404,12 +438,14 @@ class VersionSerializer(HistoricalModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'versions',
             },
             'version': {
                 'writable': 'create_only',
             },
             'browser': {
                 'link': 'to_one',
+                'resource': 'browsers',
             },
             'supports': {
                 'archive': 'omit',
@@ -418,11 +454,13 @@ class VersionSerializer(HistoricalModelSerializer):
             'history_current': {
                 'archive': 'history_id',
                 'link': 'from_one',
+                'resource': 'historical_versions',
                 'writable': 'update_only',
             },
             'history': {
                 'archive': 'omit',
                 'link': 'from_many',
+                'resource': 'historical_versions',
             },
         }
 
@@ -431,7 +469,7 @@ class VersionSerializer(HistoricalModelSerializer):
 # Change control object serializers
 #
 
-class ChangesetSerializer(ModelSerializer):
+class ChangesetSerializer(FieldsExtraMixin, ModelSerializer):
     """Changeset Serializer"""
 
     target_resource_type = OptionalCharField(required=False)
@@ -460,9 +498,11 @@ class ChangesetSerializer(ModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'changesets',
             },
             'user': {
                 'link': 'to_one',
+                'resource': 'users',
                 'writable': 'update_only',
             },
             'target_resource_type': {
@@ -495,7 +535,7 @@ class ChangesetSerializer(ModelSerializer):
         }
 
 
-class UserSerializer(ModelSerializer):
+class UserSerializer(FieldsExtraMixin, ModelSerializer):
     """User Serializer"""
 
     created = DateTimeField(source='date_joined', read_only=True)
@@ -527,6 +567,7 @@ class UserSerializer(ModelSerializer):
         fields_extra = {
             'id': {
                 'link': 'self',
+                'resource': 'users',
             },
             'changesets': {
                 'link': 'from_many',
@@ -568,6 +609,8 @@ class HistoricalObjectSerializer(ModelSerializer):
     event = SerializerMethodField()
     changeset = PrimaryKeyRelatedField(
         source="history_changeset", read_only=True)
+    object_id = HistoricalObjectField()
+    archived_representation = SerializerMethodField()
 
     EVENT_CHOICES = {
         '+': 'created',
@@ -578,7 +621,23 @@ class HistoricalObjectSerializer(ModelSerializer):
     def get_event(self, obj):
         return self.EVENT_CHOICES[obj.history_type]
 
-    def get_archive(self, obj):
+    @classmethod
+    def get_fields_extra(cls):
+        extra = deepcopy(cls.Meta.fields_extra)
+        archive_extra = cls.Meta.archive_extra
+        extra['id']['resource'] = archive_extra['history_resource']
+        object_resource = archive_extra['object_resource']
+        extra['object_id']['resource'] = object_resource
+        if object_resource == 'maturities':
+            extra['object_id']['name'] = 'maturity'
+        else:
+            extra['object_id']['name'] = object_resource[:-1]
+        extra['archived_representation']['resource'] = object_resource
+        extra['archived_representation']['is_archive_of'] = cls.ArchivedObject
+        extra['archived_representation']['name'] = object_resource
+        return extra
+
+    def get_archived_representation(self, obj):
         serializer = self.ArchivedObject(obj)
         raw_data = serializer.data
         data = OrderedDict()
@@ -613,7 +672,26 @@ class HistoricalObjectSerializer(ModelSerializer):
         return data
 
     class Meta:
-        fields = ('id', 'date', 'event', 'changeset')
+        fields = (
+            'id', 'date', 'event', 'changeset', 'object_id',
+            'archived_representation')
+        fields_extra = {
+            'id': {
+                'link': 'self',
+                'archived_resource': True,
+            },
+            'changeset': {
+                'link': 'to_one',
+                'resource': 'changesets',
+            },
+            'object_id': {
+                'link': 'to_one',
+                'archived_resource': True,
+            },
+            'archived_representation': {
+                'archived_resource': True,
+            },
+        }
 
 
 class HistoricalBrowserSerializer(HistoricalObjectSerializer):
@@ -621,13 +699,12 @@ class HistoricalBrowserSerializer(HistoricalObjectSerializer):
     class ArchivedObject(ArchiveMixin, BrowserSerializer):
         pass
 
-    browser = HistoricalObjectField()
-    browsers = SerializerMethodField('get_archive')
-
     class Meta(HistoricalObjectSerializer.Meta):
         model = Browser.history.model
-        fields = HistoricalObjectSerializer.Meta.fields + (
-            'browser', 'browsers')
+        archive_extra = {
+            'history_resource': 'historical_browsers',
+            'object_resource': 'browsers',
+        }
 
 
 class HistoricalFeatureSerializer(HistoricalObjectSerializer):
@@ -635,13 +712,12 @@ class HistoricalFeatureSerializer(HistoricalObjectSerializer):
     class ArchivedObject(ArchiveMixin, FeatureSerializer):
         pass
 
-    feature = HistoricalObjectField()
-    features = SerializerMethodField('get_archive')
-
     class Meta(HistoricalObjectSerializer.Meta):
         model = Feature.history.model
-        fields = HistoricalObjectSerializer.Meta.fields + (
-            'feature', 'features')
+        archive_extra = {
+            'history_resource': 'historical_features',
+            'object_resource': 'features',
+        }
 
 
 class HistoricalMaturitySerializer(HistoricalObjectSerializer):
@@ -649,13 +725,12 @@ class HistoricalMaturitySerializer(HistoricalObjectSerializer):
     class ArchivedObject(ArchiveMixin, MaturitySerializer):
         pass
 
-    maturity = HistoricalObjectField()
-    maturities = SerializerMethodField('get_archive')
-
     class Meta(HistoricalObjectSerializer.Meta):
         model = Maturity.history.model
-        fields = HistoricalObjectSerializer.Meta.fields + (
-            'maturity', 'maturities')
+        archive_extra = {
+            'history_resource': 'historical_maturities',
+            'object_resource': 'maturities',
+        }
 
 
 class HistoricalSectionSerializer(HistoricalObjectSerializer):
@@ -663,13 +738,12 @@ class HistoricalSectionSerializer(HistoricalObjectSerializer):
     class ArchivedObject(ArchiveMixin, SectionSerializer):
         pass
 
-    section = HistoricalObjectField()
-    sections = SerializerMethodField('get_archive')
-
     class Meta(HistoricalObjectSerializer.Meta):
         model = Section.history.model
-        fields = HistoricalObjectSerializer.Meta.fields + (
-            'section', 'sections')
+        archive_extra = {
+            'history_resource': 'historical_sections',
+            'object_resource': 'sections',
+        }
 
 
 class HistoricalSpecificationSerializer(HistoricalObjectSerializer):
@@ -677,13 +751,12 @@ class HistoricalSpecificationSerializer(HistoricalObjectSerializer):
     class ArchivedObject(ArchiveMixin, SpecificationSerializer):
         pass
 
-    specification = HistoricalObjectField()
-    specifications = SerializerMethodField('get_archive')
-
     class Meta(HistoricalObjectSerializer.Meta):
         model = Specification.history.model
-        fields = HistoricalObjectSerializer.Meta.fields + (
-            'specification', 'specifications')
+        archive_extra = {
+            'history_resource': 'historical_specifications',
+            'object_resource': 'specifications',
+        }
 
 
 class HistoricalSupportSerializer(HistoricalObjectSerializer):
@@ -691,13 +764,12 @@ class HistoricalSupportSerializer(HistoricalObjectSerializer):
     class ArchivedObject(ArchiveMixin, SupportSerializer):
         pass
 
-    support = HistoricalObjectField()
-    supports = SerializerMethodField('get_archive')
-
     class Meta(HistoricalObjectSerializer.Meta):
         model = Support.history.model
-        fields = HistoricalObjectSerializer.Meta.fields + (
-            'support', 'supports')
+        archive_extra = {
+            'history_resource': 'historical_supports',
+            'object_resource': 'supports',
+        }
 
 
 class HistoricalVersionSerializer(HistoricalObjectSerializer):
@@ -705,10 +777,9 @@ class HistoricalVersionSerializer(HistoricalObjectSerializer):
     class ArchivedObject(ArchiveMixin, VersionSerializer):
         pass
 
-    version = HistoricalObjectField()
-    versions = SerializerMethodField('get_archive')
-
     class Meta(HistoricalObjectSerializer.Meta):
         model = Version.history.model
-        fields = HistoricalObjectSerializer.Meta.fields + (
-            'version', 'versions')
+        archive_extra = {
+            'history_resource': 'historical_versions',
+            'object_resource': 'versions',
+        }

@@ -1,11 +1,11 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for `web-platform-compat.serializer."""
+"""Tests for API serializers."""
 
 from json import dumps
 
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Version)
+from webplatformcompat.serializers import HistoricalMaturitySerializer
 
 from .base import APITestCase as BaseCase
 
@@ -325,9 +325,10 @@ class TestHistoricalFeatureSerializer(APITestCase):
         history = feature.history.all()[0]
         url = self.api_reverse('historicalfeature-detail', pk=history.pk)
         response = self.get_via_json_api(url)
-        actual_sections = response.data['features']['links']['sections']
+        actual_links = response.data['archived_representation']['links']
+        actual_sections = actual_links['sections']
         self.assertEqual([], actual_sections)
-        actual_parent = response.data['features']['links']['parent']
+        actual_parent = actual_links['parent']
         self.assertIsNone(actual_parent)
 
     def test_get_history_sections_parent(self):
@@ -340,5 +341,37 @@ class TestHistoricalFeatureSerializer(APITestCase):
         url = self.api_reverse('historicalfeature-detail', pk=history.pk)
         response = self.get_via_json_api(url)
         expected_parent = str(parent.pk)
-        actual_parent = response.data['features']['links']['parent']
+        actual_links = response.data['archived_representation']['links']
+        actual_parent = actual_links['parent']
         self.assertEqual(expected_parent, actual_parent)
+
+
+class TestHistoricalMaturitySerializer(APITestCase):
+    """Test HistoricalMaturitySerializer."""
+    def test_fields_extra(self):
+        maturity = self.create(
+            Maturity, slug='WD', name={'en': 'Working Draft'})
+        historical = maturity.history.first()
+        serializer = HistoricalMaturitySerializer(instance=historical)
+        expected = {
+            'id': {
+                'archived_resource': True,
+                'link': 'self',
+                'resource': 'historical_maturities'
+            },
+            'changeset': {
+                'link': 'to_one', 'resource': 'changesets'},
+            'object_id': {
+                'archived_resource': True,
+                'link': 'to_one',
+                'name': 'maturity',
+                'resource': 'maturities'
+            },
+            'archived_representation': {
+                'archived_resource': True,
+                'is_archive_of': serializer.ArchivedObject,
+                'name': 'maturities',
+                'resource': 'maturities'
+            },
+        }
+        self.assertEqual(expected, serializer.get_fields_extra())

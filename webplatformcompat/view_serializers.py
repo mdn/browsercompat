@@ -11,8 +11,8 @@ from drf_cached_instances.models import CachedQueryset
 from rest_framework.reverse import reverse
 from rest_framework.serializers import (
     ModelSerializer, PrimaryKeyRelatedField, SerializerMethodField,
-    ValidationError)
-from rest_framework.utils.serializer_helpers import ReturnDict
+    ValidationError, ListSerializer)
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 from tools.resources import Collection, CollectionChangeset
 from .cache import Cache
@@ -21,7 +21,7 @@ from .models import (
 from .serializers import (
     BrowserSerializer, FieldMapMixin, FeatureSerializer, MaturitySerializer,
     SectionSerializer, SpecificationSerializer, SupportSerializer,
-    VersionSerializer)
+    VersionSerializer, FieldsExtraMixin)
 
 
 def omit_some(source_list, *omitted):
@@ -70,11 +70,12 @@ view_cls_by_name = {
 }
 
 
-class ViewFeatureListSerializer(FieldMapMixin, ModelSerializer):
+class ViewFeatureListSerializer(
+        FieldMapMixin, FieldsExtraMixin, ModelSerializer):
     """Get list of features"""
-    url = SerializerMethodField()
+    href = SerializerMethodField()
 
-    def get_url(self, obj):
+    def get_href(self, obj):
         return reverse(
             'viewfeatures-detail', kwargs={'pk': obj.id},
             request=self.context['request'])
@@ -82,8 +83,14 @@ class ViewFeatureListSerializer(FieldMapMixin, ModelSerializer):
     class Meta:
         model = Feature
         fields = (
-            'url', 'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
+            'href', 'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
             'stable', 'obsolete', 'name')
+        fields_extra = {
+            'id': {
+                'link': 'self',
+                'resource': 'features',
+            },
+        }
 
 
 class DjangoResourceClient(object):
@@ -266,10 +273,12 @@ class FeatureExtra(object):
             current_collection, new_collection)
         assert not self.changeset.changes.get('deleted')
 
-    def add_error(self, resource_type, seq, error_dict):
+    def add_error(self, resource_type, seq, attr_name, error):
         """Add a validation error for a linked resource."""
-        self.errors.setdefault(
-            resource_type, {}).setdefault(seq, {}).update(error_dict)
+        resource_errors = self.errors.setdefault(resource_type, {})
+        seq_errors = resource_errors.setdefault(seq, {})
+        attr_errors = seq_errors.setdefault(attr_name, [])
+        attr_errors.append(error)
 
     def _validate_changes(self):
         """Validate the changes.
@@ -317,13 +326,11 @@ class FeatureExtra(object):
             data.update(links)
             serializer = serializer_cls(instance=instance, data=data)
             if not serializer.is_valid():
-                errors = {}
                 # Discard errors in link fields, for now
-                for fieldname, error in serializer.errors.items():
+                for fieldname, errors in serializer.errors.items():
                     if fieldname not in links:
-                        errors[fieldname] = error
-                if errors:
-                    self.add_error(rtype, seq, errors)
+                        for error in errors:
+                            self.add_error(rtype, seq, fieldname, error)
 
         # Validate that features are in the feature tree
         target_id = resource_feature.id.id
@@ -339,18 +346,18 @@ class FeatureExtra(object):
             if f is None or f.parent.id is None:
                 error = (
                     "Feature must be a descendant of feature %s." % target_id)
-                self.add_error('features', feature._seq, {'parent': error})
+                self.add_error('features', feature._seq, 'parent', error)
 
         # Validate that "expert" objects are not added
         expert_resources = set((
             'maturities', 'specifications', 'versions', 'browsers'))
-        add_error = (
+        create_error = (
             'Resource can not be created as part of this update. Create'
             ' first, and try again.')
         for item in self.changeset.changes['new'].values():
             if item._resource_type in expert_resources:
                 self.add_error(
-                    item._resource_type, item._seq, {'id': add_error})
+                    item._resource_type, item._seq, 'id', create_error)
 
         # Validate that "expert" objects are not changed
         change_err = (
@@ -366,7 +373,7 @@ class FeatureExtra(object):
                 for key, value in orig_json.items():
                     if value != new_json.get(key, "(missing)"):
                         err = change_err % (dumps(value), dumps(new_json[key]))
-                        self.add_error(rtype, item._seq, {key: err})
+                        self.add_error(rtype, item._seq, key, err)
 
     def save(self, **kwargs):
         """Commit changes to linked data"""
@@ -478,7 +485,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         return CachedQueryset(
             Cache(), Feature.objects.all(), row_descendant_pks)
 
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         """Add addditonal data for the ViewFeatureSerializer.
 
         For most features, all the related data is cachable, and no database
@@ -491,11 +498,24 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         amount of related data.
         """
         # Load the paginated descendant features
-        if obj is None:
+        if instance is None:
             # This happens when OPTIONS is called from browsable API
             return None
-        self.add_sources(obj)
-        ret = super(ViewFeatureExtraSerializer, self).to_representation(obj)
+        self.add_sources(instance)
+
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            attribute = field.get_attribute(instance)
+            assert attribute is not None
+            field_ret = field.to_representation(attribute)
+            if isinstance(field, ListSerializer):
+                # Wrap lists of related resources in a ReturnList, so that the
+                # renderer has access to the serializer
+                field_ret = ReturnList(field_ret, serializer=field)
+            ret[field.field_name] = field_ret
+
         return ReturnDict(ret, serializer=self)
 
     def find_languages(self, obj):

@@ -1,244 +1,240 @@
+# -*- coding: utf-8 -*-
+"""Renderers for the API."""
+from __future__ import unicode_literals
+
 from collections import OrderedDict
 from json import loads
 
-from django.core.urlresolvers import get_resolver
 from django.template import loader, Context
-from django.utils import encoding, translation
-from django.utils.six.moves.urllib.parse import urlparse, urlunparse
+from django.utils import translation
 
-from rest_framework.relations import ManyRelatedField
-from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.renderers import BrowsableAPIRenderer as BaseAPIRenderer
-from rest_framework.serializers import ListSerializer
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT
+from rest_framework.status import (
+    HTTP_200_OK, HTTP_204_NO_CONTENT, is_client_error, is_server_error)
 from rest_framework.utils.encoders import JSONEncoder
-from rest_framework.utils.serializer_helpers import ReturnList
-from rest_framework_json_api.renderers import JsonApiRenderer \
-    as BaseJsonApiRender
-from rest_framework_json_api.renderers import WrapperNotApplicable
-from rest_framework_json_api.utils import snakecase, model_from_obj
 
 
-class JsonApiRenderer(BaseJsonApiRender):
-    convert_by_name = BaseJsonApiRender.convert_by_name
-    convert_by_name.update({
-        'meta': 'add_meta',
-    })
-    convert_by_type = BaseJsonApiRender.convert_by_type
-    convert_by_type.update({
-        ManyRelatedField: 'handle_related_field',
-        ListSerializer: 'handle_list_serializer',
-    })
+class JsonApiRC1Renderer(JSONRenderer):
+    """JSON API Release Candidate 1 (RC1) render."""
+    PAGINATION_KEYS = ('count', 'next', 'previous', 'results')
     dict_class = OrderedDict
     encoder_class = JSONEncoder
-    wrappers = ([
-        'wrap_view_extra',
-        'wrap_view_extra_error',
-    ] + BaseJsonApiRender.wrappers)
+    media_type = 'application/vnd.api+json'
 
-    def add_meta(self, resource, field, field_name, request):
-        """Add metadata."""
-        data = resource[field_name]
-        return {'meta': data}
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        """Convert native DRF data to JSON API RC1.
 
-    def wrap_paginated(self, data, renderer_context):
-        """Convert paginated data to JSON API with meta"""
-        pagination_keys = ['count', 'next', 'previous', 'results']
-        for key in pagination_keys:
-            if not (data and key in data):
-                raise WrapperNotApplicable('Not paginated results')
-
-        view = renderer_context.get("view", None)
-        model = self.model_from_obj(view)
-        resource_type = self.model_to_resource_type(model)
-
-        # Use default wrapper for results
-        # DRF 3.x - data['results'] is ReturnList
-        assert isinstance(data['results'], ReturnList)
-        results = []
-        fields = self.fields_from_resource(data['results'].serializer.child)
-        assert fields
-        for result in data['results']:
-            result.fields = fields
-            results.append(result)
-        wrapper = self.wrap_default(results, renderer_context)
-
-        # Add pagination metadata
-        pagination = self.dict_class()
-        pagination['previous'] = data['previous']
-        pagination['next'] = data['next']
-        pagination['count'] = data['count']
-        wrapper.setdefault('meta', self.dict_class())
-        wrapper['meta'].setdefault('pagination', self.dict_class())
-        wrapper['meta']['pagination'].setdefault(
-            resource_type, self.dict_class()).update(pagination)
-        return wrapper
-
-    def handle_list_serializer(self, resource, field, field_name, request):
-        serializer = field.child
-        model = serializer.Meta.model
-        resource_type = self.model_to_resource_type(model)
-
-        linked_ids = self.dict_class()
-        links = self.dict_class()
-        linked = self.dict_class()
-        linked[resource_type] = []
-
-        many = field.many
-        assert many
-        items = resource[field_name]
-
-        obj_ids = []
-        for item in items:
-            item.serializer = serializer
-            item.serializer.model = model
-            converted = self.convert_resource(item, request)
-            linked_obj = converted["data"]
-            converted_ids = converted.pop("linked_ids", {})
-            assert converted_ids
-            linked_obj["links"] = converted_ids
-            obj_ids.append(converted["data"]["id"])
-
-            field_links = self.prepend_links_with_name(
-                converted.get("links", {}), resource_type)
-            links.update(field_links)
-
-            linked[resource_type].append(linked_obj)
-
-        linked_ids[field_name] = obj_ids
-        return {"linked_ids": linked_ids, "links": links, "linked": linked}
-
-    def wrap_view_extra(self, data, renderer_context):
-        """Add nested data w/o adding links to main resource."""
-        if not (data and '_view_extra' in data):
-            raise WrapperNotApplicable('Not linked results')
-        response = renderer_context.get("response", None)
-        status_code = response and response.status_code
-        if status_code == 400:
-            raise WrapperNotApplicable('Status code must not be 400.')
-
-        linked = data.pop('_view_extra')
-        data.serializer.fields.pop('_view_extra')
-        wrapper = self.wrap_default(data, renderer_context)
-        assert 'linked' not in wrapper
-
-        wrapper_linked = self.wrap_default(linked, renderer_context)
-        to_transfer = ('links', 'linked', 'meta')
-        for key, value in wrapper_linked.items():
-            if key in to_transfer:
-                wrapper.setdefault(key, self.dict_class()).update(value)
-        return wrapper
-
-    def wrap_view_extra_error(self, data, renderer_context):
-        """Convert field errors involving _view_extra"""
-        response = renderer_context.get("response", None)
-        status_code = response and response.status_code
-        if status_code != 400:
-            raise WrapperNotApplicable('Status code must be 400.')
-        if not (data and '_view_extra' in data):
-            raise WrapperNotApplicable('Not linked results')
-
-        view_extra = data.pop('_view_extra')
-        assert isinstance(view_extra, dict)
-        converted = {}
-        for rname, error_dict in view_extra.items():
-            assert rname != 'meta'
-            for seq, errors in error_dict.items():
-                if seq is None:  # pragma: no cover
-                    # TODO: diagnose how subject feature errors are getting
-                    # into view_extra.
-                    seq = "subject"
-                for fieldname, error in errors.items():
-                    name = 'linked.%s.%s.%s' % (rname, seq, fieldname)
-                    converted[name] = error
-        data.update(converted)
-
-        return self.wrap_error(
-            data, renderer_context, keys_are_fields=True, issue_is_title=False)
-
-    def model_to_resource_type(self, model):
-        if model:
-            return snakecase(model._meta.verbose_name_plural)
-        else:
-            return 'data'
-
-    def handle_related_field(self, resource, field, field_name, request):
-        """Handle PrimaryKeyRelatedField
-
-        Same as base handle_related_field, but:
-        - adds href to links, using DRF default name
-        - doesn't handle data not in fields
-        - uses presence of child_relation attribute to signify "many"
+        The four expected kinds of data are:
+        - No data (maybe in response to 204 No Content)
+        - Error data (status code is 4xx or 5xx)
+        - Standard data (with serializer and fields_extra)
+        - Paginated data
         """
-        links = self.dict_class()
-        linked_ids = self.dict_class()
-
-        many = hasattr(field, 'child_relation')
-        model = self.model_from_obj(field)
-        if model:
-            resource_type = self.model_to_resource_type(model)
-
-            format_kwargs = {
-                'model_name': model._meta.object_name.lower()
-            }
-            view_name = '%(model_name)s-detail' % format_kwargs
-
-            links[field_name] = self.dict_class((
-                ("type", resource_type),
-                ("href", self.url_to_template(view_name, request, field_name)),
-            ))
-
-        assert field_name in resource
-        if many:
-            pks = resource[field_name]
+        response = renderer_context.get('response')
+        request = renderer_context.get('request')
+        fields_extra = renderer_context.get('fields_extra')
+        status_code = response and response.status_code
+        is_err = is_client_error(status_code) or is_server_error(status_code)
+        if data is None:
+            converted = None
+        elif is_err:
+            converted = self.convert_error(data, status_code)
+        elif all([key in data for key in self.PAGINATION_KEYS]):
+            converted = self.convert_paginated(data, request)
         else:
-            pks = [resource[field_name]]
+            main_resource = fields_extra['id']['resource']
+            converted = self.convert_standard(
+                data, fields_extra, main_resource, request)
 
-        link_data = []
-        for pk in pks:
-            if pk is None:
-                link_data.append(None)
+        renderer_context["indent"] = 4
+        return super(JsonApiRC1Renderer, self).render(
+            data=converted, renderer_context=renderer_context)
+
+    def convert_error(self, data, status_code):
+        """Convert error responses to JSON API RC1 format
+
+        Error responses are dictionaries. Simple Django errors, like permision
+        denied errors, have a single key 'detail'. Field validation errors
+        have the field name as the key, and a list of error strings. Errors on
+        nested resources appear under the '_view_extra' key.
+
+        JSON API RC1 specifies that errors appear as a dictionary with the
+        key 'errors', and the value as a list of error dictionaries, such as:
+        {"errors": [
+            {"detail": "Error string",
+             "path": "/attribute",
+             "status_code": 400
+            }]
+        }
+        """
+        errors = []
+        for name, value in data.items():
+            if name == 'detail':
+                fmt_error = self.dict_class((
+                    ('detail', value),
+                    ('status', str(status_code)),
+                ))
+                errors.append(fmt_error)
+            elif name == '_view_extra':
+                for rname, error_dict in value.items():
+                    assert rname != 'meta'
+                    for seq, seq_errors in error_dict.items():
+                        if seq is None:
+                            # TODO: diagnose how subject feature errors are
+                            # getting into view_extra.
+                            seq = "subject"
+                        for fieldname, error_list in seq_errors.items():
+                            path = '/linked.%s.%s.%s' % (rname, seq, fieldname)
+                            assert isinstance(error_list, list)
+                            for error in error_list:
+                                fmt_error = self.dict_class((
+                                    ('detail', error),
+                                    ('path', path),
+                                    ('status', str(status_code)),
+                                ))
+                                errors.append(fmt_error)
             else:
-                link_data.append(encoding.force_text(pk))
+                for error in value:
+                    fmt_error = self.dict_class((
+                        ('status', str(status_code)),
+                        ('detail', error),
+                        ('path', '/%s' % name),
+                    ))
+                    errors.append(fmt_error)
+        assert errors, data
+        return self.dict_class((('errors', errors),))
 
-        if many:
-            linked_ids[field_name] = link_data
+    def convert_standard(self, data, fields_extra, main_resource, request):
+        """Convert a standard data item to RC1 format.
+
+        Keyword Arguments:
+        data - A dictionary-like object
+        fields_extra - Field metadata, keyed by field name
+        main_resource - The name of the resource key
+        request - Used to generate full URLs
+        """
+        attributes = self.dict_class()
+        link_ids = self.dict_class()
+        link_patterns = self.dict_class()
+        linked = self.dict_class()
+        meta = self.dict_class()
+
+        for name, value in data.items():
+            field_extra = fields_extra.get(name, {})
+            link = field_extra.get('link')
+            attr_name = field_extra.get('name', name)
+            if link:
+                link_pattern, link_id = self.convert_link(
+                    name, value, field_extra, main_resource, request)
+                if link_pattern:
+                    link_ids[attr_name] = link_id
+                    pattern_name = "%s.%s" % (main_resource, attr_name)
+                    link_patterns[pattern_name] = link_pattern
+                else:
+                    attributes[attr_name] = link_id
+            elif name == '_view_extra':
+                meta.update(value.pop('meta', {}))
+                for ve_key, ve_list in value.items():
+                    converted_list, resource = self.convert_list(
+                        ve_list, request)
+                    assert resource == ve_key, (
+                        "%s != %s" % (resource, ve_key))
+                    linked[ve_key] = converted_list[resource]
+                    link_patterns.update(converted_list.get('links', {}))
+            else:
+                attributes[attr_name] = value
+
+        converted = self.dict_class(((main_resource, attributes),))
+        if link_ids:
+            converted[main_resource]['links'] = link_ids
+        if link_patterns:
+            converted['links'] = link_patterns
+        if linked:
+            converted['linked'] = linked
+        if meta:
+            converted['meta'] = meta
+        return converted
+
+    def convert_paginated(self, data, request):
+        """Convert paginated data to JSON API RC1.
+
+        The pagination data is moved to the "meta" key, and the
+        paginated "results" are split into resources and link data.
+        """
+        keys = set(data.keys())
+        is_paginated = keys >= set(('count', 'next', 'previous', 'results'))
+        converted = self.dict_class()
+
+        assert is_paginated
+        converted, resource = self.convert_list(data['results'], request)
+        pagination = self.dict_class((
+            ('previous', data['previous']),
+            ('next', data['next']),
+            ('count', data['count']),
+        ))
+        converted['meta'] = self.dict_class((
+            ('pagination', self.dict_class((
+                (resource, pagination),
+            ))),
+        ))
+        return converted
+
+    def convert_list(self, return_list, request):
+        """Convert a ReturnList to JSON API RC1 format.
+
+        The list data is moved under the resource name, and the link metadata
+        is collected under the "links" key, using field data from the
+        ReturnList's attached ListSerializer, and using the request to build
+        full URLs.
+        """
+        assert hasattr(return_list, 'serializer'), "Must be ReturnList"
+        serializer = return_list.serializer.child
+        fields_extra = serializer.get_fields_extra()
+        main_resource = fields_extra['id']['resource']
+
+        converted_items = []
+        converted_links = None
+        for item in return_list:
+            converted_item = self.convert_standard(
+                item, fields_extra, main_resource, request)
+            converted_items.append(converted_item[main_resource])
+            if converted_links is None:
+                converted_links = converted_item.get('links')
+
+        converted = self.dict_class(((main_resource, converted_items),))
+        if converted_links:
+            converted['links'] = converted_links
+        return converted, main_resource
+
+    def convert_link(self, name, value, field_extra, prefix, request):
+        """Convert an ID or ID list to the JSON API RC1 format.
+
+        Return is a tuple:
+        * pattern - The pattern dictionary
+        * link_id - The converted ID (or ID list, or None)
+        """
+        link = field_extra['link']
+        if value is None:
+            link_id = None
+        elif link in ('from_many', 'to_many'):
+            link_id = [str(pk) for pk in value]
+        elif link == 'self':
+            link_id = str(value)
         else:
-            linked_ids[field_name] = link_data[0]
+            link_id = str(value)
 
-        return {"linked_ids": linked_ids, "links": links}
+        pattern = None
+        if link != 'self':
+            resource = field_extra.get('resource', name)
+            attr_name = field_extra.get('name', name)
+            base_url = request.build_absolute_uri('/api/v1/%s' % resource)
 
-    def model_from_obj(self, obj):
-        model = model_from_obj(obj)
-        if not model and hasattr(obj, 'child_relation'):
-            model = model_from_obj(obj.child_relation)
-        if (not model and hasattr(obj, 'parent') and
-                hasattr(obj.parent, 'instance') and hasattr(obj, 'source')):
-            instance = obj.parent.instance
-            if instance:
-                if isinstance(instance, list):
-                    instance = instance[0]
-                model = model_from_obj(getattr(instance, obj.source))
-                if not model:
-                    model = type(getattr(instance, obj.source))
-        return model
-
-    def fields_from_resource(self, resource):
-        if hasattr(resource, 'serializer'):
-            return getattr(resource.serializer, 'fields', None)
-        else:
-            return super(JsonApiRenderer, self).fields_from_resource(resource)
-
-    def url_to_template(self, view_name, request, template_name):
-        prefix, resolver = get_resolver(None).namespace_dict['v1']
-        info = resolver.reverse_dict[view_name]
-        path_template = info[0][0][0]
-        id_field = info[0][0][1][0]
-        path = prefix + path_template % {id_field: '{%s}' % template_name}
-        parsed_url = urlparse(request.build_absolute_uri())
-        return urlunparse(
-            [parsed_url.scheme, parsed_url.netloc, path, '', '', '']
-        )
+            pattern = self.dict_class((
+                ('type', resource),
+                ('href', base_url + '/{%s.%s}' % (prefix, attr_name)),
+            ))
+        return pattern, link_id
 
 
 class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
@@ -247,7 +243,7 @@ class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """Generate JSON API representation, as well as collection."""
         # Set the context to the JSON API represention
-        json_api_renderer = JsonApiRenderer()
+        json_api_renderer = JsonApiRC1Renderer()
         json_api = json_api_renderer.render(
             data, accepted_media_type, renderer_context)
         context = loads(
