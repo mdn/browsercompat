@@ -414,7 +414,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         """Add the sources used by the serializer fields."""
         page = self.context['request'].GET.get('page', 1)
         per_page = settings.PAGINATE_VIEW_FEATURE
-        if self.context['include_child_pages']:
+        if self.context.get('include_child_pages'):
             # Paginate the full descendant tree
             child_queryset = self.get_all_descendants(obj, per_page)
             paginated_child_features = Paginator(child_queryset, per_page)
@@ -692,12 +692,12 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             ('previous', None),
             ('next', None),
         ))
-        if self.context['include_child_pages']:
+        if self.context.get('include_child_pages'):
             # When full descendant list, use pagination
             # The list can get huge when asking for root features like web-css
             pagination['count'] = obj.descendant_count
             url_kwargs = {'pk': obj.id}
-            if self.context['format']:
+            if self.context.get('format'):
                 url_kwargs['format'] = self.context['format']
             request = self.context['request']
             url = reverse(
@@ -735,7 +735,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         """Assemble the metadata for the feature view."""
         significant_changes = self.significant_changes(obj)
         browser_tabs = self.browser_tabs(obj)
-        include_child_pages = self.context['include_child_pages']
+        include_child_pages = self.context.get('include_child_pages', False)
         pagination = self.pagination(obj)
         languages = self.find_languages(obj)
         notes = self.ordered_notes(
