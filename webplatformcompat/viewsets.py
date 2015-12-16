@@ -243,7 +243,7 @@ class ViewFeaturesViewSet(UpdateOnlyModelViewSet):
         request = getattr(self, 'request')
         child_pages = request and request.query_params.get('child_pages')
         falsy = ('0', 'false', 'no')
-        return bool(child_pages and child_pages.lower not in falsy)
+        return bool(child_pages and child_pages.lower() not in falsy)
 
     def get_object_or_404(self, queryset, *filter_args, **filter_kwargs):
         """The feature can be accessed by primary key or by feature slug."""

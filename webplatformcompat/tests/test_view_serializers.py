@@ -446,6 +446,22 @@ class TestViewFeatureViewSet(APITestCase):
         actual_pagination = actual_json['meta']['compat_table']['pagination']
         self.assertDataEqual(expected_pagination, actual_pagination)
 
+    @override_settings(PAGINATE_VIEW_FEATURE=2)
+    def test_large_feature_tree_no_child_pages_is_unpaginated(self):
+        feature = self.setup_feature_tree()
+        url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
+        response = self.client.get(url, {'child_pages': '0'})
+        actual_json = loads(response.content.decode('utf-8'))
+        expected_pagination = {
+            'linked.features': {
+                'previous': None,
+                'next': None,
+                'count': 3,
+            }
+        }
+        actual_pagination = actual_json['meta']['compat_table']['pagination']
+        self.assertDataEqual(expected_pagination, actual_pagination)
+
     def test_important_versions(self):
         feature = self.create(Feature, slug='feature')
         browser = self.create(Browser, slug='browser')
