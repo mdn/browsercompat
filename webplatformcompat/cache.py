@@ -144,7 +144,7 @@ class Cache(BaseCache):
             ('stable', obj.stable),
             ('obsolete', obj.obsolete),
             ('name', obj.name),
-            ('descendant_count', obj.get_descendant_count()),
+            ('descendant_count', obj.descendant_count),
             self.field_to_json(
                 'PKList', 'sections', model=Section, pks=obj._section_pks),
             self.field_to_json(
@@ -155,16 +155,11 @@ class Cache(BaseCache):
                 'PKList', 'children', model=Feature, pks=obj._children_pks),
             self.field_to_json(
                 'PKList', 'row_children', model=Feature,
-                pks=obj._row_children_pks),
-            self.field_to_json(
-                'PKList', 'page_children', model=Feature,
-                pks=obj._page_children_pks),
-            self.field_to_json(
-                'PKList', 'descendants', model=Feature,
-                pks=obj._descendant_pks),
-            self.field_to_json(
-                'PKList', 'row_descendants', model=Feature,
-                pks=obj._row_descendant_pks),
+                pks=obj.row_children_pks),
+            ('row_children_pks', obj.row_children_pks),
+            ('page_children_pks', obj.page_children_pks),
+            ('descendant_pks', obj._descendant_pks),
+            ('row_descendant_pks', obj.row_descendant_pks),
             self.field_to_json(
                 'PKList', 'history', model=obj.history.model,
                 pks=obj._history_pks),
@@ -185,48 +180,20 @@ class Cache(BaseCache):
 
     def feature_v1_add_related_pks(self, obj):
         """Add related primary keys to a Feature instance."""
-        def row_descendant_pks(row_children):
-            """Recursively gather row descendants."""
-            row_pks = []
-            for child in row_children:
-                if not child.mdn_uri:
-                    row_pks.append(child.pk)
-                    sub_row_children = child.get_children()
-                    row_pks.extend(row_descendant_pks(sub_row_children))
-            return row_pks
-
         if not hasattr(obj, '_history_pks'):
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
-
-        # Gather PKs of child features that require iteration
-        # See http://browsercompat.rtfd.org/en/latest/draft/views.html,
-        #  "Including Child Pages", for a full explanation of these fields
-        if not (hasattr(obj, '_children_pks') and
-                hasattr(obj, '_row_children_pks') and
-                hasattr(obj, '_page_children_pks') and
-                hasattr(obj, '_row_descendant_pks')):
-            obj._children_pks = []
-            obj._row_children_pks = []
-            obj._page_children_pks = []
-            row_children = []
-            for child in obj.get_children():
-                obj._children_pks.append(child.pk)
-                if child.mdn_uri:
-                    obj._page_children_pks.append(child.pk)
-                else:
-                    obj._row_children_pks.append(child.pk)
-                    row_children.append(child)
-            obj._row_descendant_pks = row_descendant_pks(row_children)
+        if not hasattr(obj, '_children_pks'):
+            obj._children_pks = [
+                child_pk for child_pk, _ in obj._child_pks_and_is_page]
         if not hasattr(obj, '_support_pks'):
             obj._support_pks = sorted(
                 obj.supports.values_list('pk', flat=True))
         if not hasattr(obj, '_section_pks'):
             obj._section_pks = list(obj.sections.values_list('pk', flat=True))
         if not hasattr(obj, '_descendant_pks'):
-            if obj.get_descendant_count() <= settings.PAGINATE_VIEW_FEATURE:
-                obj._descendant_pks = list(
-                    obj.get_descendants().values_list('pk', flat=True))
+            if obj.descendant_count <= settings.PAGINATE_VIEW_FEATURE:
+                obj._descendant_pks = obj.descendant_pks
             else:
                 obj._descendant_pks = []
 

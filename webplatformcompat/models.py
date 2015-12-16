@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models.signals import post_delete, post_save, m2m_changed
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django_extensions.db.fields.json import JSONField
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
@@ -129,6 +130,52 @@ class Feature(MPTTModel):
                 current_children = list(self.get_children())
                 moved = True
             prev_child = next_child
+
+    @cached_property
+    def row_descendant_pks(self):
+        """Get the ordered primary keys for descendants representing rows."""
+        pks = []
+        for child in self.get_children():
+            if not child.mdn_uri:
+                pks.append(child.pk)
+                pks.extend(child.row_descendant_pks)
+        return pks
+
+    @cached_property
+    def descendant_pks(self):
+        """Get the ordered primary keys for descendants."""
+        return list(self.get_descendants().values_list('pk', flat=True))
+
+    @cached_property
+    def descendant_count(self):
+        """Get the count of all descendants."""
+        return self.get_descendant_count()
+
+    @cached_property
+    def row_children(self):
+        return [child for child in self.get_children() if not child.mdn_uri]
+
+    @cached_property
+    def row_children_pks(self):
+        """Get the ordered primary keys for children representing rows."""
+        return [
+            child_pk for child_pk, is_page in self._child_pks_and_is_page
+            if not is_page]
+
+    @cached_property
+    def page_children_pks(self):
+        """Get the ordered primary keys for children representing rows."""
+        return [
+            child_pk for child_pk, is_page in self._child_pks_and_is_page
+            if is_page]
+
+    @cached_property
+    def _child_pks_and_is_page(self):
+        """Get the ordered primary keys and if the child is a page feature."""
+        pk_and_is_page = []
+        for child in self.get_children().only('pk', 'mdn_uri'):
+            pk_and_is_page.append((child.pk, bool(child.mdn_uri)))
+        return pk_and_is_page
 
 
 @python_2_unicode_compatible

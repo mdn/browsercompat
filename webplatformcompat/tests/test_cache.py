@@ -156,52 +156,41 @@ class TestCache(TestCase):
             'name': {"en": "A Name"},
             'descendant_count': 0,
             'supports:PKList': {
-                'app': u'webplatformcompat',
+                'app': 'webplatformcompat',
                 'model': 'support',
                 'pks': [],
             },
             'sections:PKList': {
-                'app': u'webplatformcompat',
+                'app': 'webplatformcompat',
                 'model': 'section',
                 'pks': [],
             },
             'parent:PK': {
-                'app': u'webplatformcompat',
+                'app': 'webplatformcompat',
                 'model': 'feature',
                 'pk': None,
             },
             'children:PKList': {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [],
-            },
-            'page_children:PKList': {
-                'app': u'webplatformcompat',
+                'app': 'webplatformcompat',
                 'model': 'feature',
                 'pks': [],
             },
             'row_children:PKList': {
-                'app': u'webplatformcompat',
+                'app': 'webplatformcompat',
                 'model': 'feature',
                 'pks': [],
             },
-            'descendants:PKList': {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [],
-            },
-            'row_descendants:PKList': {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [],
-            },
+            'row_children_pks': [],
+            'page_children_pks': [],
+            'descendant_pks': [],
+            'row_descendant_pks': [],
             'history:PKList': {
-                'app': u'webplatformcompat',
+                'app': 'webplatformcompat',
                 'model': 'historicalfeature',
                 'pks': [feature.history.all()[0].pk],
             },
             'history_current:PK': {
-                'app': u'webplatformcompat',
+                'app': 'webplatformcompat',
                 'model': 'historicalfeature',
                 'pk': feature.history.all()[0].pk,
             },
@@ -224,37 +213,12 @@ class TestCache(TestCase):
         out = self.cache.feature_v1_serializer(feature)
         self.assertEqual(out['descendant_count'], 5)
         self.assertEqual(
-            out['descendants:PKList'],
-            {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [child1.pk, child2.pk, child21.pk, page2.pk, page1.pk]
-            }
-        )
+            out['descendant_pks'],
+            [child1.pk, child2.pk, child21.pk, page2.pk, page1.pk])
         self.assertEqual(
-            out['row_descendants:PKList'],
-            {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [child1.pk, child2.pk, child21.pk]
-            }
-        )
-        self.assertEqual(
-            out['page_children:PKList'],
-            {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [page1.pk]
-            }
-        )
-        self.assertEqual(
-            out['row_children:PKList'],
-            {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [child1.pk, child2.pk]
-            }
-        )
+            out['row_descendant_pks'], [child1.pk, child2.pk, child21.pk])
+        self.assertEqual(out['page_children_pks'], [page1.pk])
+        self.assertEqual(out['row_children_pks'], [child1.pk, child2.pk])
 
     @override_settings(PAGINATE_VIEW_FEATURE=2)
     def test_feature_v1_serializer_paginated_descendants(self):
@@ -266,14 +230,7 @@ class TestCache(TestCase):
         feature = Feature.objects.get(id=feature.id)
         out = self.cache.feature_v1_serializer(feature)
         self.assertEqual(out['descendant_count'], 3)
-        self.assertEqual(
-            out['descendants:PKList'],
-            {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': []
-            }
-        )
+        self.assertEqual(out['descendant_pks'], [])
 
     def test_feature_v1_serializer_empty(self):
         self.assertEqual(None, self.cache.feature_v1_serializer(None))

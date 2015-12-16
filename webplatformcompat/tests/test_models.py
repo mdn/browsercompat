@@ -89,6 +89,13 @@ class TestFeature(TestCase):
         parent.set_children_order(new_order)
         self.assertEqual(list(parent.children.all()), new_order)
 
+    def test_row_children(self):
+        parent, children = self.add_family()
+        self.create(
+            Feature, slug='page_child', parent=parent,
+            mdn_uri='{"en": "https://example.com/page"}')
+        self.assertEqual(parent.row_children, children)
+
 
 class TestMaturity(unittest.TestCase):
     def test_str(self):

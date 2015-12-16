@@ -382,10 +382,21 @@ class FeatureExtra(object):
         # Adding sub-features will change the MPTT tree through direct SQL.
         # Load the new tree data from the database before parent serializer
         # overwrites it with old values.
-        tree_attrs = ['lft', 'rght', 'tree_id', 'level', 'parent']
+        tree_attrs = ('lft', 'rght', 'tree_id', 'level', 'parent')
         db_feature = Feature.objects.only(*tree_attrs).get(id=self.feature.id)
         for attr in tree_attrs:
             setattr(self.feature, attr, getattr(db_feature, attr))
+
+        # Adding sub-features will make cached properties invalid
+        cached_params = (
+            'row_descendant_pks', 'descendant_pks', 'descendant_count',
+            'row_children', 'row_children_pks', 'page_children_pks',
+            '_child_pks_and_is_page')
+        for attr in cached_params:
+            try:
+                delattr(self.feature, attr)
+            except AttributeError:
+                pass  # cached_property was not accessed during serialization
 
 
 class ViewFeatureExtraSerializer(ModelSerializer):
@@ -457,20 +468,14 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         and page features that model sub-pages on MDN, which may have
         row and subpage features of their own.
         """
-        if isinstance(obj, Feature):
-            # It's a real Feature, not a cached proxy Feature
-            obj.descendant_count = obj.get_descendant_count()
-            descendant_pks = obj.get_descendants().values_list('pk', flat=True)
-        elif obj.descendant_count <= per_page:
-            # The cached PK list is enough to populate descendant_pks
-            descendant_pks = obj.descendants.values_list('id', flat=True)
-        else:
-            # Load the real object to get the full list of descendants
-            real_obj = Feature.objects.get(id=obj.id)
-            descendant_pks = real_obj.get_descendants().values_list(
-                'pk', flat=True)
-        return CachedQueryset(
-            Cache(), Feature.objects.all(), descendant_pks)
+        descendant_pks = obj.descendant_pks
+        if len(descendant_pks) != obj.descendant_count:
+            # Cached Features with long descendant lists don't cache them.
+            # Load from the database for the full list.
+            feature = Feature.objects.get(id=obj.id)
+            descendant_pks = list(feature.get_descendants().values_list(
+                'pk', flat=True))
+        return CachedQueryset(Cache(), Feature.objects.all(), descendant_pks)
 
     def get_row_descendants(self, obj):
         """Return a CachedQueryset of just the row descendants
@@ -481,9 +486,8 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         See http://bit.ly/1MUSEFL for one example of spliting a large table
         into a hierarchy of features.
         """
-        row_descendant_pks = obj.row_descendants.values_list('id', flat=True)
         return CachedQueryset(
-            Cache(), Feature.objects.all(), row_descendant_pks)
+            Cache(), Feature.objects.all(), obj.row_descendant_pks)
 
     def to_representation(self, instance):
         """Add addditonal data for the ViewFeatureSerializer.
@@ -787,7 +791,7 @@ class ViewFeatureSerializer(FeatureSerializer):
         """Save the feature plus linked elements.
 
         The save is done using DRF conventions; the _view_extra field is set
-        to an object (FeatureExtra) that will same linked elements.
+        to an object (FeatureExtra) that will save linked elements.
         """
         ret = super(ViewFeatureSerializer, self).save(*args, **kwargs)
         if hasattr(ret, '_view_extra'):
