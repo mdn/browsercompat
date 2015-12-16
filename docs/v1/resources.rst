@@ -7,20 +7,19 @@ deleting requires admin account permissions.
 
 All resources support similar operations using HTTP methods:
 
-* ``GET /api/v1/<type>`` - List instances (paginated)
-* ``POST /api/v1/<type>`` - Create new instance
+* ``GET /api/v1/<type>`` - List or search instances (paginated)
+* ``POST /api/v1/<type>`` - Create a new instance
 * ``GET /api/v1/<type>/<id>`` - Retrieve an instance
 * ``PUT /api/v1/<type>/<id>`` - Update an instance
-* ``DELETE /api/v1/<type>/<id>`` - Delete instance
+* ``DELETE /api/v1/<type>/<id>`` - Delete an instance
 
-Additional features may be added as needed.  See the `JSON API docs`_ for ideas
-and what format they will take.
-
-Because the operations are similar, only browsers_ has complete operations
+Because the operations are similar, only browsers_ has complete
 examples, and others just show retrieving an instance (``GET /api/v1/<type>/<id>``).
+Full requests and responses are generated and stored in the `source repository`_
 
 .. _CRUD: http://en.wikipedia.org/wiki/Create,_read,_update_and_delete
-.. _`JSON API docs`: http://jsonapi.org/format/
+.. _`source repository`: https://github.com/mdn/browsercompat/tree/master/docs/v1/raw
+
 
 .. contents:: 
 
@@ -28,9 +27,9 @@ Browsers
 --------
 
 A **browser** is a brand of web client that has one or more versions.  This
-follows most users' understanding of browsers, i.e., ``firefox`` represents
-desktop Firefox, ``safari`` represents desktop Safari, and ``firefox-mobile``
-represents Firefox Mobile.
+follows most users' understanding of browsers, i.e., ``firefox_desktop``
+represents desktop Firefox, ``safari_desktop`` represents desktop Safari, and
+``firefox_android`` represents Firefox on Android.
 
 The **browsers** representation includes:
 
@@ -48,21 +47,22 @@ The **browsers** representation includes:
     - **history** *(many)* - Associated historical_browsers_ in time order
       (most recent first). Changes are ignored.
 
+*Note:* `bug 1078699`_ *is proposing that select users will be able to modify slugs*
 
 List
 ****
 
 To request the paginated list of **browsers**:
 
-.. literalinclude:: /raw/browser-list-request-headers.txt
+.. literalinclude:: /v1/raw/browser-list-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/browser-list-response-headers.txt
+.. literalinclude:: /v1/raw/browser-list-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-list-response-body.json
+.. literalinclude:: /v1/raw/browser-list-response-body.json
     :language: json
 
 Retrieve by ID
@@ -70,31 +70,34 @@ Retrieve by ID
 
 To request a single **browser** with a known ID:
 
-.. literalinclude:: /raw/browser-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/browser-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/browser-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/browser-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-by-id-response-body.json
+.. literalinclude:: /v1/raw/browser-by-id-response-body.json
     :language: json
 
 Retrieve by Slug
 ****************
 
+*Note:* `bug 1078699` *is proposing an alternate URL format.*
+
+
 To request a **browser** by slug:
 
-.. literalinclude:: /raw/browser-by-slug-request-headers.txt
+.. literalinclude:: /v1/raw/browser-by-slug-request-headers.txt
     :language: http
 
 The response includes the desired browser, in list format:
 
-.. literalinclude:: /raw/browser-by-slug-response-headers.txt
+.. literalinclude:: /v1/raw/browser-by-slug-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-by-slug-response-body.json
+.. literalinclude:: /v1/raw/browser-by-slug-response-body.json
     :language: json
 
 Create
@@ -106,38 +109,39 @@ the required parameters.  Some items (such as the ``id`` attribute and the
 ``history_current`` link) will be picked by the server, and will be ignored if
 included.
 
-Here's an example of creating a **browser** instance:
+Here's an example of creating a **browser** instance, with cookie-based
+authentication:
 
-.. literalinclude:: /raw/browser-create-minimal-request-headers.txt
+.. literalinclude:: /v1/raw/browser-create-minimal-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-create-minimal-request-body.json
+.. literalinclude:: /v1/raw/browser-create-minimal-request-body.json
     :language: json
 
 A sample response is:
 
-.. literalinclude:: /raw/browser-create-minimal-response-headers.txt
+.. literalinclude:: /v1/raw/browser-create-minimal-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-create-minimal-response-body.json
+.. literalinclude:: /v1/raw/browser-create-minimal-response-body.json
     :language: json
 
 This, and other methods that change resources, will create a new changeset_,
 and associate the new historical_browsers_ with that changeset_.  To assign to an
 existing changeset, add it to the URI:
 
-.. literalinclude:: /raw/browser-create-in-changeset-2-request-headers.txt
+.. literalinclude:: /v1/raw/browser-create-in-changeset-2-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-create-in-changeset-2-request-body.json
+.. literalinclude:: /v1/raw/browser-create-in-changeset-2-request-body.json
     :language: json
 
 A sample response is:
 
-.. literalinclude:: /raw/browser-create-in-changeset-2-response-headers.txt
+.. literalinclude:: /v1/raw/browser-create-in-changeset-2-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-create-in-changeset-2-response-body.json
+.. literalinclude:: /v1/raw/browser-create-in-changeset-2-response-body.json
     :language: json
 
 Update
@@ -152,18 +156,18 @@ changed, and will be ignored if included.  A successful update will return a
 This update changes the English name from "Internet Explorer" to "Microsoft Internet Explorer":
 
 
-.. literalinclude:: /raw/browser-update-full-request-headers.txt
+.. literalinclude:: /v1/raw/browser-update-full-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-full-request-body.json
+.. literalinclude:: /v1/raw/browser-update-full-request-body.json
     :language: json
 
 With this response:
 
-.. literalinclude:: /raw/browser-update-full-response-headers.txt
+.. literalinclude:: /v1/raw/browser-update-full-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-full-response-body.json
+.. literalinclude:: /v1/raw/browser-update-full-response-body.json
     :language: json
 
 Partial Update
@@ -172,18 +176,18 @@ Partial Update
 An update can just update the target fields.  This is a further request to
 change the English name for the Internet Explorer browser.
 
-.. literalinclude:: /raw/browser-update-partial-request-headers.txt
+.. literalinclude:: /v1/raw/browser-update-partial-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-partial-request-body.json
+.. literalinclude:: /v1/raw/browser-update-partial-request-body.json
     :language: json
 
 With this response:
 
-.. literalinclude:: /raw/browser-update-partial-response-headers.txt
+.. literalinclude:: /v1/raw/browser-update-partial-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-partial-response-body.json
+.. literalinclude:: /v1/raw/browser-update-partial-response-body.json
     :language: json
 
 Update order of related resources
@@ -195,18 +199,18 @@ by updating the order on the **browser** object:
 
 To change just the versions_ order:
 
-.. literalinclude:: /raw/browser-update-versions-order-request-headers.txt
+.. literalinclude:: /v1/raw/browser-update-versions-order-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-versions-order-request-body.json
+.. literalinclude:: /v1/raw/browser-update-versions-order-request-body.json
     :language: json
 
 With this response:
 
-.. literalinclude:: /raw/browser-update-versions-order-response-headers.txt
+.. literalinclude:: /v1/raw/browser-update-versions-order-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-update-versions-order-response-body.json
+.. literalinclude:: /v1/raw/browser-update-versions-order-response-body.json
     :language: json
 
 Reverting to a previous instance
@@ -216,36 +220,41 @@ To revert to an earlier instance, set the ``history_current`` link to a
 previous value.  This resets the content and creates a new
 historical_browsers_ object:
 
-.. literalinclude:: /raw/browser-revert-request-headers.txt
+.. literalinclude:: /v1/raw/browser-revert-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-revert-request-body.json
+.. literalinclude:: /v1/raw/browser-revert-request-body.json
     :language: json
 
-With this response:
+With this response (note that the name and version order have reverted to the
+`original values`_):
 
-.. literalinclude:: /raw/browser-revert-response-headers.txt
+.. literalinclude:: /v1/raw/browser-revert-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/browser-revert-response-body.json
+.. literalinclude:: /v1/raw/browser-revert-response-body.json
     :language: json
+
+.. _`original values`: #retrieve-by-id
 
 Deletion
 ********
 
 To delete a **browser**:
 
-.. literalinclude:: /raw/browser-delete-request-headers.txt
+.. literalinclude:: /v1/raw/browser-delete-request-headers.txt
     :language: http
 
 The response has no body:
 
-.. literalinclude:: /raw/browser-delete-response-headers.txt
+.. literalinclude:: /v1/raw/browser-delete-response-headers.txt
     :language: http
 
 Reverting a deletion
 ********************
-Reverting deletions is not currently possible.
+Reverting deletions is not currently possible, and is tracked in `bug 1159349`_.
+
+.. _`bug 1159349`: https://bugzilla.mozilla.org/show_bug.cgi?id=1159349
 
 Versions
 --------
@@ -262,16 +271,8 @@ The **versions** representation includes:
       null if unknown.
     - **retirement_day** - Approximate day the browser was "retired" (stopped
       being a current browser), in `ISO 8601`_ format, or null if unknown.
-    - **status** - One of:
-      ``beta`` (a numbered release candidate suggested for early adopters or
-      testers),
-      ``current`` (current version, the preferred download or update for
-      users),
-      ``future`` (a named but unnumbered planned future release),
-      ``retired-beta`` (old beta version, replaced by a new beta or release),
-      ``retired`` (old version, no longer the preferred download for any
-      platform), or
-      ``unknown`` (status of this version is unknown)
+    - **status** - One of ``beta``, ``current``, ``future``, ``retired-beta``,
+      ``retired``, or ``unknown`` (see table below).
     - **release_notes_uri** *(localized)* - URI of release notes for this
       version, or null if none.
     - **note** *(localized)* - Engine, OS, etc. information, or null
@@ -289,28 +290,28 @@ The **versions** representation includes:
 The version is either a numeric value, such as ``"11.0"``, or text, such as
 ``"Nightly"``.  The version format depends on the chosen status:
 
-================ =========
-      Status      Version
-================ =========
-``beta``         numeric
-``current``      numeric or the text ``"current"``
-``future``       text
-``retired-beta`` numeric
-``retired``      numeric
-``unknown``      numeric
-================ =========
+================ ================================= ===========================================================
+      Status      Version                           Meaning
+================ ================================= ===========================================================
+``beta``         numeric                           A release candidate suggested for early adopters or testers
+``current``      numeric or the text ``"current"`` A current and preferred release for most users
+``future``       text such as ``"Nightly"``        A named but unnumbered future release
+``retired-beta`` numeric                           An old beta version, replaced by a new beta or release
+``retired``      numeric                           An old released version no longer recommended for users
+``unknown``      numeric                           A release with an unknown status
+================ ================================= ===========================================================
 
 To get a single **version**:
 
-.. literalinclude:: /raw/version-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/version-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/version-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/version-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/version-by-id-response-body.json
+.. literalinclude:: /v1/raw/version-by-id-response-body.json
     :language: json
 
 Features
@@ -368,29 +369,29 @@ The **features** representation includes:
 To get a specific **feature** (in this case, a leaf feature with a translated
 name):
 
-.. literalinclude:: /raw/feature-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/feature-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/feature-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/feature-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/feature-by-id-response-body.json
+.. literalinclude:: /v1/raw/feature-by-id-response-body.json
     :language: json
 
 Here's an example of a branch feature with a canonical name (the parent of the
 previous example):
 
-.. literalinclude:: /raw/feature-by-id-canonical-request-headers.txt
+.. literalinclude:: /v1/raw/feature-by-id-canonical-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/feature-by-id-canonical-response-headers.txt
+.. literalinclude:: /v1/raw/feature-by-id-canonical-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/feature-by-id-canonical-response-body.json
+.. literalinclude:: /v1/raw/feature-by-id-canonical-response-body.json
     :language: json
 
 Supports
@@ -434,15 +435,15 @@ The **support** representation includes:
 
 To get a single **support**:
 
-.. literalinclude:: /raw/support-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/support-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/support-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/support-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/support-by-id-response-body.json
+.. literalinclude:: /v1/raw/support-by-id-response-body.json
     :language: json
 
 Specifications
@@ -471,19 +472,21 @@ The **specification** representation includes:
 
 To get a single **specification**:
 
-.. literalinclude:: /raw/specification-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/specification-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/specification-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/specification-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/specification-by-id-response-body.json
+.. literalinclude:: /v1/raw/specification-by-id-response-body.json
     :language: json
 
 Sections
 --------
+
+*Note:* `bug 1216786`_ *is proposing splitting Sections into Sections and References.*
 
 A **section** refers to a specific area of a specification_ document.
 
@@ -509,15 +512,15 @@ The **section** representation includes:
 
 To get a single **section**:
 
-.. literalinclude:: /raw/section-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/section-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/section-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/section-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/section-by-id-response-body.json
+.. literalinclude:: /v1/raw/section-by-id-response-body.json
     :language: json
 
 Maturities
@@ -543,15 +546,15 @@ The **maturity** representation includes:
 
 To get a single **maturity**:
 
-.. literalinclude:: /raw/maturity-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/maturity-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/maturity-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/maturity-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/maturity-by-id-response-body.json
+.. literalinclude:: /v1/raw/maturity-by-id-response-body.json
     :language: json
 
 .. _feature: Features_
@@ -568,6 +571,8 @@ A sample response is:
 .. _historical_sections: history.html#historical-sections
 .. _historical_maturities: history.html#historical-maturities
 
+.. _`bug 1078699`: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699
+.. _`bug 1216786`: https://bugzilla.mozilla.org/show_bug.cgi?id=1216786
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601
 .. _MDN: https://developer.mozilla.org

@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 =============================
-browsercompat
+BrowserCompat API
 =============================
 
 .. include:: ../README.rst
@@ -17,8 +17,10 @@ Contents:
 
    installation
    contributing
-   draft/intro
+   technologies
+   v1/intro
    tools
+   issues
    history
 
 

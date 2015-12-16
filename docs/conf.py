@@ -48,7 +48,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'browsercompat'
+project = u'BrowserCompat API'
 copyright = u'2014-%d, Mozilla' % date.today().year
 
 # The version info for the project you're documenting, acts as replacement for
@@ -181,7 +181,7 @@ html_static_path = ['_static']
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'browsercompat-doc'
+htmlhelp_basename = 'browsercompat-api'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -201,7 +201,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'browsercompat.tex', u'browsercompat Documentation',
+    ('index', 'browsercompat-api.tex', u'browsercompat API Documentation',
      u'Mozilla', 'manual'),
 ]
 
@@ -231,7 +231,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'browsercompat', u'browsercompat Documentation',
+    ('index', 'browsercompat-api', u'browsercompat API Documentation',
      [u'Mozilla'], 1)
 ]
 
@@ -245,8 +245,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'browsercompat', u'browsercompat Documentation',
-     u'Mozilla', 'browsercompat', 'One line description of project.',
+    ('index', 'browsercompat-api', u'browsercompat API Documentation',
+     u'Mozilla', 'browsercompat', 'An API for compatability data.',
      'Miscellaneous'),
 ]
 

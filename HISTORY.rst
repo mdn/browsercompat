@@ -3,14 +3,16 @@
 History
 -------
 
-browsercompat has not been released to production yet.  The blocking
-issues for version 1 are tracked on Bugzilla_.
+The BrowserCompat API is still in beta, and true versioning won't start until
+it is shipped to the general public. The issues are tracked on Bugzilla_.
 
-In-progess versions are periodically deployed to Heroku at
-https://browsercompat.herokuapp.com.
+When code is merged to master (once or twice a week), it is deployed to Heroku
+at https://browsercompat.herokuapp.com.
 
-Here are some of the development deployments:
+Here are some development milestones:
 
+* 2015-12-01 - MDN beta users can see API-backed tables on select pages
+* 2015-09-11 - 3rd re-write of MDN importer ships, 82% of MDN can be imported
 * 2015-02 - Added MDN importer
 * 2014-12 - Added rest of resources, sample displays.
   Dropped versioning pre-release.

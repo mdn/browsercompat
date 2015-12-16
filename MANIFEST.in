@@ -9,8 +9,8 @@ recursive-include bcauth/static *.css *.png
 recursive-include bcauth/jinja2 *.html
 recursive-include data README.txt
 recursive-include docs Makefile *.gv *.svg conf.py *.rst make.bat *.py doc_cases.json
-recursive-include docs/raw *.txt *.json .keep
-recursive-include docs/resources *.json README.txt
+recursive-include docs/v1/raw *.txt *.json .keep
+recursive-include docs/v1/resources *.json README.txt
 recursive-include tools *.py *.sh
 recursive-include mdn *.py
 recursive-include mdn/jinja2 *.html

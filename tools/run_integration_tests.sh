@@ -93,10 +93,14 @@ user.groups.add(delete_group);\
 # Parse command line
 #
 DOC_MODE="verify"
+API_VERSION="v1"
 WITH_CELERY=0
 VERBOSITY=1
-while getopts ":cghqv" opt; do
+while getopts ":a:cghqv" opt; do
   case $opt in
+    a)
+      API_VERSION=$OPTARG
+      ;;
     c)
       WITH_CELERY=1
       ;;
@@ -113,7 +117,7 @@ while getopts ":cghqv" opt; do
       VERBOSITY=0
       ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      echo "Invalid option: -$opt" >&2
       usage 1
       ;;
   esac
@@ -200,18 +204,20 @@ tools/upload_data.py \
     --api=$DOC_API_URL \
     --user=$DOC_USER_NAME \
     --password=$DOC_USER_PASSWORD \
-    --data=docs/resources/ \
+    --data=docs/$API_VERSION/resources/ \
     --noinput
 
 # If tools/resources.py changes resource creation order,
 # uncomment this command to refresh resources
 # tools/download_data.py \
 #     --api=$DOC_API_URL \
-#     --data=docs/resources/
+#     --data=docs/$API_VERSION/resources/
 
 # Make the documentation requests
 tools/integration_requests.py\
     --api=$DOC_API_URL \
     --mode=$DOC_MODE \
     --user=$DOC_USER_NAME \
-    --password=$DOC_USER_PASSWORD
+    --password=$DOC_USER_PASSWORD \
+    --raw="docs/$API_VERSION/raw" \
+    --cases="docs/$API_VERSION/doc_cases.json"

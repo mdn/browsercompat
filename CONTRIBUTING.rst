@@ -2,37 +2,47 @@
 Contributing
 ============
 
-Contributions should follow the `MDN Contribution Guidelines`_:
+Contributions should follow the `MDN Contribution Guidelines`_, and follow the
+standards of this project:
 
 * You agree to license your contributions under `MPL 2`_
 * Discuss large changes on the `dev-mdn mailing list`_ or on a `bugzilla bug`_
   before coding.
-* Python code style should follow `PEP8 standards`_ whenever possible.
+* Code should follow Python and JavaScript standards.
+    * Python code style should conform to `PEP8 standards`_, as well as
+      `PEP257 standards`_ for documentation strings.
+    * JavaScript code should follow the conventions of jslint_.
+    * Code can be checked locally with ``make lint``, which must pass before
+      a pull request will be considered.
 * All commit messages must start with "bug NNNNNNN" or "fix bug NNNNNNN"
-    * Reason: Make it easy for someone to consume the commit log and reach
-      originating requests for all changes
+    * Reason: This makes it possible to read the commit log and find the bug
+      that includes the original request and design conversation for all
+      changes.
     * Exceptions: "Merge" and "Revert" commits
-    * Notes:
-        * "fix bug NNNNNNN" - will trigger a github bot to automatically mark
-          bug as "RESOLVED:FIXED"
-        * If a pull request has multiple commits, we should squash commits
-          together or re-word commit messages so that each commit message
-          contains a bug number
+    * "fix bug NNNNNNN" - will trigger a github bot to automatically mark
+      the bugzilla bug as "RESOLVED:FIXED"
+    * Multiple commits are allowed, and authors are encouraged to split,
+      merge, and rearrange commits in feature branches to make code review
+      easier. Each commit must start with the "bug" or "fix bug" prefix.
 * MDN module `owner or peer`_ must review and merge all pull requests.
-    * Reason: Owner and peers are and accountable for the quality of MDN code
+    * Reason: Owner and peers are accountable for the quality of MDN code
       changes
     * Exceptions: Owners/peers may commit directly to master for critical
       security/down-time fixes; they must file a bug for follow-up review.
-* MDN reviewers must verify sufficient test coverage on all changes - either by new or existing tests.
-    * Reason: Automated tests reduce human error involved in reviews
+* MDN reviewers must verify 100% test coverage on all changes.
+    * Reason: Automated tests reduce human error involved in reviews, and
+      allow radical refactoring of the code.
     * Notes: The Django site has `good testing docs`_, and
       `Django REST framework`_ has some `additonal testing docs`_.
+    * Coverage can be checked locally with ``make coverage``.
 
 .. _`MDN Contribution Guidelines`: https://github.com/mozilla/kuma/blob/master/CONTRIBUTING.md
 .. _`MPL 2`: http://www.mozilla.org/MPL/2.0/
 .. _`dev-mdn mailing list`: https://lists.mozilla.org/listinfo/dev-mdn
 .. _`bugzilla bug`: https://bugzilla.mozilla.org/show_bug.cgi?id=989448
 .. _`PEP8 standards`: http://www.python.org/dev/peps/pep-0008/
+.. _`PEP257 standards`: http://www.python.org/dev/peps/pep-0257/
+.. _jslint:  http://www.jslint.com
 .. _`owner or peer`: https://wiki.mozilla.org/Modules/All#MDN
 .. _`good testing docs`: https://docs.djangoproject.com/en/dev/topics/testing/
 .. _`Django REST framework`: http://www.django-rest-framework.org
@@ -45,7 +55,7 @@ store, the primary purpose of this project.  The dependant bugs represent
 areas of work, and are not exhaustive.  If you want to contribute at this phase
 in development, take a look at the bugs and linked documents, to familiarize
 yourself with the project, and then get in touch with the team on IRC (#mdndev
-on irc.mozilla.org) to carve out a piece of the project.
+or #browsercompat on irc.mozilla.org) to carve out a piece of the project.
 
 .. _`tracking bug`: https://bugzilla.mozilla.org/showdependencytree.cgi?id=989448&hide_resolved=1
 .. _`specific bug`: https://bugzilla.mozilla.org/showdependencytree.cgi?id=996570&hide_resolved=1

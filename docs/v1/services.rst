@@ -36,27 +36,23 @@ Additional endpoints for authentication:
 * ``/accounts/social/connections/`` - Manage social accounts
 * ``/accounts/fxa/login/`` - Start a `Firefox Accounts`_ login
 
-
-Browser Identification
-----------------------
-
-The ``/browser_ident`` endpoint provides browser identification based on the
-User Agent and other parameters.
-
-Two potential sources for this information:
-
-* WhichBrowser_ - Very detailed.  Uses User Agent header and feature detection
-  to distinguish between similar browsers.  Written in PHP.
-* ua-parser_  - Parses the User Agent.  The `reference parser`_ for
-  WebPlatform.org_. Written in Python.
-
-This endpoint will probably require the browser to visit it.  It will be
-further speced as part of the UX around user contributions.
-
 .. _user: change-control.html#users
-
 .. _`Firefox Accounts`: https://accounts.firefox.com/signup
-.. _WhichBrowser: https://github.com/NielsLeenheer/WhichBrowser
-.. _ua-parser: https://github.com/tobie/ua-parser
-.. _`reference parser`: https://webplatform.github.io/browser-compat-model/#reference-user-agent-parser
-.. _`WebPlatform.org`: http://www.webplatform.org
+
+Data Browser
+------------
+
+The Data Browser at https://browsercompat.herokuapp.com/browse/ is an
+Ember.js_ single-page app that allows browsing the resources currently
+available in the API.  It is built with Ember libraries that work with
+JSON API RC1.
+
+.. _Ember.js: http://emberjs.com
+
+
+Importer
+--------
+
+The MDN Importer at https://browsercompat.herokuapp.com/importer/ is used
+to scrape data from MDN, extract compatibility data, pinpoint data issues on
+MDN pages, and commit extracted data to the API.

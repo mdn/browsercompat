@@ -2,12 +2,9 @@ Views
 =====
 
 A **View** is a combination of resources for a particular presentation.  It is
-suitable for anonymous viewing of content.
-
-It is possible that views are unnecessary, and could be constructed by
-supporting optional parts of the JSON API spec, such as `Inclusion of Linked
-Resources`_.  These views are written as if they are aliases for a
-fully-fleshed implementation of JSON API.
+suitable for anonymous viewing of content. It uses the flexibility of the
+JSON API specification to include a basket of related resources in a response,
+but doesn't use the offical method of `Inclusion of Related Resources`_.
 
 View a Feature
 ~~~~~~~~~~~~~~
@@ -17,18 +14,18 @@ resources needed to display it on MDN.
 
 Here is a simple example, the view for the CSS property float_:
 
-.. literalinclude:: /raw/view-feature-by-id-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/view-feature-by-id-response-headers.txt
+.. literalinclude:: /v1/raw/view-feature-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-by-id-response-body.json
+.. literalinclude:: /v1/raw/view-feature-by-id-response-body.json
     :language: json
 
-The process for using this representation is:
+One way to use this representation is:
 
 1. Parse into an in-memory object store,
 2. Create the "Specifications" section:
@@ -47,7 +44,7 @@ The process for using this representation is:
     4. Close the table, and add an edit button.
 3. Create the Browser Compatibility section:
     1. Add The "Browser compatibility" header
-    2. For each item in meta.compat-table.tabs, create a table with the proper
+    2. For each item in meta.compat_table.tabs, create a table with the proper
        name ("Desktop", "Mobile")
     3. For each browser id in meta.compat-table.tabs.browsers, add a column with
        the translated browser name.
@@ -88,7 +85,7 @@ page on MDN.  For example, *Web/CSS* has the page child *Web/CSS/Display*.
 By default, these are not included, but can be included by setting the query
 parameter ``child_pages=1``:
 
-.. literalinclude:: /raw/view-feature-by-id-with-child-pages-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-by-id-with-child-pages-request-headers.txt
     :language: http
 
 
@@ -102,50 +99,50 @@ then add the support_ for the support.
 
 The first step is to create a changeset_ as an authenticated user:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-1-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-1-request-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-1-response-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-1-response-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-response-body.json
     :language: json
 
 Next, use the changeset_ ID when creating the version_:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-2-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-2-request-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-2-response-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-2-response-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-response-body.json
     :language: json
 
 Finally, create the support_:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-3-request-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-request-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-3-request-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-3-response-headers.txt
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-response-headers.txt
     :language: http
 
-.. literalinclude:: /raw/view-feature-update-parts-with-changeset-3-response-body.json
+.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-response-body.json
     :language: json
 
 The historical_versions_ and historical_supports_
@@ -158,7 +155,7 @@ vandalism.
 Updating View with PUT
 ~~~~~~~~~~~~~~~~~~~~~~
 
-`view_features` supports PUT for bulk updates of support data.  Here is a simple
+``view_features`` supports PUT for bulk updates of support data.  Here is a simple
 example that adds a new subfeature without support:
 
 .. code-block:: http
@@ -240,5 +237,5 @@ favor of direct POST and PUT to the standard resource API.
 .. _historical_supports: history.html#historical-supports
 
 .. _float: https://developer.mozilla.org/en-US/docs/Web/CSS/float
-.. _`Inclusion of Linked Resources`: http://jsonapi.org/format/#fetching-includes
+.. _`Inclusion of Related Resources`: http://jsonapi.org/format/#fetching-includes
 .. _`"caniuse" table layout`: https://wiki.mozilla.org/MDN/Development/CompatibilityTables/Data_Requirements#1._CanIUse_table_layout
