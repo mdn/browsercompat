@@ -19,4 +19,5 @@ recursive-include webplatformcompat/migrations *.py
 recursive-include webplatformcompat/static *.css *.map *.eot *.svg *.ttf *.woff *.js .keep
 recursive-include webplatformcompat/jinja2 *.html
 recursive-include webplatformcompat/tests *.py
+recursive-include webplatformcompat/v1 *.py
 recursive-include wpcsite *.py

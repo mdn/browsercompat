@@ -324,9 +324,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ],
     'VIEW_NAME_FUNCTION': 'webplatformcompat.utils.get_view_name',
-    'DEFAULT_FILTER_BACKENDS': [
-        'webplatformcompat.filters.UnorderedDjangoFilterBackend',
-    ],
     'DEFAULT_PAGINATION_CLASS': 'webplatformcompat.pagination.Pagination',
     'PAGE_SIZE': 10,
     'DEFAULT_VERSIONING_CLASS': (

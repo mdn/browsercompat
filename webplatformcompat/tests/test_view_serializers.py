@@ -12,16 +12,17 @@ from webplatformcompat.history import Changeset, HistoricalRecords
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 from webplatformcompat.view_serializers import (
-    DjangoResourceClient, ViewFeatureSerializer, ViewFeatureExtraSerializer,
+    ViewFeatureSerializer, ViewFeatureExtraSerializer,
     ViewFeatureListSerializer)
 
 from .base import TestCase
 
 
-class TestViewFeatureViewSet(TestCase):
+class TestBaseViewFeatureViewSet(TestCase):
     """Test /view_features/<feature_id>."""
 
     baseUrl = 'http://testserver'
+    __test__ = False  # Don't test outside of versioned API
 
     def make_context(self, url, **kwargs):
         """Create a context similar to a view."""
@@ -431,10 +432,11 @@ class TestViewFeatureViewSet(TestCase):
         self.assertDataEqual(expected_supports, actual_supports)
 
 
-class TestViewFeatureUpdates(TestCase):
+class TestBaseViewFeatureUpdates(TestCase):
     """Test updating via ViewFeatureSerializer."""
 
     longMessage = True
+    __test__ = False  # Don't test outside of versioned API
 
     def setUp(self):
         self.feature = self.create(
@@ -900,28 +902,3 @@ class TestViewFeatureUpdates(TestCase):
         }
         new_feature = self.assertUpdateSuccess(data)
         self.assertEqual(new_feature.name, {'en': 'New Name'})
-
-
-class TestDjangoResourceClient(TestCase):
-    def setUp(self):
-        self.client = DjangoResourceClient()
-
-    def test_url_maturity_list(self):
-        expected = self.api_reverse('maturity-list')
-        self.assertEqual(expected, self.client.url('maturities'))
-
-    def test_url_feature_detail(self):
-        expected = self.api_reverse('feature-detail', pk='55')
-        self.assertEqual(expected, self.client.url('features', '55'))
-
-    def test_open_changeset(self):
-        self.client.open_changeset()
-        self.assertFalse(Changeset.objects.exists())
-
-    def test_close_changeset(self):
-        self.client.close_changeset()
-        self.assertFalse(Changeset.objects.exists())
-
-    def test_delete(self):
-        self.assertRaises(
-            NotImplementedError, self.client.delete, 'features', '666')

@@ -8,8 +8,8 @@ from django.utils.six import BytesIO
 from rest_framework.exceptions import ParseError
 
 from .base import TestCase
-from webplatformcompat.parsers import JsonApiRC1Parser
-from webplatformcompat.viewsets import FeatureViewSet
+from webplatformcompat.v1.parsers import JsonApiRC1Parser
+from webplatformcompat.v1.viewsets import FeatureViewSet
 
 
 class TestJsonApiRC1Parser(TestCase):

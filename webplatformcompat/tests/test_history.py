@@ -14,6 +14,8 @@ from .base import APITestCase
 class TestMiddleware(APITestCase):
     """Test the HistoryChangesetRequestMiddleware."""
 
+    __test__ = False  # Don't test outside of a versioned API
+
     def test_post_with_changeset(self):
         self.login_user()
         changeset = Changeset.objects.create(user=self.user)
