@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for `web-platform-compat.viewsets."""
+"""Tests for API viewsets."""
 from __future__ import unicode_literals
 from datetime import datetime
 from json import dumps, loads
@@ -22,7 +21,7 @@ from webplatformcompat.viewsets import ViewFeaturesViewSet
 from .base import APITestCase
 
 
-class TestGenericViewset(APITestCase):
+class TestBrowserViewset(APITestCase):
     """Test common viewset functionality through the browsers viewset."""
 
     def test_get_browser_detail(self):
