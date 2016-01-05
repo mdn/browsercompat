@@ -3,9 +3,8 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
-
-from webplatformcompat.views import RequestView
 
 
 class AccountView(RedirectView):
@@ -20,7 +19,7 @@ class AccountView(RedirectView):
         return super(AccountView, self).get_redirect_url(*args, **kwargs)
 
 
-class ProfileView(RequestView):
+class ProfileView(TemplateView):
     template_name = 'account/profile.html'
 
 
