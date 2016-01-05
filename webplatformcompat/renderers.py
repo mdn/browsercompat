@@ -42,6 +42,8 @@ class JsonApiRC1Renderer(JSONRenderer):
             converted = self.convert_error(data, status_code)
         elif all([key in data for key in self.PAGINATION_KEYS]):
             converted = self.convert_paginated(data, request)
+        elif request and request.method == 'OPTIONS':
+            converted = {'meta': data}
         else:
             main_resource = fields_extra['id']['resource']
             converted = self.convert_standard(

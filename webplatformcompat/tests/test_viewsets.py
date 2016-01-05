@@ -282,6 +282,15 @@ class TestGenericViewset(APITestCase):
         self.assertEqual(204, response.status_code, response.content)
         self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())
 
+    def test_options(self):
+        self.login_user()
+        browser = self.create(Browser)
+        url = self.api_reverse('browser-detail', pk=browser.pk)
+        response = self.client.options(url)
+        self.assertEqual(200, response.status_code, response.content)
+        expected_keys = {'actions', 'description', 'name', 'parses', 'renders'}
+        self.assertEqual(set(response.data.keys()), expected_keys)
+
 
 class TestCascadeDelete(APITestCase):
     def setUp(self):

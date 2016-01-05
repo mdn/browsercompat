@@ -1,0 +1,4 @@
+OPTIONS /api/v1/browsers/7 HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json
+Content-Length: 0

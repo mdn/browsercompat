@@ -19,18 +19,20 @@ class TestJsonApiRenderers(TestCase):
     def setUp(self):
         self.renderer = JsonApiRC1Renderer()
 
-    def make_context(self, status_code=200, url=None):
+    def make_context(
+            self, status_code=200, url=None, serializer=FeatureSerializer,
+            method='get'):
         response = mock.Mock(spec_set=['status_code'])
         response.status_code = status_code
         if url:
-            request = RequestFactory().get(url)
+            request = getattr(RequestFactory(), method)(url)
         else:
-            request = mock.Mock(spec_set=['build_absolute_uri'])
+            request = mock.Mock(spec_set=['build_absolute_uri', 'method'])
             request.build_absolute_uri.side_effect = Exception('not called')
         renderer_context = {
             'response': response,
             'request': request,
-            'fields_extra': FeatureSerializer.get_fields_extra(),
+            'fields_extra': serializer.get_fields_extra(),
         }
         return renderer_context
 
@@ -343,4 +345,28 @@ class TestJsonApiRenderers(TestCase):
                 "detail": "MYSTERY ERROR."
             }]
         }
+        self.assertJSONEqual(output.decode('utf8'), expected)
+
+    def test_options(self):
+        data = {
+            'actions': {
+                'PUT': {
+                    # In full OPTIONS response, PUT has all field data
+                    'names': {'attributues': 'values'}
+                },
+            },
+            'description': '',
+            'name': 'Browser',
+            'parses': [
+                'application/vnd.api+json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data',
+            ],
+            'renders': ['application/vnd.api+json', 'text/html']
+        }
+        url = self.api_reverse('browser-detail', pk=1)
+        context = self.make_context(
+            url=url, serializer=BrowserSerializer, method='options')
+        output = self.renderer.render(data, self.media_type, context)
+        expected = {"meta": data}
         self.assertJSONEqual(output.decode('utf8'), expected)

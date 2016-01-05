@@ -50,17 +50,13 @@
         {% endif %}
 
         {% if options_form %}
-            <form class="button-form" action="{{ request.get_full_path() }}" method="POST" class="pull-right">
-                {{ csrf_input }}
-                <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
+            <form class="button-form" action="{{ request.get_full_path() }}" data-method="OPTIONS" class="pull-right">
                 <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
             </form>
         {% endif %}
 
         {% if delete_form %}
-            <form class="button-form" action="{{ request.get_full_path() }}" method="POST" class="pull-right">
-                {{ csrf_input }}
-                <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+            <form class="button-form" action="{{ request.get_full_path() }}" data-method="DELETE" class="pull-right">
                 <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
             </form>
         {% endif %}
@@ -172,8 +168,15 @@
 {% endblock content %}
 
 {% block body_js_extra %}
+    <script src="{{ static("rest_framework/js/ajax-form.js") }}"></script>
+    <script src="{{ static("rest_framework/js/csrf.js") }}"></script>
     <script src="{{ static("rest_framework/js/prettify-min.js") }}"></script>
     <script src="{{ static("rest_framework/js/default.js") }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('form').ajaxForm();
+        });
+    </script>
 {% endblock body_js_extra %}
 
 {% block footer %}
