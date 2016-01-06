@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Extensions of simplehistory for webplatformcompat"""
+"""Extensions of simplehistory for webplatformcompat."""
 
 from __future__ import unicode_literals
 from json import dumps
@@ -39,7 +39,7 @@ def register(
 
 
 class Changeset(models.Model):
-    """Changeset combining historical records"""
+    """Changeset combining historical records."""
 
     TARGET_RESOURCES = [
         'browsers', 'features', 'maturities', 'sections', 'specifications',
@@ -59,7 +59,7 @@ class Changeset(models.Model):
         default=0, help_text="ID of target resource")
 
     def save(self, update_cache=True, *args, **kwargs):
-        """Refresh cache of the items updated in changeset"""
+        """Refresh cache of the items updated in changeset."""
         super(Changeset, self).save(*args, **kwargs)
         if self.closed and update_cache:
             from .tasks import update_cache_for_instance
@@ -72,7 +72,7 @@ class Changeset(models.Model):
 
 
 class HistoricalRecords(BaseHistoricalRecords):
-    """simple_history.HistoricalRecords with modifications
+    """simple_history.HistoricalRecords with modifications.
 
     Changes from simple_history:
     * Can add additional fields (e.g., preserve relationship order)
@@ -82,7 +82,7 @@ class HistoricalRecords(BaseHistoricalRecords):
     additional_fields = {}
 
     def copy_fields(self, model):
-        """Add additional_fields to the historic model"""
+        """Add additional_fields to the historic model."""
         fields = super(HistoricalRecords, self).copy_fields(model)
         for name, field in self.additional_fields.items():
             assert name not in fields
@@ -91,7 +91,7 @@ class HistoricalRecords(BaseHistoricalRecords):
         return fields
 
     def get_extra_fields(self, model, fields):
-        """Remove fields moved to changeset"""
+        """Remove fields moved to changeset."""
         extra_fields = super(HistoricalRecords, self).get_extra_fields(
             model, fields)
         related_name = 'historical_' + model._meta.verbose_name_plural.lower()
@@ -100,7 +100,7 @@ class HistoricalRecords(BaseHistoricalRecords):
         return extra_fields
 
     def get_history_changeset(self, instance):
-        """Get the changeset from the instance or middleware"""
+        """Get the changeset from the instance or middleware."""
         # Load user from instance or request
         user = self.get_history_user(instance)
         assert user, 'History User is required'
@@ -124,7 +124,7 @@ class HistoricalRecords(BaseHistoricalRecords):
         return changeset
 
     def create_historical_record(self, instance, history_type):
-        """Create the historical record and associated objects
+        """Create the historical record and associated objects.
 
         Changes from simple_history:
         * Add data from additional_fields
@@ -148,7 +148,7 @@ class HistoricalRecords(BaseHistoricalRecords):
 
 
 class HistoryChangesetMiddleware(BaseHistoryRequestMiddleware):
-    """Add a changeset to the HistoricalRecords request"""
+    """Add a changeset to the HistoricalRecords request."""
 
     def process_request(self, request):
         """Load requested changeset or prepare auto-changeset."""

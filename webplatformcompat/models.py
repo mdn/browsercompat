@@ -24,7 +24,7 @@ from .validators import VersionAndStatusValidator
 
 class CachingManagerMixin(object):
     def delay_create(self, **kwargs):
-        """Add the _delay_cache value to the object before saving"""
+        """Add the _delay_cache value to the object before saving."""
         delay_cache = kwargs.pop('_delay_cache', False)
         obj = self.model(**kwargs)
         self._for_write = True
@@ -49,7 +49,7 @@ class CachingTreeManager(TreeManager, CachingManagerMixin):
 
 @python_2_unicode_compatible
 class Browser(models.Model):
-    """A browser or other web client"""
+    """A browser or other web client."""
 
     slug = models.SlugField(
         help_text="Unique, human-friendly slug.",
@@ -68,7 +68,7 @@ class Browser(models.Model):
 
 @python_2_unicode_compatible
 class Feature(MPTTModel):
-    """A web technology"""
+    """A web technology."""
 
     slug = models.SlugField(
         help_text="Unique, human-friendly slug.",
@@ -186,7 +186,7 @@ class Feature(MPTTModel):
 
 @python_2_unicode_compatible
 class Maturity(models.Model):
-    """Maturity of a specification document"""
+    """Maturity of a specification document."""
 
     slug = models.SlugField(
         help_text=(
@@ -207,7 +207,7 @@ class Maturity(models.Model):
 
 @python_2_unicode_compatible
 class Section(models.Model):
-    """A section of a specification document"""
+    """A section of a specification document."""
 
     specification = models.ForeignKey('Specification', related_name='sections')
     number = TranslatedField(
@@ -238,7 +238,7 @@ class Section(models.Model):
 
 @python_2_unicode_compatible
 class Specification(models.Model):
-    """A Specification document"""
+    """A Specification document."""
 
     maturity = models.ForeignKey('Maturity', related_name='specifications')
     slug = models.SlugField(
@@ -260,7 +260,7 @@ class Specification(models.Model):
 
 @python_2_unicode_compatible
 class Support(models.Model):
-    """Does a browser version support a feature?"""
+    """Detail the support of a browser version for a feature."""
 
     SUPPORT_CHOICES = [(k, k) for k in (
         'yes',
@@ -312,7 +312,7 @@ class Support(models.Model):
 
 @python_2_unicode_compatible
 class Version(models.Model):
-    """A version of a browser"""
+    """A version of a browser."""
 
     STATUS_CHOICES = [(k, k) for k in (
         'unknown',
@@ -422,7 +422,7 @@ cached_model_names = (
     dispatch_uid='m2m_changed_feature_section')
 def feature_sections_changed_update_order(
         sender, instance, action, reverse, model, pk_set, **kwargs):
-    """Maintain feature.section_order"""
+    """Maintain feature.section_order."""
     if action not in ('post_add', 'post_remove', 'post_clear'):
         # post_clear is not handled, because clear is called in
         # django.db.models.fields.related.ReverseManyRelatedObjects.__set__

@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Define base TestCase for MDN tests"""
+"""Define base TestCase for MDN tests."""
 from webplatformcompat.tests.base import TestCase as BaseTestCase
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Version)

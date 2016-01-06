@@ -176,7 +176,7 @@ class TestBrowserViewset(APITestCase):
 
     @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
     def test_put_as_json_api(self, mock_update):
-        """If content is application/vnd.api+json, put is partial"""
+        """If content is application/vnd.api+json, put is partial."""
         browser = self.create(
             Browser, slug='browser', name={'en': 'Old Name'})
         data = dumps({
@@ -225,7 +225,7 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
 
     def test_put_as_json(self):
-        """If content is application/json, put is full put"""
+        """If content is application/json, put is full put."""
         browser = self.create(
             Browser, slug='browser', name={'en': 'Old Name'})
         data = {'name': '{"en": "New Name"}'}

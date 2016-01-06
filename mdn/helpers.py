@@ -1,4 +1,4 @@
-"""Helper functions for Jinja2 templates
+"""Helper functions for Jinja2 templates.
 
 This file is loaded by jingo and must be named helpers.py
 """
@@ -11,7 +11,7 @@ from .views import can_create, can_refresh
 
 @contextfunction
 def add_filter_to_current_url(context, name, value):
-    """Add a filter to the current URL"""
+    """Add a filter to the current URL."""
     query_parts = []
     added = False
     for qs_name, qs_value in context['request'].GET.items():
@@ -27,7 +27,7 @@ def add_filter_to_current_url(context, name, value):
 
 @contextfunction
 def drop_filter_from_current_url(context, name):
-    """Drop a filter from the current URL"""
+    """Drop a filter from the current URL."""
     query_parts = []
     for qs_name, qs_value in context['request'].GET.items():
         if qs_name != name:

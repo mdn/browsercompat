@@ -221,7 +221,7 @@ class Bug(KnownKumaScript):
 
     def __init__(self, **kwargs):
         """
-        Initialize Bug
+        Initialize Bug.
 
         {{bug}} macro takes 3 arguments, but only the 1-argument version is
         supported.
@@ -246,7 +246,7 @@ class CompatKumaScript(KnownKumaScript):
 
 
 class CompatBasicKumaScript(CompatKumaScript):
-    """Base class for KumaScript specifying the actual browser version"""
+    """Base class for KumaScript specifying the actual browser version."""
 
     def __init__(self, **kwargs):
         super(CompatBasicKumaScript, self).__init__(**kwargs)
@@ -527,7 +527,7 @@ class CSSBox(KnownKumaScript):
 
 
 class XRefBase(KnownKumaScript):
-    """Base class for cross-reference KumaScript"""
+    """Base class for cross-reference KumaScript."""
 
     expected_scopes = set((
         'compatibility feature', 'specification description', 'footnote'))
@@ -745,7 +745,7 @@ class JSxRef(XRefBase):
 
     def __init__(self, **kwargs):
         """
-        Initialize JSxRef
+        Initialize JSxRef.
 
         {{jsxref}} macro can take 4 arguments, but only handling first two.
         """
@@ -829,7 +829,7 @@ class WhyNoSpecBlock(HTMLInterval):
 
 
 class XrefCSSBase(CSSxRef):
-    """Base class for xref_cssXXX macros"""
+    """Base class for xref_cssXXX macros."""
 
     min_args = max_args = 0
     arg_names = []

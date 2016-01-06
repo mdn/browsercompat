@@ -112,12 +112,12 @@ class FeaturePage(models.Model):
         return "%s for %s" % (self.get_status_display(), self.slug())
 
     def domain(self):
-        """Protocol + domain portion of URL"""
+        """Protocol + domain portion of URL."""
         url_bits = urlparse(self.url)
         return "%s://%s" % (url_bits.scheme, url_bits.netloc)
 
     def path(self):
-        """Path portion of URL"""
+        """Path portion of URL."""
         return urlparse(self.url).path
 
     def slug(self):
@@ -127,7 +127,7 @@ class FeaturePage(models.Model):
         return unquote(path[len(prefix):])
 
     def same_since(self):
-        """Return a string indicating when the object was changes"""
+        """Return a string indicating when the object was changes."""
         return timesince(self.modified or timezone.now()) + " ago"
 
     def meta(self):
@@ -169,7 +169,7 @@ class FeaturePage(models.Model):
         return translations
 
     def reset(self, delete_cache=True):
-        """Reset to initial state
+        """Reset to initial state.
 
         drop_cache - Delete cached MDN content
         """
@@ -269,7 +269,7 @@ class FeaturePage(models.Model):
 
     @data.setter
     def data(self, value):
-        """Serialize the data for storage"""
+        """Serialize the data for storage."""
         self.raw_data = dumps(value, indent=2)
 
     @property
@@ -458,7 +458,7 @@ class PageMeta(Content):
     """The metadata for a page, retrieved by adding $json to the URL."""
 
     def data(self):
-        """Get the metdata for the page"""
+        """Get the metdata for the page."""
         assert self.status == self.STATUS_FETCHED
         return loads(self.raw)
 

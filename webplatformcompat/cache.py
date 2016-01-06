@@ -1,4 +1,4 @@
-"""Cache functions"""
+"""Cache functions."""
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -10,7 +10,7 @@ from .models import (
 
 
 class Cache(BaseCache):
-    """Instance Cache for webplatformcompat"""
+    """Instance Cache for API resources."""
 
     versions = ('v1',)
     default_version = 'v1'
@@ -452,7 +452,7 @@ class Cache(BaseCache):
         ))
 
     def user_v1_add_related_pks(self, obj):
-        """Add related primary keys and data to a User instance"""
+        """Add related primary keys and data to a User instance."""
         if not hasattr(obj, 'group_names'):
             obj.group_names = sorted(obj.groups.values_list('name', flat=True))
         if not hasattr(obj, '_changeset_pks'):

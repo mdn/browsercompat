@@ -6,7 +6,7 @@ from .validators import LanguageDictValidator
 
 
 class TranslatedField(JSONField):
-    """A JSONField that holds translated strings"""
+    """A JSONField that holds translated strings."""
 
     def __init__(self, *args, **kwargs):
         self.allow_canonical = kwargs.pop('allow_canonical', False)

@@ -286,7 +286,7 @@ class Tool(object):
 
     def sync_changes(
             self, api_collection, local_collection, skip_deletes=False):
-        """Sync changes to a remote collection from a local collection
+        """Sync changes to a remote collection from a local collection.
 
         Returns a dictionary counting the new, changed, and deleted items,
         or an empty dictionary if no changes.

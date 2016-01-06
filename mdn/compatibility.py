@@ -91,7 +91,7 @@ class CompatSectionExtractor(Extractor):
         self.row = []
 
     def entering_element(self, state, element):
-        """Extract and change state when entering an element
+        """Extract and change state when entering an element.
 
         Return is a tuple:
         - The next state
@@ -316,7 +316,7 @@ class CompatSectionExtractor(Extractor):
         self.reset_compat_div()
 
     def cell_to_feature(self, cell):
-        """Parse cell items as a feature (first column)"""
+        """Parse cell items as a feature (first column)."""
         raw_text = cell.raw
         reparsed = compat_feature_grammar.parse(raw_text)
         visitor = CompatFeatureVisitor(
@@ -452,7 +452,7 @@ class CompatBaseVisitor(KumaVisitor):
 
 class CompatFeatureVisitor(CompatBaseVisitor):
     """
-    Visitor for a compatibility feature cell
+    Visitor for a compatibility feature cell.
 
     This is the first column of the compatibility table.
     """
@@ -538,7 +538,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
 
 @python_2_unicode_compatible
 class CellVersion(HTMLText):
-    """A version string, like '1.0', '1', or '1.0 (85.0)'"""
+    """A version string, like '1.0', '1', or '1.0 (85.0)'."""
 
     def __init__(self, version, engine_version=None, **kwargs):
         super(CellVersion, self).__init__(**kwargs)

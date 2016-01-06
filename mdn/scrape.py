@@ -367,7 +367,7 @@ class ScrapedViewFeature(object):
         return fp_data
 
     def load_specification_row(self, spec_row):
-        """Load Specification, Maturity, and Section"""
+        """Load Specification, Maturity, and Section."""
         # Load Specification and Maturity
         if spec_row['specification.id']:
             spec_content, mat_content = self.load_specification(

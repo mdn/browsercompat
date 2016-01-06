@@ -237,7 +237,7 @@ class ViewFeaturesViewSet(ReadUpdateModelViewSet):
                 return ViewFeatureRowChildrenSerializer
 
     def get_serializer_context(self):
-        """Add include_child_pages to context"""
+        """Add include_child_pages to context."""
         context = super(ViewFeaturesViewSet, self).get_serializer_context()
         context['include_child_pages'] = self.include_child_pages
         return context

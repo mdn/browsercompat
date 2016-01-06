@@ -433,7 +433,7 @@ class Collection(object):
         return self._repository.get(resource_type, [])
 
     def get_resources_by_data_id(self, resource_type):
-        """Get a dict mapping a resource by its unique index"""
+        """Get a dict mapping a resource by its unique index."""
         resources = {}
         for item in self.get_resources(resource_type):
             data_id = item.get_data_id()
@@ -674,7 +674,7 @@ class CollectionChangeset(object):
                 self.changes['changed'][k] = my_item
 
     def change_original_collection(self, checkpoint=100):
-        """Commit changes to the original Collection
+        """Commit changes to the original Collection.
 
         Keyword Arguments:
         -- logger_name - The name of the logger that gets progress message
@@ -759,13 +759,13 @@ class CollectionChangeset(object):
         return '\n'.join(out)
 
     def format_item(self, item):
-        """Create human-friendly representation of an item"""
+        """Create human-friendly representation of an item."""
         return dumps(
             item.to_json_api(with_sorted=False),
             indent=2, separators=(',', ': '))
 
     def format_diff(self, item):
-        """Create human-friendly representation of a difference"""
+        """Create human-friendly representation of a difference."""
         orig_item = item._original
         orig_json = dumps(
             orig_item.to_json_api(),

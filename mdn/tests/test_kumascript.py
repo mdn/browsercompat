@@ -903,7 +903,7 @@ class TestVisitor(TestHTMLVisitor):
         self.assertEqual('<code>table-cell</code>', str(code))
 
     def assert_compat_version(self, html, cls, version):
-        """Check that Compat* KumaScript is parsed correctly"""
+        """Check that Compat* KumaScript is parsed correctly."""
         parsed = kumascript_grammar['html'].parse(html)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)

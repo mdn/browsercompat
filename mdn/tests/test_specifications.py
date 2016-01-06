@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Test mdn.specifications"""
+"""Test mdn.specifications."""
 from __future__ import unicode_literals
 
 from webplatformcompat.models import Section
@@ -18,7 +18,7 @@ class TestSpecSectionExtractor(TestCase):
 
     def construct_html(
             self, header=None, pre_table="", row=None, post_table=""):
-        """Create a specification section with overrides"""
+        """Create a specification section with overrides."""
         header = header or """\
 <h2 id="Specifications" name="Specifications">Specifications</h2>"""
         row = row or """\

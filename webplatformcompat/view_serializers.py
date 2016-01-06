@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""API Serializers"""
+"""API Serializers."""
 
 from collections import OrderedDict
 from itertools import chain
@@ -30,7 +30,6 @@ from .serializers import (
 # section->specification->maturity), so omit the "reverse" relations
 # (browser.versions, specification.sections) to reduce size of response.
 #
-
 class ViewBrowserSerializer(BrowserSerializer):
     class Meta(BrowserSerializer.Meta):
         # Omit versions
@@ -84,7 +83,7 @@ view_cls_by_name = {
 
 class ViewFeatureListSerializer(
         FieldMapMixin, FieldsExtraMixin, ModelSerializer):
-    """Get list of features"""
+    """Get list of features."""
 
     href = SerializerMethodField()
 
@@ -107,7 +106,7 @@ class ViewFeatureListSerializer(
 
 
 class DjangoResourceClient(object):
-    """Implement tools.client.Client using Django native functions"""
+    """Implement tools.client.Client using Django native functions."""
 
     namespace = 'v1'
 
@@ -157,7 +156,7 @@ class DjangoResourceClient(object):
 
 
 class FeatureExtra(object):
-    """Handle new and updated data in a view_feature update"""
+    """Handle new and updated data in a view_feature update."""
 
     def __init__(self, data, feature, context):
         self.data = data
@@ -165,14 +164,14 @@ class FeatureExtra(object):
         self.context = context
 
     def is_valid(self):
-        """Validate the linked data"""
+        """Validate the linked data."""
         self.errors = {}
         self._process_data()
         self._validate_changes()
         return not self.errors
 
     def load_resource(self, resource_cls, data):
-        """Load a resource, converting data to look like wire data
+        """Load a resource, converting data to look like wire data.
 
         Conversions:
         - Stringify IDs (5 -> "5")
@@ -398,7 +397,7 @@ class FeatureExtra(object):
                         self.add_error(rtype, item._seq, key, err)
 
     def save(self, **kwargs):
-        """Commit changes to linked data"""
+        """Commit changes to linked data."""
         self.changeset.change_original_collection()
 
         # Adding sub-features will change the MPTT tree through direct SQL.
@@ -485,7 +484,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             Cache(), Browser.objects.all(), sorted(browser_pks)))
 
     def get_all_descendants(self, obj, per_page):
-        """Return a CachedQueryset of all the descendants
+        """Return a CachedQueryset of all the descendants.
 
         This includes row features that model rows in the MDN table,
         and page features that model sub-pages on MDN, which may have
@@ -501,7 +500,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         return CachedQueryset(Cache(), Feature.objects.all(), descendant_pks)
 
     def get_row_descendants(self, obj):
-        """Return a CachedQueryset of just the row descendants
+        """Return a CachedQueryset of just the row descendants.
 
         This includes row features, and subfeatures of rows that are also
         row features.
@@ -797,7 +796,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
 
 class ViewFeatureSerializer(FeatureSerializer):
-    """Feature Serializer, plus related data and MDN browser compat logic"""
+    """Feature Serializer, plus related data and MDN browser compat logic."""
 
     _view_extra = ViewFeatureExtraSerializer(source='*')
 

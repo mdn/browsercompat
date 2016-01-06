@@ -56,7 +56,7 @@ class JsonApiRC1Renderer(JSONRenderer):
             data=converted, renderer_context=renderer_context)
 
     def convert_error(self, data, status_code):
-        """Convert error responses to JSON API RC1 format
+        """Convert error responses to JSON API RC1 format.
 
         Error responses are dictionaries. Simple Django errors, like permision
         denied errors, have a single key 'detail'. Field validation errors

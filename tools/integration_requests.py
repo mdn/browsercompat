@@ -216,7 +216,7 @@ class CaseRunner(object):
         return issues
 
     def case_sections(self, case, response):
-        """Generate the documentation case, section by section
+        """Generate the documentation case, section by section.
 
         Yields a tuple:
         phase - 'request' or 'response'

@@ -234,7 +234,7 @@ class LoadWebcompatData(Tool):
         return version, version_id
 
     def select_subset(self, collection):
-        """Discard all but a subset of features and supports"""
+        """Discard all but a subset of features and supports."""
         # Select features to keep
         keep_feature_ids = set()
         for feature in collection.get_resources('features'):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Run unittests outside of manage.py"""
+"""Run unittests outside of manage.py."""
 
 import os
 import sys

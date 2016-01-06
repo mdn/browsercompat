@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Test mdn.compatibility"""
+"""Test mdn.compatibility."""
 from __future__ import unicode_literals
 
 from django.utils.six import text_type

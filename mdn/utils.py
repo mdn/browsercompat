@@ -7,7 +7,7 @@ import string
 
 
 def date_to_iso(date):
-    """Convert a datetime.Date to the ISO 8601 format, or None"""
+    """Convert a datetime.Date to the ISO 8601 format, or None."""
     if date:
         return date.isoformat()
     else:
@@ -15,7 +15,7 @@ def date_to_iso(date):
 
 
 def end_of_line(text, pos):
-    """Get the position of the end of the line from pos"""
+    """Get the position of the end of the line from pos."""
     try:
         return text.index('\n', pos)
     except ValueError:
@@ -64,7 +64,7 @@ def normalize_name(name):
 
 
 def slugify(word, length=50, suffix=""):
-    """Create a slugged version of a word or phrase"""
+    """Create a slugged version of a word or phrase."""
     raw = word.lower()
     out = []
     acceptable = string.ascii_lowercase + string.digits + '_-'

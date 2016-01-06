@@ -222,7 +222,7 @@ class SlugSearchForm(forms.Form):
 
 
 class FeaturePageSlugSearch(GetFormView):
-    """Search for an importer page by Feature slug"""
+    """Search for an importer page by Feature slug."""
 
     form_class = SlugSearchForm
     template_name = "mdn/feature_page_form.html"
@@ -257,7 +257,7 @@ class URLSearchForm(forms.Form):
 
 
 class FeaturePageURLSearch(GetFormView):
-    """Search for a MDN URI via GET"""
+    """Search for a MDN URI via GET."""
 
     form_class = URLSearchForm
     template_name = "mdn/feature_page_form.html"

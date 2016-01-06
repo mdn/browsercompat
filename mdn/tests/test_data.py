@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Test mdn.data"""
+"""Test mdn.data."""
 from __future__ import unicode_literals
 
 from mdn.data import Data
