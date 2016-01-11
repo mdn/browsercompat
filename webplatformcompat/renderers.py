@@ -17,10 +17,10 @@ from rest_framework.utils.encoders import JSONEncoder
 
 class JsonApiRC1Renderer(JSONRenderer):
     """JSON API Release Candidate 1 (RC1) render."""
-    PAGINATION_KEYS = ('count', 'next', 'previous', 'results')
     dict_class = OrderedDict
     encoder_class = JSONEncoder
     media_type = 'application/vnd.api+json'
+    PAGINATION_KEYS = ('count', 'next', 'previous', 'results')
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """Convert native DRF data to JSON API RC1.
@@ -40,7 +40,7 @@ class JsonApiRC1Renderer(JSONRenderer):
             converted = None
         elif is_err:
             converted = self.convert_error(data, status_code)
-        elif all([key in data for key in self.PAGINATION_KEYS]):
+        elif self.is_paginated(data):
             converted = self.convert_paginated(data, request)
         elif request and request.method == 'OPTIONS':
             converted = {'meta': data}
@@ -164,11 +164,6 @@ class JsonApiRC1Renderer(JSONRenderer):
         The pagination data is moved to the "meta" key, and the
         paginated "results" are split into resources and link data.
         """
-        keys = set(data.keys())
-        is_paginated = keys >= set(('count', 'next', 'previous', 'results'))
-        converted = self.dict_class()
-
-        assert is_paginated
         converted, resource = self.convert_list(data['results'], request)
         pagination = self.dict_class((
             ('previous', data['previous']),
@@ -237,6 +232,12 @@ class JsonApiRC1Renderer(JSONRenderer):
                 ('href', base_url + '/{%s.%s}' % (prefix, attr_name)),
             ))
         return pattern, link_id
+
+    def is_paginated(self, data):
+        """Return True if data appears to be a paginated result."""
+        return (
+            hasattr(data, 'keys') and
+            all([key in data for key in self.PAGINATION_KEYS]))
 
 
 class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
