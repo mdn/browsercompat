@@ -217,11 +217,11 @@ class JsonApiRC1Renderer(JSONRenderer):
         link = field_extra['link']
         if value is None:
             link_id = None
-        elif link in ('from_many', 'to_many'):
+        elif link == 'from_many':
             link_id = [str(pk) for pk in value]
-        elif link == 'self':
-            link_id = str(value)
         else:
+            assert link in ('self', 'from_one', 'to_one'), (
+                '"%s" is an unexpected link type' % link)
             link_id = str(value)
 
         pattern = None
