@@ -240,13 +240,43 @@ class ViewFeaturesViewSet(ReadUpdateModelViewSet):
 
     @cached_property
     def include_child_pages(self):
-        """Return True if the response should include paginated child pages."""
+        """Return True if the response should include paginated child pages.
+
+        The default is exclude paginated child pages, and only include row
+        children that detail the subject feature.  This matches the
+        expectations of most writers - the table on:
+
+        /Web/JavaScript/Reference/Global_Objects/Object
+
+        should only include a "Basic Support" row, not the 30+ pages under
+        Object, such as:
+
+        /Web/JavaScript/Reference/Global_Objects/Object/toString
+
+        However, if they do want a table summarizing the entire page
+        heirarchy, they can add a query parameter such as:
+
+        ?child_pages=1
+
+        These (and variants with capital letters) are synonyms for the default
+        of excluding paginated child pages:
+
+        ?child_pages=0
+        ?child_pages=false
+        ?child_pages=no
+        ?child_pages=NO
+
+        and anything else will include them:
+
+        ?child_pages
+        ?child_pages=yes
+        ?child_pages=Please%20let%20me%20have%20them
+        """
         if self.action != 'retrieve':
             return True
-        request = getattr(self, 'request')
-        child_pages = request and request.query_params.get('child_pages')
+        child_pages = self.request.query_params.get('child_pages', '0')
         falsy = ('0', 'false', 'no')
-        return bool(child_pages and child_pages.lower() not in falsy)
+        return bool(child_pages.lower() not in falsy)
 
     def get_object_or_404(self, queryset, *filter_args, **filter_kwargs):
         """The feature can be accessed by primary key or by feature slug."""
