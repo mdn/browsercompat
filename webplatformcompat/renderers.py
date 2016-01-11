@@ -10,6 +10,7 @@ from django.utils import translation
 
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.renderers import BrowsableAPIRenderer as BaseAPIRenderer
+from rest_framework.utils.serializer_helpers import ReturnList
 from rest_framework.status import (
     HTTP_200_OK, HTTP_204_NO_CONTENT, is_client_error, is_server_error)
 from rest_framework.utils.encoders import JSONEncoder
@@ -185,7 +186,9 @@ class JsonApiRC1Renderer(JSONRenderer):
         ReturnList's attached ListSerializer, and using the request to build
         full URLs.
         """
-        assert hasattr(return_list, 'serializer'), "Must be ReturnList"
+        assert isinstance(return_list, ReturnList), (
+            "Should be ReturnList (for serializer data), is %s" %
+            type(return_list))
         serializer = return_list.serializer.child
         fields_extra = serializer.get_fields_extra()
         main_resource = fields_extra['id']['resource']
