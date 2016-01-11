@@ -46,7 +46,10 @@ class WriteRestrictedMixin(object):
                 field_extra = fields_extra.get(field_name, {})
                 writable = field_extra.get('writable', True)
                 if writable == set_to_readonly:
-                    assert not field.read_only
+                    assert not field.read_only, (
+                        ('%s was requested to be set read-only for %s,'
+                         ' but is already read-only by default.')
+                        % (field_name, view and view.action or 'unknown'))
                     field.read_only = True
 
         return fields
@@ -93,7 +96,9 @@ class HistoricalModelSerializer(
 
         The history field is a list of PKs for all the history records.
         """
-        assert field_name == 'history'
+        assert field_name == 'history', (
+            'Expected field name to be "history", got "%s"'
+            % field_name)
         field_kwargs = {'many': True, 'read_only': True}
         return HistoryField, field_kwargs
 
@@ -103,7 +108,10 @@ class HistoricalModelSerializer(
         history_current returns the PK of the most recent history record.
         It is treated as read-only unless it is an update view.
         """
-        assert field_name == 'history_current'
+        assert field_name == 'history_current', (
+            'Expected field name to be "history_current", got "%s"'
+            % field_name)
+
         return CurrentHistoryField, {}
 
     def to_internal_value(self, data):
@@ -667,7 +675,9 @@ class HistoricalObjectSerializer(ModelSerializer):
             elif archive == 'history_id':
                 links[name] = str(obj.history_id)
             else:
-                assert archive == 'omit'
+                assert archive == 'omit', (
+                    'Unknown value "%s" for fields_extra["%s"]["archive"]'
+                    % (archive, name))
         data['links'] = links
         return data
 

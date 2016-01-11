@@ -54,7 +54,6 @@ class JsonApiRC1Parser(JSONParser):
                     elif link_name == '_view_extra':
                         raise ParseError(
                             '"_view_extra" not allowed as link name.')
-                    assert link_name not in resource
                     resource[link_name] = link_value
             elif name == '_view_extra':
                 raise ParseError(

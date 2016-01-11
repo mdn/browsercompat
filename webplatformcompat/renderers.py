@@ -81,7 +81,8 @@ class JsonApiRC1Renderer(JSONRenderer):
                 errors.append(fmt_error)
             elif name == '_view_extra':
                 for rname, error_dict in value.items():
-                    assert rname != 'meta'
+                    assert rname != 'meta', (
+                        'meta errors not allowed in _view_extra errors.')
                     for seq, seq_errors in error_dict.items():
                         if seq is None:
                             # TODO: diagnose how subject feature errors are
@@ -89,7 +90,9 @@ class JsonApiRC1Renderer(JSONRenderer):
                             seq = "subject"
                         for fieldname, error_list in seq_errors.items():
                             path = '/linked.%s.%s.%s' % (rname, seq, fieldname)
-                            assert isinstance(error_list, list)
+                            assert isinstance(error_list, list), (
+                                'At %s, expecting a list, not "%s".'
+                                % (path, error_list))
                             for error in error_list:
                                 fmt_error = self.dict_class((
                                     ('detail', error),
@@ -105,7 +108,7 @@ class JsonApiRC1Renderer(JSONRenderer):
                         ('path', '/%s' % name),
                     ))
                     errors.append(fmt_error)
-        assert errors, data
+        assert errors, "No errors found in %s." % data
         return self.dict_class((('errors', errors),))
 
     def convert_standard(self, data, fields_extra, main_resource, request):
@@ -264,7 +267,8 @@ class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
         # Copy main item to generic 'data' key
         other_keys = ('linked', 'links', 'meta')
         main_keys = [m for m in context.keys() if m not in other_keys]
-        assert len(main_keys) == 1
+        assert len(main_keys) == 1, (
+            'Expecting one resource key, found "%s"' % main_keys)
         main_type = main_keys[0]
         main_obj = context[main_type].copy()
         main_id = main_obj['id']
@@ -274,11 +278,14 @@ class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
         # Add a collection of types and IDs
         collection = {}
         for resource_type, resources in context.get('linked', {}).items():
-            assert resource_type not in collection
+            assert resource_type not in collection, (
+                '"%s" was already added to the collection.' % resource_type)
             collection[resource_type] = {}
             for resource in resources:
                 resource_id = resource['id']
-                assert resource_id not in collection[resource_type]
+                assert resource_id not in collection[resource_type], (
+                    'For resource %s, ID %s is already present.'
+                    % (resource_type, resource_id))
                 collection[resource_type][resource_id] = resource
         collection.setdefault(main_type, {})[main_id] = main_obj
         context['collection'] = collection

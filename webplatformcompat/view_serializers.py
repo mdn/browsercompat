@@ -203,8 +203,9 @@ class FeatureExtra(object):
 
     def _process_data(self):
         """Load the linked data and compare to current data."""
-        assert not hasattr(self, 'changes')
-        assert hasattr(self, 'errors')
+        assert not hasattr(self, 'changes'), "_process_data called twice."
+        assert hasattr(self, 'errors'), (
+            "_process_data not called by is_valid().")
         r_by_t = Collection.resource_by_type
 
         # Create and load collection of new data
@@ -283,7 +284,9 @@ class FeatureExtra(object):
         # Load the diff
         self.changeset = CollectionChangeset(
             current_collection, new_collection)
-        assert not self.changeset.changes.get('deleted')
+        assert not self.changeset.changes.get('deleted'), (
+            'Existing items were not added, so deletions found:\n%s'
+            % self.changes['deleted'])
 
     def add_error(self, resource_type, seq, attr_name, error):
         """Add a validation error for a linked resource."""
@@ -305,9 +308,11 @@ class FeatureExtra(object):
         "existing" resources that aren't in the database, but those will
         be DoesNotExist exceptions in _process_data.
         """
-        assert hasattr(self, 'changeset')
-        assert hasattr(self, 'errors')
-        assert not self.errors
+        assert hasattr(self, 'changeset'), (
+            '_validate_changes called before _process_data')
+        assert hasattr(self, 'errors'), (
+            '_validate_changes called outside of is_valid')
+        assert not self.errors, '_validate_changes called twice.'
 
         new_collection = self.changeset.new_collection
         resource_feature = new_collection.get('features', str(self.feature.id))
@@ -323,7 +328,9 @@ class FeatureExtra(object):
             # Does the ID imply an existing instance?
             int_id = None
             instance = None
-            assert item.id
+            assert item.id, (
+                'ID not set for data_id "%s", item "%s".'
+                % (data_id, item))
             item_id = item.id.id
             try:
                 int_id = int(item_id)
@@ -524,7 +531,9 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
         for field in fields:
             attribute = field.get_attribute(instance)
-            assert attribute is not None
+            assert attribute is not None, (
+                'field.get_attribute return None for instance %s, field %s'
+                % (instance, field))
             field_ret = field.to_representation(attribute)
             if isinstance(field, ListSerializer):
                 # Wrap lists of related resources in a ReturnList, so that the
@@ -765,7 +774,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
     def to_internal_value(self, data):
         self.instance = self.parent.instance
-        assert self.instance
+        assert self.instance, 'parent does not have a valid instance'
         self.add_sources(self.instance)
         self.instance._in_extra = self.parent._in_extra
 
@@ -773,7 +782,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         if extra.is_valid():
             return {'_view_extra': extra}
         else:
-            assert extra.errors
+            assert extra.errors, 'is_valid() is False, but no errors set.'
             raise ValidationError(extra.errors)
 
     class Meta:
