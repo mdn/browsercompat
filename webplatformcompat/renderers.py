@@ -31,8 +31,8 @@ class JsonApiRC1Renderer(JSONRenderer):
         - Standard data (with serializer and fields_extra)
         - Paginated data
         """
-        response = renderer_context.get('response')
-        request = renderer_context.get('request')
+        response = renderer_context['response']
+        request = renderer_context['request']
         fields_extra = renderer_context.get('fields_extra')
         status_code = response and response.status_code
         is_err = is_client_error(status_code) or is_server_error(status_code)
