@@ -24,38 +24,50 @@ from .serializers import (
     VersionSerializer, FieldsExtraMixin)
 
 
-def omit_some(source_list, *omitted):
-    """Return a list with some items omitted"""
-    for item in omitted:
-        assert item in source_list, '%r not in %r' % (item, source_list)
-    return [x for x in source_list if x not in omitted]
-
+#
+# View-specific serializers
+# Data flows from supports out (feature->version->browser,
+# section->specification->maturity), so omit the "reverse" relations
+# (browser.versions, specification.sections) to reduce size of response.
+#
 
 class ViewBrowserSerializer(BrowserSerializer):
     class Meta(BrowserSerializer.Meta):
-        fields = omit_some(BrowserSerializer.Meta.fields, 'versions')
+        # Omit versions
+        fields = (
+            'id', 'slug', 'name', 'note', 'history_current', 'history')
 
 
 class ViewMaturitySerializer(MaturitySerializer):
     class Meta(MaturitySerializer.Meta):
-        fields = omit_some(MaturitySerializer.Meta.fields, 'specifications')
+        # Omit specifications
+        fields = ('id', 'slug', 'name', 'history_current', 'history')
 
 
 class ViewSectionSerializer(SectionSerializer):
     class Meta(SectionSerializer.Meta):
-        fields = omit_some(SectionSerializer.Meta.fields, 'features')
+        # Omit features
+        fields = (
+            'id', 'number', 'name', 'subpath', 'note', 'specification',
+            'history_current', 'history')
 
 
 class ViewSpecificationSerializer(SpecificationSerializer):
     class Meta(SpecificationSerializer.Meta):
-        fields = omit_some(SpecificationSerializer.Meta.fields, 'sections')
+        # Omit sections
+        fields = (
+            'id', 'slug', 'mdn_key', 'name', 'uri', 'maturity',
+            'history_current', 'history')
 
 
 class ViewVersionSerializer(VersionSerializer):
     class Meta(VersionSerializer.Meta):
-        fields = omit_some(VersionSerializer.Meta.fields, 'supports')
-        read_only_fields = omit_some(
-            VersionSerializer.Meta.read_only_fields, 'supports')
+        # Omit supports
+        fields = (
+            'id', 'version', 'release_day', 'retirement_day',
+            'status', 'release_notes_uri', 'note', 'order', 'browser',
+            'history_current', 'history')
+        read_only_fields = []
 
 
 # Map resource names to model, view serializer classes
