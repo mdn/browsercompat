@@ -30,7 +30,8 @@ class CaseRunner(object):
         'GET': 200,
         'POST': 201,
         'PUT': 200,
-        'DELETE': 204
+        'DELETE': 204,
+        'OPTIONS': 200,
     }
     doc_csrf = "p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn"
     doc_session = "wurexa2wq416ftlvd5plesngwa28183h"

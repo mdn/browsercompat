@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for `web-platform-compat.history."""
+"""Tests for simple_history extensions."""
 
 from json import loads
 
@@ -12,7 +11,7 @@ from webplatformcompat.models import Browser
 from .base import APITestCase
 
 
-class TestHistoryChangesetRequestMiddleware(APITestCase):
+class TestMiddleware(APITestCase):
     """Test the HistoryChangesetRequestMiddleware."""
 
     def test_post_with_changeset(self):

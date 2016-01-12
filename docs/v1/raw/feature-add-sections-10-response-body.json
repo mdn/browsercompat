@@ -11,13 +11,13 @@
         "obsolete": false,
         "name": "audio",
         "links": {
+            "parent": "17",
+            "children": [],
             "sections": [
                 "6",
                 "7"
             ],
             "supports": [],
-            "parent": "17",
-            "children": [],
             "history_current": "23",
             "history": [
                 "23",
@@ -28,14 +28,6 @@
         }
     },
     "links": {
-        "features.sections": {
-            "type": "sections",
-            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
-        },
-        "features.supports": {
-            "type": "supports",
-            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
-        },
         "features.parent": {
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.parent}"
@@ -43,6 +35,14 @@
         "features.children": {
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.sections": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
         },
         "features.history_current": {
             "type": "historical_features",

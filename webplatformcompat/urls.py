@@ -1,20 +1,22 @@
+"""URLs for API and sample views."""
 from django.conf.urls import include, patterns, url
+from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from mdn.urls import mdn_urlpatterns
 from webplatformcompat.routers import router
 
-from .views import RequestView, ViewFeature
+from .views import ViewFeature
 
 
 webplatformcompat_urlpatterns = patterns(
     '',
-    url(r'^$', RequestView.as_view(
+    url(r'^$', TemplateView.as_view(
         template_name='webplatformcompat/home.html'),
         name='home'),
-    url(r'^about/', RequestView.as_view(
+    url(r'^about/', TemplateView.as_view(
         template_name='webplatformcompat/about.html'),
         name='about'),
-    url(r'^browse/', RequestView.as_view(
+    url(r'^browse/', TemplateView.as_view(
         template_name='webplatformcompat/browse.html'),
         name='browse'),
     url(r'^api-auth/', include('rest_framework.urls',

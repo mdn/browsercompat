@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""URL router for API endpoints."""
 
 from collections import OrderedDict
 

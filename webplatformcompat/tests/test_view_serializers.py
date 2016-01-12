@@ -1,37 +1,47 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Tests for web-platform-compat.view_serializers.
-
-TODO: Refactor this code to be more unit tests than integration tests.
-This should wait until bug 1153288 (Reimplement DRF serializers and renderer)
-"""
+"""Tests for view serializers."""
 from __future__ import unicode_literals
-from json import dumps, loads
 
 from django.test.utils import override_settings
+from drf_cached_instances.models import CachedQueryset
+from rest_framework.test import APIRequestFactory
+from rest_framework.versioning import NamespaceVersioning
 
-from webplatformcompat.history import Changeset
+from webplatformcompat.cache import Cache
+from webplatformcompat.history import Changeset, HistoricalRecords
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 from webplatformcompat.view_serializers import (
-    DjangoResourceClient, ViewFeatureExtraSerializer)
+    DjangoResourceClient, ViewFeatureSerializer, ViewFeatureExtraSerializer,
+    ViewFeatureListSerializer)
 
-from .base import APITestCase, TestCase
+from .base import TestCase
 
 
-class TestViewFeatureViewSet(APITestCase):
+class TestViewFeatureViewSet(TestCase):
     """Test /view_features/<feature_id>."""
 
     baseUrl = 'http://testserver'
 
-    def test_get_list(self):
+    def make_context(self, url, **kwargs):
+        """Create a context similar to a view."""
+        request = APIRequestFactory().get(url)
+        request.version = self.namespace
+        request.versioning_scheme = NamespaceVersioning()
+        context = {'request': request}
+        context.update(**kwargs)
+        return context
+
+    def test_list_representation(self):
         feature = self.create(Feature, slug='feature')
+        queryset = Feature.objects.all()
         url = self.api_reverse('viewfeatures-list')
-        response = self.client.get(url, HTTP_ACCEPT="application/vnd.api+json")
-        self.assertEqual(200, response.status_code, response.data)
+        serializer = ViewFeatureListSerializer(
+            queryset, many=True, context=self.make_context(url))
+        representation = serializer.to_representation(queryset)
+        self.assertEqual(len(representation), 1)
         detail_url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
-        self.assertContains(response, detail_url)
+        self.assertEqual(representation[0]['href'], self.baseUrl + detail_url)
 
     def setup_minimal(self):
         feature = self.create(Feature, slug='feature')
@@ -48,6 +58,7 @@ class TestViewFeatureViewSet(APITestCase):
         feature.sections = [section]
         self.changeset.closed = True
         self.changeset.save()
+        feature = Feature.objects.get(id=feature.id)  # Clear cached properties
         return {
             'feature': feature,
             'browser': browser,
@@ -69,74 +80,62 @@ class TestViewFeatureViewSet(APITestCase):
         version = resources['version']
         specification = resources['specification']
         url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
-        response = self.client.get(url)
-
-        expected_json = {
-            "features": {
-                "id": str(feature.id),
-                "mdn_uri": None,
-                "slug": "feature",
-                "experimental": False,
-                "standardized": True,
-                "stable": True,
-                "obsolete": False,
-                "name": None,
-                "links": {
-                    "sections": [str(section.pk)],
-                    "supports": [str(support.pk)],
-                    "parent": None,
-                    "children": [],
-                    "history_current": self.history_pk_str(feature),
-                    "history": self.history_pks_str(feature),
-                }
-            },
-            "linked": {
+        serializer = ViewFeatureSerializer(context=self.make_context(url))
+        representation = serializer.to_representation(feature)
+        expected_representation = {
+            "id": feature.id,
+            "mdn_uri": None,
+            "slug": "feature",
+            "experimental": False,
+            "standardized": True,
+            "stable": True,
+            "obsolete": False,
+            "name": None,
+            "sections": [section.pk],
+            "supports": [support.pk],
+            "parent": None,
+            "children": [],
+            "history_current": self.history_pk(feature),
+            "history": self.history_pks(feature),
+            "_view_extra": {
                 "browsers": [{
-                    "id": str(browser.pk),
+                    "id": browser.pk,
                     "slug": "chrome_desktop",
                     "name": {"en": "Browser"},
                     "note": None,
-                    "links": {
-                        "history_current": self.history_pk_str(browser),
-                        "history": self.history_pks_str(browser),
-                    }
+                    "history_current": self.history_pk(browser),
+                    "history": self.history_pks(browser),
                 }],
                 "features": [],
                 "maturities": [{
-                    "id": str(maturity.id),
+                    "id": maturity.id,
                     "slug": "maturity",
                     "name": {"en": "Maturity"},
-                    "links": {
-                        "history_current": self.history_pk_str(maturity),
-                        "history": self.history_pks_str(maturity),
-                    }
+                    "history_current": self.history_pk(maturity),
+                    "history": self.history_pks(maturity),
                 }],
                 "sections": [{
-                    "id": str(section.id),
+                    "id": section.id,
                     "number": None,
                     "name": None,
                     "subpath": None,
                     "note": None,
-                    "links": {
-                        "specification": str(specification.id),
-                        "history_current": self.history_pk_str(section),
-                        "history": self.history_pks_str(section),
-                    }
+                    "specification": specification.id,
+                    "history_current": self.history_pk(section),
+                    "history": self.history_pks(section),
                 }],
                 "specifications": [{
-                    "id": str(specification.id),
+                    "id": specification.id,
                     "slug": "spec",
                     "mdn_key": None,
                     "name": {"en": "Specification"},
                     "uri": None,
-                    "links": {
-                        "maturity": str(maturity.id),
-                        "history_current": self.history_pk_str(specification),
-                        "history": self.history_pks_str(specification),
-                    }
+                    "maturity": maturity.id,
+                    "history_current": self.history_pk(specification),
+                    "history": self.history_pks(specification),
                 }],
                 "supports": [{
-                    "id": str(support.id),
+                    "id": support.id,
                     "support": "yes",
                     "prefix": None,
                     "prefix_mandatory": False,
@@ -146,15 +145,13 @@ class TestViewFeatureViewSet(APITestCase):
                     "default_config": None,
                     "protected": False,
                     "note": None,
-                    "links": {
-                        "version": str(version.id),
-                        "feature": str(feature.id),
-                        "history_current": self.history_pk_str(support),
-                        "history": self.history_pks_str(support),
-                    }
+                    "version": version.id,
+                    "feature": feature.id,
+                    "history_current": self.history_pk(support),
+                    "history": self.history_pks(support),
                 }],
                 "versions": [{
-                    "id": str(version.id),
+                    "id": version.id,
                     "version": None,
                     "release_day": None,
                     "retirement_day": None,
@@ -162,195 +159,54 @@ class TestViewFeatureViewSet(APITestCase):
                     "release_notes_uri": None,
                     "note": None,
                     "order": 0,
-                    "links": {
-                        "browser": str(browser.id),
-                        "history_current": self.history_pk_str(version),
-                        "history": self.history_pks_str(version),
-                    }
+                    "browser": browser.id,
+                    "history_current": self.history_pk(version),
+                    "history": self.history_pks(version),
                 }],
-            },
-            "links": {
-                "browsers.history": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_browsers/"
-                        "{browsers.history}"),
-                    "type": "historical_browsers"
-                },
-                "browsers.history_current": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_browsers/"
-                        "{browsers.history_current}"),
-                    "type": "historical_browsers"
-                },
-                "features.children": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{features.children}"),
-                    "type": "features"
-                },
-                "features.history": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_features/"
-                        "{features.history}"),
-                    "type": "historical_features"
-                },
-                "features.history_current": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_features/"
-                        "{features.history_current}"),
-                    "type": "historical_features"
-                },
-                "features.parent": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{features.parent}"),
-                    "type": "features"
-                },
-                "features.sections": {
-                    "href": (
-                        self.baseUrl + "/api/v1/sections/"
-                        "{features.sections}"),
-                    "type": "sections"
-                },
-                "features.supports": {
-                    "href": (
-                        self.baseUrl + "/api/v1/supports/"
-                        "{features.supports}"),
-                    "type": "supports"
-                },
-                "maturities.history": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_maturities/"
-                        "{maturities.history}"),
-                    "type": "historical_maturities"
-                },
-                "maturities.history_current": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_maturities/"
-                        "{maturities.history_current}"),
-                    "type": "historical_maturities"
-                },
-                "sections.history": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_sections/"
-                        "{sections.history}"),
-                    "type": "historical_sections"
-                },
-                "sections.history_current": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_sections/"
-                        "{sections.history_current}"),
-                    "type": "historical_sections"
-                },
-                "sections.specification": {
-                    "href": (
-                        self.baseUrl + "/api/v1/specifications/"
-                        "{sections.specification}"),
-                    "type": "specifications"
-                },
-                "specifications.history": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_specifications/"
-                        "{specifications.history}"),
-                    "type": "historical_specifications"
-                },
-                "specifications.history_current": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_specifications/"
-                        "{specifications.history_current}"),
-                    "type": "historical_specifications"
-                },
-                "specifications.maturity": {
-                    "href": (
-                        self.baseUrl + "/api/v1/maturities/"
-                        "{specifications.maturity}"),
-                    "type": "maturities"
-                },
-                "supports.feature": {
-                    "href": (
-                        self.baseUrl + "/api/v1/features/"
-                        "{supports.feature}"),
-                    "type": "features"
-                },
-                "supports.history": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_supports/"
-                        "{supports.history}"),
-                    "type": "historical_supports"
-                },
-                "supports.history_current": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_supports/"
-                        "{supports.history_current}"),
-                    "type": "historical_supports"
-                },
-                "supports.version": {
-                    "href": (
-                        self.baseUrl + "/api/v1/versions/"
-                        "{supports.version}"),
-                    "type": "versions"
-                },
-                "versions.browser": {
-                    "href": (
-                        self.baseUrl + "/api/v1/browsers/"
-                        "{versions.browser}"),
-                    "type": "browsers"
-                },
-                "versions.history": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_versions/"
-                        "{versions.history}"),
-                    "type": "historical_versions"
-                },
-                "versions.history_current": {
-                    "href": (
-                        self.baseUrl + "/api/v1/historical_versions/"
-                        "{versions.history_current}"),
-                    "type": "historical_versions"
-                },
-            },
-            "meta": {
-                "compat_table": {
-                    "tabs": [
-                        {
-                            "name": {"en": "Desktop Browsers"},
-                            "browsers": [str(browser.pk)]
+                "meta": {
+                    "compat_table": {
+                        "tabs": [
+                            {
+                                "name": {"en": "Desktop Browsers"},
+                                "browsers": [str(browser.pk)]
+                            },
+                        ],
+                        "supports": {
+                            str(feature.pk): {
+                                str(browser.pk): [str(support.pk)],
+                            }
                         },
-                    ],
-                    "supports": {
-                        str(feature.pk): {
-                            str(browser.pk): [str(support.pk)],
-                        }
-                    },
-                    "child_pages": False,
-                    "pagination": {
-                        "linked.features": {
-                            "previous": None,
-                            "next": None,
-                            "count": 0,
+                        "child_pages": False,
+                        "pagination": {
+                            "linked.features": {
+                                "previous": None,
+                                "next": None,
+                                "count": 0,
+                            },
                         },
-                    },
-                    "languages": ['en'],
-                    "notes": {},
+                        "languages": ['en'],
+                        "notes": {},
+                    }
                 }
             }
         }
-        actual_json = loads(response.content.decode('utf-8'))
-        self.assertDataEqual(expected_json, actual_json)
+        self.assertEqual(representation, expected_representation)
 
     def test_canonical_removed(self):
         """zxx (non-linguistic, canonical) does not appear in languages."""
         resources = self.setup_minimal()
         feature = resources['feature']
         del self.changeset
-        self.create(Feature, parent=feature, name='{"zxx": "canonical"}')
+        self.create(
+            Feature, parent=feature, slug='child', name='{"zxx": "canonical"}')
         self.changeset.closed = True
         self.changeset.save()
+        feature = Feature.objects.get(pk=feature.pk)
         url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
-        response = self.client.get(url)
-        actual_json = loads(response.content.decode('utf-8'))
-        actual_langs = actual_json['meta']['compat_table']['languages']
-        self.assertEqual(['en'], actual_langs)
+        serializer = ViewFeatureSerializer(context=self.make_context(url))
+        representation = serializer.to_representation(feature)
+        compat_table = representation['_view_extra']['meta']['compat_table']
+        self.assertEqual(compat_table['languages'], ['en'])
 
     def test_multiple_versions(self):
         """Meta section spells out significant versions."""
@@ -373,43 +229,47 @@ class TestViewFeatureViewSet(APITestCase):
         self.changeset.save()
 
         url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
-        response = self.client.get(url)
-        actual_json = loads(response.content.decode('utf-8'))
+        serializer = ViewFeatureSerializer(context=self.make_context(url))
+        representation = serializer.to_representation(feature)
+        compat_table = representation['_view_extra']['meta']['compat_table']
         expected_supports = {
             str(feature.pk): {
                 str(browser.pk): [str(support1.pk), str(support3.pk)],
             }
         }
-        actual_supports = actual_json['meta']['compat_table']['supports']
-        self.assertDataEqual(expected_supports, actual_supports)
+        self.assertEqual(compat_table['supports'], expected_supports)
 
     def setup_feature_tree(self):
         feature = self.create(Feature, slug='feature')
-        self.create(Feature, slug='child1', parent=feature)
-        self.create(Feature, slug='child2', parent=feature)
-        self.create(Feature, slug='child3', parent=feature)
+        for count in range(3):
+            self.create(Feature, slug='child%d' % count, parent=feature)
         self.changeset.closed = True
         self.changeset.save()
+        feature = Feature.objects.get(id=feature.id)  # Clear cached properties
         return feature
 
     @override_settings(PAGINATE_VIEW_FEATURE=2)
     def test_large_feature_tree(self):
         feature = self.setup_feature_tree()
         url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
-        response = self.client.get(url, {'child_pages': True})
-        actual_json = loads(response.content.decode('utf-8'))
+        context = self.make_context(url, include_child_pages=True)
+        serializer = ViewFeatureSerializer(context=context)
+        representation = serializer.to_representation(feature)
+        next_page = url + '?child_pages=1&page=2'
         expected_pagination = {
             'linked.features': {
                 'previous': None,
-                'next': self.baseUrl + url + '?child_pages=1&page=2',
+                'next': self.baseUrl + next_page,
                 'count': 3,
             }
         }
-        actual_pagination = actual_json['meta']['compat_table']['pagination']
+        compat_table = representation['_view_extra']['meta']['compat_table']
+        actual_pagination = compat_table['pagination']
         self.assertDataEqual(expected_pagination, actual_pagination)
 
-        response = self.client.get(url, {'child_pages': True, 'page': 2})
-        actual_json = loads(response.content.decode('utf-8'))
+        context2 = self.make_context(next_page, include_child_pages=True)
+        serializer2 = ViewFeatureSerializer(context=context2)
+        representation = serializer2.to_representation(feature)
         expected_pagination = {
             'linked.features': {
                 'previous': self.baseUrl + url + '?child_pages=1&page=1',
@@ -417,25 +277,80 @@ class TestViewFeatureViewSet(APITestCase):
                 'count': 3,
             }
         }
-        actual_pagination = actual_json['meta']['compat_table']['pagination']
+        compat_table = representation['_view_extra']['meta']['compat_table']
+        actual_pagination = compat_table['pagination']
+        self.assertEqual(expected_pagination, actual_pagination)
+
+    @override_settings(PAGINATE_VIEW_FEATURE=2)
+    def test_large_feature_tree_cached_feature(self):
+        feature = self.setup_feature_tree()
+        cached_qs = CachedQueryset(
+            Cache(), Feature.objects.all(), primary_keys=[feature.pk])
+        cached_feature = cached_qs.get(pk=feature.pk)
+        self.assertEqual(cached_feature.pk, feature.id)
+        self.assertEqual(cached_feature.descendant_count, 3)
+        self.assertEqual(cached_feature.descendant_pks, [])  # Too big to cache
+
+        url = self.api_reverse('viewfeatures-detail', pk=cached_feature.pk)
+        context = self.make_context(url, include_child_pages=True)
+        serializer = ViewFeatureSerializer(context=context)
+        representation = serializer.to_representation(cached_feature)
+        next_page = url + '?child_pages=1&page=2'
+        expected_pagination = {
+            'linked.features': {
+                'previous': None,
+                'next': self.baseUrl + next_page,
+                'count': 3,
+            }
+        }
+        compat_table = representation['_view_extra']['meta']['compat_table']
+        actual_pagination = compat_table['pagination']
         self.assertDataEqual(expected_pagination, actual_pagination)
+
+        context2 = self.make_context(next_page, include_child_pages=True)
+        serializer2 = ViewFeatureSerializer(context=context2)
+        representation = serializer2.to_representation(feature)
+        expected_pagination = {
+            'linked.features': {
+                'previous': self.baseUrl + url + '?child_pages=1&page=1',
+                'next': None,
+                'count': 3,
+            }
+        }
+        compat_table = representation['_view_extra']['meta']['compat_table']
+        actual_pagination = compat_table['pagination']
+        self.assertEqual(expected_pagination, actual_pagination)
 
     @override_settings(PAGINATE_VIEW_FEATURE=2)
     def test_large_feature_tree_html(self):
         feature = self.setup_feature_tree()
         url = self.api_reverse(
             'viewfeatures-detail', pk=feature.pk, format='html')
-        response = self.client.get(url, {'child_pages': True})
+        context = self.make_context(
+            url, include_child_pages=True, format='html')
+        serializer = ViewFeatureSerializer(context=context)
+        representation = serializer.to_representation(feature)
         next_url = self.baseUrl + url + "?child_pages=1&page=2"
-        expected = '<a href="%s">next page</a>' % next_url
-        self.assertContains(response, expected, html=True)
+        expected_pagination = {
+            'linked.features': {
+                'previous': None,
+                'next': next_url,
+                'count': 3,
+            }
+        }
+        compat_table = representation['_view_extra']['meta']['compat_table']
+        actual_pagination = compat_table['pagination']
+        self.assertEqual(expected_pagination, actual_pagination)
+        self.assertTrue('.html' in next_url)
 
     @override_settings(PAGINATE_VIEW_FEATURE=4)
     def test_just_right_feature_tree(self):
         feature = self.setup_feature_tree()
+        self.assertEqual(feature.descendant_count, 3)
         url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
-        response = self.client.get(url, {'child_pages': True})
-        actual_json = loads(response.content.decode('utf-8'))
+        context = self.make_context(url, include_child_pages=True)
+        serializer = ViewFeatureSerializer(context=context)
+        representation = serializer.to_representation(feature)
         expected_pagination = {
             'linked.features': {
                 'previous': None,
@@ -443,7 +358,8 @@ class TestViewFeatureViewSet(APITestCase):
                 'count': 3,
             }
         }
-        actual_pagination = actual_json['meta']['compat_table']['pagination']
+        compat_table = representation['_view_extra']['meta']['compat_table']
+        actual_pagination = compat_table['pagination']
         self.assertDataEqual(expected_pagination, actual_pagination)
 
     def test_important_versions(self):
@@ -500,8 +416,9 @@ class TestViewFeatureViewSet(APITestCase):
         s9 = self.create(Support, version=v9, feature=feature, **support)
 
         url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
-        response = self.client.get(url)
-        actual_json = loads(response.content.decode('utf-8'))
+        context = self.make_context(url)
+        serializer = ViewFeatureSerializer(context=context)
+        representation = serializer.to_representation(feature)
         expected_supports = {
             str(feature.pk): {
                 str(browser.pk): [
@@ -509,37 +426,13 @@ class TestViewFeatureViewSet(APITestCase):
                     str(s5.pk), str(s6.pk), str(s7.pk), str(s8.pk),
                     str(s9.pk)
                 ]}}
-        actual_supports = actual_json['meta']['compat_table']['supports']
+        compat_table = representation['_view_extra']['meta']['compat_table']
+        actual_supports = compat_table['supports']
         self.assertDataEqual(expected_supports, actual_supports)
 
-    def test_slug(self):
-        feature = self.create(Feature, slug='feature')
-        browser = self.create(Browser, slug='chrome', name={'en': 'Browser'})
-        version = self.create(Version, browser=browser, status='current')
-        self.create(Support, version=version, feature=feature)
-        self.changeset.closed = True
-        self.changeset.save()
 
-        url = self.api_reverse('viewfeatures-detail', pk='feature')
-        response = self.client.get(url)
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(feature.id, response.data['id'])
-
-    def test_slug_not_found(self):
-        url = self.api_reverse('viewfeatures-detail', pk='feature')
-        response = self.client.get(url)
-        self.assertEqual(404, response.status_code)
-
-    def test_feature_not_found_html(self):
-        self.assertFalse(Feature.objects.filter(id=666).exists())
-        url = self.api_reverse('viewfeatures-detail', pk='666') + '.html'
-        response = self.client.get(url)
-        self.assertEqual(404, response.status_code)
-        self.assertEqual('404 Not Found', response.content.decode('utf8'))
-
-
-class TestViewFeatureUpdates(APITestCase):
-    """Test PUT to a ViewFeature detail"""
+class TestViewFeatureUpdates(TestCase):
+    """Test updating via ViewFeatureSerializer."""
     longMessage = True
 
     def setUp(self):
@@ -558,12 +451,12 @@ class TestViewFeatureUpdates(APITestCase):
         self.browser_data = {
             "id": str(self.browser.id), "slug": self.browser.slug,
             "name": self.browser.name, "note": None,
-            "links": {"versions": [str(self.version.id)]}}
+            "versions": [self.version.id]}
         self.version_data = {
             "id": str(self.version.id), "version": self.version.version,
             "release_day": '2015-02-17', "retirement_day": None, "note": None,
             "status": "unknown", "release_notes_uri": None,
-            "links": {"browser": str(self.browser.id)}}
+            "browser": self.browser.id}
         self.maturity_data = {
             "id": str(self.maturity.id), "slug": self.maturity.slug,
             "name": self.maturity.name}
@@ -571,22 +464,30 @@ class TestViewFeatureUpdates(APITestCase):
             "id": str(self.spec.id), "slug": self.spec.slug,
             "mdn_key": self.spec.mdn_key, "name": self.spec.name,
             "uri": self.spec.uri,
-            "links": {"maturity": str(self.maturity.id), "sections": []}}
+            "maturity": self.maturity.id, "sections": []}
         self.url = self.api_reverse('viewfeatures-detail', pk=self.feature.pk)
+        request = APIRequestFactory().get(self.url)
+        request.version = self.namespace
+        request.versioning_scheme = NamespaceVersioning()
+        request.user = self.user
+        self.context = {'request': request}
+        HistoricalRecords.thread.request = request
 
-    def json_api(self, feature_data=None, meta=None, **resources):
-        base = {'features': {"id": str(self.feature.id)}}
-        if feature_data:
-            base['features'].update(feature_data)
-        if meta:
-            base['meta'] = meta
-        if resources:
-            base['linked'] = {}
-        for name, values in resources.items():
-            base['linked'][name] = values
-        return dumps(base)
+    def assertUpdateSuccess(self, data):
+        feature = Feature.objects.get(id=self.feature.id)  # Clear prop caches
+        serializer = ViewFeatureSerializer(
+            feature, data=data, context=self.context, partial=True)
+        self.assertTrue(serializer.is_valid())
+        return serializer.save()
 
-    def test_post_just_feature(self):
+    def assertUpdateFailed(self, data, expected_errors):
+        feature = Feature.objects.get(id=self.feature.id)  # Clear prop caches
+        serializer = ViewFeatureSerializer(
+            feature, data=data, context=self.context, partial=True)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, expected_errors)
+
+    def test_just_feature(self):
         data = {
             "mdn_uri": {
                 "en": "https://developer.mozilla.org/en-US/docs/feature",
@@ -597,130 +498,108 @@ class TestViewFeatureUpdates(APITestCase):
                 "fr": "Le Feature",
             }
         }
-        json_data = self.json_api(data)
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
-        f = Feature.objects.get(id=self.feature.id)
-        self.assertEqual(f.mdn_uri, data['mdn_uri'])
-        self.assertEqual(f.name, data['name'])
+        new_feature = self.assertUpdateSuccess(data)
+        self.assertEqual(new_feature.mdn_uri, data['mdn_uri'])
+        self.assertEqual(new_feature.name, data['name'])
 
-    def test_post_add_subfeature(self):
-        subfeature = {
-            "id": "_new", "slug": "subfeature", "name": {"en": "Sub Feature"},
-            "links": {"parent": str(self.feature.pk)}}
-        json_data = self.json_api(features=[subfeature])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
+    def test_add_subfeature(self):
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_new",
+                    "slug": "subfeature",
+                    "name": {"en": "Sub Feature"},
+                    "parent": self.feature.pk,
+                }],
+            },
+        }
+        new_feature = self.assertUpdateSuccess(data)
         subfeature = Feature.objects.get(slug='subfeature')
-        self.assertEqual(subfeature.parent, self.feature)
-        feature = Feature.objects.get(id=self.feature.id)
-        self.assertEqual(list(feature.children.all()), [subfeature])
-        self.assertEqual(list(feature.get_descendants()), [subfeature])
+        self.assertEqual(subfeature.parent, new_feature)
+        self.assertEqual(list(new_feature.children.all()), [subfeature])
+        self.assertEqual(list(new_feature.get_descendants()), [subfeature])
 
-    def test_post_add_second_subfeature(self):
-        from django.db import connection
-        old_debug = connection.force_debug_cursor
-        connection.force_debug_cursor = True
-        try:
-            sf1 = self.create(
-                Feature, slug='sf1', name={'en': 'sf1'}, parent=self.feature)
-            sf2_data = {
-                "id": "_sf2", "slug": "sf2", "name": {"en": "Sub Feature 2"},
-                "links": {"parent": str(self.feature.pk)}}
-            json_data = self.json_api(
-                feature_data={'links': {'children': [str(sf1.pk), '_sf2']}},
-                features=[sf2_data])
-            response = self.client.put(
-                self.url, data=json_data,
-                content_type="application/vnd.api+json")
-            self.assertEqual(response.status_code, 200, response.content)
-            sf2 = Feature.objects.get(slug='sf2')
-            self.assertEqual(sf2.parent, self.feature)
-            feature = Feature.objects.get(id=self.feature.id)
-            actual = list(feature.children.all())
-            if actual != [sf1, sf2]:  # pragma: nocover
-                # Debug occasional test failure
-                def report(f, prefix='Feature'):
-                    attrs = ['id', 'lft', 'rght', 'tree_id', 'level', 'parent']
-                    return prefix + ': ' + ', '.join(
-                        ['%s=%s' % (a, getattr(f, a)) for a in attrs])
-                msg_lines = [
-                    "=" * 70,
-                    'Unexpected failure in test_post_add_second_subfeature.',
-                    'Report at:',
-                    ' https://bugzilla.mozilla.org/show_bug.cgi?id=1159337',
-                    'DB queries:'
-                ]
-                msg_lines.extend([str(q) for q in connection.queries])
-                msg_lines.extend([
-                    'Features:',
-                    report(self.feature, 'parent'),
-                    report(feature, 'parent from DB'),
-                    report(sf1, 'sf1'),
-                    report(sf2, 'sf2'),
-                    "=" * 70]
-                )
-                print('\n'.join(msg_lines))
-            self.assertEqual(list(feature.children.all()), [sf1, sf2])
-        finally:
-            connection.force_debug_cursor = old_debug
+    def test_add_second_subfeature(self):
+        sf1 = self.create(
+            Feature, slug='sf1', name={'en': 'sf1'}, parent=self.feature)
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_sf2",
+                    "slug": "sf2",
+                    "name": {"en": "Sub Feature 2"},
+                    "parent": self.feature.pk,
+                }],
+            },
+        }
+        new_feature = self.assertUpdateSuccess(data)
+        sf2 = Feature.objects.get(slug='sf2')
+        self.assertEqual(sf2.parent, new_feature)
+        self.assertEqual(list(new_feature.children.all()), [sf1, sf2])
 
-    def test_post_add_second_subfeature_with_existing_support(self):
+    def test_add_second_subfeature_with_existing_support(self):
         detail1 = self.create(
             Feature, slug='detail1', name={'en': 'Detail 1'},
             parent=self.feature)
         self.create(Support, version=self.version, feature=detail1)
-        detail2_data = {
-            "id": "_detail2", "slug": "detail2",
-            "name": {"en": "Detail 2"},
-            "links": {"parent": str(self.feature.pk)}}
-        json_data = self.json_api(features=[detail2_data])
-        response = self.client.put(
-            self.url, data=json_data,
-            content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_detail2",
+                    "slug": "detail2",
+                    "name": {"en": "Detail 2"},
+                    "parent": self.feature.pk
+                }],
+            },
+        }
+        new_feature = self.assertUpdateSuccess(data)
         detail2 = Feature.objects.get(slug='detail2')
-        self.assertEqual(detail2.parent, self.feature)
-        feature = Feature.objects.get(id=self.feature.id)
-        self.assertEqual(list(feature.children.all()), [detail1, detail2])
+        self.assertEqual(detail2.parent, new_feature)
+        self.assertEqual(list(new_feature.children.all()), [detail1, detail2])
 
-    def test_post_update_existing_subfeature(self):
+    def test_update_existing_subfeature(self):
         subfeature = self.create(
             Feature, slug='subfeature', name={'en': 'subfeature'},
             parent=self.feature)
-        subfeature_data = {
-            "id": str(subfeature.id), "slug": "subfeature",
-            "name": {"en": "subfeature 1"},
-            "links": {"parent": str(self.feature.pk)}}
-        json_data = self.json_api(
-            feature_data={'links': {'children': [str(subfeature.pk)]}},
-            features=[subfeature_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
-        subfeature = Feature.objects.get(id=subfeature.id)
-        self.assertEqual(subfeature.parent, self.feature)
-        self.assertEqual(subfeature.name, {"en": "subfeature 1"})
-        feature = Feature.objects.get(id=self.feature.id)
-        self.assertEqual(list(feature.children.all()), [subfeature])
+        data = {
+            'children': [subfeature.pk],
+            '_view_extra': {
+                'features': [{
+                    "id": subfeature.id,
+                    "slug": "subfeature",
+                    "name": {"en": "subfeature 1"},
+                    "parent": self.feature.pk,
+                }],
+            },
+        }
+        new_feature = self.assertUpdateSuccess(data)
+        new_subfeature = Feature.objects.get(id=subfeature.id)
+        self.assertEqual(new_subfeature.parent, self.feature)
+        self.assertEqual(new_subfeature.name, {"en": "subfeature 1"})
+        self.assertEqual(list(new_feature.children.all()), [new_subfeature])
 
-    def test_post_add_subsupport(self):
-        subfeature_data = {
-            "id": "_new", "slug": "subfeature", "name": {"en": "Sub Feature"},
-            "links": {"parent": str(self.feature.pk)}}
-        support_data = {
-            "id": "_new_yes", "support": "yes",
-            "links": {"version": str(self.version.id), "feature": "_new"}}
-        json_data = self.json_api(
-            features=[subfeature_data], supports=[support_data],
-            versions=[self.version_data], browsers=[self.browser_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
+    def test_add_subsupport(self):
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_new",
+                    "slug": "subfeature",
+                    "name": {"en": "Sub Feature"},
+                    "parent": self.feature.pk,
+                }],
+                'supports': [{
+                    "id": "_new_yes",
+                    "support": "yes",
+                    "version": self.version.id,
+                    "feature": "_new",
+                }],
+                'browsers': [self.browser_data],
+                'versions': [self.version_data],
+            },
+        }
+        new_feature = self.assertUpdateSuccess(data)
         subfeature = Feature.objects.get(slug='subfeature')
-        self.assertEqual(subfeature.parent, self.feature)
+        self.assertEqual(subfeature.parent, new_feature)
         self.assertEqual(subfeature.name, {"en": "Sub Feature"})
         supports = subfeature.supports.all()
         self.assertEqual(1, len(supports))
@@ -728,127 +607,139 @@ class TestViewFeatureUpdates(APITestCase):
         self.assertEqual(support.version, self.version)
         self.assertEqual('yes', support.support)
 
-    def test_post_no_change(self):
+    def test_no_change_no_id(self):
         subfeature = self.create(
             Feature, slug='subfeature', name={'en': 'subfeature'},
             parent=self.feature)
         history_count = subfeature.history.all().count()
-        subfeature_data = {
-            'slug': 'subfeature', 'mdn_uri': None,
-            'experimental': False, 'standardized': True, 'stable': True,
-            'obsolete': False, 'name': {'en': 'subfeature'},
-            'links': {
-                'parent': str(self.feature.id),
-                'sections': [],
-                'children': []}}
-        json_data = self.json_api(
-            features=[subfeature_data], meta={'not': 'used'})
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
+        data = {
+            '_view_extra': {
+                'features': [{
+                    'slug': 'subfeature',
+                    'mdn_uri': None,
+                    'experimental': False,
+                    'standardized': True,
+                    'stable': True,
+                    'obsolete': False,
+                    'name': {'en': 'subfeature'},
+                    'parent': self.feature.id,
+                    'sections': [],
+                    'children': [],
+                }],
+            },
+        }
+        new_feature = self.assertUpdateSuccess(data)
         subfeature = Feature.objects.get(slug='subfeature')
-        self.assertEqual(subfeature.parent, self.feature)
+        self.assertEqual(subfeature.parent, new_feature)
         self.assertEqual(subfeature.name, {"en": "subfeature"})
         self.assertEqual(history_count, subfeature.history.all().count())
 
-    def test_existing_changeset(self):
-        response = self.client.post(
-            self.api_reverse('changeset-list'), dumps({}),
-            content_type="application/vnd.api+json")
-        self.assertEqual(201, response.status_code, response.content)
-        response_json = loads(response.content.decode('utf-8'))
-        changeset_id = response_json['changesets']['id']
-        c = '?changeset=%s' % changeset_id
-
-        subfeature = {
-            "id": "_new", "slug": "subfeature", "name": {"en": "Sub Feature"},
-            "links": {"parent": str(self.feature.pk)}}
-        json_data = self.json_api(features=[subfeature])
-        response = self.client.put(
-            self.url + c, data=json_data,
-            content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
+    def test_changeset_is_applied_to_items(self):
+        changeset = self.create(Changeset, closed=False, user=self.user)
+        self.context['request'].changeset = changeset
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_new",
+                    "slug": "subfeature",
+                    "name": {"en": "Sub Feature"},
+                    "parent": self.feature.pk,
+                }],
+            },
+        }
+        new_feature = self.assertUpdateSuccess(data)
         subfeature = Feature.objects.get(slug='subfeature')
-        self.assertEqual(subfeature.parent, self.feature)
+        self.assertEqual(subfeature.parent, new_feature)
         self.assertEqual(
-            int(changeset_id),
+            changeset.id,
             subfeature.history.last().history_changeset_id)
-
-        close = {'changesets': {'id': changeset_id, 'close': True}}
-        response = self.client.post(
-            self.api_reverse('changeset-detail', pk=changeset_id),
-            dumps(close), content_type="application/vnd.api+json")
+        changeset.closed = True
+        changeset.save()
 
     def test_invalid_subfeature(self):
-        subfeature = {
-            "id": "_new", "slug": None, "name": {"en": "Sub Feature"},
-            "links": {"parent": str(self.feature.pk)}}
-        json_data = self.json_api(features=[subfeature])
-        response = self.client.put(
-            self.url, data=json_data,
-            content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 400, response.content)
-        expected_error = {
-            'errors': [{
-                "status": "400", "path": "/linked.features.0.slug",
-                "detail": "This field may not be null.",
-            }]
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_new",
+                    "slug": None,
+                    "name": {"en": "Sub Feature"},
+                    "parent": self.feature.pk,
+                }],
+            },
         }
-        actual_error = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_error, actual_error)
+        expected_errors = {
+            '_view_extra': {
+                'features': {
+                    0: {
+                        'slug': ["This field may not be null."],
+                    },
+                },
+            }
+        }
+        self.assertUpdateFailed(data, expected_errors)
 
     def test_invalid_support(self):
-        subfeature_data = {
-            "id": "_new", "slug": "subfeature", "name": {"en": "Sub Feature"},
-            "links": {"parent": str(self.feature.pk)}}
-        support_data = {
-            "id": "_new_maybe", "support": "maybe",
-            "links": {"version": str(self.version.id), "feature": "_new"}}
-        json_data = self.json_api(
-            features=[subfeature_data], supports=[support_data],
-            versions=[self.version_data], browsers=[self.browser_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 400, response.content)
-        expected_error = {
-            'errors': [{
-                "status": "400", "path": "/linked.supports.0.support",
-                "detail": '"maybe" is not a valid choice.',
-            }]
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_new",
+                    "slug": "subfeature",
+                    "name": {"en": "Sub Feature"},
+                    "parent": self.feature.pk,
+                }],
+                'supports': [{
+                    "id": "_new_maybe",
+                    "support": "maybe",
+                    "version": self.version.id,
+                    "feature": "_new",
+                }],
+                'browsers': [self.browser_data],
+                'versions': [self.version_data],
+            },
         }
-        actual_error = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_error, actual_error)
-        self.assertFalse(Feature.objects.filter(slug='subfeature').exists())
+        expected_errors = {
+            '_view_extra': {
+                'supports': {
+                    0: {
+                        'support': ['"maybe" is not a valid choice.'],
+                    },
+                }
+            }
+        }
+        self.assertUpdateFailed(data, expected_errors)
 
     def test_add_section(self):
-        section_data = {
-            "id": "_section", "name": {"en": "Section"},
-            "links": {
-                "specification": str(self.spec.id),
-                "features": [str(self.feature.id)],
-            }}
-        json_data = self.json_api(
-            {'sections': ['_section']}, sections=[section_data],
-            specifications=[self.spec_data], maturities=[self.maturity_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
+        data = {
+            'sections': ['_section'],
+            '_view_extra': {
+                'sections': [{
+                    "id": "_section",
+                    "name": {"en": "Section"},
+                    "specification": self.spec.id,
+                    "features": [self.feature.id],
+                }],
+                'specifications': [self.spec_data],
+                'maturities': [self.maturity_data],
+            }
+        }
+        new_feature = self.assertUpdateSuccess(data)
         section = Section.objects.get()
-        self.assertEqual([self.feature], list(section.features.all()))
+        self.assertEqual([new_feature], list(section.features.all()))
 
     def test_add_support_to_target(self):
-        support_data = {
-            "id": "_yes", "support": "yes",
-            "links": {
-                "version": str(self.version.id),
-                "feature": str(self.feature.id),
-            }}
-        json_data = self.json_api(
-            supports=[support_data], versions=[self.version_data],
-            browsers=[self.browser_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 200, response.content)
+        data = {
+            '_view_extra': {
+                'supports': [{
+                    "id": "_yes",
+                    "support": "yes",
+                    "version": self.version.id,
+                    "feature": self.feature.id,
+                }],
+                'versions': [self.version_data],
+                'browsers': [self.browser_data],
+            }
+        }
+        self.assertUpdateSuccess(data)
         support = Support.objects.get()
         self.assertEqual(self.version, support.version)
         self.assertEqual(self.feature, support.feature)
@@ -859,127 +750,155 @@ class TestViewFeatureUpdates(APITestCase):
         self.assertIsNone(ViewFeatureExtraSerializer().to_representation(None))
 
     def test_top_level_feature_is_error(self):
-        subfeature = {
-            "id": "_new", "slug": 'slug', "name": {"en": "Sub Feature"},
-            "links": {"parent": None}}
-        json_data = self.json_api(features=[subfeature])
-        response = self.client.put(
-            self.url, data=json_data,
-            content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 400, response.content)
-        expected_error = {
-            'errors': [{
-                "status": "400", "path": "/linked.features.0.parent",
-                "detail": (
-                    "Feature must be a descendant of feature %s." %
-                    self.feature.id),
-            }]
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_new",
+                    "slug": 'slug',
+                    "name": {"en": "Sub Feature"},
+                    "parent": None,
+                }]
+            }
         }
-        actual_error = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_error, actual_error)
+        err_msg = (
+            "Feature must be a descendant of feature %s." % self.feature.id)
+        expected_errors = {
+            '_view_extra': {
+                'features': {
+                    0: {'parent': [err_msg]},
+                }
+            }
+        }
+        self.assertUpdateFailed(data, expected_errors)
 
     def test_other_feature_is_error(self):
         other = self.create(
             Feature, slug='other', name={'en': "Other"})
-        subfeature = {
-            "id": "_new", "slug": 'slug', "name": {"en": "Sub Feature"},
-            "links": {"parent": str(other.id)}}
-        json_data = self.json_api(features=[subfeature])
-        response = self.client.put(
-            self.url, data=json_data,
-            content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 400, response.content)
-        expected_error = {
-            'errors': [{
-                "status": "400", "path": "/linked.features.0.parent",
-                "detail": (
-                    "Feature must be a descendant of feature %s." %
-                    self.feature.id),
-            }]
+        data = {
+            '_view_extra': {
+                'features': [{
+                    "id": "_new",
+                    "slug": 'slug',
+                    "name": {"en": "Sub Feature"},
+                    "parent": other.id
+                }]
+            },
         }
-        actual_error = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_error, actual_error)
-
-    def test_changed_maturity_is_error(self):
-        section_data = {
-            "id": "_section", "name": {"en": "Section"},
-            "links": {
-                "specification": str(self.spec.id),
-                "features": [str(self.feature.id)],
+        err_msg = (
+            "Feature must be a descendant of feature %s." % self.feature.id)
+        expected_errors = {
+            '_view_extra': {
+                'features': {
+                    0: {'parent': [err_msg]},
+                }
             }
         }
+        self.assertUpdateFailed(data, expected_errors)
+
+    def test_changed_maturity_is_error(self):
         maturity_data = self.maturity_data.copy()
         maturity_data['name']['en'] = "New Maturity Name"
-        json_data = self.json_api(
-            {'sections': ['_section']}, sections=[section_data],
-            specifications=[self.spec_data], maturities=[maturity_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 400, response.content)
-        expected_error = {
-            'errors': [{
-                "status": "400", "path": "/linked.maturities.0.name",
-                "detail": (
-                    'Field can not be changed from {"en": "Mature"} to'
-                    ' {"en": "New Maturity Name"} as part of this update.'
-                    ' Update the resource by itself, and try again.'),
-            }]
+        data = {
+            'sections': ['_section'],
+            '_view_extra': {
+                'sections': [{
+                    "id": "_section",
+                    "name": {"en": "Section"},
+                    "specification": self.spec.id,
+                    "features": [self.feature.id],
+                }],
+                'specifications': [self.spec_data],
+                'maturities': [maturity_data],
+            }
         }
-        actual_error = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_error, actual_error)
+        err_msg = (
+            'Field can not be changed from {"en": "Mature"} to'
+            ' {"en": "New Maturity Name"} as part of this update. Update the'
+            ' resource by itself, and try again.')
+        expected_errors = {
+            '_view_extra': {
+                'maturities': {
+                    0: {'name': [err_msg]},
+                }
+            }
+        }
+        self.assertUpdateFailed(data, expected_errors)
 
     def test_new_specification_is_error(self):
-        section_data = {
-            "id": "_section", "name": {"en": "Section"},
-            "links": {
-                "specification": "_NEW", "features": [str(self.feature.id)]}}
-        spec_data = {
-            "id": "_NEW", "slug": "NEW", "mdn_key": "",
-            "name": {"en": "New Specification"},
-            "uri": {"en": "https://example.com/new"},
-            "links": {"maturity": str(self.maturity.id)}}
-        json_data = self.json_api(
-            {'sections': ['_section']}, sections=[section_data],
-            specifications=[spec_data], maturities=[self.maturity_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 400, response.content)
-        expected_error = {
-            'errors': [{
-                "status": "400", "path": "/linked.specifications.0.id",
-                "detail": (
-                    'Resource can not be created as part of this update.'
-                    ' Create first, and try again.'),
-            }]
+        data = {
+            'sections': ['_section'],
+            '_view_extra': {
+                'sections': [{
+                    "id": "_section",
+                    "name": {"en": "Section"},
+                    "specification": "_NEW",
+                    "features": [self.feature.id],
+                }],
+                'specifications': [{
+                    "id": "_NEW",
+                    "slug": "NEW",
+                    "mdn_key": "",
+                    "name": {"en": "New Specification"},
+                    "uri": {"en": "https://example.com/new"},
+                    "maturity": self.maturity.id,
+                }],
+                'maturities': [self.maturity_data],
+            }
         }
-        actual_error = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_error, actual_error)
+        err_msg = (
+            'Resource can not be created as part of this update. Create'
+            ' first, and try again.')
+        expected_errors = {
+            '_view_extra': {
+                'specifications': {
+                    0: {'id': [err_msg]},
+                }
+            }
+        }
+        self.assertUpdateFailed(data, expected_errors)
 
     def test_new_version_is_error(self):
-        support_data = {
-            "id": "_yes", "support": "yes",
-            "links": {
-                "version": "_NEW", "feature": str(self.feature.id),
-            }}
-        version_data = {
-            "id": "_NEW", "version": "1.0", "note": None,
-            "links": {"browser": str(self.browser.id)}}
-        json_data = self.json_api(
-            supports=[support_data], versions=[version_data],
-            browsers=[self.browser_data])
-        response = self.client.put(
-            self.url, data=json_data, content_type="application/vnd.api+json")
-        self.assertEqual(response.status_code, 400, response.content)
-        expected_error = {
-            'errors': [{
-                "status": "400", "path": "/linked.versions.0.id",
-                "detail": (
-                    'Resource can not be created as part of this update.'
-                    ' Create first, and try again.'),
-            }]
+        data = {
+            '_view_extra': {
+                'supports': [{
+                    "id": "_yes",
+                    "support": "yes",
+                    "version": "_NEW",
+                    "feature": self.feature.id,
+                }],
+                'versions': [{
+                    "id": "_NEW",
+                    "version": "1.0",
+                    "note": None,
+                    "browser": self.browser.id,
+                }],
+                'browsers': [self.browser_data],
+            }
         }
-        actual_error = loads(response.content.decode('utf-8'))
-        self.assertEqual(expected_error, actual_error)
+        err_msg = (
+            'Resource can not be created as part of this update. Create'
+            ' first, and try again.')
+        expected_errors = {
+            '_view_extra': {
+                'versions': {
+                    0: {'id': [err_msg]}
+                }
+            }
+        }
+        self.assertUpdateFailed(data, expected_errors)
+
+    def test_unknown_resource_ignored(self):
+        data = {
+            'name': {'en': 'New Name'},
+            '_view_extra': {
+                'unknown': [{
+                    "id": "_new",
+                    "foo": "bar",
+                }],
+            }
+        }
+        new_feature = self.assertUpdateSuccess(data)
+        self.assertEqual(new_feature.name, {'en': 'New Name'})
 
 
 class TestDjangoResourceClient(TestCase):

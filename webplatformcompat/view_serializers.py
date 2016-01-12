@@ -11,8 +11,8 @@ from drf_cached_instances.models import CachedQueryset
 from rest_framework.reverse import reverse
 from rest_framework.serializers import (
     ModelSerializer, PrimaryKeyRelatedField, SerializerMethodField,
-    ValidationError)
-from rest_framework.utils.serializer_helpers import ReturnDict
+    ValidationError, ListSerializer)
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 from tools.resources import Collection, CollectionChangeset
 from .cache import Cache
@@ -21,34 +21,53 @@ from .models import (
 from .serializers import (
     BrowserSerializer, FieldMapMixin, FeatureSerializer, MaturitySerializer,
     SectionSerializer, SpecificationSerializer, SupportSerializer,
-    VersionSerializer, omit_some)
+    VersionSerializer, FieldsExtraMixin)
 
+
+#
+# View-specific serializers
+# Data flows from supports out (feature->version->browser,
+# section->specification->maturity), so omit the "reverse" relations
+# (browser.versions, specification.sections) to reduce size of response.
+#
 
 class ViewBrowserSerializer(BrowserSerializer):
     class Meta(BrowserSerializer.Meta):
-        fields = omit_some(BrowserSerializer.Meta.fields, 'versions')
+        # Omit versions
+        fields = (
+            'id', 'slug', 'name', 'note', 'history_current', 'history')
 
 
 class ViewMaturitySerializer(MaturitySerializer):
     class Meta(MaturitySerializer.Meta):
-        fields = omit_some(MaturitySerializer.Meta.fields, 'specifications')
+        # Omit specifications
+        fields = ('id', 'slug', 'name', 'history_current', 'history')
 
 
 class ViewSectionSerializer(SectionSerializer):
     class Meta(SectionSerializer.Meta):
-        fields = omit_some(SectionSerializer.Meta.fields, 'features')
+        # Omit features
+        fields = (
+            'id', 'number', 'name', 'subpath', 'note', 'specification',
+            'history_current', 'history')
 
 
 class ViewSpecificationSerializer(SpecificationSerializer):
     class Meta(SpecificationSerializer.Meta):
-        fields = omit_some(SpecificationSerializer.Meta.fields, 'sections')
+        # Omit sections
+        fields = (
+            'id', 'slug', 'mdn_key', 'name', 'uri', 'maturity',
+            'history_current', 'history')
 
 
 class ViewVersionSerializer(VersionSerializer):
     class Meta(VersionSerializer.Meta):
-        fields = omit_some(VersionSerializer.Meta.fields, 'supports')
-        read_only_fields = omit_some(
-            VersionSerializer.Meta.read_only_fields, 'supports')
+        # Omit supports
+        fields = (
+            'id', 'version', 'release_day', 'retirement_day',
+            'status', 'release_notes_uri', 'note', 'order', 'browser',
+            'history_current', 'history')
+        read_only_fields = []
 
 
 # Map resource names to model, view serializer classes
@@ -63,11 +82,12 @@ view_cls_by_name = {
 }
 
 
-class ViewFeatureListSerializer(FieldMapMixin, ModelSerializer):
+class ViewFeatureListSerializer(
+        FieldMapMixin, FieldsExtraMixin, ModelSerializer):
     """Get list of features"""
-    url = SerializerMethodField()
+    href = SerializerMethodField()
 
-    def get_url(self, obj):
+    def get_href(self, obj):
         return reverse(
             'viewfeatures-detail', kwargs={'pk': obj.id},
             request=self.context['request'])
@@ -75,8 +95,14 @@ class ViewFeatureListSerializer(FieldMapMixin, ModelSerializer):
     class Meta:
         model = Feature
         fields = (
-            'url', 'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
+            'href', 'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
             'stable', 'obsolete', 'name')
+        fields_extra = {
+            'id': {
+                'link': 'self',
+                'resource': 'features',
+            },
+        }
 
 
 class DjangoResourceClient(object):
@@ -177,8 +203,9 @@ class FeatureExtra(object):
 
     def _process_data(self):
         """Load the linked data and compare to current data."""
-        assert not hasattr(self, 'changes')
-        assert hasattr(self, 'errors')
+        assert not hasattr(self, 'changes'), "_process_data called twice."
+        assert hasattr(self, 'errors'), (
+            "_process_data not called by is_valid().")
         r_by_t = Collection.resource_by_type
 
         # Create and load collection of new data
@@ -257,12 +284,16 @@ class FeatureExtra(object):
         # Load the diff
         self.changeset = CollectionChangeset(
             current_collection, new_collection)
-        assert not self.changeset.changes.get('deleted')
+        assert not self.changeset.changes.get('deleted'), (
+            'Existing items were not added, so deletions found:\n%s'
+            % self.changes['deleted'])
 
-    def add_error(self, resource_type, seq, error_dict):
+    def add_error(self, resource_type, seq, attr_name, error):
         """Add a validation error for a linked resource."""
-        self.errors.setdefault(
-            resource_type, {}).setdefault(seq, {}).update(error_dict)
+        resource_errors = self.errors.setdefault(resource_type, {})
+        seq_errors = resource_errors.setdefault(seq, {})
+        attr_errors = seq_errors.setdefault(attr_name, [])
+        attr_errors.append(error)
 
     def _validate_changes(self):
         """Validate the changes.
@@ -277,9 +308,11 @@ class FeatureExtra(object):
         "existing" resources that aren't in the database, but those will
         be DoesNotExist exceptions in _process_data.
         """
-        assert hasattr(self, 'changeset')
-        assert hasattr(self, 'errors')
-        assert not self.errors
+        assert hasattr(self, 'changeset'), (
+            '_validate_changes called before _process_data')
+        assert hasattr(self, 'errors'), (
+            '_validate_changes called outside of is_valid')
+        assert not self.errors, '_validate_changes called twice.'
 
         new_collection = self.changeset.new_collection
         resource_feature = new_collection.get('features', str(self.feature.id))
@@ -295,7 +328,9 @@ class FeatureExtra(object):
             # Does the ID imply an existing instance?
             int_id = None
             instance = None
-            assert item.id
+            assert item.id, (
+                'ID not set for data_id "%s", item "%s".'
+                % (data_id, item))
             item_id = item.id.id
             try:
                 int_id = int(item_id)
@@ -310,13 +345,11 @@ class FeatureExtra(object):
             data.update(links)
             serializer = serializer_cls(instance=instance, data=data)
             if not serializer.is_valid():
-                errors = {}
                 # Discard errors in link fields, for now
-                for fieldname, error in serializer.errors.items():
+                for fieldname, errors in serializer.errors.items():
                     if fieldname not in links:
-                        errors[fieldname] = error
-                if errors:
-                    self.add_error(rtype, seq, errors)
+                        for error in errors:
+                            self.add_error(rtype, seq, fieldname, error)
 
         # Validate that features are in the feature tree
         target_id = resource_feature.id.id
@@ -332,18 +365,18 @@ class FeatureExtra(object):
             if f is None or f.parent.id is None:
                 error = (
                     "Feature must be a descendant of feature %s." % target_id)
-                self.add_error('features', feature._seq, {'parent': error})
+                self.add_error('features', feature._seq, 'parent', error)
 
         # Validate that "expert" objects are not added
         expert_resources = set((
             'maturities', 'specifications', 'versions', 'browsers'))
-        add_error = (
+        create_error = (
             'Resource can not be created as part of this update. Create'
             ' first, and try again.')
         for item in self.changeset.changes['new'].values():
             if item._resource_type in expert_resources:
                 self.add_error(
-                    item._resource_type, item._seq, {'id': add_error})
+                    item._resource_type, item._seq, 'id', create_error)
 
         # Validate that "expert" objects are not changed
         change_err = (
@@ -359,7 +392,7 @@ class FeatureExtra(object):
                 for key, value in orig_json.items():
                     if value != new_json.get(key, "(missing)"):
                         err = change_err % (dumps(value), dumps(new_json[key]))
-                        self.add_error(rtype, item._seq, {key: err})
+                        self.add_error(rtype, item._seq, key, err)
 
     def save(self, **kwargs):
         """Commit changes to linked data"""
@@ -368,10 +401,21 @@ class FeatureExtra(object):
         # Adding sub-features will change the MPTT tree through direct SQL.
         # Load the new tree data from the database before parent serializer
         # overwrites it with old values.
-        tree_attrs = ['lft', 'rght', 'tree_id', 'level', 'parent']
+        tree_attrs = ('lft', 'rght', 'tree_id', 'level', 'parent')
         db_feature = Feature.objects.only(*tree_attrs).get(id=self.feature.id)
         for attr in tree_attrs:
             setattr(self.feature, attr, getattr(db_feature, attr))
+
+        # Adding sub-features will make cached properties invalid
+        cached_params = (
+            'row_descendant_pks', 'descendant_pks', 'descendant_count',
+            'row_children', 'row_children_pks', 'page_children_pks',
+            '_child_pks_and_is_page')
+        for attr in cached_params:
+            try:
+                delattr(self.feature, attr)
+            except AttributeError:
+                pass  # cached_property was not accessed during serialization
 
 
 class ViewFeatureExtraSerializer(ModelSerializer):
@@ -389,7 +433,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         """Add the sources used by the serializer fields."""
         page = self.context['request'].GET.get('page', 1)
         per_page = settings.PAGINATE_VIEW_FEATURE
-        if self.context['include_child_pages']:
+        if self.context.get('include_child_pages'):
             # Paginate the full descendant tree
             child_queryset = self.get_all_descendants(obj, per_page)
             paginated_child_features = Paginator(child_queryset, per_page)
@@ -443,20 +487,14 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         and page features that model sub-pages on MDN, which may have
         row and subpage features of their own.
         """
-        if isinstance(obj, Feature):
-            # It's a real Feature, not a cached proxy Feature
-            obj.descendant_count = obj.get_descendant_count()
-            descendant_pks = obj.get_descendants().values_list('pk', flat=True)
-        elif obj.descendant_count <= per_page:
-            # The cached PK list is enough to populate descendant_pks
-            descendant_pks = obj.descendants.values_list('id', flat=True)
-        else:
-            # Load the real object to get the full list of descendants
-            real_obj = Feature.objects.get(id=obj.id)
-            descendant_pks = real_obj.get_descendants().values_list(
-                'pk', flat=True)
-        return CachedQueryset(
-            Cache(), Feature.objects.all(), descendant_pks)
+        descendant_pks = obj.descendant_pks
+        if len(descendant_pks) != obj.descendant_count:
+            # Cached Features with long descendant lists don't cache them.
+            # Load from the database for the full list.
+            feature = Feature.objects.get(id=obj.id)
+            descendant_pks = list(feature.get_descendants().values_list(
+                'pk', flat=True))
+        return CachedQueryset(Cache(), Feature.objects.all(), descendant_pks)
 
     def get_row_descendants(self, obj):
         """Return a CachedQueryset of just the row descendants
@@ -467,11 +505,10 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         See http://bit.ly/1MUSEFL for one example of spliting a large table
         into a hierarchy of features.
         """
-        row_descendant_pks = obj.row_descendants.values_list('id', flat=True)
         return CachedQueryset(
-            Cache(), Feature.objects.all(), row_descendant_pks)
+            Cache(), Feature.objects.all(), obj.row_descendant_pks)
 
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         """Add addditonal data for the ViewFeatureSerializer.
 
         For most features, all the related data is cachable, and no database
@@ -484,11 +521,26 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         amount of related data.
         """
         # Load the paginated descendant features
-        if obj is None:
+        if instance is None:
             # This happens when OPTIONS is called from browsable API
             return None
-        self.add_sources(obj)
-        ret = super(ViewFeatureExtraSerializer, self).to_representation(obj)
+        self.add_sources(instance)
+
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            attribute = field.get_attribute(instance)
+            assert attribute is not None, (
+                'field.get_attribute return None for instance %s, field %s'
+                % (instance, field))
+            field_ret = field.to_representation(attribute)
+            if isinstance(field, ListSerializer):
+                # Wrap lists of related resources in a ReturnList, so that the
+                # renderer has access to the serializer
+                field_ret = ReturnList(field_ret, serializer=field)
+            ret[field.field_name] = field_ret
+
         return ReturnDict(ret, serializer=self)
 
     def find_languages(self, obj):
@@ -661,12 +713,12 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             ('previous', None),
             ('next', None),
         ))
-        if self.context['include_child_pages']:
+        if self.context.get('include_child_pages'):
             # When full descendant list, use pagination
             # The list can get huge when asking for root features like web-css
             pagination['count'] = obj.descendant_count
             url_kwargs = {'pk': obj.id}
-            if self.context['format']:
+            if self.context.get('format'):
                 url_kwargs['format'] = self.context['format']
             request = self.context['request']
             url = reverse(
@@ -704,7 +756,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         """Assemble the metadata for the feature view."""
         significant_changes = self.significant_changes(obj)
         browser_tabs = self.browser_tabs(obj)
-        include_child_pages = self.context['include_child_pages']
+        include_child_pages = self.context.get('include_child_pages', False)
         pagination = self.pagination(obj)
         languages = self.find_languages(obj)
         notes = self.ordered_notes(
@@ -722,7 +774,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
     def to_internal_value(self, data):
         self.instance = self.parent.instance
-        assert self.instance
+        assert self.instance, 'parent does not have a valid instance'
         self.add_sources(self.instance)
         self.instance._in_extra = self.parent._in_extra
 
@@ -730,7 +782,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         if extra.is_valid():
             return {'_view_extra': extra}
         else:
-            assert extra.errors
+            assert extra.errors, 'is_valid() is False, but no errors set.'
             raise ValidationError(extra.errors)
 
     class Meta:
@@ -760,7 +812,7 @@ class ViewFeatureSerializer(FeatureSerializer):
         """Save the feature plus linked elements.
 
         The save is done using DRF conventions; the _view_extra field is set
-        to an object (FeatureExtra) that will same linked elements.
+        to an object (FeatureExtra) that will save linked elements.
         """
         ret = super(ViewFeatureSerializer, self).save(*args, **kwargs)
         if hasattr(ret, '_view_extra'):

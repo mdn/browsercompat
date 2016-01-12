@@ -12,10 +12,10 @@
             "links": {
                 "browser": "1",
                 "supports": [],
+                "history_current": "1",
                 "history": [
                     "1"
-                ],
-                "history_current": "1"
+                ]
             }
         },
         {
@@ -32,10 +32,10 @@
                 "supports": [
                     "1"
                 ],
+                "history_current": "2",
                 "history": [
                     "2"
-                ],
-                "history_current": "2"
+                ]
             }
         },
         {
@@ -50,10 +50,10 @@
             "links": {
                 "browser": "1",
                 "supports": [],
+                "history_current": "3",
                 "history": [
                     "3"
-                ],
-                "history_current": "3"
+                ]
             }
         },
         {
@@ -68,10 +68,10 @@
             "links": {
                 "browser": "2",
                 "supports": [],
+                "history_current": "4",
                 "history": [
                     "4"
-                ],
-                "history_current": "4"
+                ]
             }
         },
         {
@@ -86,10 +86,10 @@
             "links": {
                 "browser": "3",
                 "supports": [],
+                "history_current": "5",
                 "history": [
                     "5"
-                ],
-                "history_current": "5"
+                ]
             }
         },
         {
@@ -104,10 +104,10 @@
             "links": {
                 "browser": "3",
                 "supports": [],
+                "history_current": "6",
                 "history": [
                     "6"
-                ],
-                "history_current": "6"
+                ]
             }
         },
         {
@@ -122,10 +122,10 @@
             "links": {
                 "browser": "3",
                 "supports": [],
+                "history_current": "7",
                 "history": [
                     "7"
-                ],
-                "history_current": "7"
+                ]
             }
         },
         {
@@ -143,10 +143,10 @@
                     "11",
                     "20"
                 ],
+                "history_current": "8",
                 "history": [
                     "8"
-                ],
-                "history_current": "8"
+                ]
             }
         },
         {
@@ -163,10 +163,10 @@
                 "supports": [
                     "2"
                 ],
+                "history_current": "9",
                 "history": [
                     "9"
-                ],
-                "history_current": "9"
+                ]
             }
         },
         {
@@ -181,10 +181,10 @@
             "links": {
                 "browser": "4",
                 "supports": [],
+                "history_current": "10",
                 "history": [
                     "10"
-                ],
-                "history_current": "10"
+                ]
             }
         }
     ],
@@ -197,13 +197,13 @@
             "type": "supports",
             "href": "https://browsercompat.org/api/v1/supports/{versions.supports}"
         },
-        "versions.history": {
-            "type": "historical_versions",
-            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
-        },
         "versions.history_current": {
             "type": "historical_versions",
             "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history_current}"
+        },
+        "versions.history": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
         }
     },
     "meta": {

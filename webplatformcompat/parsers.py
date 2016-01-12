@@ -1,49 +1,66 @@
-from rest_framework_json_api.parsers import JsonApiParser \
-    as BaseJsonApiParser
-from rest_framework_json_api.parsers import JsonApiMixin
-from rest_framework_json_api.utils import snakecase
+# -*- coding: utf-8 -*-
+"""Parser for JSON API RC1."""
+
+from collections import OrderedDict
+
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import JSONParser
 
 
-class JsonApiParser(BaseJsonApiParser):
-    def model_to_resource_type(self, model):
-        if model:
-            return snakecase(model._meta.verbose_name_plural)
-        else:
-            return 'data'
+class JsonApiRC1Parser(JSONParser):
+    media_type = 'application/vnd.api+json'
+    dict_class = OrderedDict
 
     def parse(self, stream, media_type=None, parser_context=None):
-        """Parse JSON API representation into DRF native format.
+        """Parse JSON API representation into DRF native format."""
+        data = super(JsonApiRC1Parser, self).parse(
+            stream, media_type=media_type, parser_context=parser_context)
 
-        Same as rest_framework_json_api.parsers.JsonApiMixin.parse,
-        except that linked and meta sections are put into _view_extra
-        """
-        data = super(JsonApiMixin, self).parse(stream, media_type=media_type,
-                                               parser_context=parser_context)
+        view = parser_context['view']
+        model = view.queryset.model
+        resource_type = model._meta.verbose_name_plural
 
-        view = parser_context.get("view", None)
-
-        model = self.model_from_obj(view)
-        resource_type = self.model_to_resource_type(model)
-
-        resource = {}
-
-        if resource_type in data:
-            resource = data[resource_type]
-
-        if isinstance(resource, list):  # pragma: nocover
-            resource = [self.convert_resource(r, view) for r in resource]
-        else:
-            resource = self.convert_resource(resource, view)
-
-        # Add extra data to _view_extra
-        # This should mirror .renderers.JsonApiRenderer.wrap_view_extra
-        view_extra = {}
-        if 'meta' in data:
-            view_extra['meta'] = data['meta']
-        if 'linked' in data:
-            assert 'meta' not in data['linked']
-            view_extra.update(data['linked'])
+        resource = self.dict_class()
+        view_extra = self.dict_class()
+        for name, value in data.items():
+            if name == resource_type:
+                resource = self.convert(value)
+            elif name == 'linked':
+                for linked_name, linked_values in value.items():
+                    if linked_name == 'meta':
+                        raise ParseError('"meta" not allowed in linked.')
+                    view_extra[linked_name] = self.convert(linked_values)
+            elif name == 'meta':
+                view_extra['meta'] = value
+            # JSON API requires ignoring additional attributes
         if view_extra:
             resource['_view_extra'] = view_extra
+        return resource
 
+    def convert(self, raw_data):
+        if isinstance(raw_data, list):
+            return [self.convert_item(item) for item in raw_data]
+        else:
+            return self.convert_item(raw_data)
+
+    def convert_item(self, raw_data):
+        resource = self.dict_class()
+        for name, value in raw_data.items():
+            if name == 'links':
+                for link_name, link_value in value.items():
+                    if link_name in resource:
+                        raise ParseError(
+                            'Attribute "%s" duplicated in links.' % link_name)
+                    elif link_name == '_view_extra':
+                        raise ParseError(
+                            '"_view_extra" not allowed as link name.')
+                    resource[link_name] = link_value
+            elif name == '_view_extra':
+                raise ParseError(
+                    '"_view_extra" not allowed as attribute name.')
+            else:
+                if name in resource:
+                    raise ParseError(
+                        'Link %s duplicated in attributes.' % name)
+                resource[name] = value
         return resource

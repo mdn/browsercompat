@@ -14,10 +14,10 @@
                 "supports": [
                     "1"
                 ],
+                "history_current": "2",
                 "history": [
                     "2"
-                ],
-                "history_current": "2"
+                ]
             }
         },
         {
@@ -34,10 +34,10 @@
                 "supports": [
                     "2"
                 ],
+                "history_current": "9",
                 "history": [
                     "9"
-                ],
-                "history_current": "9"
+                ]
             }
         },
         {
@@ -52,10 +52,10 @@
             "links": {
                 "browser": "5",
                 "supports": [],
+                "history_current": "12",
                 "history": [
                     "12"
-                ],
-                "history_current": "12"
+                ]
             }
         },
         {
@@ -72,10 +72,10 @@
                 "supports": [
                     "3"
                 ],
+                "history_current": "15",
                 "history": [
                     "15"
-                ],
-                "history_current": "15"
+                ]
             }
         },
         {
@@ -92,10 +92,10 @@
                 "supports": [
                     "4"
                 ],
+                "history_current": "18",
                 "history": [
                     "18"
-                ],
-                "history_current": "18"
+                ]
             }
         },
         {
@@ -110,10 +110,10 @@
             "links": {
                 "browser": "13",
                 "supports": [],
+                "history_current": "39",
                 "history": [
                     "39"
-                ],
-                "history_current": "39"
+                ]
             }
         },
         {
@@ -130,10 +130,10 @@
                 "supports": [
                     "8"
                 ],
+                "history_current": "42",
                 "history": [
                     "42"
-                ],
-                "history_current": "42"
+                ]
             }
         },
         {
@@ -150,10 +150,10 @@
                 "supports": [
                     "10"
                 ],
+                "history_current": "46",
                 "history": [
                     "46"
-                ],
-                "history_current": "46"
+                ]
             }
         }
     ],
@@ -166,13 +166,13 @@
             "type": "supports",
             "href": "https://browsercompat.org/api/v1/supports/{versions.supports}"
         },
-        "versions.history": {
-            "type": "historical_versions",
-            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
-        },
         "versions.history_current": {
             "type": "historical_versions",
             "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history_current}"
+        },
+        "versions.history": {
+            "type": "historical_versions",
+            "href": "https://browsercompat.org/api/v1/historical_versions/{versions.history}"
         }
     },
     "meta": {
