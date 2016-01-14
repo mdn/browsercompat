@@ -1,27 +1,6 @@
 {
     "specifications": [
         {
-            "id": "1",
-            "slug": "css1",
-            "mdn_key": "CSS1",
-            "name": {
-                "en": "CSS Level&nbsp;1"
-            },
-            "uri": {
-                "en": "http://www.w3.org/TR/CSS1/"
-            },
-            "links": {
-                "maturity": "1",
-                "sections": [
-                    "1"
-                ],
-                "history_current": "1",
-                "history": [
-                    "1"
-                ]
-            }
-        },
-        {
             "id": "2",
             "slug": "css2_1",
             "mdn_key": "CSS2.1",
@@ -39,48 +18,6 @@
                 "history_current": "2",
                 "history": [
                     "2"
-                ]
-            }
-        },
-        {
-            "id": "3",
-            "slug": "css3_box",
-            "mdn_key": "CSS3 Box",
-            "name": {
-                "en": "CSS Basic Box Model"
-            },
-            "uri": {
-                "en": "http://dev.w3.org/csswg/css3-box/"
-            },
-            "links": {
-                "maturity": "2",
-                "sections": [
-                    "3"
-                ],
-                "history_current": "3",
-                "history": [
-                    "3"
-                ]
-            }
-        },
-        {
-            "id": "4",
-            "slug": "css3_transforms",
-            "mdn_key": "CSS3 Transforms",
-            "name": {
-                "en": "CSS Transforms Level&nbsp;1"
-            },
-            "uri": {
-                "en": "http://dev.w3.org/csswg/css-transforms/"
-            },
-            "links": {
-                "maturity": "2",
-                "sections": [
-                    "4"
-                ],
-                "history_current": "4",
-                "history": [
-                    "4"
                 ]
             }
         }
@@ -108,7 +45,7 @@
             "specifications": {
                 "previous": null,
                 "next": null,
-                "count": 4
+                "count": 1
             }
         }
     }
