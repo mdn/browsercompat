@@ -497,7 +497,7 @@
         "endpoint": "sections/6",
         "data": {
             "sections": {
-                "maturity": "6"
+                "specification": "4"
             }
         }
     }, {
