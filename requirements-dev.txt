@@ -21,7 +21,7 @@ pep8==1.7.0
 pyflakes==1.0.0
 flake8==2.5.1
 pep257==0.7.0
-flake8-docstrings==0.2.1.post1
+flake8-docstrings==0.2.4
 
 # MANIFEST.in checker
 check-manifest==0.30
