@@ -29,12 +29,10 @@ updated, and then the v1 API will be retired.
 .. toctree::
    :maxdepth: 4
 
-   entrypoints
    resources
    change-control
    history
    views
-   services
 
 .. _MDN: http://developer.mozilla.org
 .. _`HTML element \<address\>`: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address#Browser_compatibility

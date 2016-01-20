@@ -3,7 +3,7 @@ Installation
 
 Install Django Project
 ----------------------
-For detailed local instation instructions, including OS-specific
+For detailed local installation instructions, including OS-specific
 instructions, see the `Installation page on the wiki`_.
 
 1. Install system packages and libraries.  The required packages are
@@ -30,7 +30,7 @@ instructions, see the `Installation page on the wiki`_.
    settings.
 8. Initialize the database and a superuser account with
    ``./manage.py migrate``.
-9. Verify that tests pass with ``./manage,py test`` or ``make test``.
+9. Verify that tests pass with ``./manage.py test`` or ``make test``.
 10. Run it with ``./manage.py runserver`` or ``./manage.py runserver_plus``.
 
 .. _Installation page on the wiki: https://github.com/mdn/browsercompat/wiki/Installation
@@ -103,7 +103,7 @@ emails to the console::
 
 django-allauth supports many social authentication providers. See the
 `providers documentation`_ for the current list and hints for configuration.
-Using a authentication provider is not required, especially for local
+Using an authentication provider is not required, especially for local
 development.  Instead, use local authentication with a username and password.
 
 If you need FxA integration, see the `Firefox Accounts page on the wiki`_

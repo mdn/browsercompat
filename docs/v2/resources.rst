@@ -5,23 +5,7 @@ Resources are simple objects supporting CRUD_ operations.  Read operations can
 be done anonymously.  Creating and updating require account permissions, and
 deleting requires admin account permissions.
 
-All resources support similar operations using HTTP methods:
-
-* ``GET /api/v1/<type>`` - List or search instances (paginated)
-* ``POST /api/v1/<type>`` - Create a new instance
-* ``GET /api/v1/<type>/<id>`` - Retrieve an instance
-* ``PUT /api/v1/<type>/<id>`` - Update an instance
-* ``DELETE /api/v1/<type>/<id>`` - Delete an instance
-
-Because the operations are similar, only browsers_ has complete
-examples, and others just show retrieving an instance (``GET /api/v1/<type>/<id>``).
-Full requests and responses are generated and stored in the `source repository`_
-
 .. _CRUD: http://en.wikipedia.org/wiki/Create,_read,_update_and_delete
-.. _`source repository`: https://github.com/mdn/browsercompat/tree/master/docs/v1/raw
-
-
-.. contents:: 
 
 Browsers
 --------
@@ -39,7 +23,7 @@ The **browsers** representation includes:
     - **name** *(localized)* - Browser name
     - **note** *(localized)* - Notes, intended for related data like
       OS, applicable device, engines, etc.
-* **links**
+* **relationships**
     - **versions** *(many)* - Associated versions_, ordered roughly
       from earliest to latest.  User can change the order.
     - **history_current** *(one)* - Current historical_browsers_.  Can be
@@ -49,213 +33,10 @@ The **browsers** representation includes:
 
 *Note:* `bug 1078699`_ *is proposing that select users will be able to modify slugs*
 
-List
-****
+An example **browser** resource:
 
-To request the paginated list of **browsers**:
-
-.. literalinclude:: /v1/raw/browser-list-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/browser-list-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-list-response-body.json
+.. literalinclude:: /v2/raw/browser-by-id-response-body.json
     :language: json
-
-Retrieve by ID
-**************
-*Note:* `bug 1230306`_ *is proposing switching IDs to UUIDs.*
-
-To request a single **browser** with a known ID:
-
-.. literalinclude:: /v1/raw/browser-by-id-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/browser-by-id-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-by-id-response-body.json
-    :language: json
-
-Retrieve by Slug
-****************
-
-*Note:* `bug 1078699`_ *is proposing an alternate URL format.*
-
-
-To request a **browser** by slug:
-
-.. literalinclude:: /v1/raw/browser-by-slug-request-headers.txt
-    :language: http
-
-The response includes the desired browser, in list format:
-
-.. literalinclude:: /v1/raw/browser-by-slug-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-by-slug-response-body.json
-    :language: json
-
-Create
-******
-
-Creating **browser** instances require authentication with create privileges.
-To create a new **browser** instance, ``POST`` a representation with at least
-the required parameters.  Some items (such as the ``id`` attribute and the
-``history_current`` link) will be picked by the server, and will be ignored if
-included.
-
-Here's an example of creating a **browser** instance, with cookie-based
-authentication:
-
-.. literalinclude:: /v1/raw/browser-create-minimal-request-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-create-minimal-request-body.json
-    :language: json
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/browser-create-minimal-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-create-minimal-response-body.json
-    :language: json
-
-This, and other methods that change resources, will create a new changeset_,
-and associate the new historical_browsers_ with that changeset_.  To assign to an
-existing changeset, add it to the URI:
-
-.. literalinclude:: /v1/raw/browser-create-in-changeset-2-request-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-create-in-changeset-2-request-body.json
-    :language: json
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/browser-create-in-changeset-2-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-create-in-changeset-2-response-body.json
-    :language: json
-
-Update
-******
-
-Updating a **browser** instance require authentication with create privileges.
-Some items (such as the ``id`` attribute and ``history`` links) can not be
-changed, and will be ignored if included.  A successful update will return a
-``200 OK``, add a new ID to the ``history`` links list, and update the
-``history_current`` link.
-
-This update changes the English name from "Internet Explorer" to "Microsoft Internet Explorer":
-
-
-.. literalinclude:: /v1/raw/browser-update-full-request-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-update-full-request-body.json
-    :language: json
-
-With this response:
-
-.. literalinclude:: /v1/raw/browser-update-full-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-update-full-response-body.json
-    :language: json
-
-Partial Update
-**************
-
-An update can just update the target fields.  This is a further request to
-change the English name for the Internet Explorer browser.
-
-.. literalinclude:: /v1/raw/browser-update-partial-request-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-update-partial-request-body.json
-    :language: json
-
-With this response:
-
-.. literalinclude:: /v1/raw/browser-update-partial-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-update-partial-response-body.json
-    :language: json
-
-Update order of related resources
-*********************************
-In many cases, related resources (which appear in the "links" attribute")
-are sorted by ID.  In some cases, the order is significant, and is set on
-a related field.  For example, **versions** for a **browser** are ordered
-by updating the order on the **browser** object:
-
-To change just the versions_ order:
-
-.. literalinclude:: /v1/raw/browser-update-versions-order-request-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-update-versions-order-request-body.json
-    :language: json
-
-With this response:
-
-.. literalinclude:: /v1/raw/browser-update-versions-order-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-update-versions-order-response-body.json
-    :language: json
-
-Reverting to a previous instance
-********************************
-
-To revert to an earlier instance, set the ``history_current`` link to a
-previous value.  This resets the content and creates a new
-historical_browsers_ object:
-
-.. literalinclude:: /v1/raw/browser-revert-request-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-revert-request-body.json
-    :language: json
-
-With this response (note that the name and version order have reverted to the
-`original values`_):
-
-.. literalinclude:: /v1/raw/browser-revert-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/browser-revert-response-body.json
-    :language: json
-
-.. _`original values`: #retrieve-by-id
-
-Deletion
-********
-
-To delete a **browser**:
-
-.. literalinclude:: /v1/raw/browser-delete-request-headers.txt
-    :language: http
-
-The response has no body:
-
-.. literalinclude:: /v1/raw/browser-delete-response-headers.txt
-    :language: http
-
-Reverting a deletion
-********************
-Reverting deletions is not currently possible, and is tracked in `bug 1159349`_.
-
-.. _`bug 1159349`: https://bugzilla.mozilla.org/show_bug.cgi?id=1159349
 
 Versions
 --------
@@ -279,7 +60,7 @@ The **versions** representation includes:
     - **note** *(localized)* - Engine, OS, etc. information, or null
     - **order** *(read-only)* - The relative order among versions for this
       browser. The order can be changed on the **browser** resource.
-* **links**
+* **relationships**
     - **browser** - The related **browser**
     - **supports** *(many)* - Associated **supports**, in ID order.  Changes
       are ignored; work on the **supports** to add, change, or remove.
@@ -302,17 +83,9 @@ The version is either a numeric value, such as ``"11.0"``, or text, such as
 ``unknown``      numeric                           A release with an unknown status
 ================ ================================= ===========================================================
 
-To get a single **version**:
+An example **version** resource:
 
-.. literalinclude:: /v1/raw/version-by-id-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/version-by-id-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/version-by-id-response-body.json
+.. literalinclude:: /v2/raw/version-by-id-response-body.json
     :language: json
 
 Features
@@ -351,7 +124,7 @@ The **features** representation includes:
       ``"<code>none, inline</code> and <code>block</code>"``, and
       ``"CSS Properties"`` are non-canonical names that should be translated.
 
-* **links**
+* **relationships**
     - **sections** *(many)* - Associated sections_.  Order can be changed by
       the user.
     - **supports** *(many)* - Associated supports_, Order is in ID order,
@@ -366,33 +139,17 @@ The **features** representation includes:
     - **history** *(many)* - Associated historical_features_, in time order
       (most recent first).  Changes are ignored.
 
+*Note:* `bug 1240785`_ *is proposing that the slug is replaced with a list of optional aliases*
 
-To get a specific **feature** (in this case, a leaf feature with a translated
-name):
+Here is an example of a leaf **feature** with a translated name:
 
-.. literalinclude:: /v1/raw/feature-by-id-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/feature-by-id-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/feature-by-id-response-body.json
+.. literalinclude:: /v2/raw/feature-by-id-response-body.json
     :language: json
 
-Here's an example of a branch feature with a canonical name (the parent of the
+Here is an example of a branch **feature** with a canonical name (the parent of the
 previous example):
 
-.. literalinclude:: /v1/raw/feature-by-id-canonical-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/feature-by-id-canonical-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/feature-by-id-canonical-response-body.json
+.. literalinclude:: /v2/raw/feature-by-id-canonical-response-body.json
     :language: json
 
 Supports
@@ -422,7 +179,7 @@ The **support** representation includes:
       and the Bluetooth API.
     - **note** *(localized)* - Note on support, designed for
       display after a compatibility table, can contain HTML
-* **links**
+* **relationships**
     - **version** *(one)* - The associated version_.  Cannot be changed by
       the user after creation.
     - **feature** *(one)* - The associated feature_.  Cannot be changed by
@@ -434,17 +191,9 @@ The **support** representation includes:
       in time order (most recent first).  Changes are ignored.
 
 
-To get a single **support**:
+Here is a sample **support**:
 
-.. literalinclude:: /v1/raw/support-by-id-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/support-by-id-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/support-by-id-response-body.json
+.. literalinclude:: /v2/raw/support-by-id-response-body.json
     :language: json
 
 Specifications
@@ -460,7 +209,7 @@ The **specification** representation includes:
     - **mdn_key** - Key used in the KumaScript macros SpecName_ and Spec2_.
     - **name** *(localized)* - Specification name
     - **uri** *(localized)* - Specification URI, without subpath and anchor
-* **links**
+* **relationships**
     - **maturity** *(one)* - Associated maturity_.
       Can be changed by the user.
     - **sections** *(many)* - Associated sections_.  The order can be changed
@@ -471,17 +220,9 @@ The **specification** representation includes:
     - **history** *(many)* - Associated historical_specifications_
       in time order (most recent first).  Changes are ignored.
 
-To get a single **specification**:
+Here is a sample **specification**:
 
-.. literalinclude:: /v1/raw/specification-by-id-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/specification-by-id-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/specification-by-id-response-body.json
+.. literalinclude:: /v2/raw/specification-by-id-response-body.json
     :language: json
 
 Sections
@@ -500,7 +241,7 @@ The **section** representation includes:
     - **subpath** *(localized, optional)* - A subpage (possibly with an
       #anchor) to get to the subsection in the doc.  Can be empty string.
     - **note** *(localized, optional)* - Notes for this section
-* **links**
+* **relationships**
     - **specification** *(one)* - The specification_.  Can be changed by
       the user.
     - **features** *(many)* - The associated features_.  In ID order,
@@ -511,17 +252,9 @@ The **section** representation includes:
     - **history** *(many)* - Associated historical_sections_
       in time order (most recent first).  Changes are ignored.
 
-To get a single **section**:
+Here is a sample **section**:
 
-.. literalinclude:: /v1/raw/section-by-id-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/section-by-id-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/section-by-id-response-body.json
+.. literalinclude:: /v2/raw/section-by-id-response-body.json
     :language: json
 
 Maturities
@@ -536,7 +269,7 @@ The **maturity** representation includes:
     - **slug** - A human-friendly identifier for this maturity.  When applicable,
       it matches the key in the KumaScript macro Spec2_
     - **name** *(localized)* - Status name
-* **links**
+* **relationships**
     - **specifications** *(many)* - Associated specifications_.  In ID order,
       changes are ignored.
     - **history_current** *(one)* - Current
@@ -545,36 +278,274 @@ The **maturity** representation includes:
     - **history** *(many)* - Associated historical_maturities_
       in time order (most recent first).  Changes are ignored.
 
-To get a single **maturity**:
+Here is a sample **maturity**:
 
-.. literalinclude:: /v1/raw/maturity-by-id-request-headers.txt
-    :language: http
-
-A sample response is:
-
-.. literalinclude:: /v1/raw/maturity-by-id-response-headers.txt
-    :language: http
-
-.. literalinclude:: /v1/raw/maturity-by-id-response-body.json
+.. literalinclude:: /v2/raw/maturity-by-id-response-body.json
     :language: json
 
+Users
+-----
+
+A **user** represents a person or process that creates, changes, or deletes a
+resource.
+
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **username** - The user's email or ID
+    - **created** *(server selected)* - Time that the account was created, in
+      `ISO 8601`_ format.
+    - **agreement** - The version of the contribution agreement the
+      user has accepted.  "0" for not agreed, "1" for first version, etc.
+    - **permissions** - A list of permissions.  Permissions include
+      ``"change-resource"`` (add or change any resource except users_ or
+      history resources),
+      ``"delete-resource"`` (delete any resource)
+      ``"import-mdn"`` (setup import of an MDN page)
+* **relationships**
+    - **changesets** *(many)* - Associated changesets_, in ID order, changes
+      are ignored.
+
+Here's an example **user**:
+
+.. literalinclude:: /v2/raw/user-by-id-response-body.json
+    :language: json
+
+*Note:* `bug 1159354`_ *proposes this method for retrieving the authenticated user*:
+
+.. code-block:: http
+
+    GET /api/v2/users/me HTTP/1.1
+    Host: browsersupports.org
+    Accept: application/vnd.api+json
+
+
+Changesets
+----------
+
+A **changeset** collects history resources into a logical unit, allowing for
+faster reversions and better history display.  The **changeset** can be
+auto-created through a ``POST``, ``PUT``, or ``DELETE`` to a resource, or it
+can be created independently and specified by adding ``changeset=<ID>`` URI
+parameter (i.e., ``PUT /browsers/15?changeset=73``).
+
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **created** *(server selected)* - When the changeset was created, in
+      `ISO 8601`_ format.
+    - **modified** *(server selected)* - When the changeset was last modified,
+      in `ISO 8601`_ format.
+    - **target_resource_type** *(write-once, optional)* - The name of the
+      primary resource for this changeset, for example "browsers", "versions",
+      etc.
+    - **target_resource_id** *(write-once, optional)* - The ID of the primary
+      resource for this changeset.
+    - **closed** - True if the changeset is closed to new changes.
+      Auto-created changesets are auto-closed, and cache invalidation is
+      delayed until manually created changesets are closed.
+* **relationships**
+    - **user** *(one)* - The user_ who initiated this changeset, can not be
+      changed.
+    - **historical_browsers** *(many)* - Associated historical_browsers_, in ID
+      order, changes are ignored.
+    - **historical_features** *(many)* - Associated historical_features_,
+      in ID order, changes are ignored.
+    - **historical_maturities** *(many)* - Associated historical_maturities_,
+      in ID order, changes are ignored.
+    - **historical_sections** *(many)* - Associated historical_sections_, in ID
+      order, changes are ignored.
+    - **historical_specifications** *(many)* - Associated
+      historical_specifications_, in ID order, changes are ignored.
+    - **historical_supports** *(many)* - Associated historical_supports_, in ID
+      order, changes are ignored.
+    - **historical_versions** *(many)* - Associated
+      historical_versions_, in ID order, changes are ignored.
+
+Here's an example **changeset** resource:
+
+.. literalinclude:: /v2/raw/changeset-by-id-response-body.json
+    :language: json
+
+Historical Browsers
+-------------------
+A **historical_browser** resource represents the state of a browser_ at a point
+in time, and who is responsible for that state.
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
+    - **event** *(server selected)* - The type of event, one of ``"created"``,
+      ``"changed"``, or ``"deleted"``
+    - **archive_data** - The **browsers** representation at this point in time
+* **relationships**
+    - **changeset** *(one)* - Associated changeset_, can not be changed.
+    - **browser** *(one)* - Associated browser_, can not be changed
+
+Here is a sample **historical_browser**:
+
+.. literalinclude:: /v2/raw/historical-browser-by-id-response-body.json
+    :language: json
+
+Historical Versions
+-------------------
+
+A **historical_versions** resource represents the state of a
+version_ at a point in time, and who is responsible for that
+representation.
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
+    - **event** *(server selected)* - The type of event, one of ``"created"``,
+      ``"changed"``, or ``"deleted"``
+    - **archive_data** - The **versions** representation at this point in time
+* **relationships**
+    - **changeset** *(one)* - Associated changeset_, can not be changed.
+    - **version** *(one)* - Associated version_, can not be changed
+
+Here is a sample **historical_version**:
+
+.. literalinclude:: /v2/raw/historical-version-by-id-response-body.json
+    :language: json
+
+Historical Features
+-------------------
+
+A **historical_features** resource represents the state of a feature_ at a point
+in time, and who is responsible for that representation.
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
+    - **event** *(server selected)* - The type of event, one of ``"created"``,
+      ``"changed"``, or ``"deleted"``
+    - **archive_data** - The **features** representation at this point in time
+* **relationships**
+    - **changeset** *(one)* - Associated changeset_, can not be changed.
+    - **feature** *(one)* - Associated feature_, can not be changed
+
+Here is a sample **historical_feature**:
+
+.. literalinclude:: /v2/raw/historical-feature-by-id-response-body.json
+    :language: json
+
+Historical Supports
+-------------------
+
+A **historical_supports** resource represents the state of a support_ at a point
+in time, and who is responsible for that representation.
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
+    - **event** *(server selected)* - The type of event, one of ``"created"``,
+      ``"changed"``, or ``"deleted"``
+    - **archive_data** - The **supports** representation at this point in time
+* **relationships**
+    - **changeset** *(one)* - Associated changeset_, can not be changed.
+    - **support** *(one)* - Associated support_, can not be changed
+
+Here is a sample **historical_support**:
+
+.. literalinclude:: /v2/raw/historical-support-by-id-response-body.json
+    :language: json
+
+Historical Specifications
+-------------------------
+
+A **historical_specifications** resource represents the state of a specification_ at a point
+in time, and who is responsible for that representation.
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
+    - **event** *(server selected)* - The type of event, one of ``"created"``,
+      ``"changed"``, or ``"deleted"``
+    - **archive_data** - The **specifications** representation at this point in time
+* **relationships**
+    - **changeset** *(one)* - Associated changeset_, can not be changed.
+    - **specification** *(one)* - Associated specification_, can not be changed
+
+Here is a sample **historical_specification**:
+
+.. literalinclude:: /v2/raw/historical-specification-by-id-response-body.json
+    :language: json
+
+Historical Sections
+-------------------
+
+A **historical_sections** resource represents the state of a section_ at a point
+in time, and who is responsible for that representation.
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
+    - **event** *(server selected)* - The type of event, one of ``"created"``,
+      ``"changed"``, or ``"deleted"``
+    - **archive_data** - The **sections** representation at this point in time
+* **relationships**
+    - **changeset** *(one)* - Associated changeset_, can not be changed.
+    - **section** *(one)* - Associated section_, can not be changed
+
+Here is a sample **historical_section**:
+
+.. literalinclude:: /v2/raw/historical-sections-by-id-response-body.json
+    :language: json
+
+Historical Maturities
+---------------------
+
+A **historical_maturities** resource represents the state of a maturity_ at a point
+in time, and who is responsible for that representation.
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
+    - **event** *(server selected)* - The type of event, one of ``"created"``,
+      ``"changed"``, or ``"deleted"``
+    - **archive_data** - The **maturities** representation at this point in time
+* **relationships**
+    - **changeset** *(one)* - Associated changeset_, can not be changed.
+    - **maturity** *(one)* - Associated maturity_, can not be changed
+
+Here is a sample **historical_maturity**:
+
+.. literalinclude:: /v2/raw/historical-maturity-by-id-response-body.json
+    :language: json
+
+
+.. _browser: Browsers_
 .. _feature: Features_
 .. _specification: Specifications_
-.. _maturity: `Maturities`_
-.. _version: `Versions`_
-
-.. _changeset: change-control.html#changesets
-
-.. _historical_browsers: history.html#historical-browsers
-.. _historical_features: history.html#historical-features
-.. _historical_supports: history.html#historical-supports
-.. _historical_specifications: history.html#historical-specifications
-.. _historical_sections: history.html#historical-sections
-.. _historical_maturities: history.html#historical-maturities
+.. _section: Sections_
+.. _support: Supports_
+.. _maturity: Maturities_
+.. _version: Versions_
+.. _user: Users_
+.. _changeset: Changesets_
+.. _historical_browsers: `Historical Browsers`_
+.. _historical_features: `Historical Features`_
+.. _historical_supports: `Historical Supports`_
+.. _historical_specifications: `Historical Specifications`_
+.. _historical_sections: `Historical Sections`_
+.. _historical_maturities: `Historical Maturities`_
+.. _historical_versions: `Historical Versions`_
 
 .. _`bug 1078699`: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699
+.. _`bug 1078699`: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699
+.. _`bug 1159354`: https://bugzilla.mozilla.org/show_bug.cgi?id=1159354
 .. _`bug 1216786`: https://bugzilla.mozilla.org/show_bug.cgi?id=1216786
-.. _`bug 1230306`: https://bugzilla.mozilla.org/show_bug.cgi?id=1230306
+.. _`bug 1240785`: https://bugzilla.mozilla.org/show_bug.cgi?id=1240785
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601
 .. _MDN: https://developer.mozilla.org

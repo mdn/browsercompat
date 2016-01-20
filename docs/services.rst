@@ -18,7 +18,7 @@ users' account, which includes:
 * Viewing, adding, and removing linked accounts, which are optional if a
   password is set.  The support linked account type is `Firefox Accounts`_.
 * Viewing, adding, and removing emails.  Emails can be verified (a link is
-  clicked or a trusted linked accout says it is verified), and one is the
+  clicked or a trusted linked account says it is verified), and one is the
   primary email used for communication.
 
 Additional endpoints for authentication:

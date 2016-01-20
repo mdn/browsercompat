@@ -14,57 +14,64 @@ resources needed to display it on MDN.
 
 Here is a simple example, the view for the CSS property float_:
 
-.. literalinclude:: /v1/raw/view-feature-by-id-request-headers.txt
+.. literalinclude:: /v2/raw/view-feature-by-id-request-headers.txt
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /v1/raw/view-feature-by-id-response-headers.txt
+.. literalinclude:: /v2/raw/view-feature-by-id-response-headers.txt
     :language: http
 
-.. literalinclude:: /v1/raw/view-feature-by-id-response-body.json
+.. literalinclude:: /v2/raw/view-feature-by-id-response-body.json
     :language: json
 
+Generating a Compatibility Table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 One way to use this representation is:
 
-1. Parse into an in-memory object store,
+1. Parse /data and /included into an in-memory object store, so that you can
+   load a resource given the type and ID.
 2. Create the "Specifications" section:
     1. Add the ``Specifications`` header
     2. Create an HTML table with a header row "Specification", "Status", "Comment"
-    3. For each id in features.links.sections (``["746", "421", "70"]``):
-        * Add the first column: a link to specifications.uri.(lang or en) +
-          sections.subpath.(lang or en), with link text
-          specifications.name.(lang or en), with title based on
-          sections.name.(lang or en) or feature.name.(lang or en).
+    3. For each id in /data/relationships/sections (``"1"``, ``"2"``, ``"3"```):
+        * Load the section, specification, and maturity
+        * Add the first column: a link to
+          (specification).attributes.uri.(lang or en) +
+          (section).attributes.subpath.(lang or en), with link text
+          (specification).attributes.name.(lang or en), with title based on
+          (section).attributes.name.(lang or en) or
+          data.attributes.name.(lang or en).
         * Add the second column: A span with class
-          "spec-" + maturities.slug, and the text
-          maturities.name.(lang or en).
+          "spec-" + (maturity).attributes.slug, and the text
+          (maturity).attributes.name.(lang or en).
         * Add the third column:
-          maturities.notes.(lang or en), or empty string
+          (maturity).attributes.notes.(lang or en), or empty string
     4. Close the table, and add an edit button.
 3. Create the Browser Compatibility section:
     1. Add The "Browser compatibility" header
-    2. For each item in meta.compat_table.tabs, create a table with the proper
-       name ("Desktop", "Mobile")
-    3. For each browser id in meta.compat-table.tabs.browsers, add a column with
-       the translated browser name.
-    4. For each feature in features.features:
-        * Add the first column: the feature name.  If it is a string, then wrap
-          in ``<code>``.  Otherwise, use the best translation of feature.name,
-          in a ``lang=(lang)`` block.
+    2. For each item in /meta/compat_table/tabs:
+        * Create a table with the proper name ("Desktop", "Mobile")
+        * Load the browser by ID in /browsers
+        * Add a column the translated browser name
+    3. For the main feature in /data and each feature in /data/relationships/children:
+        * Add the first column: the feature name (attributes/name).  If it is a string, then wrap
+          in ``<code>``.  Otherwise, use the best translation of name,
+          in a ``lang=(lang)`` block. A good name for the main feature is
+          "Basic Support".
         * Add any feature flags, such as an obsolete or experimental icon,
           based on the feature flags.
-        * For each browser id in meta.compat-table-important:
-            - Get the important support IDs from
-              meta.compat-table-important.supports.<``feature ID``>.<``browser ID``>
-            - If null, then display "?"
-            - If just one, display "<``version``>", or "<``support``>",
+        * Load the supports reference list in
+          /meta/compat_table/supports/(feature ID)/(browser ID)/(support IDs)
+        * For each browsers' supports reference list:
+            - If no supports, then display "?"
+            - If just one support, display "<``version``>", or "<``support``>",
               depending on the defined attributes
-            - If multiple, display as subcells
+            - If multiple supports, display as subcells
             - Add prefixes, alternate names, config, and notes link
               as appropriate
-    5. Close each table, add an edit button
-    6. Add notes for displayed supports
+    4. Close each table, add an edit button
+    5. Add notes for displayed supports
 
 This may be done by including the JSON in the page as sent over the wire,
 or loaded asynchronously, with the tables built after initial page load.
@@ -85,7 +92,7 @@ page on MDN.  For example, *Web/CSS* has the page child *Web/CSS/Display*.
 By default, these are not included, but can be included by setting the query
 parameter ``child_pages=1``:
 
-.. literalinclude:: /v1/raw/view-feature-by-id-with-child-pages-request-headers.txt
+.. literalinclude:: /v2/raw/view-feature-by-id-with-child-pages-request-headers.txt
     :language: http
 
 
@@ -94,60 +101,60 @@ Updating Views with Changesets
 
 Updating the page requires a sequence of requests.  For example, if a user
 wants to change Chrome support for ``<address>`` from an unknown version to
-version 1, you'll have to create the version_ for that version,
+version 2, you'll have to create the version_ for that version,
 then add the support_ for the support.
 
 The first step is to create a changeset_ as an authenticated user:
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-request-headers.txt
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-1-request-headers.txt
     :language: http
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-request-body.json
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-1-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-response-headers.txt
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-1-response-headers.txt
     :language: http
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-1-response-body.json
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-1-response-body.json
     :language: json
 
 Next, use the changeset_ ID when creating the version_:
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-request-headers.txt
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-2-request-headers.txt
     :language: http
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-request-body.json
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-2-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-response-headers.txt
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-2-response-headers.txt
     :language: http
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-2-response-body.json
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-2-response-body.json
     :language: json
 
 Finally, create the support_:
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-request-headers.txt
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-3-request-headers.txt
     :language: http
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-request-body.json
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-3-request-body.json
     :language: http
 
 A sample response is:
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-response-headers.txt
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-3-response-headers.txt
     :language: http
 
-.. literalinclude:: /v1/raw/view-feature-update-parts-with-changeset-3-response-body.json
+.. literalinclude:: /v2/raw/view-feature-update-parts-with-changeset-3-response-body.json
     :language: json
 
 The historical_versions_ and historical_supports_
-resources will both refer to changeset_ 36, and this changeset_ is
-linked to feature_ 5, despite the fact that no changes were made
+resources will both refer to changeset_ 56, and this changeset_ is
+linked to feature_ 6, despite the fact that no changes were made
 to the feature_.  This will facilitate displaying a history of
 the compatibility tables, for the purpose of reviewing changes and reverting
 vandalism.
@@ -158,51 +165,19 @@ Updating View with PUT
 ``view_features`` supports PUT for bulk updates of support data.  Here is a simple
 example that adds a new subfeature without support:
 
-.. code-block:: http
+.. literalinclude:: /v2/raw/view-feature-update-put-subfeature-request-headers.txt
+    :language: http
 
-    PUT /api/v1/view_features/html-element-address HTTP/1.1
-    Host: browsersupports.org
-    Content-Type: application/vnd.api+json
-    Authorization: Bearer mF_9.B5f-4.1JqM
+.. literalinclude:: /v2/raw/view-feature-update-put-subfeature-request-body.json
+    :language: http
 
-.. code-block:: json
+A sample response is:
 
-    {
-        "features": {
-            "id": "816",
-            "slug": "html-element-address",
-            "mdn_uri": {
-                "en": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/address"
-            },
-            "experimental": false,
-            "standardized": true,
-            "stable": true,
-            "obsolete": false,
-            "name": "address",
-            "links": {
-                "sections": ["746", "421", "70"],
-                "supports": [],
-                "parent": "800",
-                "children": ["191"],
-                "history_current": "216",
-                "history": ["216"]
-            }
-        },
-        "linked": {
-            "features": [
-                {
-                    "id": "_New Subfeature",
-                    "slug": "html-address-new-subfeature",
-                    "name": {
-                        "en": "New Subfeature"
-                    },
-                    "links": {
-                        "parent": "816"
-                    }
-                }
-            ]
-        }
-    }
+.. literalinclude:: /v2/raw/view-feature-update-put-subfeature-response-headers.txt
+    :language: http
+
+.. literalinclude:: /v2/raw/view-feature-update-put-subfeature-response-body.json
+    :language: json
 
 The response is the feature view with new and updated items, or an error
 response.
@@ -231,10 +206,10 @@ favor of direct POST and PUT to the standard resource API.
 .. _version: resources.html#versions
 .. _versions: resources.html#versions
 
-.. _changeset: change-control#changeset
+.. _changeset: resources.html#changeset
 
-.. _historical_versions: history.html#historical-versions
-.. _historical_supports: history.html#historical-supports
+.. _historical_versions: resources.html#historical-versions
+.. _historical_supports: resources.html#historical-supports
 
 .. _float: https://developer.mozilla.org/en-US/docs/Web/CSS/float
 .. _`Inclusion of Related Resources`: http://jsonapi.org/format/#fetching-includes
