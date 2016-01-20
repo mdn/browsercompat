@@ -19,6 +19,7 @@ from resources import Collection
 
 class ImportMDNData(Tool):
     """Import features from MDN, or reparse imported features."""
+
     logger_name = 'tools.import_mdn'
     parser_options = ['api', 'user', 'password']
 

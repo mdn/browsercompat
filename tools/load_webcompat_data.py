@@ -21,6 +21,7 @@ from resources import Collection, Browser, Version, Feature, Support
 
 class LoadWebcompatData(Tool):
     """Initialize with data from the webcompat project."""
+
     logger_name = 'tools.load_webcompat_data'
     parser_options = ['api', 'user', 'password']
 

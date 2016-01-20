@@ -131,6 +131,7 @@ class MPTTRelationField(PrimaryKeyRelatedField):
 
 class OptionalCharField(CharField):
     """Field is a CharField that serializes as None when omitted"""
+
     def to_representation(self, value):
         if value:
             return value
@@ -177,6 +178,7 @@ class TranslatedTextField(CharField):
     If blank=True, then empty strings and other falsy values are allowed, and
     are serialized as null.
     """
+
     def __init__(self, *args, **kwargs):
         self.allow_canonical = kwargs.pop('allow_canonical', False)
         super(TranslatedTextField, self).__init__(*args, **kwargs)

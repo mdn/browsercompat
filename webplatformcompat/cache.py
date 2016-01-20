@@ -11,6 +11,7 @@ from .models import (
 
 class Cache(BaseCache):
     """Instance Cache for webplatformcompat"""
+
     versions = ('v1',)
     default_version = 'v1'
 

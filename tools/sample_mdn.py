@@ -18,6 +18,7 @@ re_url = re.compile(r'\s*"url":\s"([^"]*)"')
 
 class SampleMDN(Tool):
     """Open a random MDN URL scraped from the webcompat project."""
+
     logger_name = 'tools.sample_mdn'
 
     def run(self, *args, **kwargs):

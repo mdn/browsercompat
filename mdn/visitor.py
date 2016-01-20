@@ -43,6 +43,7 @@ class Visitor(Recorder, NodeVisitor):
 
     The Parsimonious NodeVisitor works from leaf nodes up to trunk nodes.
     """
+
     def __init__(self, offset=0, data=None):
         super(Visitor, self).__init__()
         self.initialize_tracker(offset=offset, data=data)
@@ -53,6 +54,7 @@ class Extractor(Recorder):
 
     The Extractor works from trunk nodes to leaf nodes.
     """
+
     extractor_name = "Extractor"
 
     def initialize_extractor(self, elements=None, debug=False, **kwargs):

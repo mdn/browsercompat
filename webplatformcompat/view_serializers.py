@@ -85,6 +85,7 @@ view_cls_by_name = {
 class ViewFeatureListSerializer(
         FieldMapMixin, FieldsExtraMixin, ModelSerializer):
     """Get list of features"""
+
     href = SerializerMethodField()
 
     def get_href(self, obj):
@@ -107,6 +108,7 @@ class ViewFeatureListSerializer(
 
 class DjangoResourceClient(object):
     """Implement tools.client.Client using Django native functions"""
+
     namespace = 'v1'
 
     def url(self, resource_type, resource_id=None):
@@ -156,6 +158,7 @@ class DjangoResourceClient(object):
 
 class FeatureExtra(object):
     """Handle new and updated data in a view_feature update"""
+
     def __init__(self, data, feature, context):
         self.data = data
         self.feature = feature
@@ -420,6 +423,7 @@ class FeatureExtra(object):
 
 class ViewFeatureExtraSerializer(ModelSerializer):
     """Linked resources and metadata for ViewFeatureSerializer."""
+
     browsers = ViewBrowserSerializer(source='all_browsers', many=True)
     features = FeatureSerializer(source='child_features', many=True)
     maturities = ViewMaturitySerializer(source='all_maturities', many=True)
@@ -822,5 +826,6 @@ class ViewFeatureSerializer(FeatureSerializer):
 
 class ViewFeatureRowChildrenSerializer(ViewFeatureSerializer):
     """Adjust serializer when page children are omitted."""
+
     children = PrimaryKeyRelatedField(
         many=True, queryset=Feature.objects.all(), source='row_children')

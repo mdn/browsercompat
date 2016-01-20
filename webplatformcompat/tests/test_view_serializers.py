@@ -433,6 +433,7 @@ class TestViewFeatureViewSet(TestCase):
 
 class TestViewFeatureUpdates(TestCase):
     """Test updating via ViewFeatureSerializer."""
+
     longMessage = True
 
     def setUp(self):

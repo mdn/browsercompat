@@ -78,6 +78,7 @@ class HistoricalRecords(BaseHistoricalRecords):
     * Can add additional fields (e.g., preserve relationship order)
     * References a history_changeset instead of a history_user
     """
+
     additional_fields = {}
 
     def copy_fields(self, model):
@@ -148,6 +149,7 @@ class HistoricalRecords(BaseHistoricalRecords):
 
 class HistoryChangesetMiddleware(BaseHistoryRequestMiddleware):
     """Add a changeset to the HistoricalRecords request"""
+
     def process_request(self, request):
         """Load requested changeset or prepare auto-changeset."""
         super(HistoryChangesetMiddleware, self).process_request(request)

@@ -434,7 +434,6 @@ class HTMLOpenTag(HTMLBaseTag):
 @python_2_unicode_compatible
 class HTMLCloseTag(HTMLBaseTag):
     """An HTML closing tag, such as </a>"""
-    pass
 
     def __str__(self):
         return "</{}>".format(self.tag)
@@ -485,6 +484,7 @@ class HTMLElement(HTMLInterval):
 
 class HnElement(HTMLElement):
     """An HTML header, such as <h2>"""
+
     def __init__(self, **kwargs):
         super(HnElement, self).__init__(**kwargs)
         self.level = int(self.tag[1:])
@@ -497,6 +497,7 @@ class HTMLVisitor(Visitor):
     fragment is inside of a document, then an offset can be applied so that
     positions are reported relative to the whole document.
     """
+
     _default_attribute_actions = {None: 'keep'}
     _allowed_tags = None
     scope = 'HTML'

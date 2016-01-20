@@ -14,6 +14,7 @@ from resources import Collection
 
 class UploadData(Tool):
     """Upload data to the API."""
+
     logger_name = 'tools.upload_data'
     parser_options = ['api', 'user', 'password', 'data']
 

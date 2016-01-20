@@ -19,7 +19,6 @@ logger = logging.getLogger('tools.client')
 
 class APIException(Exception):
     """Errors returned from API"""
-    pass
 
 
 class Client(object):

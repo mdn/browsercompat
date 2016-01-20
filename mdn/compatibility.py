@@ -456,6 +456,7 @@ class CompatFeatureVisitor(CompatBaseVisitor):
 
     This is the first column of the compatibility table.
     """
+
     scope = 'compatibility feature'
     _allowed_tags = ['code', 'td', 'br']
 

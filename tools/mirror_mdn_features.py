@@ -30,6 +30,7 @@ from resources import Collection, Feature
 
 class MirrorMDNFeatures(Tool):
     """Create and Update API features for MDN pages."""
+
     logger_name = 'tools.mirror_mdn_features'
     parser_options = ['api', 'user', 'password', 'data', 'nocache']
     base_mdn_domain = 'https://developer.mozilla.org'

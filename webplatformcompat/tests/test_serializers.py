@@ -193,6 +193,7 @@ class TestSpecificationSerializer(TestCase):
 
 class TestUserSerializer(TestCase):
     """Test UserSerializer."""
+
     def test_to_representation(self):
         user = self.login_user()
         serializer = UserSerializer()
@@ -203,6 +204,7 @@ class TestUserSerializer(TestCase):
 
 class TestHistoricalFeatureSerializer(TestCase):
     """Test HistoricalFeatureSerializer, which has archive fields."""
+
     def test_to_representation_no_parent(self):
         feature = self.create(
             Feature, slug="the_feature", name={"en": "The Feature"})
@@ -229,6 +231,7 @@ class TestHistoricalFeatureSerializer(TestCase):
 
 class TestHistoricalMaturitySerializer(TestCase):
     """Test HistoricalMaturitySerializer."""
+
     def test_fields_extra(self):
         maturity = self.create(
             Maturity, slug='WD', name={'en': 'Working Draft'})

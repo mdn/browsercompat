@@ -15,6 +15,7 @@ from common import Tool
 
 class DownloadData(Tool):
     """Download data from the API."""
+
     logger_name = 'tools.download_data'
     parser_options = ['api', 'data']
 

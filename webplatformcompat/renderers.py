@@ -18,6 +18,7 @@ from rest_framework.utils.encoders import JSONEncoder
 
 class JsonApiRC1Renderer(JSONRenderer):
     """JSON API Release Candidate 1 (RC1) render."""
+
     dict_class = OrderedDict
     encoder_class = JSONEncoder
     media_type = 'application/vnd.api+json'
@@ -308,6 +309,7 @@ class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
 
 class BrowsableAPIRenderer(BaseAPIRenderer):
     """Jinja2 renderer used to self-document the API."""
+
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render the HTML for the browsable API representation.

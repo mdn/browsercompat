@@ -7,6 +7,7 @@ from webplatformcompat.models import (
 
 class TestCase(BaseTestCase):
     """TestCase that provides get_instance for loading specification data."""
+
     longMessage = True  # On assertions, print values and message
     _instance_specs = {
         ('Maturity', 'CR'): {'name': '{"en": "Candidate Recommendation"}'},

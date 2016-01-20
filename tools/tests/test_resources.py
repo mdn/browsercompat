@@ -18,7 +18,6 @@ class TestCase(BaseTestCase):
 
 
 class TestLink(TestCase):
-
     """Test the Link resource."""
 
     def test_link_without_collection(self):
@@ -48,7 +47,6 @@ class TestLink(TestCase):
 
 
 class TestBrowser(TestCase):
-
     """Test the Browser resource, and general Resource functions."""
 
     def test_load_at_init(self):

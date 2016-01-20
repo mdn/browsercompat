@@ -125,6 +125,7 @@ class ToolParser(argparse.ArgumentParser):
 
 class Tool(object):
     """A tool for working with the API."""
+
     logger_name = 'tools'
     parser_options = []
 

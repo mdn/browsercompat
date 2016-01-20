@@ -194,6 +194,7 @@ class PageVisitor(KumaVisitor):
     Uses most of KumaVisitor behaviour, except defaults to allowing all
     HTML element attributes, leaving validation to section-specific extractors.
     """
+
     _default_attribute_actions = {None: 'keep'}
 
 
@@ -311,6 +312,7 @@ class ScrapedViewFeature(object):
     doubtful this will be a high priority.  Translators may need to redo work
     inside the new contribution interface.
     """
+
     tab_name = {
         'desktop': 'Desktop Browsers',
         'mobile': 'Mobile Browsers',

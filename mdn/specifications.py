@@ -206,6 +206,7 @@ class SpecNameVisitor(KumaVisitor):
 
     This is the first column of the Specifications table.
     """
+
     scope = 'specification name'
     _allowed_tags = ['td']
 
@@ -264,6 +265,7 @@ class Spec2Visitor(KumaVisitor):
 
     This is the second column of the Specifications table.
     """
+
     scope = 'specification maturity'
     _allowed_tags = ['td']
 
@@ -300,6 +302,7 @@ class SpecDescVisitor(KumaVisitor):
 
     This is the third column of the Specifications table.
     """
+
     scope = 'specification description'
     _allowed_tags = ['a', 'br', 'code', 'td']
 

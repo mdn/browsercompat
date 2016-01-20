@@ -25,6 +25,7 @@ from resources import Collection, Maturity, Specification
 
 class LoadSpecData(Tool):
     """Initialize API with specification data from MDN."""
+
     logger_name = 'tools.load_spec_data'
     parser_options = ['api', 'user', 'password', 'nocache']
 

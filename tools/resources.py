@@ -15,7 +15,6 @@ class Link(object):
 
     class NoId(object):
         """Placeholder for local objects without an ID."""
-        pass
 
     def __init__(self, collection, linked_type, linked_id=None):
         self.collection = collection
@@ -49,6 +48,7 @@ class Link(object):
 
 class LinkList(object):
     """Proxy for a set of database IDs in a collection."""
+
     def __init__(self, collection, linked_type, linked_ids):
         self.collection = collection
         self.links = [
@@ -373,7 +373,6 @@ class Maturity(Resource):
 
 
 class Collection(object):
-
     """A collection of resources."""
 
     resource_by_type = {

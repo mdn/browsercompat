@@ -38,6 +38,7 @@ def validate_mdn_url(value):
 @python_2_unicode_compatible
 class FeaturePage(models.Model):
     """A page on MDN describing a feature."""
+
     url = models.URLField(
         help_text="URL of the English translation of an MDN page",
         db_index=True, unique=True, validators=[validate_mdn_url])
@@ -339,6 +340,7 @@ class FeaturePage(models.Model):
 @python_2_unicode_compatible
 class Issue(models.Model):
     """An issue on a FeaturePage."""
+
     page = models.ForeignKey(FeaturePage, related_name='issues')
     slug = models.SlugField(
         help_text="Human-friendly slug for issue.",
@@ -421,6 +423,7 @@ class Issue(models.Model):
 @python_2_unicode_compatible
 class Content(models.Model):
     """The content of an MDN page."""
+
     page = models.ForeignKey(FeaturePage)
     path = models.CharField(help_text="Path of MDN page", max_length=1024)
     crawled = models.DateTimeField(
@@ -476,6 +479,7 @@ class PageMeta(Content):
 
 class TranslatedContent(Content):
     """The raw translated content of a MDN feature page."""
+
     locale = models.CharField(
         help_text="Locale for page translation",
         max_length=5, db_index=True)

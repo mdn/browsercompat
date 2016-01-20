@@ -80,12 +80,14 @@ class FieldsExtraMixin(object):
 class ModelViewSet(
         PartialPutMixin, CachedViewMixin, FieldsExtraMixin, BaseModelViewSet):
     """Base class for ViewSets supporting CRUD operations on models."""
+
     renderer_classes = (JsonApiRC1Renderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiRC1Parser, FormParser, MultiPartParser)
 
 
 class ReadOnlyModelViewSet(FieldsExtraMixin, BaseROModelViewSet):
     """Base class for ViewSets supporting read operations on models."""
+
     renderer_classes = (JsonApiRC1Renderer, BrowsableAPIRenderer)
 
 
@@ -93,6 +95,7 @@ class ReadUpdateModelViewSet(
         PartialPutMixin, CachedViewMixin, FieldsExtraMixin, UpdateModelMixin,
         BaseROModelViewSet):
     """Base class for ViewSets supporting read and update operations."""
+
     renderer_classes = (JsonApiRC1Renderer, BrowsableAPIRenderer)
     parser_classes = (JsonApiRC1Parser, FormParser, MultiPartParser)
 

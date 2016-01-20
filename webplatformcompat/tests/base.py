@@ -12,6 +12,7 @@ from webplatformcompat.history import Changeset
 
 class TestMixin(object):
     """Useful methods for testing."""
+
     maxDiff = None
     namespace = 'v1'
 

@@ -57,6 +57,7 @@ class WriteRestrictedMixin(object):
 
 class FieldMapMixin(object):
     """Automatically handle fields used by this project"""
+
     serializer_field_mapping = ModelSerializer.serializer_field_mapping
     serializer_field_mapping[fields.TranslatedField] = TranslatedTextField
     serializer_field_mapping[CharField] = OptionalCharField
@@ -87,6 +88,7 @@ class HistoricalModelSerializer(
         WriteRestrictedMixin, FieldMapMixin, FieldsExtraMixin,
         ModelSerializer):
     """Model serializer with history manager"""
+
     omit_historical_fields = (
         'id', 'history_id', 'history_date', 'history_user', 'history_type',
         'history_changeset')

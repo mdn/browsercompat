@@ -356,6 +356,7 @@ class TestCascadeDelete(APITestCase):
 
 class TestFeatureViewSet(APITestCase):
     """Test FeatureViewSet."""
+
     def test_filter_by_slug(self):
         parent = self.create(Feature, slug='parent', name={'en': 'Parent'})
         feature = self.create(
@@ -393,6 +394,7 @@ class TestFeatureViewSet(APITestCase):
 
 class TestHistoricaViewset(APITestCase):
     """Test common historical viewset functionality through browsers."""
+
     def test_get_historical_browser_detail(self):
         browser = self.create(
             Browser, slug='browser', name={'en': 'A Browser'},

@@ -83,6 +83,7 @@ MDN_DOCS = MDN_DOMAIN + '/en-US/docs'
 @python_2_unicode_compatible
 class KumaScript(HTMLText):
     """A KumaScript macro."""
+
     def __init__(self, args=None, scope=None, **kwargs):
         """Initialize components of a KumaScript macro."""
         super(KumaScript, self).__init__(**kwargs)
@@ -146,6 +147,7 @@ class UnknownKumaScript(KumaScript):
 
 class KnownKumaScript(KumaScript):
     """Base class for known KumaScript macros."""
+
     min_args = 0
     max_args = 0
     arg_names = []
@@ -235,6 +237,7 @@ class Bug(KnownKumaScript):
 
 class CompatKumaScript(KnownKumaScript):
     """Base class for KumaScript specifying a browser version."""
+
     min_args = max_args = 1
     expected_scopes = set(('compatibility support', ))
 
@@ -525,6 +528,7 @@ class CSSBox(KnownKumaScript):
 
 class XRefBase(KnownKumaScript):
     """Base class for cross-reference KumaScript"""
+
     expected_scopes = set((
         'compatibility feature', 'specification description', 'footnote'))
 
@@ -813,6 +817,7 @@ class WhyNoSpecBlock(HTMLInterval):
     https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecStart
     https://developer.mozilla.org/en-US/docs/Template:WhyNoSpecEnd
     """
+
     expected_scopes = set()
 
     def __init__(self, scope=None, **kwargs):
@@ -825,6 +830,7 @@ class WhyNoSpecBlock(HTMLInterval):
 
 class XrefCSSBase(CSSxRef):
     """Base class for xref_cssXXX macros"""
+
     min_args = max_args = 0
     arg_names = []
 
@@ -898,6 +904,7 @@ class BaseKumaVisitor(HTMLVisitor):
 
     Extracts KumaScript, with special handling if it is known.
     """
+
     scope = None
 
     def __init__(self, **kwargs):
@@ -1072,6 +1079,7 @@ class KumaVisitor(BaseKumaVisitor):
     - Keeps <h2 id="id" name="name">, for warning on mismatch
     - Raises issues on all other attributes
     """
+
     _default_attribute_actions = {None: 'ban'}
 
     def visit_a_open(self, node, children):

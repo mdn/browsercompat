@@ -50,6 +50,7 @@ class CachingTreeManager(TreeManager, CachingManagerMixin):
 @python_2_unicode_compatible
 class Browser(models.Model):
     """A browser or other web client"""
+
     slug = models.SlugField(
         help_text="Unique, human-friendly slug.",
         unique=True)
@@ -186,6 +187,7 @@ class Feature(MPTTModel):
 @python_2_unicode_compatible
 class Maturity(models.Model):
     """Maturity of a specification document"""
+
     slug = models.SlugField(
         help_text=(
             "Unique, human-friendly slug, sourced from the KumaScript macro"
@@ -206,6 +208,7 @@ class Maturity(models.Model):
 @python_2_unicode_compatible
 class Section(models.Model):
     """A section of a specification document"""
+
     specification = models.ForeignKey('Specification', related_name='sections')
     number = TranslatedField(
         help_text="Section number",
@@ -236,6 +239,7 @@ class Section(models.Model):
 @python_2_unicode_compatible
 class Specification(models.Model):
     """A Specification document"""
+
     maturity = models.ForeignKey('Maturity', related_name='specifications')
     slug = models.SlugField(
         help_text="Unique, human-friendly slug",
@@ -309,6 +313,7 @@ class Support(models.Model):
 @python_2_unicode_compatible
 class Version(models.Model):
     """A version of a browser"""
+
     STATUS_CHOICES = [(k, k) for k in (
         'unknown',
         'current',
