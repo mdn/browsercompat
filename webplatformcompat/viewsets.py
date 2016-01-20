@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""API endpoints for CRUD operations."""
 
 from django.contrib.auth.models import User
 from django.utils.functional import cached_property

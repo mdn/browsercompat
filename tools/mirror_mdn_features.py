@@ -1,4 +1,18 @@
 #!/usr/bin/env python
+"""Crawl subset of MDN pages, creating and updating API Features.
+
+The subset is defined in the current_mdn_uris, and includes most pages found
+to have Browser Compatibility tables. Due to the effort to remove Zones, some
+of subset may no longer be on MDN.
+
+"Standard" usage is:
+
+tools/mirror_mdn_features.py --no-cache --skip-deletes
+
+This downloads fresh copies of MDN pages, and skips deleting resources for
+removed or renamed pages. This will take 1-2 hours to run, even on a fast
+connection.
+"""
 
 from __future__ import print_function
 

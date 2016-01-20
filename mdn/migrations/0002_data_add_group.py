@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Add import-mdn group and related permission."""
 from __future__ import unicode_literals
 from itertools import chain
 

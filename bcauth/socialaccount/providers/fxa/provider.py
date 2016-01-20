@@ -1,3 +1,4 @@
+"""bcauth override of FirefoxAccountsProvider."""
 from allauth.socialaccount import providers
 from allauth.socialaccount.providers.fxa.provider import (
     FirefoxAccountsProvider as BaseProvider)

@@ -1,3 +1,4 @@
+"""Customize filters for the API."""
 from rest_framework.filters import DjangoFilterBackend
 
 

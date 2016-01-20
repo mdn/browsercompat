@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""Convert blank version string to "current".
+
+When a browser has supported a feature for a long time, it is unknown what
+version added that support. Previously, this was modeled as a blank string
+for the version. Now, it is modeled as the string "current" for the version.
+
+See https://bugzilla.mozilla.org/show_bug.cgi?id=1160214
+"""
 from __future__ import print_function, unicode_literals
 
 from django.conf import settings

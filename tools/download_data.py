@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+"""Download compatibility data from the API.
+
+The data is stored in several JSON files, one per resource type, representing
+the combined pages of data, in the JSON API format used by the API.  This is
+designed for exporting to GitHub, or for processing by offline tools.
+
+For a data dump, see https://github.com/mdn/browsercompat-data
+"""
 import codecs
 import json
 

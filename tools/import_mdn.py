@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+"""Import features from MDN.
+
+For each Feature in the API, run the importer to re-parse the MDN page for
+compatibility data. This can work with the last fetched copy of the MDN page,
+or re-download all the MDN pages.
+
+This will not detect new MDN pages - see mirror_mdn_features.py. It will take
+hours to run, even on a fast connection.
+"""
+
 import time
 
 from requests import RequestException

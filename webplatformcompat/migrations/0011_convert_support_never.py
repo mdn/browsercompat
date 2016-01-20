@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""Convert support.support="never" to "no".
+
+"never" was used to signal that the browser maintainer had decided not to
+support a feature, and was usually supported by a WON'T FIX ticket. This
+changes the API strategy to support="no", and (optionally) linking to
+supporting documentation in a note.
+
+See https://bugzilla.mozilla.org/show_bug.cgi?id=1170209
+"""
 from __future__ import print_function, unicode_literals
 
 from django.conf import settings

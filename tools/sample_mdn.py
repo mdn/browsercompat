@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Open a random MDN page."""
 from __future__ import print_function
 
 import re

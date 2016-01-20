@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Add change-resource and delete-resource groups and related permissions."""
 from __future__ import unicode_literals
 from itertools import chain
 

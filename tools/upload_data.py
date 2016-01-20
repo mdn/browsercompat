@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+"""Upload data to to API.
+
+This script is designed to work with an empty or populated database, but
+it only runs reliably on an empty database.
+"""
 from collections import OrderedDict
 import codecs
 import json

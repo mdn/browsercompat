@@ -1,3 +1,4 @@
+"""Views for Firefox Accounts OAuth endpoints."""
 from allauth.socialaccount.providers.fxa.views import \
     FirefoxAccountsOAuth2Adapter as BaseAdapter
 from allauth.socialaccount.providers.fxa.provider import \

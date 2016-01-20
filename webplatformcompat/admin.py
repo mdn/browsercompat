@@ -1,3 +1,4 @@
+"""Register model interfaces for the Django admin."""
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 

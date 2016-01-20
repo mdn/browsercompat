@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""Move support.footnotes into the support.notes field.
+
+Inline notes are being dropped, so that there is a single place to specify
+human-friendly notes. Rather than using "footnote" for the combined field,
+"note" will be the one field name. Current footnote data is moved to the
+notes field, unless both are populated, which will halt the migration.
+
+See https://bugzilla.mozilla.org/show_bug.cgi?id=1128519
+"""
 from __future__ import unicode_literals, print_function
 
 from django.conf import settings

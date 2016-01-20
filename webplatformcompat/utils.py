@@ -1,3 +1,4 @@
+"""API utilty functions."""
 from rest_framework.views import get_view_name as drf_get_view_name
 
 

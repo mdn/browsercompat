@@ -1,4 +1,15 @@
 #!/usr/bin/env python
+"""Initialize with data from the webcompat project.
+
+The webcompat project scraped compatibility data from MDN in July 2014, and
+put it online at:
+
+https://github.com/webplatform/compatibility-data
+
+This script loads the data into the API, as a starting point until the MDN
+data is imported.
+"""
+
 from cgi import escape
 from collections import defaultdict
 from json import loads

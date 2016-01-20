@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""API database models.
+
+Additional models (Changeset, historical models) are defined in history.py.
+"""
+
 from __future__ import unicode_literals
 
 from django.conf import settings

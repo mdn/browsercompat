@@ -1,4 +1,22 @@
 #!/usr/bin/env python
+r"""Load specification data from MDN into the API.
+
+Specification data is stored in two KumaScript macros:
+
+https://developer.mozilla.org/en-US/docs/Template:SpecName
+https://developer.mozilla.org/en-US/docs/Template:Spec2
+
+As long as the format hasn't changed much, this script will parse the macros
+and turn the results into Maturity and Specification resources for the API.
+
+The "standard" usage is:
+tools/load_spec_data.py --no-cache --skip-deletes
+
+This loads the lastest data (ignoring any local caches of the macros) into
+the local API, but doesn't delete any unused Maturity resources.
+"""
+
+
 import re
 
 from common import Tool
