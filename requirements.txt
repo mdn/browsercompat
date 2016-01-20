@@ -24,6 +24,7 @@ dj-database-url==0.3.0
 
 # Better test runner (included in settings)
 nose==1.3.7
+nose-ignore-docstring==0.2
 django-nose==1.4.3
 
 # Test Mocking, included in Python 3.3
