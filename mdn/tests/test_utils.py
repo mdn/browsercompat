@@ -64,8 +64,8 @@ class TestJoinContent(TestCase):
         self.assertEqual(joined, expected_text)
 
     def test_join_content_empty(self):
-        joined = join_content(["Text with", "", "blank", None, "bits", "."])
-        self.assertEqual(joined, "Text with blank bits.")
+        joined = join_content(['Text with', '', 'blank', None, 'bits', '.'])
+        self.assertEqual(joined, 'Text with blank bits.')
 
 
 class TestSlugify(TestCase):
@@ -78,7 +78,7 @@ class TestSlugify(TestCase):
             slugify('ABCDEFGHIJKLMNOPQRSTUVWXYZ-abcdefghijklmnopqrstuvwxyz'))
 
     def test_non_ascii(self):
-        self.assertEqual('_', slugify("Рекомендация"))
+        self.assertEqual('_', slugify('Рекомендация'))
 
     def test_limit(self):
         self.assertEqual(

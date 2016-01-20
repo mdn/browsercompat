@@ -164,7 +164,7 @@ def narrow_parse_error(fragment, pos):
         tag = fragment[pos:ws_start] + '>'
     else:
         tag = fragment[pos:(end + 1)]
-    end_tag = tag.replace("<", "</")
+    end_tag = tag.replace('<', '</')
     try:
         end_index = fragment.index(end_tag, pos)
     except ValueError:
@@ -229,19 +229,19 @@ class PageExtractor(Extractor):
         - True if the child elements should be walked, False if
           already processed or can be skipped.
         """
-        if state == "begin":
+        if state == 'begin':
             if isinstance(element, HnElement):
                 self.section.append(element)
                 return 'in_section', False
             else:
-                return "begin", False
-        elif state == "in_section":
+                return 'begin', False
+        elif state == 'in_section':
             if isinstance(element, HnElement):
                 self.process_current_section()
                 self.section.append(element)  # Start new section
             else:
                 self.section.append(element)
-            return "in_section", False
+            return 'in_section', False
         else:  # pragma: no cover
             raise Exception('Unexpected state "{}"'.format(state))
 
@@ -390,9 +390,9 @@ class ScrapedViewFeature(object):
     def load_compat_table(self, table):
         """Load a compat table."""
         tab = OrderedDict((
-            ("name",
-             {"en": self.tab_name.get(table['name'], 'Other Environments')}),
-            ("browsers", []),
+            ('name',
+             {'en': self.tab_name.get(table['name'], 'Other Environments')}),
+            ('browsers', []),
         ))
         # Load Browsers (first row)
         for browser_entry in table['browsers']:

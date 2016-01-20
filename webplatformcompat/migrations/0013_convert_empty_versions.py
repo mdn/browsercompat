@@ -15,39 +15,39 @@ from webplatformcompat.cache import Cache
 
 
 def convert_empty_versions(apps, schema_editor):
-    Version = apps.get_model("webplatformcompat", "Version")
+    Version = apps.get_model('webplatformcompat', 'Version')
     # Database stores as empty string, API converts to null
-    has_blank = Version.objects.filter(version="")
+    has_blank = Version.objects.filter(version='')
     has_bad_status = has_blank.exclude(status__in=('current', 'unknown'))
     if has_bad_status.exists():
         raise Exception(
-            "Some versions with empty version strings have an unexpected"
-            " status. IDs:", list(has_bad_status.values_list('id', flat=True)))
+            'Some versions with empty version strings have an unexpected'
+            ' status. IDs:', list(has_bad_status.values_list('id', flat=True)))
 
     if has_blank.exists():
         print('\nConverting blank version.version to "current"...')
-        Changeset = apps.get_model("webplatformcompat", "Changeset")
+        Changeset = apps.get_model('webplatformcompat', 'Changeset')
         HistoricalVersion = apps.get_model(
-            "webplatformcompat", "HistoricalVersion")
+            'webplatformcompat', 'HistoricalVersion')
         User = apps.get_model(settings.AUTH_USER_MODEL)
         superuser = User.objects.filter(
             is_superuser=True).order_by('id').first()
-        assert superuser, "Must be at least one superuser"
+        assert superuser, 'Must be at least one superuser'
         cs = Changeset.objects.create(user=superuser)
         for version in has_blank:
             print('Version %d: Converting version to "current"' % version.id)
 
             # Update the instance
-            version.version = "current"
-            version.status = "current"
+            version.version = 'current'
+            version.status = 'current'
             version._delay_cache = True
             version.save()
-            Cache().delete_all_versions("Version", version.id)
+            Cache().delete_all_versions('Version', version.id)
 
             # Create a historical version
             hs = HistoricalVersion(
                 history_date=cs.created, history_changeset=cs,
-                history_type="~",
+                history_type='~',
                 **dict((field.attname, getattr(version, field.attname))
                        for field in Version._meta.fields))
             hs.save()
@@ -57,10 +57,10 @@ def convert_empty_versions(apps, schema_editor):
 
 def warn_about_converted(apps, schema_editor):
     HistoricalVersion = apps.get_model(
-        "webplatformcompat", "HistoricalVersion")
+        'webplatformcompat', 'HistoricalVersion')
     has_blank = HistoricalVersion.objects.filter(version='')
     if has_blank.exists():
-        print("\nWARNING: version=<blank> used in past, not restored")
+        print('\nWARNING: version=<blank> used in past, not restored')
 
 
 class Migration(migrations.Migration):

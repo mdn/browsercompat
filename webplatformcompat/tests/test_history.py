@@ -32,12 +32,12 @@ class TestMiddleware(APITestCase):
         url = self.api_reverse('browser-list') + '?changeset=%s' % changeset.id
         data = {'slug': 'firefox', 'name': '{"en": "Firefox"}'}
         response = self.client.post(
-            url, data, content_type="application/vnd.api+json")
+            url, data, content_type='application/vnd.api+json')
         self.assertEqual(400, response.status_code)
         expected = {
             'errors': {
-                "changeset": (
-                    "Changeset %s has a different user." % changeset.id)
+                'changeset': (
+                    'Changeset %s has a different user.' % changeset.id)
             }
         }
         self.assertDataEqual(expected, loads(response.content.decode('utf-8')))
@@ -48,11 +48,11 @@ class TestMiddleware(APITestCase):
         url = self.api_reverse('browser-list') + '?changeset=%s' % changeset.id
         data = {'slug': 'firefox', 'name': '{"en": "Firefox"}'}
         response = self.client.post(
-            url, data, content_type="application/vnd.api+json")
+            url, data, content_type='application/vnd.api+json')
         self.assertEqual(400, response.status_code)
         expected = {
             'errors': {
-                "changeset": "Changeset %s is closed." % changeset.id}}
+                'changeset': 'Changeset %s is closed.' % changeset.id}}
         self.assertDataEqual(expected, loads(response.content.decode('utf-8')))
 
     def test_post_with_error_not_json_api(self):
@@ -62,5 +62,5 @@ class TestMiddleware(APITestCase):
         data = {'slug': 'firefox', 'name': '{"en": "Firefox"}'}
         response = self.client.post(url, data)
         self.assertEqual(400, response.status_code)
-        expected = "Changeset %s is closed." % changeset.id
+        expected = 'Changeset %s is closed.' % changeset.id
         self.assertDataEqual(expected, response.content.decode('utf-8'))

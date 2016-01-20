@@ -21,8 +21,8 @@ class LanguageDictValidator(object):
             return
         if not isinstance(value, dict):
             raise ValidationError(
-                _("Value must be a JSON dictionary of language codes to"
-                  " strings."))
+                _('Value must be a JSON dictionary of language codes to'
+                  ' strings.'))
         if 'zxx' in value:
             if self.allow_canonical and list(value.keys()) != ['zxx']:
                 raise ValidationError(
@@ -95,24 +95,24 @@ class VersionAndStatusValidator(object):
 
         if not version:
             # DRF will catch in field validation
-            raise self.Error({"version": ["This field may not be blank."]})
+            raise self.Error({'version': ['This field may not be blank.']})
 
         is_numeric = bool(self.re_numeric.match(version))
         numeric_only = ['beta', 'retired beta', 'retired', 'unknown']
         if status in numeric_only and not is_numeric:
             msg = 'With status "{0}", version must be numeric.'.format(status)
-            raise self.Error({"version": [msg]})
+            raise self.Error({'version': [msg]})
 
         if status == 'future' and is_numeric:
             msg = ('With status "future", version must be non-numeric.'
                    ' Use status "beta" for future numbered versions.')
-            raise self.Error({"version": [msg]})
+            raise self.Error({'version': [msg]})
 
         if status == 'current' and not (is_numeric or version == 'current'):
             msg = ('With status "current", version must be numeric or'
                    ' "current".')
-            raise self.Error({"version": [msg]})
+            raise self.Error({'version': [msg]})
 
         if version == 'current' and status != 'current':
             msg = 'With version "current", status must be "current".'
-            raise self.Error({"status": [msg]})
+            raise self.Error({'status': [msg]})

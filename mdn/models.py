@@ -40,9 +40,9 @@ class FeaturePage(models.Model):
     """A page on MDN describing a feature."""
 
     url = models.URLField(
-        help_text="URL of the English translation of an MDN page",
+        help_text='URL of the English translation of an MDN page',
         db_index=True, unique=True, validators=[validate_mdn_url])
-    feature = models.OneToOneField(Feature, help_text="Feature in API")
+    feature = models.OneToOneField(Feature, help_text='Feature in API')
 
     STATUS_STARTING = 0
     STATUS_META = 1
@@ -55,24 +55,24 @@ class FeaturePage(models.Model):
     STATUS_PARSED_ERROR = 8
     STATUS_PARSED_CRITICAL = 9
     STATUS_CHOICES = (
-        (STATUS_STARTING, "Starting Import"),
-        (STATUS_META, "Fetching Metadata"),
-        (STATUS_PAGES, "Fetching MDN pages"),
-        (STATUS_PARSING, "Parsing MDN pages"),
-        (STATUS_PARSED, "Parsing Complete"),
-        (STATUS_ERROR, "Scraping Failed"),
-        (STATUS_NO_DATA, "No Compat Data"),
-        (STATUS_PARSED_WARNING, "Has Warnings"),
-        (STATUS_PARSED_ERROR, "Has Errors"),
-        (STATUS_PARSED_CRITICAL, "Has Critical Errors"),
+        (STATUS_STARTING, 'Starting Import'),
+        (STATUS_META, 'Fetching Metadata'),
+        (STATUS_PAGES, 'Fetching MDN pages'),
+        (STATUS_PARSING, 'Parsing MDN pages'),
+        (STATUS_PARSED, 'Parsing Complete'),
+        (STATUS_ERROR, 'Scraping Failed'),
+        (STATUS_NO_DATA, 'No Compat Data'),
+        (STATUS_PARSED_WARNING, 'Has Warnings'),
+        (STATUS_PARSED_ERROR, 'Has Errors'),
+        (STATUS_PARSED_CRITICAL, 'Has Critical Errors'),
     )
     status = models.IntegerField(
-        help_text="Status of MDN Parsing process",
+        help_text='Status of MDN Parsing process',
         default=STATUS_STARTING, choices=STATUS_CHOICES, db_index=True)
 
     modified = models.DateTimeField(
-        help_text="Last modification time", auto_now=True)
-    raw_data = models.TextField(help_text="JSON-encoded parsed content")
+        help_text='Last modification time', auto_now=True)
+    raw_data = models.TextField(help_text='JSON-encoded parsed content')
 
     COMMITTED_UNKNOWN = 0
     COMMITTED_NO = 1
@@ -81,15 +81,15 @@ class FeaturePage(models.Model):
     COMMITTED_NEEDS_FIXES = 4
     COMMITTED_NO_DATA = 5
     COMMITTED_CHOICES = (
-        (COMMITTED_UNKNOWN, "Unknown"),
-        (COMMITTED_NO, "Not Committed"),
-        (COMMITTED_YES, "Committed"),
-        (COMMITTED_NEEDS_UPDATE, "New Data"),
-        (COMMITTED_NEEDS_FIXES, "Blocking Issues"),
-        (COMMITTED_NO_DATA, "No Data"),
+        (COMMITTED_UNKNOWN, 'Unknown'),
+        (COMMITTED_NO, 'Not Committed'),
+        (COMMITTED_YES, 'Committed'),
+        (COMMITTED_NEEDS_UPDATE, 'New Data'),
+        (COMMITTED_NEEDS_FIXES, 'Blocking Issues'),
+        (COMMITTED_NO_DATA, 'No Data'),
     )
     committed = models.IntegerField(
-        help_text="Is the data committed to the API?",
+        help_text='Is the data committed to the API?',
         default=COMMITTED_UNKNOWN, choices=COMMITTED_CHOICES, db_index=True)
 
     CONVERSION_UNKNOWN = 0
@@ -98,23 +98,23 @@ class FeaturePage(models.Model):
     CONVERTED_MISMATCH = 3
     CONVERTED_NO_DATA = 4
     CONVERTED_CHOICES = (
-        (CONVERSION_UNKNOWN, "Unknown"),
-        (CONVERTED_NO, "Not Converted"),
-        (CONVERTED_YES, "Converted"),
-        (CONVERTED_MISMATCH, "Slug Mismatch"),
-        (CONVERTED_NO_DATA, "No Data"),
+        (CONVERSION_UNKNOWN, 'Unknown'),
+        (CONVERTED_NO, 'Not Converted'),
+        (CONVERTED_YES, 'Converted'),
+        (CONVERTED_MISMATCH, 'Slug Mismatch'),
+        (CONVERTED_NO_DATA, 'No Data'),
     )
     converted_compat = models.IntegerField(
-        help_text="Does the MDN page include {{EmbedCompatTable}}?",
+        help_text='Does the MDN page include {{EmbedCompatTable}}?',
         default=CONVERSION_UNKNOWN, choices=CONVERTED_CHOICES, db_index=True)
 
     def __str__(self):
-        return "%s for %s" % (self.get_status_display(), self.slug())
+        return '%s for %s' % (self.get_status_display(), self.slug())
 
     def domain(self):
         """Protocol + domain portion of URL."""
         url_bits = urlparse(self.url)
-        return "%s://%s" % (url_bits.scheme, url_bits.netloc)
+        return '%s://%s' % (url_bits.scheme, url_bits.netloc)
 
     def path(self):
         """Path portion of URL."""
@@ -128,7 +128,7 @@ class FeaturePage(models.Model):
 
     def same_since(self):
         """Return a string indicating when the object was changes."""
-        return timesince(self.modified or timezone.now()) + " ago"
+        return timesince(self.modified or timezone.now()) + ' ago'
 
     def meta(self):
         """Get the page Meta section."""
@@ -139,7 +139,7 @@ class FeaturePage(models.Model):
         return meta
 
     TranslationData = namedtuple(
-        "TranslationData", ["locale", "path", "title", "obj"])
+        'TranslationData', ['locale', 'path', 'title', 'obj'])
 
     def translations(self):
         """Get the page translations data, after fetching the meta data.
@@ -182,7 +182,7 @@ class FeaturePage(models.Model):
         for obj in self.translatedcontent_set.all():
             if delete_cache or (obj.status == obj.STATUS_ERROR):
                 obj.status = obj.STATUS_STARTING
-                obj.raw = ""
+                obj.raw = ''
                 obj.save()
 
     def reset_data(self, keep_issues=False):
@@ -239,17 +239,17 @@ class FeaturePage(models.Model):
                 ('features', []),
             ))),
             ('meta', OrderedDict((
-                ("compat_table", OrderedDict((
-                    ("supports", OrderedDict()),
-                    ("tabs", []),
-                    ("pagination", OrderedDict()),
-                    ("languages", []),
-                    ("notes", OrderedDict()),
+                ('compat_table', OrderedDict((
+                    ('supports', OrderedDict()),
+                    ('tabs', []),
+                    ('pagination', OrderedDict()),
+                    ('languages', []),
+                    ('notes', OrderedDict()),
                 ))),
-                ("scrape", OrderedDict((
-                    ("phase", "Starting Import"),
-                    ("issues", issues),
-                    ("embedded_compat", None),
+                ('scrape', OrderedDict((
+                    ('phase', 'Starting Import'),
+                    ('issues', issues),
+                    ('embedded_compat', None),
                 ))))))))
 
         self.data = view_feature
@@ -308,7 +308,7 @@ class FeaturePage(models.Model):
 
         # Did we already add this issue?
         if self.issues.filter(slug=slug, start=start, end=end).exists():
-            raise ValueError("Duplicate issue")
+            raise ValueError('Duplicate issue')
 
         # Add issue to database, data
         data = self.data
@@ -343,24 +343,24 @@ class Issue(models.Model):
 
     page = models.ForeignKey(FeaturePage, related_name='issues')
     slug = models.SlugField(
-        help_text="Human-friendly slug for issue.",
+        help_text='Human-friendly slug for issue.',
         choices=[(slug, slug) for slug in sorted(ISSUES.keys())])
     start = models.IntegerField(
-        help_text="Start position in source text")
+        help_text='Start position in source text')
     end = models.IntegerField(
-        help_text="End position in source text")
+        help_text='End position in source text')
     params = JSONField(
-        help_text="Parameters for description templates")
+        help_text='Parameters for description templates')
     content = models.ForeignKey(
         'TranslatedContent', null=True, blank=True,
-        help_text="Content the issue was found on")
+        help_text='Content the issue was found on')
 
     def __str__(self):
         if self.content:
             url = self.content.url()
         else:
             url = self.page.url
-        return "{slug} [{start}:{end}] on {url}".format(
+        return '{slug} [{start}:{end}] on {url}'.format(
             slug=self.slug, start=self.start, end=self.end, url=url)
 
     @property
@@ -425,22 +425,22 @@ class Content(models.Model):
     """The content of an MDN page."""
 
     page = models.ForeignKey(FeaturePage)
-    path = models.CharField(help_text="Path of MDN page", max_length=1024)
+    path = models.CharField(help_text='Path of MDN page', max_length=1024)
     crawled = models.DateTimeField(
-        help_text="Time when the content was retrieved", auto_now=True)
-    raw = models.TextField(help_text="Raw content of the page")
+        help_text='Time when the content was retrieved', auto_now=True)
+    raw = models.TextField(help_text='Raw content of the page')
     STATUS_STARTING = 0
     STATUS_FETCHING = 1
     STATUS_FETCHED = 2
     STATUS_ERROR = 3
     STATUS_CHOICES = (
-        (STATUS_STARTING, "Starting Fetch"),
-        (STATUS_FETCHING, "Fetching Page"),
-        (STATUS_FETCHED, "Fetched Page"),
-        (STATUS_ERROR, "Error Fetching Page"),
+        (STATUS_STARTING, 'Starting Fetch'),
+        (STATUS_FETCHING, 'Fetching Page'),
+        (STATUS_FETCHED, 'Fetched Page'),
+        (STATUS_ERROR, 'Error Fetching Page'),
     )
     status = models.IntegerField(
-        help_text="Status of MDN fetching process",
+        help_text='Status of MDN fetching process',
         default=STATUS_STARTING, choices=STATUS_CHOICES)
 
     class Meta:
@@ -450,7 +450,7 @@ class Content(models.Model):
         return self.page.domain() + self.path
 
     def __str__(self):
-        return "%s retrieved %s ago" % (
+        return '%s retrieved %s ago' % (
             self.path, timesince(self.crawled or timezone.now()))
 
 
@@ -481,6 +481,6 @@ class TranslatedContent(Content):
     """The raw translated content of a MDN feature page."""
 
     locale = models.CharField(
-        help_text="Locale for page translation",
+        help_text='Locale for page translation',
         max_length=5, db_index=True)
-    title = models.TextField(help_text="Page title in locale", blank=True)
+    title = models.TextField(help_text='Page title in locale', blank=True)

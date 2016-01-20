@@ -90,7 +90,7 @@ class Resource(object):
     # 2) New sorted
     # 3) Updated resource w/ sorted list
     # 4) Updated sorted
-    SORTED = "SORTED"
+    SORTED = 'SORTED'
 
     # A writable linked field is an order association (many to many)
     # Write order of resource.sorted is:
@@ -98,7 +98,7 @@ class Resource(object):
     # 2) New resource w/ sorted list
     # 3) Updated sorted
     # 4) Updated resource w/ sorted list
-    SORTED_M2M = "SORTED_M2M"
+    SORTED_M2M = 'SORTED_M2M'
 
     def __init__(self, collection=None, **properties):
         """Initialize a Resource.
@@ -116,10 +116,10 @@ class Resource(object):
         self._data = {}
         self._collection = collection
 
-        assert hasattr(self, '_resource_type'), "Must set _resource_type"
-        assert hasattr(self, '_id_data'), "Must set _id_data"
+        assert hasattr(self, '_resource_type'), 'Must set _resource_type'
+        assert hasattr(self, '_id_data'), 'Must set _id_data'
         assert tuple(sorted(self._id_data)) == tuple(self._id_data), \
-            "_id_data must be sorted"
+            '_id_data must be sorted'
 
         # Get field definitions, setting to default if not defined
         wprops = getattr(self, '_writeable_property_fields', ())
@@ -143,7 +143,7 @@ class Resource(object):
             assert field not in self._fields, 'Duplicate field "%s"' % field
             self._fields.add(field)
             self._link_fields[field] = attributes
-        assert self._fields, "Must set fields"
+        assert self._fields, 'Must set fields'
 
         # Load properties
         for key, val in properties.items():
@@ -158,7 +158,7 @@ class Resource(object):
             else:
                 return None
         raise AttributeError(
-            "%r object has no attribute %r" % (self.__class__, name))
+            '%r object has no attribute %r' % (self.__class__, name))
 
     def __setattr__(self, name, value):
         """Set resource properties and links."""
@@ -180,7 +180,7 @@ class Resource(object):
         Both readable and writable fields are read, and additional items,
         such links, metadata, and unknown fields, are discarded.
         """
-        assert self._resource_type in json_api.keys(), "Unexpected json_api"
+        assert self._resource_type in json_api.keys(), 'Unexpected json_api'
 
         items = chain(
             json_api[self._resource_type].items(),
@@ -230,7 +230,7 @@ class Resource(object):
         with_sorted -- If True (default), then writable links representing a
         sort order are included.
         """
-        assert self._data, "No data to export"
+        assert self._data, 'No data to export'
 
         data = OrderedDict()
         for field in self._writeable_property_fields:
@@ -580,10 +580,10 @@ class CollectionChangeset(object):
         my_keys = set(my_index.keys())
 
         self.changes = {
-            "new": OrderedDict(),
-            "same": OrderedDict(),
-            "changed": OrderedDict(),
-            "deleted": OrderedDict(),
+            'new': OrderedDict(),
+            'same': OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict(),
         }
 
         def new_resource_keys_with_dependencies(resource, new_keys):
@@ -631,7 +631,7 @@ class CollectionChangeset(object):
                     else:
                         pre_links.extend(link_keys)
             keys = pre_links + [my_key] + post_links
-            logger.debug("  DEPS %s -> %s", my_key, keys)
+            logger.debug('  DEPS %s -> %s', my_key, keys)
             return keys
 
         # Handle new items with sort fields
@@ -644,7 +644,7 @@ class CollectionChangeset(object):
                     has_sorted = True
             if has_sorted:
                 item_keys = new_resource_keys_with_dependencies(item, new_keys)
-                logger.debug("  SORT %s -> %s", item.get_data_id(), item_keys)
+                logger.debug('  SORT %s -> %s', item.get_data_id(), item_keys)
                 for ik in item_keys:
                     self.changes['new'][ik] = my_index[ik]
 
@@ -704,7 +704,7 @@ class CollectionChangeset(object):
                 counts[resource_type]['new'] += 1
                 count = counts[resource_type]['new']
                 if (count % checkpoint == 0):  # pragma nocover
-                    logger.info("Imported %d %s" % (count, resource_type))
+                    logger.info('Imported %d %s' % (count, resource_type))
 
             if not self.skip_deletes:
                 for item in self.changes['deleted'].values():
@@ -714,7 +714,7 @@ class CollectionChangeset(object):
                     counts[resource_type]['deleted'] += 1
                     count = counts[resource_type]['deleted']
                     if (count % checkpoint == 0):  # pragma nocover
-                        logger.info("Deleted %d %s" % (count, resource_type))
+                        logger.info('Deleted %d %s' % (count, resource_type))
 
             for item in self.changes['changed'].values():
                 json_api = item.to_json_api()
@@ -724,7 +724,7 @@ class CollectionChangeset(object):
                 counts[resource_type]['changed'] += 1
                 count = counts[resource_type]['changed']
                 if (count % checkpoint == 0):  # pragma nocover
-                    logger.info("Changed %d %s" % (count, resource_type))
+                    logger.info('Changed %d %s' % (count, resource_type))
         finally:
             logger.info('Closing changeset, updating cache...')
             client.close_changeset()
@@ -738,23 +738,23 @@ class CollectionChangeset(object):
         # Summarize new resources
         for item in self.changes['new'].values():
             rep = self.format_item(item)
-            out.append("New:\n%s" % rep)
+            out.append('New:\n%s' % rep)
 
         # Summarize deleted resources
         for item in self.changes['deleted'].values():
             url = client.url(item._resource_type, item.id.id)
             rep = self.format_item(item)
             if self.skip_deletes:
-                fmt = "Deleted (but skipped) %s:\n%s"
+                fmt = 'Deleted (but skipped) %s:\n%s'
             else:
-                fmt = "Deleted %s:\n%s"
+                fmt = 'Deleted %s:\n%s'
             out.append(fmt % (url, rep))
 
         # Summarize changed resources
         for item in self.changes['changed'].values():
             url = client.url(item._resource_type, item.id.id)
             rep = self.format_diff(item)
-            out.append("Changed: %s:\n%s" % (url, rep))
+            out.append('Changed: %s:\n%s' % (url, rep))
 
         return '\n'.join(out)
 

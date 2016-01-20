@@ -28,7 +28,7 @@ class DownloadData(Tool):
             # Get data from API
             data = self.client.get_resource_collection(resource)
             self.logger.info(
-                "Downloaded {} {}".format(len(data[resource]), resource))
+                'Downloaded {} {}'.format(len(data[resource]), resource))
             counts[resource] = len(data[resource])
 
             # Remove history relations
@@ -50,9 +50,9 @@ if __name__ == '__main__':
     tool = DownloadData()
     tool.init_from_command_line()
     tool.logger.info(
-        "Downloading data from {tool.api} to {tool.data}".format(tool=tool))
+        'Downloading data from {tool.api} to {tool.data}'.format(tool=tool))
     counts = tool.run()
     if counts:
-        tool.logger.info("Download complete.")
+        tool.logger.info('Download complete.')
     else:
-        tool.logger.info("No data downloaded.")
+        tool.logger.info('No data downloaded.')

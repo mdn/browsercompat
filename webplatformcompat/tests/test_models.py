@@ -43,20 +43,20 @@ class TestManager(TestCase):
 class TestBrowser(unittest.TestCase):
 
     def test_str(self):
-        browser = Browser(slug="browser")
+        browser = Browser(slug='browser')
         self.assertEqual('browser', str(browser))
 
 
 class TestFeature(TestCase):
 
     def test_str(self):
-        feature = Feature(slug="feature")
+        feature = Feature(slug='feature')
         self.assertEqual('feature', str(feature))
 
     def add_family(self):
-        parent = self.create(Feature, slug="parent")
+        parent = self.create(Feature, slug='parent')
         children = [
-            self.create(Feature, slug="child%d" % i, parent=parent)
+            self.create(Feature, slug='child%d' % i, parent=parent)
             for i in range(5)]
         return parent, children
 
@@ -99,7 +99,7 @@ class TestFeature(TestCase):
 
 class TestMaturity(unittest.TestCase):
     def test_str(self):
-        maturity = Maturity(slug="Draft")
+        maturity = Maturity(slug='Draft')
         self.assertEqual('Draft', str(maturity))
 
 
@@ -128,7 +128,7 @@ class TestSupport(unittest.TestCase):
     def test_str(self):
         browser = Browser(slug='firefox')
         version = Version(browser=browser, version=1.0)
-        feature = Feature(slug="feature")
+        feature = Feature(slug='feature')
         support = Support(version=version, feature=feature)
         self.assertEqual(
             'firefox 1.0 support for feature feature is yes', str(support))
@@ -137,12 +137,12 @@ class TestSupport(unittest.TestCase):
 class TestVersion(TestCase):
 
     def test_str(self):
-        browser = Browser(slug="browser")
+        browser = Browser(slug='browser')
         bv = Version(browser=browser, version='1.0')
         self.assertEqual('browser 1.0', str(bv))
 
     def test_clean(self):
-        browser = Browser(slug="browser")
+        browser = Browser(slug='browser')
         version = Version(version='text', browser=browser)
         self.assertRaises(ValidationError, version.clean)
 

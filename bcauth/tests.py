@@ -109,10 +109,10 @@ class TestProviderLoginUrl(TestCase):
 
     def test_explicit_next(self):
         actual = provider_login_url(
-            self.request, 'provider', 'process', next="/next")
+            self.request, 'provider', 'process', next='/next')
         self.assertEqual(actual, self.fake_url)
         self.provider.get_login_url.assert_called_once_with(
-            self.request, process='process', next="/next")
+            self.request, process='process', next='/next')
 
     def test_post_next(self):
         self.request.POST['next'] = '/post'
@@ -120,14 +120,14 @@ class TestProviderLoginUrl(TestCase):
         actual = provider_login_url(self.request, 'provider', 'process')
         self.assertEqual(actual, self.fake_url)
         self.provider.get_login_url.assert_called_once_with(
-            self.request, process='process', next="/post")
+            self.request, process='process', next='/post')
 
     def test_get_next(self):
         self.request.GET['next'] = '/get'
         actual = provider_login_url(self.request, 'provider', 'process')
         self.assertEqual(actual, self.fake_url)
         self.provider.get_login_url.assert_called_once_with(
-            self.request, process='process', next="/get")
+            self.request, process='process', next='/get')
 
     def test_redirect_next(self):
         self.request.get_full_path.side_effect = None
@@ -135,4 +135,4 @@ class TestProviderLoginUrl(TestCase):
         actual = provider_login_url(self.request, 'provider', 'redirect')
         self.assertEqual(actual, self.fake_url)
         self.provider.get_login_url.assert_called_once_with(
-            self.request, process='redirect', next="http://example.com/full")
+            self.request, process='redirect', next='http://example.com/full')

@@ -17,7 +17,7 @@ class TestSpecSectionExtractor(TestCase):
         self.spec = self.get_instance('Specification', 'css3_backgrounds')
 
     def construct_html(
-            self, header=None, pre_table="", row=None, post_table=""):
+            self, header=None, pre_table='', row=None, post_table=''):
         """Create a specification section with overrides."""
         header = header or """\
 <h2 id="Specifications" name="Specifications">Specifications</h2>"""
@@ -229,7 +229,7 @@ present in early drafts of {{SpecName("CSS3 Animations")}}.
 
     def test_post_table_content(self):
         post_table = (
-            "<p>You may also be interested in the user group posts.</p>")
+            '<p>You may also be interested in the user group posts.</p>')
         html = self.construct_html(post_table=post_table)
         issues = [('skipped_content', 413, 471, {})]
         self.assert_extract(html, [self.get_default_spec()], issues)
@@ -267,7 +267,7 @@ class TestSpecNameVisitor(TestCase):
         self.assertEqual(self.visitor.issues, issues)
 
     def test_no_specname(self):
-        html = "<td>No spec</td>"
+        html = '<td>No spec</td>'
         expected_issue = (
             'specname_not_kumascript', 4, 11, {'original': u'No spec'})
         self.assert_specname(html, None, None, None, [expected_issue])
@@ -312,7 +312,7 @@ class TestSpecNameVisitor(TestCase):
     def test_ES1_legacy(self):
         # /en-US/docs/Web/JavaScript/Reference/Operators/this
         self.get_instance('Specification', 'es1')
-        html = "<td>ECMAScript 1st Edition.</td>"
+        html = '<td>ECMAScript 1st Edition.</td>'
         expected_issue = (
             'specname_converted', 4, 27,
             {'key': 'ES1', 'original': 'ECMAScript 1st Edition.'})
@@ -321,7 +321,7 @@ class TestSpecNameVisitor(TestCase):
 
     def test_specname_td_ES3_legacy(self):
         # /en-US/docs/Web/JavaScript/Reference/Operators/function
-        html = "<td> ECMAScript 3rd Edition. </td>"
+        html = '<td> ECMAScript 3rd Edition. </td>'
         issue1 = (
             'specname_converted', 4, 29,
             {'original': 'ECMAScript 3rd Edition.', 'key': 'ES3'})
@@ -332,7 +332,7 @@ class TestSpecNameVisitor(TestCase):
     def test_other_kumascript(self):
         self.get_instance('Specification', 'css3_ui')
         html = ("<td>{{ SpecName('CSS3 UI', '#cursor', 'cursor') }}"
-                "{{not_standard_inline}}</td>")
+                '{{not_standard_inline}}</td>')
         kname = 'not_standard_inline'
         issue = (
             'unexpected_kumascript', 50, 73,
@@ -377,7 +377,7 @@ class TestSpec2Visitor(TestCase):
         html = "<td>{{SpecName('HTML WHATWG')}}</td>"
         issues = [(
             'unexpected_kumascript', 4, 31,
-            {'name': 'SpecName', 'args': ["HTML WHATWG"],
+            {'name': 'SpecName', 'args': ['HTML WHATWG'],
              'scope': 'specification maturity',
              'kumascript': '{{SpecName("HTML WHATWG")}}',
              'expected_scopes': (
@@ -387,7 +387,7 @@ class TestSpec2Visitor(TestCase):
 
     def test_text_name(self):
         # /en-US/docs/Web/JavaScript/Reference/Operators/this
-        html = "<td>Standard</td>"
+        html = '<td>Standard</td>'
         self.assert_spec2(html, None, [])
 
     def test_other_kumascript(self):
@@ -420,8 +420,8 @@ class TestSpecDescVisitor(TestCase):
         self.assert_specdesc('<td> Plain text </td>', ['Plain text'], [])
 
     def test_html(self):
-        html = "<td>Defines <code>right</code> as animatable.</td>"
-        expected = ["Defines", "<code>right</code>", "as animatable."]
+        html = '<td>Defines <code>right</code> as animatable.</td>'
+        expected = ['Defines', '<code>right</code>', 'as animatable.']
         self.assert_specdesc(html, expected, [])
 
     def test_styled(self):
@@ -429,7 +429,7 @@ class TestSpecDescVisitor(TestCase):
         html = """<td style=\"vertical-align: top;\">
             Initial definition.
         </td>"""
-        expected = ["Initial definition."]
+        expected = ['Initial definition.']
         issue = (
             'unexpected_attribute', 4, 32,
             {'expected': 'no attributes', 'node_type': 'td', 'ident': 'style',
@@ -455,7 +455,7 @@ class TestSpecDescVisitor(TestCase):
     def test_kumascript_spec2(self):
         # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/data
         html = "<td>No change from {{Spec2('HTML5 W3C')}}</td>"
-        expected = ["No change from", "specification HTML5 W3C"]
+        expected = ['No change from', 'specification HTML5 W3C']
         issues = [
             ('unexpected_kumascript', 19, 41,
              {'name': 'Spec2', 'args': ['HTML5 W3C'],

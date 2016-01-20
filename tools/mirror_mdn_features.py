@@ -44,7 +44,7 @@ class MirrorMDNFeatures(Tool):
     def get_parser(self):
         parser = super(MirrorMDNFeatures, self).get_parser()
         parser.add_argument(
-            '--skip-deletes', action="store_true",
+            '--skip-deletes', action='store_true',
             help='Skip deleting API resources')
         return parser
 
@@ -62,7 +62,7 @@ class MirrorMDNFeatures(Tool):
         feature_by_slug = dict((k[1], k[2]) for k in features)
         slugs = set(feature_by_slug.keys())
 
-        cache_state = "using cache" if self.use_cache else "no cache"
+        cache_state = 'using cache' if self.use_cache else 'no cache'
         self.logger.info('Reading pages from MDN (%s)', cache_state)
         mdn_uris = self.current_mdn_uris()
 
@@ -121,11 +121,11 @@ class MirrorMDNFeatures(Tool):
             canonical = False
         elif text[0] in lowercase:
             canonical = True
-        elif text[0] == '<' and text[-1] == ">":
+        elif text[0] == '<' and text[-1] == '>':
             canonical = True
         elif text[0] == ':':
             canonical = True
-        elif text[0].endswith("()"):
+        elif text[0].endswith('()'):
             canonical = True
         else:
             canonical = False
@@ -147,7 +147,7 @@ class MirrorMDNFeatures(Tool):
 
     def crawl_mdn(self, path, parent_path=None, attempt=0):
         """Recursively crawl MDN paths."""
-        cache_file = os.path.join("mdn_children", path + ".json")
+        cache_file = os.path.join('mdn_children', path + '.json')
         mdn_uri = self.base_mdn_uri + path
         children_uri = mdn_uri + '$children?depth=1'
         headers = {'Accept': 'application/json'}
@@ -198,6 +198,6 @@ class MirrorMDNFeatures(Tool):
 if __name__ == '__main__':
     tool = MirrorMDNFeatures()
     tool.init_from_command_line()
-    tool.logger.info("Loading data into {tool.api}...".format(tool=tool))
+    tool.logger.info('Loading data into {tool.api}...'.format(tool=tool))
     changes = tool.run()
     tool.report_changes(changes)

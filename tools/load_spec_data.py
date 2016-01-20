@@ -38,7 +38,7 @@ class LoadSpecData(Tool):
         api_collection.load_all('maturities')
         api_collection.load_all('specifications')
 
-        cache = "using cache" if self.use_cache else "no cache"
+        cache = 'using cache' if self.use_cache else 'no cache'
         self.logger.info('Reading spec data from MDN templates (%s)', cache)
         specname = self.specname_template()
         self.parse_specname(specname, api_collection, local_collection)
@@ -58,7 +58,7 @@ class LoadSpecData(Tool):
     def get_parser(self):
         parser = super(LoadSpecData, self).get_parser()
         parser.add_argument(
-            '--skip-deletes', action="store_true",
+            '--skip-deletes', action='store_true',
             help='Skip deleting API resources')
         return parser
 
@@ -113,7 +113,7 @@ class LoadSpecData(Tool):
                         else:
                             slug = self.unique_slugify(mdn_key, slugs)
                         spec = Specification(
-                            id="_" + slug, slug=slug, mdn_key=mdn_key,
+                            id='_' + slug, slug=slug, mdn_key=mdn_key,
                             name={u'en': name}, uri={u'en': url}, sections=[])
                         local_collection.add(spec)
                     else:
@@ -208,6 +208,6 @@ class LoadSpecData(Tool):
 if __name__ == '__main__':
     tool = LoadSpecData()
     tool.init_from_command_line()
-    tool.logger.info("Loading data into {tool.api}".format(tool=tool))
+    tool.logger.info('Loading data into {tool.api}'.format(tool=tool))
     changes = tool.run()
     tool.report_changes(changes)

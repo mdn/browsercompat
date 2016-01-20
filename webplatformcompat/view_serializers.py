@@ -152,7 +152,7 @@ class DjangoResourceClient(object):
         return {'id': obj.id}
 
     def delete(self, resource_type, resource_id):
-        raise NotImplementedError("delete not implemented for safety")
+        raise NotImplementedError('delete not implemented for safety')
 
 
 class FeatureExtra(object):
@@ -205,9 +205,9 @@ class FeatureExtra(object):
 
     def _process_data(self):
         """Load the linked data and compare to current data."""
-        assert not hasattr(self, 'changes'), "_process_data called twice."
+        assert not hasattr(self, 'changes'), '_process_data called twice.'
         assert hasattr(self, 'errors'), (
-            "_process_data not called by is_valid().")
+            '_process_data not called by is_valid().')
         r_by_t = Collection.resource_by_type
 
         # Create and load collection of new data
@@ -256,7 +256,7 @@ class FeatureExtra(object):
                 rtype = item._resource_type
                 resource = r_by_t[rtype]()
                 json_api_rep = item.to_json_api()
-                json_api_rep[rtype]["id"] = item.id.id
+                json_api_rep[rtype]['id'] = item.id.id
                 resource.from_json_api(json_api_rep)
                 resource._seq = None
                 new_collection.add(resource)
@@ -366,7 +366,7 @@ class FeatureExtra(object):
 
             if f is None or f.parent.id is None:
                 error = (
-                    "Feature must be a descendant of feature %s." % target_id)
+                    'Feature must be a descendant of feature %s.' % target_id)
                 self.add_error('features', feature._seq, 'parent', error)
 
         # Validate that "expert" objects are not added
@@ -392,7 +392,7 @@ class FeatureExtra(object):
                 orig_json = dict(item._original.to_json_api()[rtype])
                 orig_json.update(orig_json.pop('links', {}))
                 for key, value in orig_json.items():
-                    if value != new_json.get(key, "(missing)"):
+                    if value != new_json.get(key, '(missing)'):
                         err = change_err % (dumps(value), dumps(new_json[key]))
                         self.add_error(rtype, item._seq, key, err)
 
@@ -729,11 +729,11 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             if obj.page_child_features.has_previous():
                 page = obj.page_child_features.previous_page_number()
                 pagination['previous'] = (
-                    "%s?child_pages=1&page=%s" % (url, page))
+                    '%s?child_pages=1&page=%s' % (url, page))
             if obj.page_child_features.has_next():
                 page = obj.page_child_features.next_page_number()
                 pagination['next'] = (
-                    "%s?child_pages=1&page=%s" % (url, page))
+                    '%s?child_pages=1&page=%s' % (url, page))
         else:
             # Don't paginate results. The client probabaly wants to generate a
             # complete table, so pagination would get in the way.

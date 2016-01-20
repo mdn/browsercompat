@@ -31,9 +31,9 @@ class LoadWebcompatData(Tool):
         api_collection = Collection(self.client)
         local_collection = Collection()
         compat_data = loads(self.cached_download(
-            "data-human.json",
-            "https://raw.githubusercontent.com/webplatform/compatibility-data"
-            "/master/data-human.json"))
+            'data-human.json',
+            'https://raw.githubusercontent.com/webplatform/compatibility-data'
+            '/master/data-human.json'))
 
         self.logger.info('Reading existing feature data from API')
         for resource in ['browsers', 'versions', 'features', 'supports']:
@@ -50,7 +50,7 @@ class LoadWebcompatData(Tool):
     def get_parser(self):
         parser = super(LoadWebcompatData, self).get_parser()
         parser.add_argument(
-            '--all-data', action="store_true",
+            '--all-data', action='store_true',
             help='Import all the data, rather than a subset')
         return parser
 
@@ -69,22 +69,22 @@ class LoadWebcompatData(Tool):
             browser.versions = sorted([v.id.id for v in versions])
 
     known_browsers = [
-        "Chrome", "Firefox", "Internet Explorer", "Opera", "Safari", "Android",
-        "Chrome for Android", "Chrome Mobile", "Firefox Mobile", "IE Mobile",
-        "Opera Mini", "Opera Mobile", "Safari Mobile", "BlackBerry",
-        "Firefox OS"]
+        'Chrome', 'Firefox', 'Internet Explorer', 'Opera', 'Safari', 'Android',
+        'Chrome for Android', 'Chrome Mobile', 'Firefox Mobile', 'IE Mobile',
+        'Opera Mini', 'Opera Mobile', 'Safari Mobile', 'BlackBerry',
+        'Firefox OS']
     browser_conversions = {
-        "IE Phone": "IE Mobile",
-        "Chrome for Andriod": "Chrome for Android",
-        "Android Browser": "Android",
-        "Chrome**": "Chrome",
-        "Opera*": "Opera",
-        "BlackBerry Browser": "BlackBerry",
-        "Internet Explorer*": "Internet Explorer",
-        "IE": "Internet Explorer",
-        "Firefox mobile": "Firefox Mobile",
-        "Windows Phone": "IE Mobile",
-        "iOS Safari": "Safari Mobile",
+        'IE Phone': 'IE Mobile',
+        'Chrome for Andriod': 'Chrome for Android',
+        'Android Browser': 'Android',
+        'Chrome**': 'Chrome',
+        'Opera*': 'Opera',
+        'BlackBerry Browser': 'BlackBerry',
+        'Internet Explorer*': 'Internet Explorer',
+        'IE': 'Internet Explorer',
+        'Firefox mobile': 'Firefox Mobile',
+        'Windows Phone': 'IE Mobile',
+        'iOS Safari': 'Safari Mobile',
     }
     version_ignore = ['notes']
     support_map = {
@@ -111,13 +111,13 @@ class LoadWebcompatData(Tool):
     }
 
     def parse_compat_data_item(self, key, item, collection):
-        if "breadcrumb" in item:
-            assert "contents" in item
-            assert "jsonselect" in item
-            assert "links" in item
+        if 'breadcrumb' in item:
+            assert 'contents' in item
+            assert 'jsonselect' in item
+            assert 'links' in item
 
             # Feature heirarchy
-            url = item['links'][0]["url"]
+            url = item['links'][0]['url']
             assert url.startswith('https://developer.mozilla.org/en-US/docs/')
             mdn_subpath = url.split('en-US/docs/', 1)[1]
             path_bits = mdn_subpath.split('/')
@@ -213,7 +213,7 @@ class LoadWebcompatData(Tool):
             for subkey, subitem in item.items():
                 self.parse_compat_data_item(subkey, subitem, collection)
 
-    version_re = re.compile("^[.\d]+$")
+    version_re = re.compile('^[.\d]+$')
 
     def convert_version(self, browser_id, raw_version):
         if raw_version == '?':
@@ -260,6 +260,6 @@ if __name__ == '__main__':
     tool = LoadWebcompatData()
     tool.init_from_command_line()
     how_much = 'all' if tool.all_data else 'subset of'
-    tool.logger.info("Loading {} data into {}".format(how_much, tool.api))
+    tool.logger.info('Loading {} data into {}'.format(how_much, tool.api))
     changes = tool.run()
     tool.report_changes(changes)

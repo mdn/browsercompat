@@ -60,7 +60,7 @@ class ToolParser(argparse.ArgumentParser):
             self.add_argument(
                 '-a', '--api',
                 help='Base URL of the API (default: http://localhost:8000)',
-                default="http://localhost:8000",
+                default='http://localhost:8000',
                 action=ToolParser.StripTrailingSlash)
 
         if 'user' in self.include_set:
@@ -76,10 +76,10 @@ class ToolParser(argparse.ArgumentParser):
         if logger:
             self.logger = logger
             self.add_argument(
-                '-v', '--verbose', action="store_true",
+                '-v', '--verbose', action='store_true',
                 help='Print extra debug information')
             self.add_argument(
-                '-q', '--quiet', action="store_true",
+                '-q', '--quiet', action='store_true',
                 help='Only print warnings')
 
         if 'data' in self.include_set:
@@ -90,8 +90,8 @@ class ToolParser(argparse.ArgumentParser):
 
         if 'nocache' in self.include_set:
             self.add_argument(
-                '--no-cache', action="store_false", default=True,
-                dest="use_cache",
+                '--no-cache', action='store_false', default=True,
+                dest='use_cache',
                 help='Ignore cache and redownload files')
 
     def parse_args(self, *args, **kwargs):
@@ -154,9 +154,9 @@ class Tool(object):
             retry = 0
             while retry < retries:
                 if retry == 0:
-                    msg = "Downloading {path} from {url}..."
+                    msg = 'Downloading {path} from {url}...'
                 else:
-                    msg = "Retry #{retry} downloading {path} from {url}..."
+                    msg = 'Retry #{retry} downloading {path} from {url}...'
                 self.logger.info(msg.format(path=path, url=url, retry=retry))
                 try:
                     response = requests.get(url, headers=headers)
@@ -165,7 +165,7 @@ class Tool(object):
                     if retry == retries:
                         raise
                     else:
-                        self.logger.warning("Got exception {}".format(e))
+                        self.logger.warning('Got exception {}'.format(e))
                 else:
                     response.raise_for_status()
                     break
@@ -173,7 +173,7 @@ class Tool(object):
                 f.write(response.text)
         else:
             self.logger.info(
-                "Using existing {} downloaded from {}".format(path, url))
+                'Using existing {} downloaded from {}'.format(path, url))
 
         with codecs.open(path, 'r', 'utf8') as f:
             content = f.read()
@@ -190,7 +190,7 @@ class Tool(object):
     def confirm_changes(self, changeset):
         """Ask the user to confirm a changeset."""
         while True:
-            choice = input("Make these changes? (Y/N/D for details) ")
+            choice = input('Make these changes? (Y/N/D for details) ')
             if choice.upper() == 'Y':
                 return True
             elif choice.upper() == 'N':
@@ -198,7 +198,7 @@ class Tool(object):
             elif choice.upper() == 'D':
                 print(changeset.summarize())
             else:
-                print("Please type Y or N or D.")
+                print('Please type Y or N or D.')
 
     def data_file(self, filename):
         """Return the path to a data file."""
@@ -215,13 +215,13 @@ class Tool(object):
     def get_password(self):
         """Get the password, prompting if needed."""
         if not getattr(self, 'password'):
-            self.password = getpass.getpass("API password: ")
+            self.password = getpass.getpass('API password: ')
         return self.password
 
     def get_user(self):
         """Get the user, prompting if needed."""
         if not getattr(self, 'user'):
-            self.user = input("API username: ")
+            self.user = input('API username: ')
         return self.user
 
     def init_from_command_line(self):
@@ -239,23 +239,23 @@ class Tool(object):
 
     def report_changes(self, counts):
         if counts:
-            self.logger.info("Changes complete. Counts:")
+            self.logger.info('Changes complete. Counts:')
             for resource_type, changes in counts.items():
                 c_new = changes.get('new', 0)
                 c_deleted = changes.get('deleted', 0)
                 c_changed = changes.get('changed', 0)
                 c_text = []
                 if c_new:
-                    c_text.append("%d new" % c_new)
+                    c_text.append('%d new' % c_new)
                 if c_deleted:
-                    c_text.append("%d deleted" % c_deleted)
+                    c_text.append('%d deleted' % c_deleted)
                 if c_changed:
-                    c_text.append("%d changed" % c_changed)
+                    c_text.append('%d changed' % c_changed)
                 if c_text:
-                    self.logger.info("  %s: %s" % (
+                    self.logger.info('  %s: %s' % (
                         resource_type.title(), ', '.join(c_text)))
         else:
-            self.logger.info("No data uploaded.")
+            self.logger.info('No data uploaded.')
 
     def run(self, *args, **kwargs):
         """Run the tool."""
@@ -278,7 +278,7 @@ class Tool(object):
         if attempt:
             suffix = str(attempt)
         else:
-            suffix = ""
+            suffix = ''
 
         if len(slugged) > 50:
             slugged = slugged[:45] + md5[:5]
@@ -297,7 +297,7 @@ class Tool(object):
         delta = changeset.changes
 
         if delta['new'] or delta['changed'] or delta['deleted']:
-            delete_skipped = " (but skipped)" if skip_deletes else ""
+            delete_skipped = ' (but skipped)' if skip_deletes else ''
             self.logger.info(
                 'Changes detected: %d new, %d changed, %d deleted%s, %d same.',
                 len(delta['new']), len(delta['changed']),

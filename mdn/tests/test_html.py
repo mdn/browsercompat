@@ -62,7 +62,7 @@ class TestHTMLAttribute(TestCase):
     def test_false_raises(self):
         self.assertRaises(
             ValueError, HTMLAttribute,
-            raw="selected", ident='selected', value=False)
+            raw='selected', ident='selected', value=False)
 
 
 class TestHTMLAttributes(TestCase):
@@ -179,9 +179,9 @@ class TestHTMLOpenTag(TestCase):
             'unexpected_attribute', 42, 62,
             {'node_type': 'a', 'ident': 'style', 'value': 'display:none',
              'expected': 'the attributes external or href'})
-        expected = {"href": "http://example.com", "external": "1"}
+        expected = {'href': 'http://example.com', 'external': '1'}
         passed = expected.copy()
-        passed["style"] = "display:none"
+        passed['style'] = 'display:none'
         self.assert_validate_attributes(passed, actions, expected, [issue])
 
 
@@ -208,19 +208,19 @@ class TestHTMLElement(TestCase):
 
     def test_to_text(self):
         raw = '<p>A <strong>Text</strong> Element</p>'
-        strong_attrs = HTMLAttributes(raw="", attributes=[])
+        strong_attrs = HTMLAttributes(raw='', attributes=[])
         strong_open_tag = HTMLOpenTag(
-            raw="<strong>", tag="strong", attributes=strong_attrs)
-        strong_close_tag = HTMLCloseTag(raw="</strong>", tag="strong")
-        strong_text = HTMLText(raw="Text")
+            raw='<strong>', tag='strong', attributes=strong_attrs)
+        strong_close_tag = HTMLCloseTag(raw='</strong>', tag='strong')
+        strong_text = HTMLText(raw='Text')
         strong_elem = HTMLElement(
-            raw="<strong>Text</strong>", open_tag=strong_open_tag,
+            raw='<strong>Text</strong>', open_tag=strong_open_tag,
             close_tag=strong_close_tag, children=[strong_text])
-        p_attrs = HTMLAttributes(raw="", attributes=[])
-        p_open_tag = HTMLOpenTag(raw="<p>", tag="p", attributes=p_attrs)
-        p_close_tag = HTMLCloseTag(raw="</p>", tag="p")
-        text1 = HTMLText(raw="A ")
-        text2 = HTMLText(raw=" Element")
+        p_attrs = HTMLAttributes(raw='', attributes=[])
+        p_open_tag = HTMLOpenTag(raw='<p>', tag='p', attributes=p_attrs)
+        p_close_tag = HTMLCloseTag(raw='</p>', tag='p')
+        text1 = HTMLText(raw='A ')
+        text2 = HTMLText(raw=' Element')
         p_elem = HTMLElement(
             raw=raw, open_tag=p_open_tag, close_tag=p_close_tag,
             children=[text1, strong_elem, text2])
@@ -385,7 +385,7 @@ class TestVisitor(TestCase):
         self.assertEqual(str(out[4]), '')
 
     def test_html_with_code(self):
-        text = "<p>Here is <code>code</code>.</p>"
+        text = '<p>Here is <code>code</code>.</p>'
         parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
@@ -398,32 +398,32 @@ class TestVisitor(TestCase):
         self.assertEqual(text_type(text2), '.')
 
     def test_html_simple_table(self):
-        text = "<table><tr><td>A very dumb table</td></tr></table>"
+        text = '<table><tr><td>A very dumb table</td></tr></table>'
         parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         table = out[0]
-        self.assertEqual(table.tag, "table")
+        self.assertEqual(table.tag, 'table')
         self.assertEqual(len(table.children), 1)
         tr = table.children[0]
-        self.assertEqual(tr.tag, "tr")
+        self.assertEqual(tr.tag, 'tr')
         self.assertEqual(len(tr.children), 1)
         td = tr.children[0]
-        self.assertEqual(td.tag, "td")
+        self.assertEqual(td.tag, 'td')
         self.assertEqual(len(td.children), 1)
         text = td.children[0]
-        self.assertEqual(text_type(text), "A very dumb table")
+        self.assertEqual(text_type(text), 'A very dumb table')
 
     def test_html_empty_tag(self):
-        text = "<td></td>"
+        text = '<td></td>'
         parsed = html_grammar['html'].parse(text)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)
         td = out[0]
-        self.assertEqual(td.tag, "td")
+        self.assertEqual(td.tag, 'td')
         self.assertEqual(len(td.children), 1)
         text = td.children[0]
-        self.assertEqual(text_type(text), "")
+        self.assertEqual(text_type(text), '')
 
     def test_add_issue(self):
         text = '<p>A paragraph</p>'

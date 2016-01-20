@@ -103,7 +103,7 @@ class TestPageExtractor(BaseTestCase):
         self.assert_extract(sample_spec_section, specs=expected_specs)
 
     def test_invalid_spec_section(self):
-        page = "<h2>Specifications</h2><p>Incomplete</p>"
+        page = '<h2>Specifications</h2><p>Incomplete</p>'
         self.assert_extract(page, issues=[('skipped_content', 23, 40, {})])
 
     def test_valid_compat_section(self):
@@ -111,7 +111,7 @@ class TestPageExtractor(BaseTestCase):
         self.assert_extract(sample_compat_section, compat=expected_compat)
 
     def test_invalid_compat_section(self):
-        page = "<h2>Browser Compatibility</h2><p>Not present</p>"
+        page = '<h2>Browser Compatibility</h2><p>Not present</p>'
         self.assert_extract(page, issues=[('skipped_content', 30, 48, {})])
 
     def test_full_page(self):
@@ -181,7 +181,7 @@ class TestScrape(BaseTestCase):
         self.assertDataEqual(actual['embedded_compat'], None)
 
     def test_empty(self):
-        page = ""
+        page = ''
         self.assertScrape(page, [], [])
 
     def test_not_compat_page(self):
@@ -261,8 +261,8 @@ class TestNarrowParseError(TestCase):
 
 class FeaturePageTestCase(TestCase):
     def setUp(self):
-        path = "/en-US/docs/Web/CSS/background-size"
-        url = "https://developer.mozilla.org" + path
+        path = '/en-US/docs/Web/CSS/background-size'
+        url = 'https://developer.mozilla.org' + path
         self.feature = self.get_instance('Feature', 'web-css-background-size')
         self.page = FeaturePage.objects.create(
             url=url, feature=self.feature, status=FeaturePage.STATUS_PARSING)
@@ -442,7 +442,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
 
     def test_new_unnamed_current_version(self):
         version_entry = {
-            'id': '_version', 'browser': '_browser', 'version': ""}
+            'id': '_version', 'browser': '_browser', 'version': ''}
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         version_content = view.new_version(version_entry)
         expected = {
@@ -814,7 +814,7 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
             translation.status = translation.STATUS_FETCHED
             translation.raw = content
             translation.save()
-        assert found, "No English translation object found in translations"
+        assert found, 'No English translation object found in translations'
 
     def test_empty_page(self):
         self.set_content('  ')
@@ -904,15 +904,15 @@ class TestScrapeFeaturePage(FeaturePageTestCase):
         self.assertEqual(fp.CONVERTED_MISMATCH, fp.converted_compat)
 
     def test_committed(self):
-        self.get_instance("Section", "background-size")  # Create existing data
+        self.get_instance('Section', 'background-size')  # Create existing data
         self.set_content(self.good_content)
         scrape_feature_page(self.page)
         fp = FeaturePage.objects.get(id=self.page.id)
         self.assertEqual(fp.COMMITTED_YES, fp.committed)
 
     def test_updated(self):
-        self.get_instance("Section", "background-size")
-        spec = self.get_instance("Specification", "css3_ui")
+        self.get_instance('Section', 'background-size')
+        spec = self.get_instance('Specification', 'css3_ui')
         content = self.good_content.replace(' </tbody>\n', '''\
    <tr>
      <td>{{SpecName('%(key)s', '#anchor', 'new section')}}</td>

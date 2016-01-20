@@ -213,15 +213,15 @@ class FeatureSerializer(HistoricalModelSerializer):
             new_set = set([child.pk for child in value])
             if current_set - new_set:
                 raise ValidationError(
-                    "All child features must be included in children.")
+                    'All child features must be included in children.')
             if new_set - current_set:
                 raise ValidationError(
-                    "Set child.parent to add a child feature.")
+                    'Set child.parent to add a child feature.')
         else:
             if value != []:  # pragma: no cover
                 # Because children is in update_only_fields, never happens
                 raise ValidationError(
-                    "Can not set children when creating a feature.")
+                    'Can not set children when creating a feature.')
         return value
 
     class Meta:
@@ -565,7 +565,7 @@ class UserSerializer(FieldsExtraMixin, ModelSerializer):
         Can not be used with a writable view, since django.contrib.auth User
         doesn't have this method.  Will need updating or a proxy class.
         """
-        assert hasattr(obj, 'group_names'), "Expecting cached User object"
+        assert hasattr(obj, 'group_names'), 'Expecting cached User object'
         return obj.group_names
 
     class Meta:
@@ -614,11 +614,11 @@ class ArchiveMixin(object):
 class HistoricalObjectSerializer(ModelSerializer):
     """Common serializer attributes for Historical models."""
 
-    id = IntegerField(source="history_id")
-    date = DateTimeField(source="history_date")
+    id = IntegerField(source='history_id')
+    date = DateTimeField(source='history_date')
     event = SerializerMethodField()
     changeset = PrimaryKeyRelatedField(
-        source="history_changeset", read_only=True)
+        source='history_changeset', read_only=True)
     object_id = HistoricalObjectField()
     archived_representation = SerializerMethodField()
 

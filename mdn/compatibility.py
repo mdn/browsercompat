@@ -70,7 +70,7 @@ class CompatSectionExtractor(Extractor):
     <p>[1] This is a footnote.</p>
     """
 
-    extractor_name = "Compatibility Extractor"
+    extractor_name = 'Compatibility Extractor'
 
     def __init__(self, feature, **kwargs):
         self.feature = feature
@@ -98,50 +98,50 @@ class CompatSectionExtractor(Extractor):
         - True if the child elements should be walked, False if already
           processed or can be skipped.
         """
-        if state == "begin":
+        if state == 'begin':
             assert isinstance(element, HnElement)
             # TODO: Check id and name
-            return "before_compat_div", False
-        elif state == "before_compat_div":
+            return 'before_compat_div', False
+        elif state == 'before_compat_div':
             if self.is_tag(element, 'p') or self.is_tag(element, 'div'):
                 is_compat_div = self.extract_pre_compat_element(element)
                 if is_compat_div:
-                    return "compat_div", True
+                    return 'compat_div', True
                 else:
-                    return "before_compat_div", False
-        elif state == "compat_div":
+                    return 'before_compat_div', False
+        elif state == 'compat_div':
             if self.is_tag(element, 'table'):
-                return "in_table", True
-        elif state == "in_table":
+                return 'in_table', True
+        elif state == 'in_table':
             if self.is_tag(element, 'tr'):
-                return "in_header_row", True
-        elif state == "in_header_row":
+                return 'in_header_row', True
+        elif state == 'in_header_row':
             if self.is_tag(element, 'th'):
                 self.extract_feature_header(element)
-                return "in_browser_names", False
-        elif state == "in_browser_names":
-            # Transition to "extracted_row" happens on </tr>
+                return 'in_browser_names', False
+        elif state == 'in_browser_names':
+            # Transition to 'extracted_row' happens on </tr>
             if self.is_tag(element, 'th'):
                 self.extract_browser_name(element)
-                return "in_browser_names", False
-        elif state == "extracted_row":
-            # Transition to "after_compat_div" happens on </table>
+                return 'in_browser_names', False
+        elif state == 'extracted_row':
+            # Transition to 'after_compat_div' happens on </table>
             if self.is_tag(element, 'tr'):
-                return "in_data_row", True
-        elif state == "in_data_row":
+                return 'in_data_row', True
+        elif state == 'in_data_row':
             # Transition to "extracted_row" happens on </tr>
             if self.is_tag(element, 'td'):
                 self.extract_cell(element)
-                return "in_data_row", False
-        elif state == "after_compat_div":
+                return 'in_data_row', False
+        elif state == 'after_compat_div':
             if self.is_tag(element, 'p') or self.is_tag(element, 'div'):
                 next_state, descend = self.extract_post_compat_div(element)
                 assert next_state in (
                     'after_compat_div', 'compat_div', 'in_footnotes')
                 return next_state, descend
-        elif state == "in_footnotes":
+        elif state == 'in_footnotes':
             self.extract_footnotes(element)
-            return "in_footnotes", False
+            return 'in_footnotes', False
         else:  # pragma: no cover
             raise Exception('Unexpected state "{}"'.format(state))
         return state, True
@@ -151,30 +151,30 @@ class CompatSectionExtractor(Extractor):
 
         Return is the next state.
         """
-        if state == "begin":  # pragma: no cover
+        if state == 'begin':  # pragma: no cover
             pass
-        elif state == "before_compat_div":
+        elif state == 'before_compat_div':
             pass
-        elif state == "compat_div":
+        elif state == 'compat_div':
             pass
-        elif state == "in_table":
+        elif state == 'in_table':
             pass
-        elif state == "in_header_row":  # pragma: no cover
+        elif state == 'in_header_row':  # pragma: no cover
             pass
-        elif state == "in_browser_names":
+        elif state == 'in_browser_names':
             if self.is_tag(element, 'tr'):
                 return 'extracted_row'
-        elif state == "extracted_row":
+        elif state == 'extracted_row':
             if self.is_tag(element, 'table'):
                 self.process_table()
                 return 'after_compat_div'
-        elif state == "in_data_row":
+        elif state == 'in_data_row':
             if self.is_tag(element, 'tr'):
                 self.process_row()
                 return 'extracted_row'
-        elif state == "after_compat_div":
+        elif state == 'after_compat_div':
             pass
-        elif state == "in_footnotes":
+        elif state == 'in_footnotes':
             pass
         else:  # pragma: no cover
             raise Exception('Unexpected state "{}"'.format(state))
@@ -430,7 +430,7 @@ class Footnote(HTMLText):
         return ''
 
     def __str__(self):
-        return "[{}]".format(self.footnote_id)
+        return '[{}]'.format(self.footnote_id)
 
 
 class CompatBaseVisitor(KumaVisitor):
@@ -549,7 +549,7 @@ class CellVersion(HTMLText):
         if self.engine_version is None:
             return self.version
         else:
-            return "{} ({})".format(self.version, self.engine_version)
+            return '{} ({})'.format(self.version, self.engine_version)
 
 
 class CellRemoved(HTMLText):

@@ -385,8 +385,8 @@ class Cache(BaseCache):
 
     def support_v1_invalidator(self, obj):
         return [
-            ("Version", obj.version_id, True),
-            ("Feature", obj.feature_id, True),
+            ('Version', obj.version_id, True),
+            ('Feature', obj.feature_id, True),
         ]
 
     def version_v1_serializer(self, obj):
@@ -435,7 +435,7 @@ class Cache(BaseCache):
 
     def version_v1_invalidator(self, obj):
         return [
-            ("Browser", obj.browser_id, True)]
+            ('Browser', obj.browser_id, True)]
 
     def user_v1_serializer(self, obj):
         if not obj or not obj.is_active:

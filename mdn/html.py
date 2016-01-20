@@ -213,7 +213,7 @@ class HTMLInterval(object):
 
     def to_text(self):
         """Convert to non-HTML text."""
-        return ""
+        return ''
 
     @property
     def issues(self):
@@ -272,7 +272,7 @@ class HTMLBaseTag(HTMLInterval):
         self.tag = tag
 
     def __str__(self):
-        return "<{}>".format(self.tag)
+        return '<{}>'.format(self.tag)
 
 
 @python_2_unicode_compatible
@@ -436,7 +436,7 @@ class HTMLCloseTag(HTMLBaseTag):
     """An HTML closing tag, such as </a>."""
 
     def __str__(self):
-        return "</{}>".format(self.tag)
+        return '</{}>'.format(self.tag)
 
 
 @python_2_unicode_compatible
@@ -460,9 +460,9 @@ class HTMLElement(HTMLInterval):
     def __str__(self):
         content = join_content(text_type(child) for child in self.children)
         if self.close_tag:
-            return "{}{}{}".format(self.open_tag, content, self.close_tag)
+            return '{}{}{}'.format(self.open_tag, content, self.close_tag)
         else:
-            return "{}".format(self.open_tag)
+            return '{}'.format(self.open_tag)
 
     @cached_property
     def attributes(self):

@@ -16,8 +16,8 @@ group_perms = {
 
 
 def add_groups(apps, schema_editor, with_create_permissions=True):
-    Group = apps.get_model("auth", "Group")
-    Permission = apps.get_model("auth", "Permission")
+    Group = apps.get_model('auth', 'Group')
+    Permission = apps.get_model('auth', 'Permission')
     try:
         perms = dict(
             [(codename, Permission.objects.get(codename=codename))
@@ -45,7 +45,7 @@ def add_groups(apps, schema_editor, with_create_permissions=True):
 
 
 def drop_groups(apps, schema_editor):
-    Group = apps.get_model("auth", "Group")
+    Group = apps.get_model('auth', 'Group')
     Group.objects.filter(name__in=list(group_perms.keys())).delete()
 
 

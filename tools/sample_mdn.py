@@ -26,22 +26,22 @@ class SampleMDN(Tool):
         urls = self.get_urls()
         while True:
             url = random.choice(urls)
-            self.logger.info("%d: %s", count, url)
+            self.logger.info('%d: %s', count, url)
             count += 1
             webbrowser.open(url + '#Specifications')
-            x = input("Enter to continue, or q+Enter to quit: ")
+            x = input('Enter to continue, or q+Enter to quit: ')
 
             if x == 'q':
                 break
 
-        self.logger.info("%d URLs visited" % count)
+        self.logger.info('%d URLs visited' % count)
         return count
 
     def get_urls(self):
         data_human = self.cached_download(
             'data-human.json',
-            "https://raw.githubusercontent.com/webplatform/compatibility-data"
-            "/master/data-human.json")
+            'https://raw.githubusercontent.com/webplatform/compatibility-data'
+            '/master/data-human.json')
 
         urls = []
         for raw_line in data_human.split('\n'):

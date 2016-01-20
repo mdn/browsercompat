@@ -27,9 +27,9 @@ class TestBrowserViewset(APITestCase):
     def test_get_browser_detail(self):
         browser = self.create(
             Browser,
-            slug="firefox",
-            name={"en": "Firefox"},
-            note={"en": "Uses Gecko for its web browser engine"})
+            slug='firefox',
+            name={'en': 'Firefox'},
+            note={'en': 'Uses Gecko for its web browser engine'})
         url = self.api_reverse('browser-detail', pk=browser.pk)
         response = self.client.get(url)
         history_pk = browser.history.get().pk
@@ -37,8 +37,8 @@ class TestBrowserViewset(APITestCase):
             'browsers': {
                 'id': str(browser.pk),
                 'slug': 'firefox',
-                'name': {"en": "Firefox"},
-                'note': {"en": "Uses Gecko for its web browser engine"},
+                'name': {'en': 'Firefox'},
+                'note': {'en': 'Uses Gecko for its web browser engine'},
                 'links': {
                     'history': [str(history_pk)],
                     'history_current': str(history_pk),
@@ -72,9 +72,9 @@ class TestBrowserViewset(APITestCase):
     def test_get_browser_list(self):
         firefox = self.create(
             Browser,
-            slug="firefox", name={"en": "Firefox"},
-            note={"en": "Uses Gecko for its web browser engine"})
-        chrome = self.create(Browser, slug="chrome", name={"en": "Chrome"})
+            slug='firefox', name={'en': 'Firefox'},
+            note={'en': 'Uses Gecko for its web browser engine'})
+        chrome = self.create(Browser, slug='chrome', name={'en': 'Chrome'})
         response = self.client.get(self.api_reverse('browser-list'))
         firefox_history_id = str(firefox.history.get().pk)
         chrome_history_id = str(chrome.history.get().pk)
@@ -83,8 +83,8 @@ class TestBrowserViewset(APITestCase):
                 {
                     'id': str(firefox.pk),
                     'slug': 'firefox',
-                    'name': {"en": "Firefox"},
-                    'note': {"en": "Uses Gecko for its web browser engine"},
+                    'name': {'en': 'Firefox'},
+                    'note': {'en': 'Uses Gecko for its web browser engine'},
                     'links': {
                         'history': [firefox_history_id],
                         'history_current': firefox_history_id,
@@ -93,7 +93,7 @@ class TestBrowserViewset(APITestCase):
                 }, {
                     'id': '%s' % chrome.pk,
                     'slug': 'chrome',
-                    'name': {"en": "Chrome"},
+                    'name': {'en': 'Chrome'},
                     'note': None,
                     'links': {
                         'history': [chrome_history_id],
@@ -138,7 +138,7 @@ class TestBrowserViewset(APITestCase):
     def test_get_browsable_api(self):
         browser = self.create(Browser)
         url = self.api_reverse('browser-list')
-        response = self.client.get(url, HTTP_ACCEPT="text/html")
+        response = self.client.get(url, HTTP_ACCEPT='text/html')
         history_pk = browser.history.get().pk
         expected_data = {
             'count': 1,
@@ -164,10 +164,10 @@ class TestBrowserViewset(APITestCase):
         browser = Browser.objects.get()
         history_pk = browser.history.get().pk
         expected_data = {
-            "id": browser.pk,
-            "slug": "firefox",
-            "name": {"en": "Firefox"},
-            "note": None,
+            'id': browser.pk,
+            'slug': 'firefox',
+            'name': {'en': 'Firefox'},
+            'note': None,
             'history': [history_pk],
             'history_current': history_pk,
             'versions': [],
@@ -189,17 +189,17 @@ class TestBrowserViewset(APITestCase):
         url = self.api_reverse('browser-detail', pk=browser.pk)
         mock_update.reset_mock()
         response = self.client.put(
-            url, data=data, content_type="application/vnd.api+json")
+            url, data=data, content_type='application/vnd.api+json')
         self.assertEqual(200, response.status_code, response.data)
         histories = browser.history.all()
         expected_data = {
-            "id": browser.pk,
-            "slug": "browser",
-            "name": {"en": "New Name"},
-            "note": None,
-            "history": [h.pk for h in histories],
-            "history_current": histories[0].pk,
-            "versions": [],
+            'id': browser.pk,
+            'slug': 'browser',
+            'name': {'en': 'New Name'},
+            'note': None,
+            'history': [h.pk for h in histories],
+            'history_current': histories[0].pk,
+            'versions': [],
         }
         self.assertDataEqual(response.data, expected_data)
         mock_update.assert_called_once_with('Browser', browser.pk, browser)
@@ -219,9 +219,9 @@ class TestBrowserViewset(APITestCase):
         url = self.api_reverse('browser-detail', pk=browser.pk)
         url += '?changeset=%s' % changeset.pk
         mock_update.reset_mock()
-        mock_update.side_effect = Exception("not called")
+        mock_update.side_effect = Exception('not called')
         response = self.client.put(
-            url, data=data, content_type="application/vnd.api+json")
+            url, data=data, content_type='application/vnd.api+json')
         self.assertEqual(200, response.status_code, response.data)
 
     def test_put_as_json(self):
@@ -234,19 +234,19 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.data)
         histories = browser.history.all()
         expected_data = {
-            "id": browser.pk,
-            "slug": "browser",
-            "name": {"en": "New Name"},
-            "note": None,
-            "history": [h.pk for h in histories],
-            "history_current": histories[0].pk,
-            "versions": [],
+            'id': browser.pk,
+            'slug': 'browser',
+            'name': {'en': 'New Name'},
+            'note': None,
+            'history': [h.pk for h in histories],
+            'history_current': histories[0].pk,
+            'versions': [],
         }
         self.assertDataEqual(response.data, expected_data)
 
     @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
     def test_delete(self, mock_update):
-        self.login_user(groups=["change-resource", "delete-resource"])
+        self.login_user(groups=['change-resource', 'delete-resource'])
         browser = self.create(Browser, slug='firesux', name={'en': 'Firesux'})
         url = self.api_reverse('browser-detail', pk=browser.pk)
         mock_update.reset_mock()
@@ -263,20 +263,20 @@ class TestBrowserViewset(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(403, response.status_code)
         expected_data = {
-            'detail': "You do not have permission to perform this action."
+            'detail': 'You do not have permission to perform this action.'
         }
         self.assertDataEqual(response.data, expected_data)
 
     @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
     def test_delete_in_changeset(self, mock_update):
-        self.login_user(groups=["change-resource", "delete-resource"])
+        self.login_user(groups=['change-resource', 'delete-resource'])
         browser = self.create(
-            Browser, slug="internet_exploder",
+            Browser, slug='internet_exploder',
             name={'en': 'Internet Exploder'})
         url = self.api_reverse('browser-detail', pk=browser.pk)
-        url += "?changeset=%d" % self.changeset.id
+        url += '?changeset=%d' % self.changeset.id
         mock_update.reset_mock()
-        mock_update.side_effect = Exception("not called")
+        mock_update.side_effect = Exception('not called')
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code, response.content)
         self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())
@@ -294,7 +294,7 @@ class TestBrowserViewset(APITestCase):
 class TestCascadeDelete(APITestCase):
     def setUp(self):
         super(TestCascadeDelete, self).setUp()
-        self.login_user(groups=["change-resource", "delete-resource"])
+        self.login_user(groups=['change-resource', 'delete-resource'])
         self.parent = self.create(Feature, slug='parent')
         self.child = self.create(Feature, slug='doomed', parent=self.parent)
         self.browser = self.create(Browser, slug='browser')
@@ -302,9 +302,9 @@ class TestCascadeDelete(APITestCase):
             Version, version='1.0', browser=self.browser)
         self.support = self.create(
             Support, version=self.version, feature=self.child)
-        self.maturity = self.create(Maturity, slug="MAT")
+        self.maturity = self.create(Maturity, slug='MAT')
         self.specification = self.create(
-            Specification, slug="Spec", maturity=self.maturity)
+            Specification, slug='Spec', maturity=self.maturity)
         self.section = self.create(
             Section, specification=self.specification)
         self.section.features.add(self.child)
@@ -361,7 +361,7 @@ class TestFeatureViewSet(APITestCase):
         parent = self.create(Feature, slug='parent', name={'en': 'Parent'})
         feature = self.create(
             Feature, slug='feature', parent=parent, name={'en': 'A Feature'})
-        self.create(Feature, slug="other", name={'en': 'Other'})
+        self.create(Feature, slug='other', name={'en': 'Other'})
         response = self.client.get(
             self.api_reverse('feature-list'), {'slug': 'feature'})
         self.assertEqual(200, response.status_code, response.data)
@@ -372,7 +372,7 @@ class TestFeatureViewSet(APITestCase):
         parent = self.create(Feature, slug='parent', name={'en': 'Parent'})
         feature = self.create(
             Feature, slug='feature', parent=parent, name={'en': 'A Feature'})
-        self.create(Feature, slug="other", name={'en': 'Other'})
+        self.create(Feature, slug='other', name={'en': 'Other'})
         response = self.client.get(
             self.api_reverse('feature-list'), {'parent': str(parent.id)})
         self.assertEqual(200, response.status_code, response.data)
@@ -383,7 +383,7 @@ class TestFeatureViewSet(APITestCase):
         parent = self.create(Feature, slug='parent', name={'en': 'Parent'})
         self.create(
             Feature, slug='feature', parent=parent, name={'en': 'The Feature'})
-        other = self.create(Feature, slug="other", name={'en': 'Other'})
+        other = self.create(Feature, slug='other', name={'en': 'Other'})
         response = self.client.get(
             self.api_reverse('feature-list'), {'parent': ''})
         self.assertEqual(200, response.status_code, response.data)
@@ -402,7 +402,7 @@ class TestHistoricaViewset(APITestCase):
         history = browser.history.all()[0]
         url = self.api_reverse('historicalbrowser-detail', pk=history.pk)
         response = self.client.get(
-            url, HTTP_ACCEPT="application/vnd.api+json")
+            url, HTTP_ACCEPT='application/vnd.api+json')
         self.assertEqual(200, response.status_code, response.data)
 
         expected_json = {

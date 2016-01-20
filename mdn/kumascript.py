@@ -76,7 +76,7 @@ SCOPES = set((
     'footnote',
 ))
 
-MDN_DOMAIN = "https://developer.mozilla.org"
+MDN_DOMAIN = 'https://developer.mozilla.org'
 MDN_DOCS = MDN_DOMAIN + '/en-US/docs'
 
 
@@ -105,13 +105,13 @@ class KumaScript(HTMLText):
                 quote = "'"
             else:
                 quote = '"'
-            args.append("{0}{1}{0}".format(quote, arg))
+            args.append('{0}{1}{0}'.format(quote, arg))
         if args:
             argtext = '(' + ', '.join(args) + ')'
         else:
             argtext = ''
         name = getattr(self, 'name', 'KumaScript')
-        return "{{{{{}{}}}}}".format(name, argtext)
+        return '{{{{{}{}}}}}'.format(name, argtext)
 
     def to_html(self):
         """Convert to HTML.  Default is an empty string."""
@@ -178,21 +178,21 @@ class KnownKumaScript(KumaScript):
                 'max': self.max_args, 'min': self.min_args, 'count': count,
                 'arg_names': self.arg_names}
             if self.max_args == 0:
-                arg_spec = "no arguments"
+                arg_spec = 'no arguments'
             else:
                 if self.max_args == self.min_args:
-                    arg_range = "exactly {0} argument{1}".format(
+                    arg_range = 'exactly {0} argument{1}'.format(
                         self.max_args, '' if self.max_args == 1 else 's')
                 else:
-                    arg_range = "between {0} and {1} arguments".format(
+                    arg_range = 'between {0} and {1} arguments'.format(
                         self.min_args, self.max_args)
                 names = []
                 for pos, name in enumerate(self.arg_names):
                     if pos > self.min_args:
-                        names.append("[{}]".format(name))
+                        names.append('[{}]'.format(name))
                     else:
                         names.append(name)
-                arg_spec = "{} ({})".format(arg_range, ', '.join(names))
+                arg_spec = '{} ({})'.format(arg_range, ', '.join(names))
             extra['arg_spec'] = arg_spec
             if count == 1:
                 extra['arg_count'] = '1 argument'
@@ -299,7 +299,7 @@ class CompatGeckoDesktop(CompatKumaScript):
                 return None
 
             if nversion >= 5:
-                return "{:1.1f}".format(nversion)
+                return '{:1.1f}'.format(nversion)
             else:
                 return None
 
@@ -387,7 +387,7 @@ class CompatGeckoMobile(CompatKumaScript):
         if nversion == '2':
             return '4.0'
         else:
-            return "{}.0".format(nversion)
+            return '{}.0'.format(nversion)
 
 
 class CompatIE(CompatBasicKumaScript):
@@ -473,8 +473,8 @@ class SpecKumaScript(KnownKumaScript):
         if self.spec:
             name = self.spec.name['en']
         else:
-            name = self.mdn_key or "(None)"
-        return "specification {}".format(name)
+            name = self.mdn_key or '(None)'
+        return 'specification {}'.format(name)
 
 
 class Spec2(SpecKumaScript):
@@ -703,7 +703,7 @@ class GeckoRelease(KnownKumaScript):
         else:
             vnum = float(self.gecko_version)
             assert vnum >= 5.0
-            rnum = "{:.1f}".format(vnum)
+            rnum = '{:.1f}'.format(vnum)
             snum = int(vnum) - 3
             self.releases = [
                 name.format(rnum=rnum, snum=snum)
@@ -825,7 +825,7 @@ class WhyNoSpecBlock(HTMLInterval):
         self.scope = scope
 
     def to_html(self, drop_tag=None):
-        return ""
+        return ''
 
 
 class XrefCSSBase(CSSxRef):

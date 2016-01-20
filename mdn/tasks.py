@@ -63,7 +63,7 @@ def fetch_meta(featurepage_id):
         issue = (
             'failed_download', 0, 0,
             {'url': url, 'status': r.status_code, 'content': r.text})
-        meta.raw = "Status %d, Content:\n%s" % (r.status_code, r.text)
+        meta.raw = 'Status %d, Content:\n%s' % (r.status_code, r.text)
         meta.status = meta.STATUS_ERROR
         next_task = r.raise_for_status
     else:
@@ -73,7 +73,7 @@ def fetch_meta(featurepage_id):
         try:
             meta.raw = dumps(r.json())
         except ValueError:
-            meta.raw = "Response is not JSON:\n" + r.text
+            meta.raw = 'Response is not JSON:\n' + r.text
             issue = ('bad_json', 0, 0, {'url': url, 'content': r.text})
             meta.status = meta.STATUS_ERROR
             next_task = r.json
@@ -156,7 +156,7 @@ def fetch_translation(featurepage_id, locale):
 
     # Request the translation
     url = t.url() + '?raw'
-    r = requests.get(t.url() + "?raw", headers={'Cache-Control': 'no-cache'})
+    r = requests.get(t.url() + '?raw', headers={'Cache-Control': 'no-cache'})
     t.raw = r.text
     if r.status_code == requests.codes.ok:
         t.status = t.STATUS_FETCHED

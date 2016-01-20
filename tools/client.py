@@ -109,7 +109,7 @@ class Client(object):
         response = self.session.post(
             self.base_url + '/api-auth/login/', params=params, data=data)
         if response.url == self.base_url + next_path:
-            logger.info("Logged into " + self.base_url)
+            logger.info('Logged into ' + self.base_url)
             self.csrftoken = self.session.cookies['csrftoken']
         else:
             raise Exception('Problem logging in.', response)
@@ -196,7 +196,7 @@ class Client(object):
                 count = float(len(data[resource_type]))
                 percent = int(100 * (count / total))
                 logger.info(
-                    "  Loaded %d of %d %s (%d%%)...",
+                    '  Loaded %d of %d %s (%d%%)...',
                     count, total, resource_type, percent)
                 last_time = current_time
             params = {'page': page}
@@ -215,7 +215,7 @@ class Client(object):
         return data
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     from math import log10, trunc
     from common import ToolParser
 
@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     api = args.api
-    logger.info("Counting resources on %s" % api)
+    logger.info('Counting resources on %s' % api)
 
     client = Client(api)
     resources = [

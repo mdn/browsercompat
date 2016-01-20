@@ -42,14 +42,14 @@ def is_new_id(_id):
 
 def join_content(content_bits):
     """Construct a string with just the right whitespace."""
-    out = ""
+    out = ''
     nospace_before = '!,.;?[ '
     nospace_after = ' '
     for bit in content_bits:
         if bit:
             if (out and out[-1] not in nospace_after and
                     bit[0] not in nospace_before):
-                out += " "
+                out += ' '
             out += bit
     return out
 
@@ -63,7 +63,7 @@ def normalize_name(name):
     return normalized_name
 
 
-def slugify(word, length=50, suffix=""):
+def slugify(word, length=50, suffix=''):
     """Create a slugged version of a word or phrase."""
     raw = word.lower()
     out = []
@@ -78,6 +78,6 @@ def slugify(word, length=50, suffix=""):
         slugged = slugged.replace('__', '_')
     if slugged.endswith('_') and len(slugged) > 1:
         slugged = slugged[:-1]
-    suffix = text_type(suffix) if suffix else ""
+    suffix = text_type(suffix) if suffix else ''
     with_suffix = slugged[slice(length - len(suffix))] + suffix
     return with_suffix

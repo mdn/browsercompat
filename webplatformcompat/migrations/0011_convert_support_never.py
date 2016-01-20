@@ -16,32 +16,32 @@ from webplatformcompat.cache import Cache
 
 
 def convert_support_never(apps, schema_editor):
-    Support = apps.get_model("webplatformcompat", "Support")
-    has_never = Support.objects.filter(support="never")
+    Support = apps.get_model('webplatformcompat', 'Support')
+    has_never = Support.objects.filter(support='never')
 
     if has_never.exists():
         print('\nConverting support.support="never" to "no"...')
-        Changeset = apps.get_model("webplatformcompat", "Changeset")
+        Changeset = apps.get_model('webplatformcompat', 'Changeset')
         HistoricalSupport = apps.get_model(
-            "webplatformcompat", "HistoricalSupport")
+            'webplatformcompat', 'HistoricalSupport')
         User = apps.get_model(settings.AUTH_USER_MODEL)
         superuser = User.objects.filter(
             is_superuser=True).order_by('id').first()
-        assert superuser, "Must be at least one superuser"
+        assert superuser, 'Must be at least one superuser'
         cs = Changeset.objects.create(user=superuser)
         for support in has_never.iterator():
-            print("Support %d: Converting support to no" % support.id)
+            print('Support %d: Converting support to no' % support.id)
 
             # Update the instance
-            support.support = "no"
+            support.support = 'no'
             support._delay_cache = True
             support.save()
-            Cache().delete_all_versions("Support", support.id)
+            Cache().delete_all_versions('Support', support.id)
 
             # Create a historical support
             hs = HistoricalSupport(
                 history_date=cs.created, history_changeset=cs,
-                history_type="~",
+                history_type='~',
                 **dict((field.attname, getattr(support, field.attname))
                        for field in Support._meta.fields))
             hs.save()
@@ -51,10 +51,10 @@ def convert_support_never(apps, schema_editor):
 
 def warn_about_converted_never(apps, schema_editor):
     HistoricalSupport = apps.get_model(
-        "webplatformcompat", "HistoricalSupport")
+        'webplatformcompat', 'HistoricalSupport')
     has_never = HistoricalSupport.objects.filter(support='never')
     if has_never.exists():
-        print("\nWARNING: support=never used in past, not restored")
+        print('\nWARNING: support=never used in past, not restored')
 
 
 class Migration(migrations.Migration):

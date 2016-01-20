@@ -30,7 +30,7 @@ def register(
         records_class = records_class or HistoricalRecords
         records = records_class(**records_config)
         records.manager_name = manager_name
-        records.module = app and ("%s.models" % app) or model.__module__
+        records.module = app and ('%s.models' % app) or model.__module__
         records.add_extra_methods(model)
         records.finalize(model)
         models.registered_models[model._meta.db_table] = model
@@ -48,15 +48,15 @@ class Changeset(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(user_model, related_name="changesets")
+    user = models.ForeignKey(user_model, related_name='changesets')
     closed = models.BooleanField(
-        help_text="Is the changeset closed to new changes?",
+        help_text='Is the changeset closed to new changes?',
         default=False)
     target_resource_type = models.CharField(
-        help_text="Type of target resource",
+        help_text='Type of target resource',
         max_length=12, blank=True, choices=[(r, r) for r in TARGET_RESOURCES])
     target_resource_id = models.PositiveIntegerField(
-        default=0, help_text="ID of target resource")
+        default=0, help_text='ID of target resource')
 
     def save(self, update_cache=True, *args, **kwargs):
         """Refresh cache of the items updated in changeset."""
@@ -110,7 +110,7 @@ class HistoricalRecords(BaseHistoricalRecords):
             changeset = instance._history_changeset
         except AttributeError:
             # Load existing changeset
-            changeset = getattr(self.thread.request, "changeset", None)
+            changeset = getattr(self.thread.request, 'changeset', None)
             if changeset is None:
                 # Create new, auto-closing changeset
                 changeset = Changeset.objects.create(user=user)
@@ -185,9 +185,9 @@ class HistoryChangesetMiddleware(BaseHistoryRequestMiddleware):
 
     def process_response(self, request, response):
         """Close an auto-changeset."""
-        changeset = getattr(request, "changeset", None)
-        close_changeset = getattr(request, "close_changeset", True)
-        update_cache = getattr(request, "delay_cache", False)
+        changeset = getattr(request, 'changeset', None)
+        close_changeset = getattr(request, 'close_changeset', True)
+        update_cache = getattr(request, 'delay_cache', False)
         if changeset and close_changeset:
             # Close changeset, but assume related item caches already updated
             changeset.closed = True

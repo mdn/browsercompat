@@ -50,13 +50,13 @@ class TestJsonApiRenderers(TestCase):
         output = self.renderer.render(
             data, self.media_type, self.make_context())
         expected = {
-            "browsers": [],
-            "meta": {
-                "pagination": {
-                    "browsers": {
-                        "count": 0,
-                        "next": None,
-                        "previous": None,
+            'browsers': [],
+            'meta': {
+                'pagination': {
+                    'browsers': {
+                        'count': 0,
+                        'next': None,
+                        'previous': None,
                     }
                 }
             }
@@ -93,32 +93,32 @@ class TestJsonApiRenderers(TestCase):
         output = self.renderer.render(
             data, self.media_type, self.make_context(url=url))
         expected = {
-            "browsers": [
+            'browsers': [
                 {
-                    "id": "1",
-                    "slug": "firefox_desktop",
-                    "name": {"en": "Firefox for Desktop"},
-                    "note": None,
-                    "links": {
-                        "versions": ["100", "101"],
-                        "history_current": "200",
-                        "history": ["200"],
+                    'id': '1',
+                    'slug': 'firefox_desktop',
+                    'name': {'en': 'Firefox for Desktop'},
+                    'note': None,
+                    'links': {
+                        'versions': ['100', '101'],
+                        'history_current': '200',
+                        'history': ['200'],
                     }
                 },
                 {
-                    "id": "2",
-                    "slug": "edge",
-                    "name": {"en": "Edge"},
-                    "note": None,
-                    "links": {
-                        "versions": ["300", "301"],
-                        "history_current": "400",
-                        "history": ["400"],
+                    'id': '2',
+                    'slug': 'edge',
+                    'name': {'en': 'Edge'},
+                    'note': None,
+                    'links': {
+                        'versions': ['300', '301'],
+                        'history_current': '400',
+                        'history': ['400'],
                     }
                 },
 
             ],
-            "links": {
+            'links': {
                 'browsers.versions': {
                     'type': 'versions',
                     'href': self.base_url + 'versions/{browsers.versions}',
@@ -136,12 +136,12 @@ class TestJsonApiRenderers(TestCase):
                         'historical_browsers/{browsers.history}'),
                 },
             },
-            "meta": {
-                "pagination": {
-                    "browsers": {
-                        "count": 2,
-                        "next": None,
-                        "previous": None,
+            'meta': {
+                'pagination': {
+                    'browsers': {
+                        'count': 2,
+                        'next': None,
+                        'previous': None,
                     }
                 }
             }
@@ -161,17 +161,17 @@ class TestJsonApiRenderers(TestCase):
         output = self.renderer.render(
             data, self.media_type, self.make_context(url=url))
         expected = {
-            "features": {
-                "id": "1",
-                "slug": "web",
-                "mdn_uri": None,
-                "name": {"en": "Web"},
-                "links": {
-                    "parent": None,
-                    "children": ['2', '3', '4', '5', '6', '7']
+            'features': {
+                'id': '1',
+                'slug': 'web',
+                'mdn_uri': None,
+                'name': {'en': 'Web'},
+                'links': {
+                    'parent': None,
+                    'children': ['2', '3', '4', '5', '6', '7']
                 }
             },
-            "links": {
+            'links': {
                 'features.parent': {
                     'type': 'features',
                     'href': self.base_url + 'features/{features.parent}',
@@ -200,18 +200,18 @@ class TestJsonApiRenderers(TestCase):
         output = self.renderer.render(
             data, self.media_type, self.make_context(url=url))
         expected = {
-            "features": {
-                "id": "1",
-                "slug": "web",
-                "mdn_uri": None,
-                "name": {"en": "Web"},
+            'features': {
+                'id': '1',
+                'slug': 'web',
+                'mdn_uri': None,
+                'name': {'en': 'Web'},
             },
         }
         self.assertJSONEqual(output.decode('utf8'), expected)
 
     def test_permission_denied(self):
         data = {
-            'detail': "You do not have permission to perform this action."
+            'detail': 'You do not have permission to perform this action.'
         }
         output = self.renderer.render(
             data, self.media_type, self.make_context(status_code=403))
@@ -270,41 +270,41 @@ class TestJsonApiRenderers(TestCase):
         output = self.renderer.render(
             data, self.media_type, self.make_context(url=url))
         expected = {
-            "features": {
-                "id": "1",
-                "slug": "web",
-                "mdn_uri": None,
-                "name": {"en": "Web"},
-                "links": {
-                    "parent": None,
-                    "children": ["2", "3"],
+            'features': {
+                'id': '1',
+                'slug': 'web',
+                'mdn_uri': None,
+                'name': {'en': 'Web'},
+                'links': {
+                    'parent': None,
+                    'children': ['2', '3'],
                 },
             },
-            "linked": {
-                "features": [
+            'linked': {
+                'features': [
                     {
-                        "id": "2",
-                        "slug": "css",
-                        "links": {"parent": "1"},
+                        'id': '2',
+                        'slug': 'css',
+                        'links': {'parent': '1'},
                     }, {
-                        "id": "3",
-                        "slug": "js",
-                        "links": {"parent": "1"},
+                        'id': '3',
+                        'slug': 'js',
+                        'links': {'parent': '1'},
                     }
                 ]
             },
-            "links": {
-                "features.children": {
-                    "type": "features",
-                    "href": self.base_url + "features/{features.children}",
+            'links': {
+                'features.children': {
+                    'type': 'features',
+                    'href': self.base_url + 'features/{features.children}',
                 },
-                "features.parent": {
-                    "type": "features",
-                    "href": self.base_url + "features/{features.parent}",
+                'features.parent': {
+                    'type': 'features',
+                    'href': self.base_url + 'features/{features.parent}',
                 },
             },
-            "meta": {
-                "foo": "bar"
+            'meta': {
+                'foo': 'bar'
             }
         }
         self.assertJSONEqual(output.decode('utf8'), expected)
@@ -321,9 +321,9 @@ class TestJsonApiRenderers(TestCase):
             data, self.media_type, self.make_context(status_code=400))
         expected = {
             'errors': [{
-                "status": "400",
-                "path": "/linked.features.0.parent",
-                "detail": "Feature must be a descendant."
+                'status': '400',
+                'path': '/linked.features.0.parent',
+                'detail': 'Feature must be a descendant.'
             }]
         }
         self.assertJSONEqual(output.decode('utf8'), expected)
@@ -340,9 +340,9 @@ class TestJsonApiRenderers(TestCase):
             data, self.media_type, self.make_context(status_code=400))
         expected = {
             'errors': [{
-                "status": "400",
-                "path": "/linked.features.subject.children",
-                "detail": "MYSTERY ERROR."
+                'status': '400',
+                'path': '/linked.features.subject.children',
+                'detail': 'MYSTERY ERROR.'
             }]
         }
         self.assertJSONEqual(output.decode('utf8'), expected)
@@ -368,5 +368,5 @@ class TestJsonApiRenderers(TestCase):
         context = self.make_context(
             url=url, serializer=BrowserSerializer, method='options')
         output = self.renderer.render(data, self.media_type, context)
-        expected = {"meta": data}
+        expected = {'meta': data}
         self.assertJSONEqual(output.decode('utf8'), expected)

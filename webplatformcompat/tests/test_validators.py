@@ -78,28 +78,28 @@ class SharedVersionAndStatusTests(object):
         self.validator(attrs)
 
     def test_empty_fails(self):
-        self.assertFailsValidation("", "unknown")
+        self.assertFailsValidation('', 'unknown')
 
     def test_float_unknown_ok(self):
-        self.assertPasses("1.0", "unknown")
+        self.assertPasses('1.0', 'unknown')
 
     def test_double_dotted_ok(self):
-        self.assertPasses("1.0.1", "unknown")
+        self.assertPasses('1.0.1', 'unknown')
 
     def test_current_current_ok(self):
-        self.assertPasses("current", "current")
+        self.assertPasses('current', 'current')
 
     def test_current_nightly_fails(self):
-        self.assertFailsValidation("nightly", "current")
+        self.assertFailsValidation('nightly', 'current')
 
     def test_current_future_fails(self):
-        self.assertFailsValidation("current", "future")
+        self.assertFailsValidation('current', 'future')
 
     def test_text_future_ok(self):
-        self.assertPasses("nightly", "future")
+        self.assertPasses('nightly', 'future')
 
     def test_number_future_fails(self):
-        self.assertFailsValidation("1.0", "future")
+        self.assertFailsValidation('1.0', 'future')
 
 
 class TestVersionAndStatusDjango(SharedVersionAndStatusTests, TestCase):
