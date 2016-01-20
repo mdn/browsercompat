@@ -60,7 +60,7 @@ def warn_about_converted(apps, schema_editor):
         "webplatformcompat", "HistoricalVersion")
     has_blank = HistoricalVersion.objects.filter(version='')
     if has_blank.exists():
-        print("\nWARNING: version=never used in past, not restored")
+        print("\nWARNING: version=<blank> used in past, not restored")
 
 
 class Migration(migrations.Migration):
