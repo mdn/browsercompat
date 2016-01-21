@@ -1,0 +1,32 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/2/user"
+    },
+    "data": {
+        "type": "users",
+        "id": "1",
+        "attributes": {
+            "username": "user",
+            "created": "2016-01-14T17:30:15.525902Z",
+            "agreement": 0,
+            "permissions": [
+                "change-resource",
+                "delete-resource"
+            ]
+        },
+        "relationships": {
+            "changesets": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/users/1/relationships/changesets",
+                    "related": "https://browsercompat.org/api/v2/users/1/changesets"
+                },
+                "data": [
+                    {
+                        "type": "changesets",
+                        "id": "1"
+                    }
+                ]
+            }
+        }
+    }
+}

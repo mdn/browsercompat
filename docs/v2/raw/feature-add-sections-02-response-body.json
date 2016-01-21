@@ -1,0 +1,60 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/specifications"
+    },
+    "data": {
+        "type": "specifications",
+        "id": "6",
+        "attributes": {
+            "slug": "html5_w3c",
+            "mdn_key": "HTML5 W3C",
+            "name": {
+                "en": "HTML5"
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/html5/"
+            }
+        },
+        "relationships": {
+            "maturity": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/relationships/maturity",
+                    "related": "https://browsercompat.org/api/v2/specifications/maturity"
+                },
+                "data": {
+                    "type": "maturities",
+                    "id": "1"
+                }
+            },
+            "sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/relationships/sections",
+                    "related": "https://browsercompat.org/api/v2/specifications/sections"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/specifications/history_current"
+                },
+                "data": {
+                    "type": "historical_specifications",
+                    "id": "6"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/specifications/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_specifications",
+                        "id": "6"
+                    }
+                ]
+            }
+        }
+    }
+}

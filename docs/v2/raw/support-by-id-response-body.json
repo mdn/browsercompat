@@ -1,0 +1,64 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/supports/22"
+    },
+    "data": {
+        "type": "supports",
+        "id": "22",
+        "attributes": {
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null
+        },
+        "relationships": {
+            "version": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/22/relationships/version",
+                    "related": "https://browsercompat.org/api/v2/supports/22/version"
+                },
+                "data": {
+                    "type": "versions",
+                    "id": "21"
+                }
+            },
+            "feature": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/22/relationships/feature",
+                    "related": "https://browsercompat.org/api/v2/supports/22/feature"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "12"
+                }
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/22/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/supports/22/history_current"
+                },
+                "data": {
+                    "type": "historical_supports",
+                    "id": "22"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/22/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/supports/22/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_supports",
+                        "id": "22"
+                    }
+                ]
+            }
+        }
+    }
+}

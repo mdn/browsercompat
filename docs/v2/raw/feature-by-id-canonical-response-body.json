@@ -1,0 +1,92 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features/10"
+    },
+    "data": {
+        "type": "features",
+        "id": "10",
+        "attributes": {
+            "slug": "web-css-transform-origin",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin",
+                "es": "https://developer.mozilla.org/es/docs/Web/CSS/transform-origin",
+                "fr": "https://developer.mozilla.org/fr/docs/Web/CSS/transform-origin",
+                "ja": "https://developer.mozilla.org/ja/docs/Web/CSS/transform-origin"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": "transform-origin"
+        },
+        "relationships": {
+            "parent": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/10/relationships/parent",
+                    "related": "https://browsercompat.org/api/v2/features/10/parent"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "2"
+                }
+            },
+            "children": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/10/relationships/children",
+                    "related": "https://browsercompat.org/api/v2/features/10/children"
+                },
+                "data": [
+                    {
+                        "type": "features",
+                        "id": "11"
+                    },
+                    {
+                        "type": "features",
+                        "id": "12"
+                    }
+                ]
+            },
+            "sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/10/relationships/sections",
+                    "related": "https://browsercompat.org/api/v2/features/10/sections"
+                },
+                "data": [
+                    {
+                        "type": "sections",
+                        "id": "4"
+                    }
+                ]
+            },
+            "supports": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/10/relationships/supports",
+                    "related": "https://browsercompat.org/api/v2/features/10/supports"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/10/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/features/10/history_current"
+                },
+                "data": {
+                    "type": "historical_features",
+                    "id": "10"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/10/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/features/10/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_features",
+                        "id": "10"
+                    }
+                ]
+            }
+        }
+    }
+}

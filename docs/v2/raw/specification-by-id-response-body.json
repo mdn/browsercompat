@@ -1,0 +1,65 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/specifications/2"
+    },
+    "data": {
+        "type": "specifications",
+        "id": "2",
+        "attributes": {
+            "slug": "css2_1",
+            "mdn_key": "CSS2.1",
+            "name": {
+                "en": "CSS Level&nbsp;2 (Revision&nbsp;1)"
+            },
+            "uri": {
+                "en": "http://www.w3.org/TR/CSS2/"
+            }
+        },
+        "relationships": {
+            "maturity": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/2/relationships/maturity",
+                    "related": "https://browsercompat.org/api/v2/specifications/2/maturity"
+                },
+                "data": {
+                    "type": "maturities",
+                    "id": "1"
+                }
+            },
+            "sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/2/relationships/sections",
+                    "related": "https://browsercompat.org/api/v2/specifications/2/sections"
+                },
+                "data": [
+                    {
+                        "type": "sections",
+                        "id": "2"
+                    }
+                ]
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/2/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/specifications/2/history_current"
+                },
+                "data": {
+                    "type": "historical_specifications",
+                    "id": "2"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/2/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/specifications/2/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_specifications",
+                        "id": "2"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "data": {
+        "type": "browsers",
+        "attributes": {
+            "slug": "amazon-silk-mobile",
+            "name": {
+                "en": "Amazon Silk Mobile"
+            }
+        }
+    }
+}

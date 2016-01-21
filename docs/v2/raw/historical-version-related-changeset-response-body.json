@@ -1,0 +1,82 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_versions/49/changeset"
+    },
+    "data": {
+        "type": "changesets",
+        "id": "13",
+        "attributes": {
+            "created": "2016-01-14T07:52:16.669000Z",
+            "modified": "2016-01-14T07:52:22.524000Z",
+            "closed": true,
+            "target_resource_type": null,
+            "target_resource_id": null
+        },
+        "relationships": {
+            "user": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/13/relationships/user",
+                    "related": "https://browsercompat.org/api/v2/changesets/13/user"
+                },
+                "data": {
+                    "type": "users",
+                    "id": "1"
+                }
+            },
+            "historical_browsers": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/13/relationships/historical_browsers",
+                    "related": "https://browsercompat.org/api/v2/changesets/13/historical_browsers"
+                },
+                "data": []
+            },
+            "historical_features": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/13/relationships/historical_features",
+                    "related": "https://browsercompat.org/api/v2/changesets/13/historical_features"
+                },
+                "data": []
+            },
+            "historical_maturities": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/13/relationships/historical_maturities",
+                    "related": "https://browsercompat.org/api/v2/changesets/13/historical_maturities"
+                },
+                "data": []
+            },
+            "historical_sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/13/relationships/historical_sections",
+                    "related": "https://browsercompat.org/api/v2/changesets/13/historical_sections"
+                },
+                "data": []
+            },
+            "historical_specifications": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/13/relationships/historical_specifications",
+                    "related": "https://browsercompat.org/api/v2/changesets/13/historical_specifications"
+                },
+                "data": []
+            },
+            "historical_supports": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/13/relationships/historical_supports",
+                    "related": "https://browsercompat.org/api/v2/changesets/13/historical_supports"
+                },
+                "data": []
+            },
+            "historical_versions": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/13/relationships/historical_versions",
+                    "related": "https://browsercompat.org/api/v2/changesets/13/historical_versions"
+                },
+                "data": [
+                    {
+                        "type": "historical_versions",
+                        "id": "49"
+                    }
+                ]
+            }
+        }
+    }
+}

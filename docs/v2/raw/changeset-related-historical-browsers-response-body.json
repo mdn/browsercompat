@@ -1,0 +1,62 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/2/historical_browsers",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_browsers",
+            "id": "16",
+            "attributes": {
+                "date": "2016-01-14T17:44:18.450097Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "browsers",
+                    "id": "16",
+                    "attributes": {
+                        "slug": "amazon-silk-mobile",
+                        "name": {
+                            "en": "Amazon Silk Mobile"
+                        },
+                        "note": null
+                    },
+                    "relationships": {
+                        "versions": {
+                            "data": []
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_browsers",
+                                "id": "16"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/browsers/16"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "2"
+                    }
+                },
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "16"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_browsers/16"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

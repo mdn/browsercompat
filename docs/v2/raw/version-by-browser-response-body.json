@@ -1,0 +1,277 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/versions?filter[browser]=7",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "versions",
+            "id": "17",
+            "attributes": {
+                "version": "current",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "current",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 0
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "7"
+                    }
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "17"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "17"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/17"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "18",
+            "attributes": {
+                "version": "1.0",
+                "release_day": "2004-11-09",
+                "retirement_day": "2005-11-29",
+                "status": "retired",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "7"
+                    }
+                },
+                "supports": {
+                    "data": [
+                        {
+                            "type": "supports",
+                            "id": "4"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "18"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "18"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/18"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "19",
+            "attributes": {
+                "version": "3.5",
+                "release_day": "2009-06-30",
+                "retirement_day": "2010-01-21",
+                "status": "retired",
+                "release_notes_uri": {
+                    "en": "https://developer.mozilla.org/en/Firefox/Releases/3.5",
+                    "de": "https://developer.mozilla.org/de/docs/Firefox_3.5_f%C3%BCr_Entwickler",
+                    "es": "https://developer.mozilla.org/es/docs/Firefox_3.5_para_desarrolladores",
+                    "fr": "https://developer.mozilla.org/fr/Firefox/Versions/3.5",
+                    "ja": "https://developer.mozilla.org/ja/Firefox/Releases/3.5",
+                    "ko": "https://developer.mozilla.org/ko/docs/Firefox_3.5_for_developers",
+                    "pl": "https://developer.mozilla.org/pl/Firefox/Releases/3.5",
+                    "pt-PT": "https://developer.mozilla.org/pt-PT/docs/Firefox_3.5_para_desenvolvedores",
+                    "ru": "https://developer.mozilla.org/ru/docs/Firefox_3.5_%D0%B4%D0%BB%D1%8F_%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B0",
+                    "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/3.5",
+                    "zh-TW": "https://developer.mozilla.org/zh-TW/docs/Firefox_3.1_%E6%8A%80%E8%A1%93%E6%96%87%E4%BB%B6"
+                },
+                "note": null,
+                "order": 2
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "7"
+                    }
+                },
+                "supports": {
+                    "data": [
+                        {
+                            "type": "supports",
+                            "id": "13"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "19"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "19"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/19"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "20",
+            "attributes": {
+                "version": "10.0",
+                "release_day": "2012-01-31",
+                "retirement_day": "2012-03-13",
+                "status": "retired",
+                "release_notes_uri": {
+                    "en": "https://developer.mozilla.org/en/Firefox/Releases/10",
+                    "de": "https://developer.mozilla.org/de/Firefox/Releases/10",
+                    "es": "https://developer.mozilla.org/es/Firefox/Releases/10",
+                    "fr": "https://developer.mozilla.org/fr/Firefox/Releases/10",
+                    "ja": "https://developer.mozilla.org/ja/docs/Firefox_10_for_developers",
+                    "ko": "https://developer.mozilla.org/ko/Firefox/Releases/10",
+                    "pl": "https://developer.mozilla.org/pl/Firefox/Releases/10",
+                    "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/10",
+                    "ru": "https://developer.mozilla.org/ru/Firefox/Releases/10",
+                    "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/10",
+                    "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/10"
+                },
+                "note": null,
+                "order": 3
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "7"
+                    }
+                },
+                "supports": {
+                    "data": [
+                        {
+                            "type": "supports",
+                            "id": "21"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "20"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "20"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/20"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "21",
+            "attributes": {
+                "version": "16.0",
+                "release_day": "2012-10-09",
+                "retirement_day": "2012-11-20",
+                "status": "retired",
+                "release_notes_uri": {
+                    "en": "https://developer.mozilla.org/en/Firefox/Releases/16",
+                    "de": "https://developer.mozilla.org/de/Firefox/Releases/16",
+                    "es": "https://developer.mozilla.org/es/Firefox/Releases/16",
+                    "fr": "https://developer.mozilla.org/fr/Firefox/Versions/16",
+                    "ja": "https://developer.mozilla.org/ja/Firefox/Releases/16",
+                    "ko": "https://developer.mozilla.org/ko/Firefox/Releases/16",
+                    "pl": "https://developer.mozilla.org/pl/Firefox/Releases/16",
+                    "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/16",
+                    "ru": "https://developer.mozilla.org/ru/Firefox/Releases/16",
+                    "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/16",
+                    "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/16"
+                },
+                "note": null,
+                "order": 4
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "7"
+                    }
+                },
+                "supports": {
+                    "data": [
+                        {
+                            "type": "supports",
+                            "id": "12"
+                        },
+                        {
+                            "type": "supports",
+                            "id": "22"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "21"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "21"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/21"
+            }
+        }
+    ],
+    "meta": {
+        "count": 5
+    }
+}

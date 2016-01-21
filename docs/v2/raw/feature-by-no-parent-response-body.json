@@ -1,0 +1,63 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features?filter[parent]=",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "features",
+            "id": "1",
+            "attributes": {
+                "slug": "web",
+                "mdn_uri": null,
+                "experimental": false,
+                "standardized": true,
+                "stable": true,
+                "obsolete": false,
+                "name": {
+                    "en": "Web"
+                }
+            },
+            "relationships": {
+                "parent": {
+                    "data": null
+                },
+                "children": {
+                    "data": [
+                        {
+                            "type": "features",
+                            "id": "2"
+                        }
+                    ]
+                },
+                "sections": {
+                    "data": []
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_features",
+                        "id": "1"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_features",
+                            "id": "1"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/features/1"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

@@ -1,0 +1,68 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/versions/21/browser"
+    },
+    "data": {
+        "type": "browsers",
+        "id": "7",
+        "attributes": {
+            "slug": "firefox_desktop",
+            "name": {
+                "en": "Firefox for Desktop"
+            },
+            "note": null
+        },
+        "relationships": {
+            "versions": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/browsers/7/relationships/versions",
+                    "related": "https://browsercompat.org/api/v2/browsers/7/versions"
+                },
+                "data": [
+                    {
+                        "type": "versions",
+                        "id": "17"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "18"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "19"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "20"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "21"
+                    }
+                ]
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/browsers/7/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/browsers/7/history_current"
+                },
+                "data": {
+                    "type": "historical_browsers",
+                    "id": "7"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/browsers/7/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/browsers/7/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_browsers",
+                        "id": "7"
+                    }
+                ]
+            }
+        }
+    }
+}

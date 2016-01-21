@@ -1,0 +1,59 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/versions"
+    },
+    "data": {
+        "type": "versions",
+        "id": "48",
+        "attributes": {
+            "version": "17.0",
+            "release_day": null,
+            "retirement_day": null,
+            "status": "unknown",
+            "release_notes_uri": null,
+            "note": null,
+            "order": 5
+        },
+        "relationships": {
+            "browser": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/relationships/browser",
+                    "related": "https://browsercompat.org/api/v2/versions/browser"
+                },
+                "data": {
+                    "type": "browsers",
+                    "id": "7"
+                }
+            },
+            "supports": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/relationships/supports",
+                    "related": "https://browsercompat.org/api/v2/versions/supports"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/versions/history_current"
+                },
+                "data": {
+                    "type": "historical_versions",
+                    "id": "48"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/versions/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_versions",
+                        "id": "48"
+                    }
+                ]
+            }
+        }
+    }
+}

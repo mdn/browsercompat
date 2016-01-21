@@ -1,0 +1,70 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/24/historical_sections",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_sections",
+            "id": "5",
+            "attributes": {
+                "date": "2016-01-14T18:19:05.644324Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "sections",
+                    "id": "5",
+                    "attributes": {
+                        "number": {
+                            "en": "4.8.11"
+                        },
+                        "name": {
+                            "en": "The audio element"
+                        },
+                        "subpath": {
+                            "en": "embedded-content.html#the-audio-element"
+                        },
+                        "note": null
+                    },
+                    "relationships": {
+                        "specification": {
+                            "data": {
+                                "type": "specifications",
+                                "id": "5"
+                            }
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_sections",
+                                "id": "5"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/sections/5"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "24"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "5"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_sections/5"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

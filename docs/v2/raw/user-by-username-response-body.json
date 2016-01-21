@@ -1,0 +1,33 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/users?filter[username]=user",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "users",
+            "id": "1",
+            "attributes": {
+                "username": "user",
+                "created": "2016-01-08T22:22:03.989333Z",
+                "agreement": 0,
+                "permissions": [
+                    "change-resource",
+                    "delete-resource"
+                ]
+            },
+            "relationships": {
+                "changesets": {
+                    "data": []
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/users/1"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

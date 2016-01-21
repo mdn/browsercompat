@@ -1,0 +1,66 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/browsers?filter[slug]=firefox_desktop",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "browsers",
+            "id": "7",
+            "attributes": {
+                "slug": "firefox_desktop",
+                "name": {
+                    "en": "Firefox for Desktop"
+                },
+                "note": null
+            },
+            "relationships": {
+                "versions": {
+                    "data": [
+                        {
+                            "type": "versions",
+                            "id": "17"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "18"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "19"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "20"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "21"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_browsers",
+                        "id": "7"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_browsers",
+                            "id": "7"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/browsers/7"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

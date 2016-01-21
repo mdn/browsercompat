@@ -1,0 +1,17 @@
+{
+    "data": {
+        "type": "versions",
+        "attributes": {
+            "version": "Developer Edition",
+            "status": "current"
+        },
+        "relationships": {
+            "browser": {
+                "data": {
+                    "type": "browsers",
+                    "id": "6"
+                }
+            }
+        }
+    }
+}

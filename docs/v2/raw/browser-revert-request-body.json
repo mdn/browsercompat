@@ -1,0 +1,14 @@
+{
+    "data": {
+        "type": "browsers",
+        "id": "9",
+        "relationships": {
+            "history_current": {
+                "data": {
+                    "type": "historical_browsers",
+                    "id": "9"
+                }
+            }
+        }
+    }
+}

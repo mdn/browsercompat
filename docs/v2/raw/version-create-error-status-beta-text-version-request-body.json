@@ -1,0 +1,17 @@
+{
+    "data": {
+        "type": "versions",
+        "attributes": {
+            "version": "Nightly",
+            "status": "beta"
+        },
+        "relationships": {
+            "browser": {
+                "data": {
+                    "type": "browsers",
+                    "id": "6"
+                }
+            }
+        }
+    }
+}

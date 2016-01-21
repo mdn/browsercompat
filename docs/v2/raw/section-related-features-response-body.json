@@ -1,0 +1,83 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/sections/3/features",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "features",
+            "id": "5",
+            "attributes": {
+                "slug": "web-css-float",
+                "mdn_uri": {
+                    "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+                    "de": "https://developer.mozilla.org/de/docs/Web/CSS/float",
+                    "es": "https://developer.mozilla.org/es/docs/Web/CSS/float",
+                    "ja": "https://developer.mozilla.org/ja/docs/Web/CSS/float",
+                    "ru": "https://developer.mozilla.org/ru/docs/Web/CSS/float"
+                },
+                "experimental": false,
+                "standardized": true,
+                "stable": true,
+                "obsolete": false,
+                "name": "float"
+            },
+            "relationships": {
+                "parent": {
+                    "data": {
+                        "type": "features",
+                        "id": "2"
+                    }
+                },
+                "children": {
+                    "data": [
+                        {
+                            "type": "features",
+                            "id": "6"
+                        }
+                    ]
+                },
+                "sections": {
+                    "data": [
+                        {
+                            "type": "sections",
+                            "id": "1"
+                        },
+                        {
+                            "type": "sections",
+                            "id": "2"
+                        },
+                        {
+                            "type": "sections",
+                            "id": "3"
+                        }
+                    ]
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_features",
+                        "id": "5"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_features",
+                            "id": "5"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/features/5"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

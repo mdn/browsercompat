@@ -1,0 +1,28 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/browsers/7/relationships/versions",
+        "related": "https://browsercompat.org/api/v2/browsers/7/versions"
+    },
+    "data": [
+        {
+            "type": "versions",
+            "id": "17"
+        },
+        {
+            "type": "versions",
+            "id": "18"
+        },
+        {
+            "type": "versions",
+            "id": "19"
+        },
+        {
+            "type": "versions",
+            "id": "20"
+        },
+        {
+            "type": "versions",
+            "id": "21"
+        }
+    ]
+}

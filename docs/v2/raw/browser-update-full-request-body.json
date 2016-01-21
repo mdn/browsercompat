@@ -1,0 +1,56 @@
+{
+    "data": {
+        "type": "browsers",
+        "id": "9",
+        "attributes": {
+            "slug": "ie_desktop",
+            "name": {
+                "en": "Microsoft Internet Explorer"
+            },
+            "note": null
+        },
+        "relationships": {
+            "versions": {
+                "data": [
+                    {
+                        "type": "versions",
+                        "id": "25"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "26"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "27"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "28"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "29"
+                    }
+                ],
+                "links": {}
+            },
+            "history_current": {
+                "data": {
+                    "type": "historical_browsers",
+                    "id": "9"
+                },
+                "links": {}
+            },
+            "history": {
+                "data": [
+                    {
+                        "type": "historical_browsers",
+                        "id": "9"
+                    }
+                ],
+                "links": {}
+            }
+        }
+    }
+}

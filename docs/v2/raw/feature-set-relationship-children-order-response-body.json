@@ -1,0 +1,40 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features/2/relationships/children",
+        "related": "https://browsercompat.org/api/v2/features/2/children"
+    },
+    "data": [
+        {
+            "type": "features",
+            "id": "3"
+        },
+        {
+            "type": "features",
+            "id": "4"
+        },
+        {
+            "type": "features",
+            "id": "5"
+        },
+        {
+            "type": "features",
+            "id": "7"
+        },
+        {
+            "type": "features",
+            "id": "8"
+        },
+        {
+            "type": "features",
+            "id": "13"
+        },
+        {
+            "type": "features",
+            "id": "9"
+        },
+        {
+            "type": "features",
+            "id": "10"
+        }
+    ]
+}

@@ -1,0 +1,71 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/22/historical_specifications",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_specifications",
+            "id": "5",
+            "attributes": {
+                "date": "2016-01-14T18:19:05.596076Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "specifications",
+                    "id": "5",
+                    "attributes": {
+                        "slug": "html_whatwg",
+                        "mdn_key": "HTML WHATWG",
+                        "name": {
+                            "en": "WHATWG HTML Living Standard"
+                        },
+                        "uri": {
+                            "en": "https://html.spec.whatwg.org/multipage/"
+                        }
+                    },
+                    "relationships": {
+                        "maturity": {
+                            "data": {
+                                "type": "maturities",
+                                "id": "6"
+                            }
+                        },
+                        "sections": {
+                            "data": []
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_specifications",
+                                "id": "5"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/specifications/5"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "22"
+                    }
+                },
+                "specification": {
+                    "data": {
+                        "type": "specifications",
+                        "id": "5"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_specifications/5"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

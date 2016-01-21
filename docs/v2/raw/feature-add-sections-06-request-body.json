@@ -1,0 +1,19 @@
+{
+    "data": {
+        "type": "features",
+        "attributes": {
+            "slug": "web-html-element",
+            "name": {
+                "en": "Element"
+            }
+        },
+        "relationships": {
+            "parent": {
+                "data": {
+                    "type": "features",
+                    "id": "16"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,110 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/supports/22/feature"
+    },
+    "data": {
+        "type": "features",
+        "id": "12",
+        "attributes": {
+            "slug": "web-css-transform-three-value-syntax",
+            "mdn_uri": null,
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": {
+                "en": "Three-value syntax",
+                "es": "Sintaxis con tres valores",
+                "ja": "3-値構文"
+            }
+        },
+        "relationships": {
+            "parent": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/12/relationships/parent",
+                    "related": "https://browsercompat.org/api/v2/features/12/parent"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "10"
+                }
+            },
+            "children": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/12/relationships/children",
+                    "related": "https://browsercompat.org/api/v2/features/12/children"
+                },
+                "data": []
+            },
+            "sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/12/relationships/sections",
+                    "related": "https://browsercompat.org/api/v2/features/12/sections"
+                },
+                "data": []
+            },
+            "supports": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/12/relationships/supports",
+                    "related": "https://browsercompat.org/api/v2/features/12/supports"
+                },
+                "data": [
+                    {
+                        "type": "supports",
+                        "id": "20"
+                    },
+                    {
+                        "type": "supports",
+                        "id": "21"
+                    },
+                    {
+                        "type": "supports",
+                        "id": "22"
+                    },
+                    {
+                        "type": "supports",
+                        "id": "23"
+                    },
+                    {
+                        "type": "supports",
+                        "id": "24"
+                    },
+                    {
+                        "type": "supports",
+                        "id": "25"
+                    },
+                    {
+                        "type": "supports",
+                        "id": "26"
+                    }
+                ]
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/12/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/features/12/history_current"
+                },
+                "data": {
+                    "type": "historical_features",
+                    "id": "16"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/12/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/features/12/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_features",
+                        "id": "16"
+                    },
+                    {
+                        "type": "historical_features",
+                        "id": "12"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,334 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features/12/supports",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "supports",
+            "id": "20",
+            "attributes": {
+                "support": "yes",
+                "prefix": "--webkit",
+                "prefix_mandatory": true,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null
+            },
+            "relationships": {
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "8"
+                    }
+                },
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "12"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_supports",
+                        "id": "20"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_supports",
+                            "id": "20"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/supports/20"
+            }
+        },
+        {
+            "type": "supports",
+            "id": "21",
+            "attributes": {
+                "support": "yes",
+                "prefix": "--moz",
+                "prefix_mandatory": true,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null
+            },
+            "relationships": {
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "20"
+                    }
+                },
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "12"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_supports",
+                        "id": "21"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_supports",
+                            "id": "21"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/supports/21"
+            }
+        },
+        {
+            "type": "supports",
+            "id": "22",
+            "attributes": {
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null
+            },
+            "relationships": {
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "21"
+                    }
+                },
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "12"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_supports",
+                        "id": "22"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_supports",
+                            "id": "22"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/supports/22"
+            }
+        },
+        {
+            "type": "supports",
+            "id": "23",
+            "attributes": {
+                "support": "yes",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null
+            },
+            "relationships": {
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "29"
+                    }
+                },
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "12"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_supports",
+                        "id": "23"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_supports",
+                            "id": "23"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/supports/23"
+            }
+        },
+        {
+            "type": "supports",
+            "id": "24",
+            "attributes": {
+                "support": "no",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null
+            },
+            "relationships": {
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "33"
+                    }
+                },
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "12"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_supports",
+                        "id": "24"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_supports",
+                            "id": "24"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/supports/24"
+            }
+        },
+        {
+            "type": "supports",
+            "id": "25",
+            "attributes": {
+                "support": "no",
+                "prefix": null,
+                "prefix_mandatory": false,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null
+            },
+            "relationships": {
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "38"
+                    }
+                },
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "12"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_supports",
+                        "id": "25"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_supports",
+                            "id": "25"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/supports/25"
+            }
+        },
+        {
+            "type": "supports",
+            "id": "26",
+            "attributes": {
+                "support": "yes",
+                "prefix": "--webkit",
+                "prefix_mandatory": true,
+                "alternate_name": null,
+                "alternate_mandatory": false,
+                "requires_config": null,
+                "default_config": null,
+                "protected": false,
+                "note": null
+            },
+            "relationships": {
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "41"
+                    }
+                },
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "12"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_supports",
+                        "id": "26"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_supports",
+                            "id": "26"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/supports/26"
+            }
+        }
+    ],
+    "meta": {
+        "count": 7
+    }
+}

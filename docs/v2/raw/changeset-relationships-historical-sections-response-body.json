@@ -1,0 +1,12 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/24/relationships/historical_sections",
+        "related": "https://browsercompat.org/api/v2/changesets/24/historical_sections"
+    },
+    "data": [
+        {
+            "type": "historical_sections",
+            "id": "5"
+        }
+    ]
+}

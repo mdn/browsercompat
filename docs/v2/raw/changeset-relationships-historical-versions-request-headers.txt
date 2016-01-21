@@ -1,0 +1,3 @@
+GET /api/v2/changesets/12/relationships/historical_versions HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json

@@ -1,0 +1,10 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/2/relationships/user",
+        "related": "https://browsercompat.org/api/v2/changesets/2/user"
+    },
+    "data": {
+        "type": "users",
+        "id": "1"
+    }
+}

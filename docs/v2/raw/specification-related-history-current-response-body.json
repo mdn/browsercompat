@@ -1,0 +1,69 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/specifications/2/history_current"
+    },
+    "data": {
+        "type": "historical_specifications",
+        "id": "2",
+        "attributes": {
+            "date": "2016-01-14T14:52:07.616990Z",
+            "event": "created",
+            "archive_data": {
+                "type": "specifications",
+                "id": "2",
+                "attributes": {
+                    "slug": "css2_1",
+                    "mdn_key": "CSS2.1",
+                    "name": {
+                        "en": "CSS Level&nbsp;2 (Revision&nbsp;1)"
+                    },
+                    "uri": {
+                        "en": "http://www.w3.org/TR/CSS2/"
+                    }
+                },
+                "relationships": {
+                    "maturity": {
+                        "data": {
+                            "type": "maturities",
+                            "id": "1"
+                        }
+                    },
+                    "sections": {
+                        "data": []
+                    },
+                    "history_current": {
+                        "data": {
+                            "type": "historical_specifications",
+                            "id": "2"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/2"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_specifications/2/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_specifications/2/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "1"
+                }
+            },
+            "specification": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_specifications/2/relationships/specification",
+                    "related": "https://browsercompat.org/api/v2/historical_specifications/2/specification"
+                },
+                "data": {
+                    "type": "specifications",
+                    "id": "2"
+                }
+            }
+        }
+    }
+}

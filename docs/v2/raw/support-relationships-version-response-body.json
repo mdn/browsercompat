@@ -1,0 +1,10 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/supports/22/relationships/version",
+        "related": "https://browsercompat.org/api/v2/supports/22/version"
+    },
+    "data": {
+        "type": "versions",
+        "id": "21"
+    }
+}

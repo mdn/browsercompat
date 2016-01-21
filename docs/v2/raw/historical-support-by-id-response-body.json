@@ -1,0 +1,75 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_supports/28"
+    },
+    "data": {
+        "type": "historical_supports",
+        "id": "28",
+        "attributes": {
+            "date": "2016-01-14T08:08:03.582000Z",
+            "event": "created",
+            "archive_data": {
+                "type": "supports",
+                "id": "28",
+                "attributes": {
+                    "support": "partial",
+                    "prefix": "-o",
+                    "prefix_mandatory": true,
+                    "alternate_name": "float",
+                    "alternate_mandatory": true,
+                    "requires_config": "future=true",
+                    "default_config": "future=false",
+                    "protected": true,
+                    "note": {
+                        "en": "This is fake."
+                    }
+                },
+                "relationships": {
+                    "version": {
+                        "data": {
+                            "type": "versions",
+                            "id": "37"
+                        }
+                    },
+                    "feature": {
+                        "data": {
+                            "type": "features",
+                            "id": "6"
+                        }
+                    },
+                    "history_current": {
+                        "data": {
+                            "type": "historical_supports",
+                            "id": "28"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/28"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_supports/28/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_supports/28/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "36"
+                }
+            },
+            "support": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_supports/28/relationships/support",
+                    "related": "https://browsercompat.org/api/v2/historical_supports/28/support"
+                },
+                "data": {
+                    "type": "supports",
+                    "id": "28"
+                }
+            }
+        }
+    }
+}

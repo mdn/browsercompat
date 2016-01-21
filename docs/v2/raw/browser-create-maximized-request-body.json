@@ -1,0 +1,14 @@
+{
+    "data": {
+        "type": "browsers",
+        "attributes": {
+            "slug": "konqueror",
+            "name": {
+                "en": "Konqueror"
+            },
+            "note": {
+                "en": "First comes the Navigator, then Explorer, and then the Konqueror."
+            }
+        }
+    }
+}

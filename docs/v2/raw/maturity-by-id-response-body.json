@@ -1,0 +1,62 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/maturities/1"
+    },
+    "data": {
+        "type": "maturities",
+        "id": "1",
+        "attributes": {
+            "slug": "REC",
+            "name": {
+                "en": "Recommendation",
+                "de": "Empfehlung",
+                "ja": "勧告",
+                "ru": "Рекомендация"
+            }
+        },
+        "relationships": {
+            "specifications": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/maturities/1/relationships/specifications",
+                    "related": "https://browsercompat.org/api/v2/maturities/1/specifications"
+                },
+                "data": [
+                    {
+                        "type": "specifications",
+                        "id": "1"
+                    },
+                    {
+                        "type": "specifications",
+                        "id": "2"
+                    },
+                    {
+                        "type": "specifications",
+                        "id": "6"
+                    }
+                ]
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/maturities/1/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/maturities/1/history_current"
+                },
+                "data": {
+                    "type": "historical_maturities",
+                    "id": "1"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/maturities/1/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/maturities/1/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_maturities",
+                        "id": "1"
+                    }
+                ]
+            }
+        }
+    }
+}

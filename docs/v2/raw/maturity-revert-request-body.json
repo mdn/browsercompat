@@ -1,0 +1,14 @@
+{
+    "data": {
+        "id": "9",
+        "type": "maturities",
+        "relationships": {
+            "history_current": {
+                "data": {
+                    "type": "historical_maturities",
+                    "id": "9"
+                }
+            }
+        }
+    }
+}

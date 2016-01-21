@@ -1,0 +1,60 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/specifications"
+    },
+    "data": {
+        "type": "specifications",
+        "id": "5",
+        "attributes": {
+            "slug": "html_whatwg",
+            "mdn_key": "HTML WHATWG",
+            "name": {
+                "en": "WHATWG HTML Living Standard"
+            },
+            "uri": {
+                "en": "https://html.spec.whatwg.org/multipage/"
+            }
+        },
+        "relationships": {
+            "maturity": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/relationships/maturity",
+                    "related": "https://browsercompat.org/api/v2/specifications/maturity"
+                },
+                "data": {
+                    "type": "maturities",
+                    "id": "6"
+                }
+            },
+            "sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/relationships/sections",
+                    "related": "https://browsercompat.org/api/v2/specifications/sections"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/specifications/history_current"
+                },
+                "data": {
+                    "type": "historical_specifications",
+                    "id": "5"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/specifications/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_specifications",
+                        "id": "5"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,79 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/versions/21/history",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_versions",
+            "id": "21",
+            "attributes": {
+                "date": "2016-01-08T22:33:20.350402Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "versions",
+                    "id": "21",
+                    "attributes": {
+                        "version": "16.0",
+                        "release_day": "2012-10-09",
+                        "retirement_day": "2012-11-20",
+                        "status": "retired",
+                        "release_notes_uri": {
+                            "en": "https://developer.mozilla.org/en/Firefox/Releases/16",
+                            "de": "https://developer.mozilla.org/de/Firefox/Releases/16",
+                            "es": "https://developer.mozilla.org/es/Firefox/Releases/16",
+                            "fr": "https://developer.mozilla.org/fr/Firefox/Versions/16",
+                            "ja": "https://developer.mozilla.org/ja/Firefox/Releases/16",
+                            "ko": "https://developer.mozilla.org/ko/Firefox/Releases/16",
+                            "pl": "https://developer.mozilla.org/pl/Firefox/Releases/16",
+                            "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/16",
+                            "ru": "https://developer.mozilla.org/ru/Firefox/Releases/16",
+                            "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/16",
+                            "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/16"
+                        },
+                        "note": null,
+                        "order": 4
+                    },
+                    "relationships": {
+                        "browser": {
+                            "data": {
+                                "type": "browsers",
+                                "id": "7"
+                            }
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_versions",
+                                "id": "21"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/versions/21"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "1"
+                    }
+                },
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "21"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_versions/21"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

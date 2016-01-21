@@ -1,0 +1,3 @@
+GET /api/v2/features/10/parent HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json

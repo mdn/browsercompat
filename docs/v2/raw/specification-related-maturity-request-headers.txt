@@ -1,0 +1,3 @@
+GET /api/v2/specifications/2/maturity HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json

@@ -1,0 +1,9 @@
+{
+    "errors": [
+        {
+            "status": "400",
+            "detail": "With status \"future\", version must be non-numeric. Use status \"beta\" for future numbered versions.",
+            "path": "/data/attributes/version"
+        }
+    ]
+}

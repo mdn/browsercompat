@@ -1,0 +1,62 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_browsers/17"
+    },
+    "data": {
+        "type": "historical_browsers",
+        "id": "17",
+        "attributes": {
+            "date": "2016-01-14T06:30:59.618000Z",
+            "event": "created",
+            "archive_data": {
+                "type": "browsers",
+                "id": "17",
+                "attributes": {
+                    "slug": "konqueror",
+                    "name": {
+                        "en": "Konqueror"
+                    },
+                    "note": {
+                        "en": "First comes the Navigator, then Explorer, and then the Konqueror."
+                    }
+                },
+                "relationships": {
+                    "versions": {
+                        "data": []
+                    },
+                    "history_current": {
+                        "data": {
+                            "type": "historical_browsers",
+                            "id": "17"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/browsers/17"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_browsers/17/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_browsers/17/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "3"
+                }
+            },
+            "browser": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_browsers/17/relationships/browser",
+                    "related": "https://browsercompat.org/api/v2/historical_browsers/17/browser"
+                },
+                "data": {
+                    "type": "browsers",
+                    "id": "17"
+                }
+            }
+        }
+    }
+}

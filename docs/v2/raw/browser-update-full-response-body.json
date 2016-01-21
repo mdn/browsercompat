@@ -1,0 +1,72 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/browsers/9"
+    },
+    "data": {
+        "type": "browsers",
+        "id": "9",
+        "attributes": {
+            "slug": "ie_desktop",
+            "name": {
+                "en": "Microsoft Internet Explorer"
+            },
+            "note": null
+        },
+        "relationships": {
+            "versions": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/browsers/9/relationships/versions",
+                    "related": "https://browsercompat.org/api/v2/browsers/9/versions"
+                },
+                "data": [
+                    {
+                        "type": "versions",
+                        "id": "25"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "26"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "27"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "28"
+                    },
+                    {
+                        "type": "versions",
+                        "id": "29"
+                    }
+                ]
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/browsers/9/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/browsers/9/history_current"
+                },
+                "data": {
+                    "type": "historical_browsers",
+                    "id": "19"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/browsers/9/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/browsers/9/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_browsers",
+                        "id": "19"
+                    },
+                    {
+                        "type": "historical_browsers",
+                        "id": "9"
+                    }
+                ]
+            }
+        }
+    }
+}

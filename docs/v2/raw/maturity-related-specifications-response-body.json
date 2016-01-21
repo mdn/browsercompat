@@ -1,0 +1,110 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/maturities/2/specifications",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "specifications",
+            "id": "3",
+            "attributes": {
+                "slug": "css3_box",
+                "mdn_key": "CSS3 Box",
+                "name": {
+                    "en": "CSS Basic Box Model"
+                },
+                "uri": {
+                    "en": "http://dev.w3.org/csswg/css3-box/"
+                }
+            },
+            "relationships": {
+                "maturity": {
+                    "data": {
+                        "type": "maturities",
+                        "id": "2"
+                    }
+                },
+                "sections": {
+                    "data": [
+                        {
+                            "type": "sections",
+                            "id": "3"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_specifications",
+                        "id": "3"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_specifications",
+                            "id": "3"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/specifications/3"
+            }
+        },
+        {
+            "type": "specifications",
+            "id": "4",
+            "attributes": {
+                "slug": "css3_transforms",
+                "mdn_key": "CSS3 Transforms",
+                "name": {
+                    "en": "CSS Transforms Level&nbsp;1"
+                },
+                "uri": {
+                    "en": "http://dev.w3.org/csswg/css-transforms/"
+                }
+            },
+            "relationships": {
+                "maturity": {
+                    "data": {
+                        "type": "maturities",
+                        "id": "2"
+                    }
+                },
+                "sections": {
+                    "data": [
+                        {
+                            "type": "sections",
+                            "id": "4"
+                        },
+                        {
+                            "type": "sections",
+                            "id": "8"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_specifications",
+                        "id": "4"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_specifications",
+                            "id": "4"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/specifications/4"
+            }
+        }
+    ],
+    "meta": {
+        "count": 2
+    }
+}

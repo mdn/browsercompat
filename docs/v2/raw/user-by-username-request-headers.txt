@@ -1,0 +1,3 @@
+GET /api/v2/users?filter[username]=user HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json
