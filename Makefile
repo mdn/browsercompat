@@ -47,8 +47,13 @@ install-jslint:
 	npm install -g jslint
 	rm -rf .node_src_tmp
 
-test-integration:
-	tools/run_integration_tests.sh
+test-integration-v1:
+	tools/run_integration_tests.sh -a v1
+
+test-integration-v2:
+	tools/run_integration_tests.sh -a v2
+
+test-integration: test-integration-v1 test-integration-v2
 
 test-all:
 	tox
@@ -65,9 +70,15 @@ docs:
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
 
-docs-regen-api:
-	rm -f docs/raw/*
-	tools/run_integration_tests.sh -g
+docs-regen-api-v1:
+	rm -f docs/v1/raw/*
+	tools/run_integration_tests.sh -a v1 -g
+
+docs-regen-api-v2:
+	rm -f docs/v2/raw/*
+	tools/run_integration_tests.sh -a v2 -g
+
+docs-regen-api: docs-regen-api-v1 docs-regen-api-v2
 
 docs-fresh: docs-regen-api docs
 

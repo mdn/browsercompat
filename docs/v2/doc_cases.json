@@ -1,0 +1,10 @@
+[
+    {
+        "name": "user-by-id",
+        "method": "GET",
+        "endpoint": "users/1",
+        "standardize": {
+            "created": "2016-01-08T22:21:50.254130Z"
+        }
+    }
+]

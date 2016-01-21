@@ -21,6 +21,7 @@ usage () {
   local errnum=${1:-0}
   echo "Make requests against a local API server with known data. Usage:"
   echo "${0##/} [-g] [-h]"
+  echo " -a - The API version (default v1)"
   echo " -c - Run with Celery and local Redis (database $REDIS_DB)."
   echo " -g - Generate documentation samples. If omitted, then tests"
   echo "      responses against documentation samples."
@@ -37,7 +38,6 @@ CELERY_PID=
 DATABASE_NAME="integration.sqlite3"
 cleanup_local () {
   echo "Cleaning up..."
-  rm -f $DATABASE_NAME
   if [ ! -z $DJANGO_PID ]
   then
     echo "Killing Django ($DJANGO_PID)"
@@ -52,6 +52,7 @@ cleanup_local () {
     echo "Flushing Redis DB $REDIS_DB"
     redis-cli -n $REDIS_DB flushdb
   fi
+  rm -f $DATABASE_NAME
   echo "Done."
 }
 trap cleanup_local EXIT
@@ -96,10 +97,12 @@ DOC_MODE="verify"
 API_VERSION="v1"
 WITH_CELERY=0
 VERBOSITY=1
+API_VERSION="v1"
 while getopts ":a:cghqv" opt; do
   case $opt in
     a)
       API_VERSION=$OPTARG
+      DATABASE_NAME="integration-${API_VERSION}.sqlite3"
       ;;
     c)
       WITH_CELERY=1
@@ -117,7 +120,7 @@ while getopts ":a:cghqv" opt; do
       VERBOSITY=0
       ;;
     \?)
-      echo "Invalid option: -$opt" >&2
+      echo "Invalid option: -$OPTARG" >&2
       usage 1
       ;;
   esac
@@ -143,7 +146,7 @@ SCRIPT_DIR=`dirname "$BASH_SOURCE"`
 cd "$SCRIPT_DIR/.."
 
 # Set Django environment variables
-DATABASE_URL="sqlite:///$DATABASE_NAME"
+export DATABASE_URL="sqlite:///$DATABASE_NAME"
 unset MEMCACHE_SERVERS
 if [ $WITH_CELERY -eq 0 ]; then
     unset REDIS_URL
@@ -200,11 +203,12 @@ if [ $WITH_CELERY -eq 1 ]; then
 fi
 
 # Add the documentation resources
+# TODO: change when upload_data.py can work with v2 API
 tools/upload_data.py \
     --api=$DOC_API_URL \
     --user=$DOC_USER_NAME \
     --password=$DOC_USER_PASSWORD \
-    --data=docs/$API_VERSION/resources/ \
+    --data=docs/v1/resources/ \
     --noinput
 
 # If tools/resources.py changes resource creation order,
@@ -216,6 +220,7 @@ tools/upload_data.py \
 # Make the documentation requests
 tools/integration_requests.py\
     --api=$DOC_API_URL \
+    --apiversion=$API_VERSION \
     --mode=$DOC_MODE \
     --user=$DOC_USER_NAME \
     --password=$DOC_USER_PASSWORD \
