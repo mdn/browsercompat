@@ -1,6 +1,13 @@
+"""Mixins for DRF Viewsets.
+
+This is modeled after DRF's mixins.py. However, the current strategy is to
+declare the mixins in viewsets.py directly.
+"""
+
+
 class PartialPutMixin(object):
     """
-    If content type is JSON API, treat PUT as a partial update
+    If content type is JSON API, treat PUT as a partial update.
 
     In Django REST Framework:
     - PUT is a full replacement

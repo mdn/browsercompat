@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Client for accessing the API
+"""Client for accessing the API.
 
 This is a baby step toward a generally useful client.  As it matures, it may
 grow features and get moved to its own repo.
@@ -18,8 +18,7 @@ logger = logging.getLogger('tools.client')
 
 
 class APIException(Exception):
-    """Errors returned from API"""
-    pass
+    """Errors returned from API."""
 
 
 class Client(object):
@@ -33,7 +32,7 @@ class Client(object):
 
     @property
     def session(self):
-        """Return the session, creating if needed"""
+        """Return the session, creating if needed."""
         if not self._session:
             self._session = requests.Session()
         return self._session
@@ -48,7 +47,7 @@ class Client(object):
     def request(
             self, method, resource_type, resource_id=None, params=None,
             data=None, json_params=None):
-        """Request data from the API"""
+        """Request data from the API."""
         start = time()
         url = self.url(resource_type, resource_id)
 
@@ -110,31 +109,31 @@ class Client(object):
         response = self.session.post(
             self.base_url + '/api-auth/login/', params=params, data=data)
         if response.url == self.base_url + next_path:
-            logger.info("Logged into " + self.base_url)
+            logger.info('Logged into ' + self.base_url)
             self.csrftoken = self.session.cookies['csrftoken']
         else:
             raise Exception('Problem logging in.', response)
 
     def open_changeset(self):
-        """Open a changeset for multiple items"""
+        """Open a changeset for multiple items."""
         assert not self.changeset, 'A changeset is already open!'
         response = self.create('changesets', {})
         self.changeset = response['id']
 
     def close_changeset(self):
-        """Close a changeset for multiple items"""
+        """Close a changeset for multiple items."""
         assert self.changeset, 'There is no open changeset!'
         data = {'changesets': {'closed': True}}
         self.request('PUT', 'changesets', self.changeset, data=data)
         self.changeset = None
 
     def count(self, resource_type):
-        """Return the current count for a resource type"""
+        """Return the current count for a resource type."""
         response = self.request('GET', resource_type)
         return response['meta']['pagination'][resource_type]['count']
 
     def create(self, resource_type, resource):
-        """Create a resource in the API
+        """Create a resource in the API.
 
         Keyword arguments:
         resource_type -- resource name, such as 'browsers'
@@ -148,7 +147,7 @@ class Client(object):
         return response[resource_type]
 
     def update(self, resource_type, resource_id, resource):
-        """Update a resource in the API
+        """Update a resource in the API.
 
         Keyword arguments:
         resource_type -- resource name, such as 'browsers'
@@ -163,7 +162,7 @@ class Client(object):
         return response[resource_type]
 
     def delete(self, resource_type, resource_id):
-        """Delete a resource in the API
+        """Delete a resource in the API.
 
         Keyword arguments:
         resource_type -- resource name, such as 'browsers'
@@ -197,7 +196,7 @@ class Client(object):
                 count = float(len(data[resource_type]))
                 percent = int(100 * (count / total))
                 logger.info(
-                    "  Loaded %d of %d %s (%d%%)...",
+                    '  Loaded %d of %d %s (%d%%)...',
                     count, total, resource_type, percent)
                 last_time = current_time
             params = {'page': page}
@@ -216,7 +215,7 @@ class Client(object):
         return data
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     from math import log10, trunc
     from common import ToolParser
 
@@ -226,7 +225,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     api = args.api
-    logger.info("Counting resources on %s" % api)
+    logger.info('Counting resources on %s' % api)
 
     client = Client(api)
     resources = [

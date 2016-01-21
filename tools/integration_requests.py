@@ -24,8 +24,8 @@ default_raw_dir = os.path.realpath(os.path.join(doc_dir, 'raw'))
 class CaseRunner(object):
     """Run integration test cases."""
 
-    doc_hostname = "browsercompat.org"
-    doc_base_url = "https://browsercompat.org"
+    doc_hostname = 'browsercompat.org'
+    doc_base_url = 'https://browsercompat.org'
     default_status = {
         'GET': 200,
         'POST': 201,
@@ -33,8 +33,8 @@ class CaseRunner(object):
         'DELETE': 204,
         'OPTIONS': 200,
     }
-    doc_csrf = "p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn"
-    doc_session = "wurexa2wq416ftlvd5plesngwa28183h"
+    doc_csrf = 'p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn'
+    doc_session = 'wurexa2wq416ftlvd5plesngwa28183h'
     modification_methods = ('PUT', 'PATCH', 'DELETE', 'POST')
 
     def __init__(
@@ -43,10 +43,10 @@ class CaseRunner(object):
         self.cases = cases or default_cases_file
         self.api = api or default_api
         self.raw_dir = raw_dir or default_raw_dir
-        self.mode = mode or "verify"
-        assert self.mode in ("verify", "display", "generate"), "Invalid mode"
+        self.mode = mode or 'verify'
+        assert self.mode in ('verify', 'display', 'generate'), 'Invalid mode'
         self.handler = getattr(self, self.mode)
-        self.standardize = self.mode in ("verify", "generate")
+        self.standardize = self.mode in ('verify', 'generate')
         self.username = username
         self.password = password
         self._user_session = None
@@ -55,15 +55,15 @@ class CaseRunner(object):
         self.stop = stop
 
     def uri(self, endpoint):
-        return self.api + "/api/v1/" + endpoint
+        return self.api + '/api/v1/' + endpoint
 
     @property
     def user_session(self):
         if not self._user_session:
             assert (self.username and self.password), (
-                "Must set a username and password")
+                'Must set a username and password')
             session = requests.Session()
-            next_path = "/api/v1/browsers"
+            next_path = '/api/v1/browsers'
 
             # Get login page
             params = {'next': next_path}
@@ -102,10 +102,10 @@ class CaseRunner(object):
                 continue
             if case.get('skip'):
                 skipped += 1
-                header = "SKIPPED Test Case %d: %s" % (casenum, case['name'])
+                header = 'SKIPPED Test Case %d: %s' % (casenum, case['name'])
                 print()
                 print(header)
-                print("*" * len(header))
+                print('*' * len(header))
                 print(case['skip'])
                 continue
 
@@ -113,10 +113,10 @@ class CaseRunner(object):
             issues = self.handler(casenum, case, response)
             if issues:
                 failure += 1
-                header = "Test Case %d: %s" % (casenum, case['name'])
+                header = 'Test Case %d: %s' % (casenum, case['name'])
                 print()
                 print(header)
-                print("*" * len(header))
+                print('*' * len(header))
                 for num, issue in enumerate(issues):
                     if num != 0:
                         print()
@@ -161,7 +161,7 @@ class CaseRunner(object):
             else:
                 headers['Content-Type'] = content_type
                 kwargs['data'] = json.dumps(
-                    case['data'], indent=4, separators=(",", ": "))
+                    case['data'], indent=4, separators=(',', ': '))
 
         # Make request
         response = requester(full_uri, **kwargs)
@@ -170,10 +170,10 @@ class CaseRunner(object):
     def display(self, casenum, case, response):
         """Display a requests response."""
         out = self.format_response_for_display(response, case)
-        header = "Test Case %d: %s" % (casenum, case['name'])
+        header = 'Test Case %d: %s' % (casenum, case['name'])
         print()
         print(header.encode('utf8'))
-        print("*" * len(header))
+        print('*' * len(header))
         print(out.encode('utf8'))
         return []
 
@@ -203,20 +203,20 @@ class CaseRunner(object):
                 if section:
                     actual = self.ensure_ending_newline(section)
                 else:
-                    actual = ""
+                    actual = ''
                 if expected != actual:
                     expected_lines = expected.splitlines(1)
                     actual_lines = actual.splitlines(1)
                     diff = ''.join(ndiff(expected_lines, actual_lines))
                     issues.append(
-                        "Difference in %s %s\n%s" % (phase, stype, diff))
+                        'Difference in %s %s\n%s' % (phase, stype, diff))
         status_issue = self.check_status(case, response)
         if status_issue:
             issues.append(status_issue)
         return issues
 
     def case_sections(self, case, response):
-        """Generate the documentation case, section by section
+        """Generate the documentation case, section by section.
 
         Yields a tuple:
         phase - 'request' or 'response'
@@ -249,29 +249,29 @@ class CaseRunner(object):
         actual_status = response.status_code
         if actual_status != expected_status:
             return (
-                "Status code %s does not match %s:\n%s" % (
+                'Status code %s does not match %s:\n%s' % (
                     actual_status, expected_status, response.text))
 
     def format_response_for_docs(self, response, case):
         """Format a requests response for documentation."""
         parsed = self.parse_response(response, case)
         formatted = {
-            "request": {"body": parsed['request']['body']},
-            "response": {"body": parsed['response']['body']}
+            'request': {'body': parsed['request']['body']},
+            'response': {'body': parsed['response']['body']}
         }
 
         request = parsed['request']
         headers = request['request_line']
         if request['headers']:
-            headers += "\n" + "\n".join(
-                "%s: %s" % pair for pair in request['headers'].items())
+            headers += '\n' + '\n'.join(
+                '%s: %s' % pair for pair in request['headers'].items())
         formatted['request']['headers'] = headers
 
         response = parsed['response']
         headers = response['response_line']
         if response['headers']:
-            headers += "\n" + "\n".join(
-                "%s: %s" % pair for pair in response['headers'].items())
+            headers += '\n' + '\n'.join(
+                '%s: %s' % pair for pair in response['headers'].items())
         formatted['response']['headers'] = headers
 
         for phase in ('request', 'response'):
@@ -290,20 +290,20 @@ class CaseRunner(object):
         request = parsed['request']
         out_bits.append(request['request_line'])
         for header, value in request['headers'].items():
-            out_bits.append("%s: %s" % (header, value))
+            out_bits.append('%s: %s' % (header, value))
         if request['body']:
-            out_bits.extend(("", request['body']))
+            out_bits.extend(('', request['body']))
 
         out_bits.extend([''] * 2)
 
         response = parsed['response']
         out_bits.append(response['response_line'])
         for header, value in response['headers'].items():
-            out_bits.append("%s: %s" % (header, value))
+            out_bits.append('%s: %s' % (header, value))
         if response['body']:
-            out_bits.extend(("", response['body']))
+            out_bits.extend(('', response['body']))
 
-        return "\n".join(out_bits)
+        return '\n'.join(out_bits)
 
     def parse_response(self, response, case):
         """Parse and reformat a requests response."""
@@ -323,7 +323,7 @@ class CaseRunner(object):
 
         # Re-assemble request line
         url_parts = urlparse(request.url)
-        parsed['request']['request_line'] = "%s %s%s%s HTTP/1.1" % (
+        parsed['request']['request_line'] = '%s %s%s%s HTTP/1.1' % (
             request.method, url_parts.path, '?' if url_parts.query else '',
             url_parts.query)
 
@@ -335,18 +335,18 @@ class CaseRunner(object):
         parsed['request']['headers'] = OrderedDict((('Host', hostname),))
         for header in sorted([h.title() for h in request.headers]):
             raw_value = request.headers[header]
-            value = self.parse_header(header, raw_value, "request")
+            value = self.parse_header(header, raw_value, 'request')
             if value:
                 parsed['request']['headers'][header.title()] = value
 
         # Re-assemble response line
-        parsed['response']['response_line'] = "HTTP/1.1 %s %s" % (
+        parsed['response']['response_line'] = 'HTTP/1.1 %s %s' % (
             response.status_code, response.reason)
 
         # Process response headers
         for header in sorted([h.title() for h in response.headers]):
             raw_value = response.headers[header]
-            value = self.parse_header(header, raw_value, "response")
+            value = self.parse_header(header, raw_value, 'response')
             if value:
                 parsed['response']['headers'][header.title()] = value
 
@@ -375,7 +375,7 @@ class CaseRunner(object):
             return value
         if phase == 'request':
             if header.lower() == 'accept':
-                return value if value != "*/*" else None
+                return value if value != '*/*' else None
             elif header.lower() == 'x-csrftoken':
                 if self.csrftoken:
                     value = value.replace(self.csrftoken, self.doc_csrf)
@@ -385,12 +385,12 @@ class CaseRunner(object):
                     value = value.replace(self.csrftoken, self.doc_csrf)
                 if self.sessionid:
                     value = value.replace(self.sessionid, self.doc_session)
-                return "; ".join(sorted(value.split('; ')))
+                return '; '.join(sorted(value.split('; ')))
             elif header.lower() in ('content-type', 'content-length'):
                 return value
             elif header.lower() not in (
                     'accept-encoding', 'connection', 'user-agent', 'referer'):
-                print("Unexpected request header %s: %s", header, value)
+                print('Unexpected request header %s: %s', header, value)
                 return value
         else:
             if header.lower() == 'content-type':
@@ -398,7 +398,7 @@ class CaseRunner(object):
             elif header.lower() not in (
                     'allow', 'date', 'server', 'vary', 'x-frame-options',
                     'content-length'):
-                print("Unexpected response header %s: %s", header, value)
+                print('Unexpected response header %s: %s', header, value)
                 return value
 
 
@@ -411,34 +411,34 @@ if __name__ == '__main__':
         description='Make raw requests to API',
         include=['api', 'user', 'password'], logger=logger)
     parser.add_argument(
-        'casenames', metavar="case name", nargs="*",
+        'casenames', metavar='case name', nargs='*',
         help='Case names to run, defaults to all cases')
     parser.add_argument(
         '-r', '--raw', default=default_raw_dir,
-        help="Path to requests/responses folder")
+        help='Path to requests/responses folder')
     parser.add_argument(
         '-c', '--cases', default=default_cases_file,
-        help="Path to cases JSON")
+        help='Path to cases JSON')
     parser.add_argument(
-        '-m', '--mode', choices=("display", "generate", "verify"),
-        default="display",
-        help="Run test cases in the specified mode, default display")
+        '-m', '--mode', choices=('display', 'generate', 'verify'),
+        default='display',
+        help='Run test cases in the specified mode, default display')
     parser.add_argument(
-        '--include-mod', action="store_true",
-        help="In display mode, include cases that modify data")
+        '--include-mod', action='store_true',
+        help='In display mode, include cases that modify data')
     parser.add_argument(
-        '-x', '--stop', action="store_true",
-        help="In verify mode, stop after first failure")
+        '-x', '--stop', action='store_true',
+        help='In verify mode, stop after first failure')
     args = parser.parse_args()
     api = args.api
     mode = args.mode
-    logger.info("Making API requests against %s for %s", api, mode)
+    logger.info('Making API requests against %s for %s', api, mode)
     if mode == 'display':
         include_mod = args.include_mod
     else:
         include_mod = True
     if args.user and not args.password:
-        password = getpass.getpass("API password: ")
+        password = getpass.getpass('API password: ')
     else:
         password = args.password
 
@@ -451,15 +451,15 @@ if __name__ == '__main__':
     success, failure, skipped = runner.run(args.casenames, include_mod)
 
     if skipped:
-        skip_msg = " (%d skipped)" % skipped
+        skip_msg = ' (%d skipped)' % skipped
     else:
-        skip_msg = ""
+        skip_msg = ''
     if not (success or failure):
-        logger.info("No requests made%s.", skip_msg)
+        logger.info('No requests made%s.', skip_msg)
     if success and not failure:
-        logger.info("Requests complete, %d passed%s.", success, skip_msg)
+        logger.info('Requests complete, %d passed%s.', success, skip_msg)
     else:
         logger.info(
-            "Requests complete, %d failed, %d passed%s.",
+            'Requests complete, %d failed, %d passed%s.',
             failure, success, skip_msg)
         sys.exit(1)

@@ -83,109 +83,109 @@ class TestViewFeatureViewSet(TestCase):
         serializer = ViewFeatureSerializer(context=self.make_context(url))
         representation = serializer.to_representation(feature)
         expected_representation = {
-            "id": feature.id,
-            "mdn_uri": None,
-            "slug": "feature",
-            "experimental": False,
-            "standardized": True,
-            "stable": True,
-            "obsolete": False,
-            "name": None,
-            "sections": [section.pk],
-            "supports": [support.pk],
-            "parent": None,
-            "children": [],
-            "history_current": self.history_pk(feature),
-            "history": self.history_pks(feature),
-            "_view_extra": {
-                "browsers": [{
-                    "id": browser.pk,
-                    "slug": "chrome_desktop",
-                    "name": {"en": "Browser"},
-                    "note": None,
-                    "history_current": self.history_pk(browser),
-                    "history": self.history_pks(browser),
+            'id': feature.id,
+            'mdn_uri': None,
+            'slug': 'feature',
+            'experimental': False,
+            'standardized': True,
+            'stable': True,
+            'obsolete': False,
+            'name': None,
+            'sections': [section.pk],
+            'supports': [support.pk],
+            'parent': None,
+            'children': [],
+            'history_current': self.history_pk(feature),
+            'history': self.history_pks(feature),
+            '_view_extra': {
+                'browsers': [{
+                    'id': browser.pk,
+                    'slug': 'chrome_desktop',
+                    'name': {'en': 'Browser'},
+                    'note': None,
+                    'history_current': self.history_pk(browser),
+                    'history': self.history_pks(browser),
                 }],
-                "features": [],
-                "maturities": [{
-                    "id": maturity.id,
-                    "slug": "maturity",
-                    "name": {"en": "Maturity"},
-                    "history_current": self.history_pk(maturity),
-                    "history": self.history_pks(maturity),
+                'features': [],
+                'maturities': [{
+                    'id': maturity.id,
+                    'slug': 'maturity',
+                    'name': {'en': 'Maturity'},
+                    'history_current': self.history_pk(maturity),
+                    'history': self.history_pks(maturity),
                 }],
-                "sections": [{
-                    "id": section.id,
-                    "number": None,
-                    "name": None,
-                    "subpath": None,
-                    "note": None,
-                    "specification": specification.id,
-                    "history_current": self.history_pk(section),
-                    "history": self.history_pks(section),
+                'sections': [{
+                    'id': section.id,
+                    'number': None,
+                    'name': None,
+                    'subpath': None,
+                    'note': None,
+                    'specification': specification.id,
+                    'history_current': self.history_pk(section),
+                    'history': self.history_pks(section),
                 }],
-                "specifications": [{
-                    "id": specification.id,
-                    "slug": "spec",
-                    "mdn_key": None,
-                    "name": {"en": "Specification"},
-                    "uri": None,
-                    "maturity": maturity.id,
-                    "history_current": self.history_pk(specification),
-                    "history": self.history_pks(specification),
+                'specifications': [{
+                    'id': specification.id,
+                    'slug': 'spec',
+                    'mdn_key': None,
+                    'name': {'en': 'Specification'},
+                    'uri': None,
+                    'maturity': maturity.id,
+                    'history_current': self.history_pk(specification),
+                    'history': self.history_pks(specification),
                 }],
-                "supports": [{
-                    "id": support.id,
-                    "support": "yes",
-                    "prefix": None,
-                    "prefix_mandatory": False,
-                    "alternate_name": None,
-                    "alternate_mandatory": False,
-                    "requires_config": None,
-                    "default_config": None,
-                    "protected": False,
-                    "note": None,
-                    "version": version.id,
-                    "feature": feature.id,
-                    "history_current": self.history_pk(support),
-                    "history": self.history_pks(support),
+                'supports': [{
+                    'id': support.id,
+                    'support': 'yes',
+                    'prefix': None,
+                    'prefix_mandatory': False,
+                    'alternate_name': None,
+                    'alternate_mandatory': False,
+                    'requires_config': None,
+                    'default_config': None,
+                    'protected': False,
+                    'note': None,
+                    'version': version.id,
+                    'feature': feature.id,
+                    'history_current': self.history_pk(support),
+                    'history': self.history_pks(support),
                 }],
-                "versions": [{
-                    "id": version.id,
-                    "version": None,
-                    "release_day": None,
-                    "retirement_day": None,
-                    "status": "current",
-                    "release_notes_uri": None,
-                    "note": None,
-                    "order": 0,
-                    "browser": browser.id,
-                    "history_current": self.history_pk(version),
-                    "history": self.history_pks(version),
+                'versions': [{
+                    'id': version.id,
+                    'version': None,
+                    'release_day': None,
+                    'retirement_day': None,
+                    'status': 'current',
+                    'release_notes_uri': None,
+                    'note': None,
+                    'order': 0,
+                    'browser': browser.id,
+                    'history_current': self.history_pk(version),
+                    'history': self.history_pks(version),
                 }],
-                "meta": {
-                    "compat_table": {
-                        "tabs": [
+                'meta': {
+                    'compat_table': {
+                        'tabs': [
                             {
-                                "name": {"en": "Desktop Browsers"},
-                                "browsers": [str(browser.pk)]
+                                'name': {'en': 'Desktop Browsers'},
+                                'browsers': [str(browser.pk)]
                             },
                         ],
-                        "supports": {
+                        'supports': {
                             str(feature.pk): {
                                 str(browser.pk): [str(support.pk)],
                             }
                         },
-                        "child_pages": False,
-                        "pagination": {
-                            "linked.features": {
-                                "previous": None,
-                                "next": None,
-                                "count": 0,
+                        'child_pages': False,
+                        'pagination': {
+                            'linked.features': {
+                                'previous': None,
+                                'next': None,
+                                'count': 0,
                             },
                         },
-                        "languages": ['en'],
-                        "notes": {},
+                        'languages': ['en'],
+                        'notes': {},
                     }
                 }
             }
@@ -213,18 +213,18 @@ class TestViewFeatureViewSet(TestCase):
         feature = self.create(Feature, slug='feature')
         browser = self.create(Browser, slug='browser', name={'en': 'Browser'})
         version1 = self.create(
-            Version, browser=browser, status='current', version="1.0")
+            Version, browser=browser, status='current', version='1.0')
         version2 = self.create(
-            Version, browser=browser, status='current', version="2.0")
+            Version, browser=browser, status='current', version='2.0')
         version3 = self.create(
-            Version, browser=browser, status='current', version="3.0")
+            Version, browser=browser, status='current', version='3.0')
         support1 = self.create(
-            Support, version=version1, feature=feature, support="no")
+            Support, version=version1, feature=feature, support='no')
         # No change in support
         self.create(
-            Support, version=version2, feature=feature, support="no")
+            Support, version=version2, feature=feature, support='no')
         support3 = self.create(
-            Support, version=version3, feature=feature, support="yes")
+            Support, version=version3, feature=feature, support='yes')
         self.changeset.closed = True
         self.changeset.save()
 
@@ -330,7 +330,7 @@ class TestViewFeatureViewSet(TestCase):
             url, include_child_pages=True, format='html')
         serializer = ViewFeatureSerializer(context=context)
         representation = serializer.to_representation(feature)
-        next_url = self.baseUrl + url + "?child_pages=1&page=2"
+        next_url = self.baseUrl + url + '?child_pages=1&page=2'
         expected_pagination = {
             'linked.features': {
                 'previous': None,
@@ -433,38 +433,39 @@ class TestViewFeatureViewSet(TestCase):
 
 class TestViewFeatureUpdates(TestCase):
     """Test updating via ViewFeatureSerializer."""
+
     longMessage = True
 
     def setUp(self):
         self.feature = self.create(
-            Feature, slug='feature', name={'en': "Feature"})
+            Feature, slug='feature', name={'en': 'Feature'})
         self.browser = self.create(
             Browser, slug='browser', name={'en': 'Browser'})
         self.version = self.create(
             Version, browser=self.browser, version='1.0',
             release_day='2015-02-17')
-        self.maturity = self.create(Maturity, slug='M', name={"en": 'Mature'})
+        self.maturity = self.create(Maturity, slug='M', name={'en': 'Mature'})
         self.spec = self.create(
             Specification, slug='spec', mdn_key='SPEC', name={'en': 'Spec'},
             uri={'en': 'http://example.com/Spec'}, maturity=self.maturity)
 
         self.browser_data = {
-            "id": str(self.browser.id), "slug": self.browser.slug,
-            "name": self.browser.name, "note": None,
-            "versions": [self.version.id]}
+            'id': str(self.browser.id), 'slug': self.browser.slug,
+            'name': self.browser.name, 'note': None,
+            'versions': [self.version.id]}
         self.version_data = {
-            "id": str(self.version.id), "version": self.version.version,
-            "release_day": '2015-02-17', "retirement_day": None, "note": None,
-            "status": "unknown", "release_notes_uri": None,
-            "browser": self.browser.id}
+            'id': str(self.version.id), 'version': self.version.version,
+            'release_day': '2015-02-17', 'retirement_day': None, 'note': None,
+            'status': 'unknown', 'release_notes_uri': None,
+            'browser': self.browser.id}
         self.maturity_data = {
-            "id": str(self.maturity.id), "slug": self.maturity.slug,
-            "name": self.maturity.name}
+            'id': str(self.maturity.id), 'slug': self.maturity.slug,
+            'name': self.maturity.name}
         self.spec_data = {
-            "id": str(self.spec.id), "slug": self.spec.slug,
-            "mdn_key": self.spec.mdn_key, "name": self.spec.name,
-            "uri": self.spec.uri,
-            "maturity": self.maturity.id, "sections": []}
+            'id': str(self.spec.id), 'slug': self.spec.slug,
+            'mdn_key': self.spec.mdn_key, 'name': self.spec.name,
+            'uri': self.spec.uri,
+            'maturity': self.maturity.id, 'sections': []}
         self.url = self.api_reverse('viewfeatures-detail', pk=self.feature.pk)
         request = APIRequestFactory().get(self.url)
         request.version = self.namespace
@@ -489,13 +490,13 @@ class TestViewFeatureUpdates(TestCase):
 
     def test_just_feature(self):
         data = {
-            "mdn_uri": {
-                "en": "https://developer.mozilla.org/en-US/docs/feature",
-                "fr": "https://developer.mozilla.org/fr/docs/feature",
+            'mdn_uri': {
+                'en': 'https://developer.mozilla.org/en-US/docs/feature',
+                'fr': 'https://developer.mozilla.org/fr/docs/feature',
             },
-            "name": {
-                "en": "The Feature",
-                "fr": "Le Feature",
+            'name': {
+                'en': 'The Feature',
+                'fr': 'Le Feature',
             }
         }
         new_feature = self.assertUpdateSuccess(data)
@@ -506,10 +507,10 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_new",
-                    "slug": "subfeature",
-                    "name": {"en": "Sub Feature"},
-                    "parent": self.feature.pk,
+                    'id': '_new',
+                    'slug': 'subfeature',
+                    'name': {'en': 'Sub Feature'},
+                    'parent': self.feature.pk,
                 }],
             },
         }
@@ -525,10 +526,10 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_sf2",
-                    "slug": "sf2",
-                    "name": {"en": "Sub Feature 2"},
-                    "parent": self.feature.pk,
+                    'id': '_sf2',
+                    'slug': 'sf2',
+                    'name': {'en': 'Sub Feature 2'},
+                    'parent': self.feature.pk,
                 }],
             },
         }
@@ -545,10 +546,10 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_detail2",
-                    "slug": "detail2",
-                    "name": {"en": "Detail 2"},
-                    "parent": self.feature.pk
+                    'id': '_detail2',
+                    'slug': 'detail2',
+                    'name': {'en': 'Detail 2'},
+                    'parent': self.feature.pk
                 }],
             },
         }
@@ -565,33 +566,33 @@ class TestViewFeatureUpdates(TestCase):
             'children': [subfeature.pk],
             '_view_extra': {
                 'features': [{
-                    "id": subfeature.id,
-                    "slug": "subfeature",
-                    "name": {"en": "subfeature 1"},
-                    "parent": self.feature.pk,
+                    'id': subfeature.id,
+                    'slug': 'subfeature',
+                    'name': {'en': 'subfeature 1'},
+                    'parent': self.feature.pk,
                 }],
             },
         }
         new_feature = self.assertUpdateSuccess(data)
         new_subfeature = Feature.objects.get(id=subfeature.id)
         self.assertEqual(new_subfeature.parent, self.feature)
-        self.assertEqual(new_subfeature.name, {"en": "subfeature 1"})
+        self.assertEqual(new_subfeature.name, {'en': 'subfeature 1'})
         self.assertEqual(list(new_feature.children.all()), [new_subfeature])
 
     def test_add_subsupport(self):
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_new",
-                    "slug": "subfeature",
-                    "name": {"en": "Sub Feature"},
-                    "parent": self.feature.pk,
+                    'id': '_new',
+                    'slug': 'subfeature',
+                    'name': {'en': 'Sub Feature'},
+                    'parent': self.feature.pk,
                 }],
                 'supports': [{
-                    "id": "_new_yes",
-                    "support": "yes",
-                    "version": self.version.id,
-                    "feature": "_new",
+                    'id': '_new_yes',
+                    'support': 'yes',
+                    'version': self.version.id,
+                    'feature': '_new',
                 }],
                 'browsers': [self.browser_data],
                 'versions': [self.version_data],
@@ -600,7 +601,7 @@ class TestViewFeatureUpdates(TestCase):
         new_feature = self.assertUpdateSuccess(data)
         subfeature = Feature.objects.get(slug='subfeature')
         self.assertEqual(subfeature.parent, new_feature)
-        self.assertEqual(subfeature.name, {"en": "Sub Feature"})
+        self.assertEqual(subfeature.name, {'en': 'Sub Feature'})
         supports = subfeature.supports.all()
         self.assertEqual(1, len(supports))
         support = supports[0]
@@ -631,7 +632,7 @@ class TestViewFeatureUpdates(TestCase):
         new_feature = self.assertUpdateSuccess(data)
         subfeature = Feature.objects.get(slug='subfeature')
         self.assertEqual(subfeature.parent, new_feature)
-        self.assertEqual(subfeature.name, {"en": "subfeature"})
+        self.assertEqual(subfeature.name, {'en': 'subfeature'})
         self.assertEqual(history_count, subfeature.history.all().count())
 
     def test_changeset_is_applied_to_items(self):
@@ -640,10 +641,10 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_new",
-                    "slug": "subfeature",
-                    "name": {"en": "Sub Feature"},
-                    "parent": self.feature.pk,
+                    'id': '_new',
+                    'slug': 'subfeature',
+                    'name': {'en': 'Sub Feature'},
+                    'parent': self.feature.pk,
                 }],
             },
         }
@@ -660,10 +661,10 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_new",
-                    "slug": None,
-                    "name": {"en": "Sub Feature"},
-                    "parent": self.feature.pk,
+                    'id': '_new',
+                    'slug': None,
+                    'name': {'en': 'Sub Feature'},
+                    'parent': self.feature.pk,
                 }],
             },
         }
@@ -671,7 +672,7 @@ class TestViewFeatureUpdates(TestCase):
             '_view_extra': {
                 'features': {
                     0: {
-                        'slug': ["This field may not be null."],
+                        'slug': ['This field may not be null.'],
                     },
                 },
             }
@@ -682,16 +683,16 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_new",
-                    "slug": "subfeature",
-                    "name": {"en": "Sub Feature"},
-                    "parent": self.feature.pk,
+                    'id': '_new',
+                    'slug': 'subfeature',
+                    'name': {'en': 'Sub Feature'},
+                    'parent': self.feature.pk,
                 }],
                 'supports': [{
-                    "id": "_new_maybe",
-                    "support": "maybe",
-                    "version": self.version.id,
-                    "feature": "_new",
+                    'id': '_new_maybe',
+                    'support': 'maybe',
+                    'version': self.version.id,
+                    'feature': '_new',
                 }],
                 'browsers': [self.browser_data],
                 'versions': [self.version_data],
@@ -713,10 +714,10 @@ class TestViewFeatureUpdates(TestCase):
             'sections': ['_section'],
             '_view_extra': {
                 'sections': [{
-                    "id": "_section",
-                    "name": {"en": "Section"},
-                    "specification": self.spec.id,
-                    "features": [self.feature.id],
+                    'id': '_section',
+                    'name': {'en': 'Section'},
+                    'specification': self.spec.id,
+                    'features': [self.feature.id],
                 }],
                 'specifications': [self.spec_data],
                 'maturities': [self.maturity_data],
@@ -730,10 +731,10 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'supports': [{
-                    "id": "_yes",
-                    "support": "yes",
-                    "version": self.version.id,
-                    "feature": self.feature.id,
+                    'id': '_yes',
+                    'support': 'yes',
+                    'version': self.version.id,
+                    'feature': self.feature.id,
                 }],
                 'versions': [self.version_data],
                 'browsers': [self.browser_data],
@@ -753,15 +754,15 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_new",
-                    "slug": 'slug',
-                    "name": {"en": "Sub Feature"},
-                    "parent": None,
+                    'id': '_new',
+                    'slug': 'slug',
+                    'name': {'en': 'Sub Feature'},
+                    'parent': None,
                 }]
             }
         }
         err_msg = (
-            "Feature must be a descendant of feature %s." % self.feature.id)
+            'Feature must be a descendant of feature %s.' % self.feature.id)
         expected_errors = {
             '_view_extra': {
                 'features': {
@@ -773,19 +774,19 @@ class TestViewFeatureUpdates(TestCase):
 
     def test_other_feature_is_error(self):
         other = self.create(
-            Feature, slug='other', name={'en': "Other"})
+            Feature, slug='other', name={'en': 'Other'})
         data = {
             '_view_extra': {
                 'features': [{
-                    "id": "_new",
-                    "slug": 'slug',
-                    "name": {"en": "Sub Feature"},
-                    "parent": other.id
+                    'id': '_new',
+                    'slug': 'slug',
+                    'name': {'en': 'Sub Feature'},
+                    'parent': other.id
                 }]
             },
         }
         err_msg = (
-            "Feature must be a descendant of feature %s." % self.feature.id)
+            'Feature must be a descendant of feature %s.' % self.feature.id)
         expected_errors = {
             '_view_extra': {
                 'features': {
@@ -797,15 +798,15 @@ class TestViewFeatureUpdates(TestCase):
 
     def test_changed_maturity_is_error(self):
         maturity_data = self.maturity_data.copy()
-        maturity_data['name']['en'] = "New Maturity Name"
+        maturity_data['name']['en'] = 'New Maturity Name'
         data = {
             'sections': ['_section'],
             '_view_extra': {
                 'sections': [{
-                    "id": "_section",
-                    "name": {"en": "Section"},
-                    "specification": self.spec.id,
-                    "features": [self.feature.id],
+                    'id': '_section',
+                    'name': {'en': 'Section'},
+                    'specification': self.spec.id,
+                    'features': [self.feature.id],
                 }],
                 'specifications': [self.spec_data],
                 'maturities': [maturity_data],
@@ -829,18 +830,18 @@ class TestViewFeatureUpdates(TestCase):
             'sections': ['_section'],
             '_view_extra': {
                 'sections': [{
-                    "id": "_section",
-                    "name": {"en": "Section"},
-                    "specification": "_NEW",
-                    "features": [self.feature.id],
+                    'id': '_section',
+                    'name': {'en': 'Section'},
+                    'specification': '_NEW',
+                    'features': [self.feature.id],
                 }],
                 'specifications': [{
-                    "id": "_NEW",
-                    "slug": "NEW",
-                    "mdn_key": "",
-                    "name": {"en": "New Specification"},
-                    "uri": {"en": "https://example.com/new"},
-                    "maturity": self.maturity.id,
+                    'id': '_NEW',
+                    'slug': 'NEW',
+                    'mdn_key': '',
+                    'name': {'en': 'New Specification'},
+                    'uri': {'en': 'https://example.com/new'},
+                    'maturity': self.maturity.id,
                 }],
                 'maturities': [self.maturity_data],
             }
@@ -861,16 +862,16 @@ class TestViewFeatureUpdates(TestCase):
         data = {
             '_view_extra': {
                 'supports': [{
-                    "id": "_yes",
-                    "support": "yes",
-                    "version": "_NEW",
-                    "feature": self.feature.id,
+                    'id': '_yes',
+                    'support': 'yes',
+                    'version': '_NEW',
+                    'feature': self.feature.id,
                 }],
                 'versions': [{
-                    "id": "_NEW",
-                    "version": "1.0",
-                    "note": None,
-                    "browser": self.browser.id,
+                    'id': '_NEW',
+                    'version': '1.0',
+                    'note': None,
+                    'browser': self.browser.id,
                 }],
                 'browsers': [self.browser_data],
             }
@@ -892,8 +893,8 @@ class TestViewFeatureUpdates(TestCase):
             'name': {'en': 'New Name'},
             '_view_extra': {
                 'unknown': [{
-                    "id": "_new",
-                    "foo": "bar",
+                    'id': '_new',
+                    'foo': 'bar',
                 }],
             }
         }

@@ -23,7 +23,7 @@ from .viewsets import (
 
 
 class GroupedRouter(DefaultRouter):
-    """Router with grouped API root and slash redirects"""
+    """Router with grouped API root and slash redirects."""
 
     view_groups = {}
     allowed_ext = ['api', 'json']

@@ -33,7 +33,7 @@ class TestBrowserSerializer(TestCase):
         new_browser = serializer.save()
         histories = new_browser.history.all()
         self.assertEqual(3, len(histories))
-        self.assertEqual(new_browser.name, {"en": "Old Name"})
+        self.assertEqual(new_browser.name, {'en': 'Old Name'})
 
     def test_set_history_current_to_wrong_browser_fails(self):
         other_browser = self.create(
@@ -134,18 +134,18 @@ class TestSpecificationSerializer(TestCase):
         maturity = self.create(
             Maturity, slug='WD', name={'en': 'Working Draft'})
         self.spec = self.create(
-            Specification, maturity=maturity, slug="css3-animations",
+            Specification, maturity=maturity, slug='css3-animations',
             mdn_key='CSS3 Animations',
-            name={'en': "CSS Animations"},
+            name={'en': 'CSS Animations'},
             uri={'en': 'http://dev.w3.org/csswg/css-animations/'})
         self.s46 = self.create(
             Section, specification=self.spec,
             name={'en': "The 'animation-direction' property"},
-            subpath={'en': "#animation-direction"})
+            subpath={'en': '#animation-direction'})
         self.s45 = self.create(
             Section, specification=self.spec,
             name={'en': "The 'animation-iteration-count' property"},
-            subpath={'en': "#animation-iteration-count"})
+            subpath={'en': '#animation-iteration-count'})
 
     def test_set_name_without_sections(self):
         data = {'name': {'en': 'CSS3 Animations'}}
@@ -193,6 +193,7 @@ class TestSpecificationSerializer(TestCase):
 
 class TestUserSerializer(TestCase):
     """Test UserSerializer."""
+
     def test_to_representation(self):
         user = self.login_user()
         serializer = UserSerializer()
@@ -203,9 +204,10 @@ class TestUserSerializer(TestCase):
 
 class TestHistoricalFeatureSerializer(TestCase):
     """Test HistoricalFeatureSerializer, which has archive fields."""
+
     def test_to_representation_no_parent(self):
         feature = self.create(
-            Feature, slug="the_feature", name={"en": "The Feature"})
+            Feature, slug='the_feature', name={'en': 'The Feature'})
         history = feature.history.all()[0]
         serializer = HistoricalFeatureSerializer()
         representation = serializer.to_representation(history)
@@ -216,9 +218,9 @@ class TestHistoricalFeatureSerializer(TestCase):
 
     def test_to_representation_with_parent(self):
         parent = self.create(
-            Feature, slug="the_parent", name={"en": "The Parent"})
+            Feature, slug='the_parent', name={'en': 'The Parent'})
         feature = self.create(
-            Feature, slug="the_feature", name={"en": "The Feature"},
+            Feature, slug='the_feature', name={'en': 'The Feature'},
             parent=parent)
         history = feature.history.all()[0]
         serializer = HistoricalFeatureSerializer()
@@ -229,6 +231,7 @@ class TestHistoricalFeatureSerializer(TestCase):
 
 class TestHistoricalMaturitySerializer(TestCase):
     """Test HistoricalMaturitySerializer."""
+
     def test_fields_extra(self):
         maturity = self.create(
             Maturity, slug='WD', name={'en': 'Working Draft'})

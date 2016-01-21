@@ -57,8 +57,8 @@ USE_DRF_INSTANCE_CACHE - 1 to enable, 0 to disable, default enabled
 DRF_INSTANCE_CACHE_POPULATE_COLD - 1 to recursively populate a cold cache on
   updates, 0 to be eventually consistent, default enabled
 SECRET_KEY - Overrides SECRET_KEY
-SECURE_PROXY_SSL_HEADER - "HTTP_X_FORWARDED_PROTOCOL,https" to enable
-SERVER_EMAIL - Email 'From' address for error messages to admins
+SECURE_PROXY_SSL_HEADER - 'HTTP_X_FORWARDED_PROTOCOL,https' to enable
+SERVER_EMAIL - Email "From" address for error messages to admins
 STATIC_ROOT - Overrides STATIC_ROOT
 
 """
@@ -95,7 +95,7 @@ SECRET_KEY = environ.get(
     'SECRET_KEY', 'jl^8zustdy8ht@=abml-j@%hp7hr-0u-41hb*1=duc91a%=9+%')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = environ.get("DJANGO_DEBUG", '0') in (1, '1')
+DEBUG = environ.get('DJANGO_DEBUG', '0') in (1, '1')
 
 ALLOWED_HOSTS = environ.get('ALLOWED_HOSTS', '').split(',')
 if environ.get('SECURE_PROXY_SSL_HEADER'):
@@ -103,8 +103,8 @@ if environ.get('SECURE_PROXY_SSL_HEADER'):
     SECURE_PROXY_SSL_HEADER = tuple(raw.split(','))
 
 AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 # Application definition
@@ -171,9 +171,9 @@ if 'EMAIL_HOST_USER' in environ:
 if 'EMAIL_HOST_PASSWORD' in environ:
     EMAIL_HOST_PASSWORD = environ['EMAIL_HOST_PASSWORD']
 if 'EMAIL_USE_TLS' in environ:
-    EMAIL_USE_TLS = (environ['EMAIL_USE_TLS'] in (1, "1"))
+    EMAIL_USE_TLS = (environ['EMAIL_USE_TLS'] in (1, '1'))
 if 'EMAIL_USE_SSL' in environ:
-    EMAIL_USE_SSL = (environ['EMAIL_USE_SSL'] in (1, "1"))
+    EMAIL_USE_SSL = (environ['EMAIL_USE_SSL'] in (1, '1'))
 if 'EMAIL_SUBJECT_PREFIX' in environ:
     EMAIL_SUBJECT_PREFIX = environ['EMAIL_SUBJECT_PREFIX']
 if 'SERVER_EMAIL' in environ:
@@ -290,7 +290,7 @@ else:
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         },
     }
-SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 # When the number of descendants means to paginate a view_feature
 PAGINATE_VIEW_FEATURE = 50

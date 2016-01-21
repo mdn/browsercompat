@@ -1,1 +1,1 @@
-"""Modifications for allauth/socialaccount/providers/fxa"""
+"""Modifications for allauth/socialaccount/providers/fxa."""

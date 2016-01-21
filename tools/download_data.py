@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+"""Download compatibility data from the API.
+
+The data is stored in several JSON files, one per resource type, representing
+the combined pages of data, in the JSON API format used by the API.  This is
+designed for exporting to GitHub, or for processing by offline tools.
+
+For a data dump, see https://github.com/mdn/browsercompat-data
+"""
 import codecs
 import json
 
@@ -7,6 +15,7 @@ from common import Tool
 
 class DownloadData(Tool):
     """Download data from the API."""
+
     logger_name = 'tools.download_data'
     parser_options = ['api', 'data']
 
@@ -19,7 +28,7 @@ class DownloadData(Tool):
             # Get data from API
             data = self.client.get_resource_collection(resource)
             self.logger.info(
-                "Downloaded {} {}".format(len(data[resource]), resource))
+                'Downloaded {} {}'.format(len(data[resource]), resource))
             counts[resource] = len(data[resource])
 
             # Remove history relations
@@ -41,9 +50,9 @@ if __name__ == '__main__':
     tool = DownloadData()
     tool.init_from_command_line()
     tool.logger.info(
-        "Downloading data from {tool.api} to {tool.data}".format(tool=tool))
+        'Downloading data from {tool.api} to {tool.data}'.format(tool=tool))
     counts = tool.run()
     if counts:
-        tool.logger.info("Download complete.")
+        tool.logger.info('Download complete.')
     else:
-        tool.logger.info("No data downloaded.")
+        tool.logger.info('No data downloaded.')

@@ -127,7 +127,7 @@ class TestPaginationControl(CurrentURLTestCase):
     def test_one_page(self):
         page = self.page(1, 1)
         out = pagination_control(self.mock_context('/test'), page)
-        self.assertEqual("", out)
+        self.assertEqual('', out)
 
     def test_first_page(self):
         page = self.page(1, 3)

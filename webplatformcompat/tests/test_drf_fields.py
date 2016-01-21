@@ -20,7 +20,7 @@ class SharedTranslatedTextFieldTests(object):
 
     def test_to_representation_dict(self):
         # Converting to serializable form, dicts are passed through
-        data = {"key": "value"}
+        data = {'key': 'value'}
         self.assertEqual(data, self.ttf.to_representation(data))
 
     def test_to_representation_sorted_dict(self):
@@ -45,7 +45,7 @@ class SharedTranslatedTextFieldTests(object):
     def test_to_internal_value_json(self):
         # Converting from serialized form, JSON becomes dict
         json_in = '{"key": "value"}'
-        json_out = {"key": "value"}
+        json_out = {'key': 'value'}
         self.assertEqual(json_out, self.ttf.to_internal_value(json_in))
 
     def test_run_validation_empty_string(self):
@@ -62,13 +62,13 @@ class TestTranslatedTextField(SharedTranslatedTextFieldTests, TestCase):
 
     def test_to_representation_canonical(self):
         # Converting to serializable form, canonical dicts become strings
-        data = {"zxx": "canonical"}
+        data = {'zxx': 'canonical'}
         self.assertEqual(None, self.ttf.to_representation(data))
 
     def test_to_internal_value_string(self):
         # Converting from serialized form, string remains string, validation
         # will raise an error
-        self.assertEqual("display", self.ttf.to_internal_value('"display"'))
+        self.assertEqual('display', self.ttf.to_internal_value('"display"'))
 
     def test_to_internal_value_null(self):
         self.assertEqual(None, self.ttf.to_internal_value(None))
@@ -93,18 +93,18 @@ class TestCanonTranslatedTextField(SharedTranslatedTextFieldTests, TestCase):
 
     def test_to_representation_canonical(self):
         # Converting to serializable form, canonical dicts become strings
-        data = {"zxx": "canonical"}
-        self.assertEqual("canonical", self.ttf.to_representation(data))
+        data = {'zxx': 'canonical'}
+        self.assertEqual('canonical', self.ttf.to_representation(data))
 
     def test_to_internal_value_string(self):
         # Converting from serialized form, string become canonical dicts
-        expected = {"zxx": "display"}
+        expected = {'zxx': 'display'}
         self.assertEqual(expected, self.ttf.to_internal_value('"display"'))
 
     def test_to_internal_value_bad_json(self):
         # Converting from serialized form, bad JSON becomes canonical
         bad_json = "{'quotes': 'wrong ones'}"
-        expected = {"zxx": "{'quotes': 'wrong ones'}"}
+        expected = {'zxx': "{'quotes': 'wrong ones'}"}
         self.assertEqual(expected, self.ttf.to_internal_value(bad_json))
 
     def test_to_internal_value_string_true(self):

@@ -19,7 +19,7 @@ class TestStartCrawlTask(TestCase):
         self.feature = self.create(Feature, slug='web-css-float')
         self.fp = FeaturePage.objects.create(
             feature=self.feature, status=FeaturePage.STATUS_STARTING,
-            url="https://developer.mozilla.org/en-US/docs/Web/CSS/float")
+            url='https://developer.mozilla.org/en-US/docs/Web/CSS/float')
         self.patcher_fetch_meta = mock.patch('mdn.tasks.fetch_meta.delay')
         self.mocked_fetch_meta = self.patcher_fetch_meta.start()
         self.mocked_fetch_meta.side_effect = Exception('Not Called')
@@ -63,7 +63,7 @@ class TestStartCrawlTask(TestCase):
     def test_meta_error(self):
         meta = self.fp.meta()
         meta.status = meta.STATUS_ERROR
-        meta.raw = "META ERROR"
+        meta.raw = 'META ERROR'
         meta.save()
         start_crawl(self.fp.id)
 
@@ -76,7 +76,7 @@ class TestFetchMetaTask(TestCase):
         self.feature = self.create(Feature, slug='web-css-float')
         self.fp = FeaturePage.objects.create(
             feature=self.feature, status=FeaturePage.STATUS_META,
-            url="https://developer.mozilla.org/en-US/docs/Web/CSS/float")
+            url='https://developer.mozilla.org/en-US/docs/Web/CSS/float')
         self.patcher_fetch_all = mock.patch(
             'mdn.tasks.fetch_all_translations.delay')
         self.mocked_fetch_all = self.patcher_fetch_all.start()
@@ -89,9 +89,9 @@ class TestFetchMetaTask(TestCase):
         self.response = self.mocked_get.return_value
         self.response.status_code = 200
         self.response.json.side_effect = Exception('Not Called')
-        self.response.text = ""
+        self.response.text = ''
         self.response.raise_for_status.side_effect = Exception('Not Called')
-        self.response.url = self.fp.url + "$json"
+        self.response.url = self.fp.url + '$json'
 
     def tearDown(self):
         self.patcher_fetch_all.stop()
@@ -147,7 +147,7 @@ class TestFetchMetaTask(TestCase):
         self.assertEqual(issues, fp.data['meta']['scrape']['issues'])
         meta = fp.meta()
         self.assertEqual(meta.STATUS_ERROR, meta.status)
-        self.assertEqual("Response is not JSON:\n" + text, meta.raw)
+        self.assertEqual('Response is not JSON:\n' + text, meta.raw)
 
     @mock.patch('mdn.tasks.fetch_meta.delay')
     def test_redirect(self, mocked_delay):
@@ -188,7 +188,7 @@ class TestFetchAllTranslationsTask(TestCase):
         self.feature = self.create(Feature, slug='web-css-display')
         self.fp = FeaturePage.objects.create(
             feature=self.feature, status=FeaturePage.STATUS_PAGES,
-            url="https://developer.mozilla.org/en-US/docs/Web/CSS/float")
+            url='https://developer.mozilla.org/en-US/docs/Web/CSS/float')
         meta = self.fp.meta()
         meta.status = meta.STATUS_FETCHED
         meta.raw = dumps({
@@ -221,7 +221,7 @@ class TestFetchAllTranslationsTask(TestCase):
                 if raw is not None:
                     obj.raw = raw
                 obj.save()
-        assert found, "No English translation object found in translations"
+        assert found, 'No English translation object found in translations'
 
     def test_fetch_all_start(self):
         self.mocked_fetch_trans.side_effect = None
@@ -250,7 +250,7 @@ class TestFetchAllTranslationsTask(TestCase):
     def test_fetch_one_issue(self):
         self.set_content(
             TranslatedContent.STATUS_ERROR,
-            "Status 500, Content:\nServer Error")
+            'Status 500, Content:\nServer Error')
 
         fetch_all_translations(self.fp.id)
         fp = FeaturePage.objects.get(id=self.fp.id)
@@ -291,7 +291,7 @@ class TestFetchTranslationTask(TestCase):
             spec_set=['status_code', 'text', 'raise_for_status'])
         self.response = self.mocked_get.return_value
         self.response.status_code = 200
-        self.response.text = "Some page text"
+        self.response.text = 'Some page text'
         self.response.raise_for_status.side_effect = Exception('Not Called')
 
     def tearDown(self):
@@ -360,17 +360,17 @@ class TestParsePageTask(TestCase):
     def test_call(self, mock_scrape):
         fp = FeaturePage.objects.create(
             feature_id=666, status=FeaturePage.STATUS_PARSING,
-            url="https://developer.mozilla.org/en-US/_docs/hi")
+            url='https://developer.mozilla.org/en-US/_docs/hi')
         parse_page(fp.id)
         mock_scrape.assert_called_once_with(fp)
 
     @mock.patch('mdn.tasks.scrape_feature_page')
     def test_exception(self, mock_scrape):
-        mock_scrape.side_effect = ValueError("Unexpected error")
-        feature = self.create(Feature, slug="the-slug")
+        mock_scrape.side_effect = ValueError('Unexpected error')
+        feature = self.create(Feature, slug='the-slug')
         fp = FeaturePage.objects.create(
             feature=feature, status=FeaturePage.STATUS_PARSING,
-            url="https://developer.mozilla.org/en-US/_docs/test")
+            url='https://developer.mozilla.org/en-US/_docs/test')
         self.assertRaises(ValueError, parse_page, fp.id)
         mock_scrape.assert_called_once_with(fp)
         fp = FeaturePage.objects.get(id=fp.id)

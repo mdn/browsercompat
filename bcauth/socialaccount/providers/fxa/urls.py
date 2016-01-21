@@ -1,3 +1,4 @@
+"""URLs for Firefox Accounts endpoints."""
 from allauth.socialaccount.providers.oauth2.urls import default_urlpatterns
 from .provider import FirefoxAccountsProvider
 

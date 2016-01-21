@@ -18,11 +18,11 @@ def set_uri_from_path(features):
 
 
 def populate_feature_mdn_uri(apps, schema_editor):
-    Feature = apps.get_model("webplatformcompat", "Feature")
+    Feature = apps.get_model('webplatformcompat', 'Feature')
     set_uri_from_path(Feature.objects.all())
 
     HistoricalFeature = apps.get_model(
-        "webplatformcompat", "HistoricalFeature")
+        'webplatformcompat', 'HistoricalFeature')
     set_uri_from_path(HistoricalFeature.objects.all())
 
 
@@ -38,10 +38,10 @@ def set_path_from_uri(features):
 
 
 def flush_feature_mdn_uri(apps, schema_editor):
-    Feature = apps.get_model("webplatformcompat", "Feature")
+    Feature = apps.get_model('webplatformcompat', 'Feature')
     set_path_from_uri(Feature.objects.all())
     HistoricalFeature = apps.get_model(
-        "webplatformcompat", "HistoricalFeature")
+        'webplatformcompat', 'HistoricalFeature')
     set_path_from_uri(HistoricalFeature.objects.all())
 
 

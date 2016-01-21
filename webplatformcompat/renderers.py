@@ -18,6 +18,7 @@ from rest_framework.utils.encoders import JSONEncoder
 
 class JsonApiRC1Renderer(JSONRenderer):
     """JSON API Release Candidate 1 (RC1) render."""
+
     dict_class = OrderedDict
     encoder_class = JSONEncoder
     media_type = 'application/vnd.api+json'
@@ -50,12 +51,12 @@ class JsonApiRC1Renderer(JSONRenderer):
             converted = self.convert_standard(
                 data, fields_extra, main_resource, request)
 
-        renderer_context["indent"] = 4
+        renderer_context['indent'] = 4
         return super(JsonApiRC1Renderer, self).render(
             data=converted, renderer_context=renderer_context)
 
     def convert_error(self, data, status_code):
-        """Convert error responses to JSON API RC1 format
+        """Convert error responses to JSON API RC1 format.
 
         Error responses are dictionaries. Simple Django errors, like permision
         denied errors, have a single key 'detail'. Field validation errors
@@ -87,7 +88,7 @@ class JsonApiRC1Renderer(JSONRenderer):
                         if seq is None:
                             # TODO: diagnose how subject feature errors are
                             # getting into view_extra.
-                            seq = "subject"
+                            seq = 'subject'
                         for fieldname, error_list in seq_errors.items():
                             path = '/linked.%s.%s.%s' % (rname, seq, fieldname)
                             assert isinstance(error_list, list), (
@@ -108,7 +109,7 @@ class JsonApiRC1Renderer(JSONRenderer):
                         ('path', '/%s' % name),
                     ))
                     errors.append(fmt_error)
-        assert errors, "No errors found in %s." % data
+        assert errors, 'No errors found in %s.' % data
         return self.dict_class((('errors', errors),))
 
     def convert_standard(self, data, fields_extra, main_resource, request):
@@ -135,7 +136,7 @@ class JsonApiRC1Renderer(JSONRenderer):
                     name, value, field_extra, main_resource, request)
                 if link_pattern:
                     link_ids[attr_name] = link_id
-                    pattern_name = "%s.%s" % (main_resource, attr_name)
+                    pattern_name = '%s.%s' % (main_resource, attr_name)
                     link_patterns[pattern_name] = link_pattern
                 else:
                     attributes[attr_name] = link_id
@@ -145,7 +146,7 @@ class JsonApiRC1Renderer(JSONRenderer):
                     converted_list, resource = self.convert_list(
                         ve_list, request)
                     assert resource == ve_key, (
-                        "%s != %s" % (resource, ve_key))
+                        '%s != %s' % (resource, ve_key))
                     linked[ve_key] = converted_list[resource]
                     link_patterns.update(converted_list.get('links', {}))
             else:
@@ -190,7 +191,7 @@ class JsonApiRC1Renderer(JSONRenderer):
         full URLs.
         """
         assert isinstance(return_list, ReturnList), (
-            "Should be ReturnList (for serializer data), is %s" %
+            'Should be ReturnList (for serializer data), is %s' %
             type(return_list))
         serializer = return_list.serializer.child
         fields_extra = serializer.get_fields_extra()
@@ -308,6 +309,7 @@ class JsonApiTemplateHTMLRenderer(TemplateHTMLRenderer):
 
 class BrowsableAPIRenderer(BaseAPIRenderer):
     """Jinja2 renderer used to self-document the API."""
+
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render the HTML for the browsable API representation.

@@ -1,4 +1,4 @@
-"""Configuration for the Firefox Accounts provider"""
+"""Configuration for the Firefox Accounts provider."""
 
 
 def fxa_config():

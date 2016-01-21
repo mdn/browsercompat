@@ -36,7 +36,7 @@ class SpecSectionExtractor(Extractor):
     {{WhyNoSpecStart}}/{{WhyNoSpecEnd}} pair.
     """
 
-    extractor_name = "Specifications Extractor"
+    extractor_name = 'Specifications Extractor'
 
     def __init__(self, **kwargs):
         self.initialize_extractor(**kwargs)
@@ -52,21 +52,21 @@ class SpecSectionExtractor(Extractor):
         self.section_id = None
 
     def entering_element(self, state, element):
-        if state == "begin":
+        if state == 'begin':
             assert isinstance(element, HnElement)
             self.extract_header(element)
-            return "extracted_header", False
-        elif state == "extracted_header":
+            return 'extracted_header', False
+        elif state == 'extracted_header':
             if self.is_tag(element, 'table'):
-                return "in_table", True
+                return 'in_table', True
             elif isinstance(element, HTMLElement):
                 self.extract_non_table(element)
-                return "extracted_header", False
-        elif state == "in_table":
+                return 'extracted_header', False
+        elif state == 'in_table':
             if self.is_tag(element, 'tr'):
                 # Confirm header columns?
-                return "in_first_row", False
-        elif state == "in_table_data":
+                return 'in_first_row', False
+        elif state == 'in_table_data':
             if self.is_tag(element, 'tr'):
                 self.key = None
                 self.spec_id = None
@@ -75,16 +75,16 @@ class SpecSectionExtractor(Extractor):
                 self.spec2_key = None
                 self.section_id = None
                 self.desc = None
-                return "in_data_row", True
-        elif state == "in_data_row":
+                return 'in_data_row', True
+        elif state == 'in_data_row':
             if self.is_tag(element, 'td'):
                 self.extract_specname(element)
-                return "extracted_name", False
-        elif state == "extracted_name":
+                return 'extracted_name', False
+        elif state == 'extracted_name':
             if self.is_tag(element, 'td'):
                 self.extract_spec2(element)
-                return "extracted_spec2", False
-        elif state == "extracted_spec2":
+                return 'extracted_spec2', False
+        elif state == 'extracted_spec2':
             if self.is_tag(element, 'td'):
                 self.extract_specdesc(element)
                 self.specs.append({
@@ -94,39 +94,39 @@ class SpecSectionExtractor(Extractor):
                     'section.name': self.name,
                     'section.note': self.desc,
                     'section.id': self.section_id})
-                return "extracted_desc", False
-        elif state == "extracted_desc":
+                return 'extracted_desc', False
+        elif state == 'extracted_desc':
             # Warn on extra columns?
             pass
-        elif state == "extracted_table":
+        elif state == 'extracted_table':
             if isinstance(element, HTMLElement):
                 self.extract_non_table(element)
-                return "extracted_table", False
+                return 'extracted_table', False
         else:  # pragma: no cover
             raise Exception('Unexpected state "{}"'.format(state))
         return state, True
 
     def leaving_element(self, state, element):
-        if state == "begin":  # pragma: no cover
+        if state == 'begin':  # pragma: no cover
             pass
-        elif state == "extracted_header":
+        elif state == 'extracted_header':
             pass
-        elif state == "in_table":
+        elif state == 'in_table':
             # Warn when exiting with no data found?
             pass
-        elif state == "in_first_row":
+        elif state == 'in_first_row':
             assert self.is_tag(element, 'tr')
-            return "in_table_data"
-        elif state == "in_table_data":
+            return 'in_table_data'
+        elif state == 'in_table_data':
             if self.is_tag(element, 'table'):
-                return "extracted_table"
-        elif state in ("in_data_row", "extracted_name", "extracted_spec2"):
+                return 'extracted_table'
+        elif state in ('in_data_row', 'extracted_name', 'extracted_spec2'):
             # Error on not enough columns?
             pass
-        elif state == "extracted_desc":
+        elif state == 'extracted_desc':
             if self.is_tag(element, 'tr'):
-                return "in_table_data"
-        elif state == "extracted_table":
+                return 'in_table_data'
+        elif state == 'extracted_table':
             pass
         else:  # pragma: no cover
             raise Exception('Unexpected state "{}"'.format(state))
@@ -160,14 +160,14 @@ class SpecSectionExtractor(Extractor):
         visitor = SpecNameVisitor(data=self.data, offset=td_element.start)
         visitor.visit(reparsed)
         self.issues.extend(visitor.issues)
-        self.key = visitor.mdn_key or ""
+        self.key = visitor.mdn_key or ''
         if not (self.key or visitor.issues):
             self.add_issue('specname_omitted', td_element)
         if visitor.spec:
             self.spec_id = visitor.spec.id
         self.section_id = visitor.section_id or None
-        self.path = visitor.subpath or ""
-        self.name = visitor.section_name or ""
+        self.path = visitor.subpath or ''
+        self.name = visitor.section_name or ''
 
     def extract_spec2(self, td_element):
         reparsed = kumascript_grammar.parse(td_element.raw)
@@ -206,6 +206,7 @@ class SpecNameVisitor(KumaVisitor):
 
     This is the first column of the Specifications table.
     """
+
     scope = 'specification name'
     _allowed_tags = ['td']
 
@@ -264,6 +265,7 @@ class Spec2Visitor(KumaVisitor):
 
     This is the second column of the Specifications table.
     """
+
     scope = 'specification maturity'
     _allowed_tags = ['td']
 
@@ -300,6 +302,7 @@ class SpecDescVisitor(KumaVisitor):
 
     This is the third column of the Specifications table.
     """
+
     scope = 'specification description'
     _allowed_tags = ['a', 'br', 'code', 'td']
 

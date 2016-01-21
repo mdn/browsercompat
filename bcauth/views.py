@@ -9,6 +9,7 @@ from django.views.generic.base import RedirectView
 
 class AccountView(RedirectView):
     """Redirect to login or profile page."""
+
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):

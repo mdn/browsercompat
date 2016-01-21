@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""API Serializers"""
+"""API Serializers."""
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -27,7 +27,7 @@ from .validators import VersionAndStatusValidator
 class WriteRestrictedMixin(object):
 
     def get_fields(self):
-        """Add read_only flag for write-restricted fields"""
+        """Add read_only flag for write-restricted fields."""
         fields = super(WriteRestrictedMixin, self).get_fields()
 
         # Some fields are read-only based on view action
@@ -56,7 +56,8 @@ class WriteRestrictedMixin(object):
 
 
 class FieldMapMixin(object):
-    """Automatically handle fields used by this project"""
+    """Automatically handle fields used by this project."""
+
     serializer_field_mapping = ModelSerializer.serializer_field_mapping
     serializer_field_mapping[fields.TranslatedField] = TranslatedTextField
     serializer_field_mapping[CharField] = OptionalCharField
@@ -86,7 +87,8 @@ class FieldsExtraMixin(object):
 class HistoricalModelSerializer(
         WriteRestrictedMixin, FieldMapMixin, FieldsExtraMixin,
         ModelSerializer):
-    """Model serializer with history manager"""
+    """Model serializer with history manager."""
+
     omit_historical_fields = (
         'id', 'history_id', 'history_date', 'history_user', 'history_type',
         'history_changeset')
@@ -115,7 +117,7 @@ class HistoricalModelSerializer(
         return CurrentHistoryField, {}
 
     def to_internal_value(self, data):
-        """If history_current in data, load historical data into instance"""
+        """If history_current in data, load historical data into instance."""
         if data and 'history_current' in data:
             history_id = int(data['history_current'])
             current_history = self.instance.history.all()[0]
@@ -140,7 +142,7 @@ class HistoricalModelSerializer(
 
 
 class BrowserSerializer(HistoricalModelSerializer):
-    """Browser Serializer"""
+    """Browser Serializer."""
 
     def update(self, instance, validated_data):
         versions = validated_data.pop('versions', None)
@@ -186,7 +188,7 @@ class BrowserSerializer(HistoricalModelSerializer):
 
 
 class FeatureSerializer(HistoricalModelSerializer):
-    """Feature Serializer"""
+    """Feature Serializer."""
 
     children = MPTTRelationField(
         many=True, queryset=Feature.objects.all(), required=False)
@@ -211,15 +213,15 @@ class FeatureSerializer(HistoricalModelSerializer):
             new_set = set([child.pk for child in value])
             if current_set - new_set:
                 raise ValidationError(
-                    "All child features must be included in children.")
+                    'All child features must be included in children.')
             if new_set - current_set:
                 raise ValidationError(
-                    "Set child.parent to add a child feature.")
+                    'Set child.parent to add a child feature.')
         else:
             if value != []:  # pragma: no cover
                 # Because children is in update_only_fields, never happens
                 raise ValidationError(
-                    "Can not set children when creating a feature.")
+                    'Can not set children when creating a feature.')
         return value
 
     class Meta:
@@ -265,7 +267,7 @@ class FeatureSerializer(HistoricalModelSerializer):
 
 
 class MaturitySerializer(HistoricalModelSerializer):
-    """Specification Maturity Serializer"""
+    """Specification Maturity Serializer."""
 
     class Meta:
         model = Maturity
@@ -297,7 +299,7 @@ class MaturitySerializer(HistoricalModelSerializer):
 
 
 class SectionSerializer(HistoricalModelSerializer):
-    """Specification Section Serializer"""
+    """Specification Section Serializer."""
 
     class Meta:
         model = Section
@@ -337,7 +339,7 @@ class SectionSerializer(HistoricalModelSerializer):
 
 
 class SpecificationSerializer(HistoricalModelSerializer):
-    """Specification Serializer"""
+    """Specification Serializer."""
 
     def update(self, instance, validated_data):
         sections = validated_data.pop('sections', None)
@@ -389,7 +391,7 @@ class SpecificationSerializer(HistoricalModelSerializer):
 
 
 class SupportSerializer(HistoricalModelSerializer):
-    """Support Serializer"""
+    """Support Serializer."""
 
     class Meta:
         model = Support
@@ -426,7 +428,7 @@ class SupportSerializer(HistoricalModelSerializer):
 
 
 class VersionSerializer(HistoricalModelSerializer):
-    """Browser Version Serializer"""
+    """Browser Version Serializer."""
 
     order = IntegerField(read_only=True, source='_order')
 
@@ -478,7 +480,7 @@ class VersionSerializer(HistoricalModelSerializer):
 #
 
 class ChangesetSerializer(FieldsExtraMixin, ModelSerializer):
-    """Changeset Serializer"""
+    """Changeset Serializer."""
 
     target_resource_type = OptionalCharField(required=False)
     target_resource_id = OptionalIntegerField(required=False)
@@ -544,26 +546,26 @@ class ChangesetSerializer(FieldsExtraMixin, ModelSerializer):
 
 
 class UserSerializer(FieldsExtraMixin, ModelSerializer):
-    """User Serializer"""
+    """User Serializer."""
 
     created = DateTimeField(source='date_joined', read_only=True)
     agreement = SerializerMethodField()
     permissions = SerializerMethodField()
 
     def get_agreement(self, obj):
-        """What version of the contribution terms did the user agree to?
+        """Return the version of the contribution terms the user agreed to.
 
         Placeholder for when we have a license agreement.
         """
         return 0
 
     def get_permissions(self, obj):
-        """Return names of django.contrib.auth Groups
+        """Return names of django.contrib.auth Groups.
 
         Can not be used with a writable view, since django.contrib.auth User
         doesn't have this method.  Will need updating or a proxy class.
         """
-        assert hasattr(obj, 'group_names'), "Expecting cached User object"
+        assert hasattr(obj, 'group_names'), 'Expecting cached User object'
         return obj.group_names
 
     class Meta:
@@ -610,13 +612,13 @@ class ArchiveMixin(object):
 
 
 class HistoricalObjectSerializer(ModelSerializer):
-    """Common serializer attributes for Historical models"""
+    """Common serializer attributes for Historical models."""
 
-    id = IntegerField(source="history_id")
-    date = DateTimeField(source="history_date")
+    id = IntegerField(source='history_id')
+    date = DateTimeField(source='history_date')
     event = SerializerMethodField()
     changeset = PrimaryKeyRelatedField(
-        source="history_changeset", read_only=True)
+        source='history_changeset', read_only=True)
     object_id = HistoricalObjectField()
     archived_representation = SerializerMethodField()
 

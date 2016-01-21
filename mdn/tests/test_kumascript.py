@@ -50,7 +50,7 @@ class TestBug(TestCase):
 class TestCompatAndroid(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:CompatAndroid
     def test_standard(self):
-        raw = "{{CompatAndroid(1.0)}}"
+        raw = '{{CompatAndroid(1.0)}}'
         ks = CompatAndroid(
             raw=raw, args=['1.0'], scope='compatibility support')
         self.assertEqual(ks.version, '1.0')
@@ -72,19 +72,19 @@ class TestCompatGeckoDesktop(TestCase):
         self.assertEqual(text_type(ks), raw)
 
     def test_v1(self):
-        self.assert_value("1", "1.0")
+        self.assert_value('1', '1.0')
 
     def test_v8(self):
-        self.assert_value("8.0", "8.0")
+        self.assert_value('8.0', '8.0')
 
     def test_bad_text(self):
         self.assert_value(
-            "Yep", None,
+            'Yep', None,
             [('compatgeckodesktop_unknown', 0, 29, {'version': 'Yep'})])
 
     def test_bad_num(self):
         self.assert_value(
-            "1.1", None,
+            '1.1', None,
             [('compatgeckodesktop_unknown', 0, 29, {'version': '1.1'})])
 
 
@@ -117,12 +117,12 @@ class TestCompatGeckoFxOS(TestCase):
 
     def test_bad_gecko(self):
         self.assert_value(
-            "999999", None,
+            '999999', None,
             issues=[('compatgeckofxos_unknown', 0, 29, {'version': '999999'})])
 
     def test_bad_text(self):
         self.assert_value(
-            "Yep", None,
+            'Yep', None,
             issues=[('compatgeckofxos_unknown', 0, 26, {'version': 'Yep'})])
 
     def assert_value_with_override(
@@ -139,14 +139,14 @@ class TestCompatGeckoFxOS(TestCase):
         self.assertEqual(text_type(ks), raw)
 
     def test_7_override_1_0_1(self):
-        self.assert_value_with_override("7", "1.0.1", "1.0.1")
+        self.assert_value_with_override('7', '1.0.1', '1.0.1')
 
     def test_7_override_1_1(self):
-        self.assert_value_with_override("7", "1.1", "1.1")
+        self.assert_value_with_override('7', '1.1', '1.1')
 
     def test_bad_override(self):
         self.assert_value_with_override(
-            "18", "5.0", None,
+            '18', '5.0', None,
             issues=[('compatgeckofxos_override', 0, 32,
                      {'override': '5.0', 'version': '18'})])
 
@@ -164,13 +164,13 @@ class TestCompatGeckoMobile(TestCase):
         self.assertEqual(text_type(ks), raw)
 
     def test_v1(self):
-        self.assert_value("1", "1.0")
+        self.assert_value('1', '1.0')
 
     def test_v1_11(self):
-        self.assert_value("1.11", "1.0")
+        self.assert_value('1.11', '1.0')
 
     def test_v2(self):
-        self.assert_value("2", "4.0")
+        self.assert_value('2', '4.0')
 
 
 class TestCompatNightly(TestCase):
@@ -285,7 +285,7 @@ class TestSpec2(TestCase):
         self.assertEqual(ks.to_html(), 'specification CSS3 Backgrounds')
 
     def test_empty_key(self):
-        raw = "{{Spec2()}}"
+        raw = '{{Spec2()}}'
         ks = Spec2(raw=raw, scope=self.scope)
         self.assertIsNone(ks.mdn_key)
         self.assertIsNone(ks.spec)
@@ -348,7 +348,7 @@ class TestSpecName(TestCase):
         self.assertEqual(ks.issues, [issue])
 
     def test_no_args(self):
-        raw = "{{SpecName}}"
+        raw = '{{SpecName}}'
         ks = SpecName(raw=raw, scope=self.scope)
         issue = ks._make_issue(
             'kumascript_wrong_args', min=1, max=3, count=0,
@@ -531,28 +531,28 @@ class TestGeckoRelease(TestCase):
     # https://developer.mozilla.org/en-US/docs/Template:geckoRelease
     def test_early(self):
         raw = '{{geckoRelease("1.9.2")}}'
-        ks = GeckoRelease(raw=raw, args=["1.9.2"], scope='footnote')
-        expected = "(Firefox 3.6 / Thunderbird 3.1 / Fennec 1.0)"
+        ks = GeckoRelease(raw=raw, args=['1.9.2'], scope='footnote')
+        expected = '(Firefox 3.6 / Thunderbird 3.1 / Fennec 1.0)'
         self.assertEqual(ks.to_html(), expected)
 
     def test_recent(self):
         raw = '{{geckoRelease("19.0")}}'
-        ks = GeckoRelease(raw=raw, args=["19.0"], scope='footnote')
-        expected = "(Firefox 19.0 / Thunderbird 19.0 / SeaMonkey 2.16)"
+        ks = GeckoRelease(raw=raw, args=['19.0'], scope='footnote')
+        expected = '(Firefox 19.0 / Thunderbird 19.0 / SeaMonkey 2.16)'
         self.assertEqual(ks.to_html(), expected)
 
     def test_fxos(self):
         raw = '{{geckoRelease("18.0")}}'
-        ks = GeckoRelease(raw=raw, args=["18.0"], scope='footnote')
+        ks = GeckoRelease(raw=raw, args=['18.0'], scope='footnote')
         expected = (
-            "(Firefox 18.0 / Thunderbird 18.0 / SeaMonkey 2.15 /"
-            " Firefox OS 1.0.1 / Firefox OS 1.1)")
+            '(Firefox 18.0 / Thunderbird 18.0 / SeaMonkey 2.15 /'
+            ' Firefox OS 1.0.1 / Firefox OS 1.1)')
         self.assertEqual(ks.to_html(), expected)
 
     def test_with_plus(self):
         raw = '{{geckoRelease("33.0+")}}'
-        ks = GeckoRelease(raw=raw, args=["33.0+"], scope='footnote')
-        expected = "(Firefox 33.0+ / Thunderbird 33.0+ / SeaMonkey 2.30+)"
+        ks = GeckoRelease(raw=raw, args=['33.0+'], scope='footnote')
+        expected = '(Firefox 33.0+ / Thunderbird 33.0+ / SeaMonkey 2.30+)'
         self.assertEqual(ks.to_html(), expected)
 
 
@@ -574,7 +574,7 @@ class TestJSxRef(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/arguments
         raw = '{{jsxref("Functions/arguments", "arguments")}}'
         ks = JSxRef(
-            raw=raw, args=["Functions/arguments", "arguments"],
+            raw=raw, args=['Functions/arguments', 'arguments'],
             scope='specification description')
         self.assertEqual(
             ks.to_html(),
@@ -586,7 +586,7 @@ class TestJSxRef(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SIMD
         raw = '{{jsxref("Float32x4", "SIMD.Float32x4")}}'
         ks = JSxRef(
-            raw=raw, args=["Float32x4", "SIMD.Float32x4"],
+            raw=raw, args=['Float32x4', 'SIMD.Float32x4'],
             scope='compatibility feature')
         self.assertEqual(ks.to_html(), '<code>SIMD.Float32x4</code>')
 
@@ -594,7 +594,7 @@ class TestJSxRef(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/API/Blob
         raw = '{{jsxref("Array/slice", "Array.slice()")}}'
         ks = JSxRef(
-            raw=raw, args=["Array/slice", "Array.slice()"], scope='footnote')
+            raw=raw, args=['Array/slice', 'Array.slice()'], scope='footnote')
         self.assertEqual(
             ks.to_html(),
             ('<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript'
@@ -605,7 +605,7 @@ class TestJSxRef(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
         raw = '{{jsxref("Array.prototype.lastIndexOf", "lastIndexOf")}}'
         ks = JSxRef(
-            raw=raw, args=["Array.prototype.lastIndexOf", "lastIndexOf"],
+            raw=raw, args=['Array.prototype.lastIndexOf', 'lastIndexOf'],
             scope='specification description')
         self.assertEqual(
             ks.to_html(),
@@ -617,7 +617,7 @@ class TestJSxRef(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math
         raw = '{{jsxref("Math.log10()", "log10()")}}'
         ks = JSxRef(
-            raw=raw, args=["Math.log10()", "log10()"],
+            raw=raw, args=['Math.log10()', 'log10()'],
             scope='specification description')
         self.assertEqual(
             ks.to_html(),
@@ -629,7 +629,7 @@ class TestJSxRef(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString
         raw = '{{jsxref("Global_Objects/null", "null")}}'
         ks = JSxRef(
-            raw=raw, args=["Global_Objects/null", "null"],
+            raw=raw, args=['Global_Objects/null', 'null'],
             scope='specification description')
         self.assertEqual(
             ks.to_html(),
@@ -753,7 +753,7 @@ class TestGrammar(TestHTMLGrammar):
         assert parsed  # Hard to do more than this
 
     def test_whynospec_plain(self):
-        text = "{{WhyNoSpecStart}}There is no spec{{WhyNoSpecEnd}}"
+        text = '{{WhyNoSpecStart}}There is no spec{{WhyNoSpecEnd}}'
         self.assert_whynospec(text)
 
     def test_whynospec_spaces(self):
@@ -772,7 +772,7 @@ Not part of any current spec, but it was in early drafts of
         self.assert_whynospec(text)
 
     def test_single_curly(self):
-        text = "Here is some sample text: { ... }."
+        text = 'Here is some sample text: { ... }.'
         parsed = kumascript_grammar['text_block'].parse(text)
         self.assertEqual(text, parsed.text)
 
@@ -819,14 +819,14 @@ class TestVisitor(TestHTMLVisitor):
         self.assert_kumascript(
             ("{{SpecName('CSS3 Backgrounds', '#the-background-size',"
              " 'background-size')}}"),
-            "SpecName",
-            ["CSS3 Backgrounds", "#the-background-size",
-             "background-size"], 'specification name')
+            'SpecName',
+            ['CSS3 Backgrounds', '#the-background-size',
+             'background-size'], 'specification name')
 
     def test_kumascript_empty_string(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/MIDIConnectionEvent
         raw = "{{SpecName('', '#midiconnection')}}"
-        name = "SpecName"
+        name = 'SpecName'
         args = ['', '#midiconnection']
         issue = (
             'specname_blank_key', 0, 35,
@@ -841,7 +841,7 @@ class TestVisitor(TestHTMLVisitor):
             {'name': 'CSSRef', 'args': [], 'scope': 'footnote',
              'kumascript': '{{CSSRef}}'})
         self.assert_kumascript(
-            "{{CSSRef}}", "CSSRef", [], scope='footnote', known=False,
+            '{{CSSRef}}', 'CSSRef', [], scope='footnote', known=False,
             issues=[issue])
 
     def test_kumascript_in_html(self):
@@ -903,7 +903,7 @@ class TestVisitor(TestHTMLVisitor):
         self.assertEqual('<code>table-cell</code>', str(code))
 
     def assert_compat_version(self, html, cls, version):
-        """Check that Compat* KumaScript is parsed correctly"""
+        """Check that Compat* KumaScript is parsed correctly."""
         parsed = kumascript_grammar['html'].parse(html)
         out = self.visitor.visit(parsed)
         self.assertEqual(len(out), 1)

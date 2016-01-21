@@ -12,6 +12,7 @@ from webplatformcompat.history import Changeset
 
 class TestMixin(object):
     """Useful methods for testing."""
+
     maxDiff = None
     namespace = 'v1'
 
@@ -20,7 +21,7 @@ class TestMixin(object):
 
     def api_reverse(self, viewname, **kwargs):
         """Create a path to a namespaced API view."""
-        return reverse("%s:%s" % (self.namespace, viewname), kwargs=kwargs)
+        return reverse('%s:%s' % (self.namespace, viewname), kwargs=kwargs)
 
     def login_user(self, groups=None):
         """Create and login a user, saving to self.user.
@@ -86,7 +87,7 @@ class TestMixin(object):
 
     def dt_repr(self, dt):
         """Convert a datetime to DRF serialized representation."""
-        return dt.isoformat().replace("+00:00", "Z")
+        return dt.isoformat().replace('+00:00', 'Z')
 
     dt_json = dt_repr
 

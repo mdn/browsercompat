@@ -213,7 +213,7 @@ class HTMLInterval(object):
 
     def to_text(self):
         """Convert to non-HTML text."""
-        return ""
+        return ''
 
     @property
     def issues(self):
@@ -222,7 +222,7 @@ class HTMLInterval(object):
 
 @python_2_unicode_compatible
 class HTMLText(HTMLInterval):
-    """A plain text section of HTML"""
+    """A plain text section of HTML."""
 
     def __init__(self, **kwargs):
         super(HTMLText, self).__init__(**kwargs)
@@ -244,7 +244,7 @@ class HTMLText(HTMLInterval):
         return self.cleaned
 
     def cleanup_whitespace(self, text):
-        """Normalize whitespace"""
+        """Normalize whitespace."""
         normal = self.re_whitespace.sub(' ', text)
         assert '  ' not in normal
         return normal.strip()
@@ -252,7 +252,7 @@ class HTMLText(HTMLInterval):
 
 @python_2_unicode_compatible
 class HTMLEmptyText(HTMLText):
-    """An empty text section of HTML"""
+    """An empty text section of HTML."""
 
     def __init__(self, **kwargs):
         super(HTMLEmptyText, self).__init__(**kwargs)
@@ -264,7 +264,7 @@ class HTMLEmptyText(HTMLText):
 
 @python_2_unicode_compatible
 class HTMLBaseTag(HTMLInterval):
-    """An HTML tag, such as <li>, <br/>, or </code>"""
+    """An HTML tag, such as <li>, <br/>, or </code>."""
 
     def __init__(self, tag, **kwargs):
         super(HTMLBaseTag, self).__init__(**kwargs)
@@ -272,7 +272,7 @@ class HTMLBaseTag(HTMLInterval):
         self.tag = tag
 
     def __str__(self):
-        return "<{}>".format(self.tag)
+        return '<{}>'.format(self.tag)
 
 
 @python_2_unicode_compatible
@@ -320,12 +320,12 @@ class HTMLAttributes(HTMLInterval):
 
 @python_2_unicode_compatible
 class HTMLOpenTag(HTMLBaseTag):
-    """An HTML tag, such as <a href="#foo">"""
+    """An HTML tag, such as <a href="#foo">."""
 
     def __init__(
             self, attributes, attribute_actions=None, drop_tag=False,
             scope=None, **kwargs):
-        """Initialize an HTML open tag
+        """Initialize an HTML open tag.
 
         Keyword Arguments:
         attributes - An HTMLAttributes instance
@@ -433,16 +433,15 @@ class HTMLOpenTag(HTMLBaseTag):
 
 @python_2_unicode_compatible
 class HTMLCloseTag(HTMLBaseTag):
-    """An HTML closing tag, such as </a>"""
-    pass
+    """An HTML closing tag, such as </a>."""
 
     def __str__(self):
-        return "</{}>".format(self.tag)
+        return '</{}>'.format(self.tag)
 
 
 @python_2_unicode_compatible
 class HTMLElement(HTMLInterval):
-    """An HTML element that may contain child elements"""
+    """An HTML element that may contain child elements."""
 
     def __init__(
             self, open_tag, close_tag=None, children=None, drop_tag=False,
@@ -461,9 +460,9 @@ class HTMLElement(HTMLInterval):
     def __str__(self):
         content = join_content(text_type(child) for child in self.children)
         if self.close_tag:
-            return "{}{}{}".format(self.open_tag, content, self.close_tag)
+            return '{}{}{}'.format(self.open_tag, content, self.close_tag)
         else:
-            return "{}".format(self.open_tag)
+            return '{}'.format(self.open_tag)
 
     @cached_property
     def attributes(self):
@@ -484,7 +483,8 @@ class HTMLElement(HTMLInterval):
 
 
 class HnElement(HTMLElement):
-    """An HTML header, such as <h2>"""
+    """An HTML header, such as <h2>."""
+
     def __init__(self, **kwargs):
         super(HnElement, self).__init__(**kwargs)
         self.level = int(self.tag[1:])
@@ -497,6 +497,7 @@ class HTMLVisitor(Visitor):
     fragment is inside of a document, then an offset can be applied so that
     positions are reported relative to the whole document.
     """
+
     _default_attribute_actions = {None: 'keep'}
     _allowed_tags = None
     scope = 'HTML'
@@ -505,7 +506,7 @@ class HTMLVisitor(Visitor):
         super(HTMLVisitor, self).__init__(**kwargs)
 
     def process(self, cls, node, **kwargs):
-        """Convert a node to an HTML* instance"""
+        """Convert a node to an HTML* instance."""
         dropable = issubclass(cls, (HTMLElement, HTMLOpenTag))
         if dropable and self._allowed_tags is not None:
             if issubclass(cls, HTMLOpenTag):
@@ -562,7 +563,7 @@ class HTMLVisitor(Visitor):
     visit_hn_element = _visit_token
 
     def _visit_open(self, node, children, actions=None, cls=None, **kwargs):
-        """Parse an opening tag with an optional attributes list"""
+        """Parse an opening tag with an optional attributes list."""
         open_tag_node, ws, attrs, close = children
         assert isinstance(open_tag_node, Node), type(open_tag_node)
         open_tag = open_tag_node.text

@@ -18,7 +18,6 @@ class TestCase(BaseTestCase):
 
 
 class TestLink(TestCase):
-
     """Test the Link resource."""
 
     def test_link_without_collection(self):
@@ -48,7 +47,6 @@ class TestLink(TestCase):
 
 
 class TestBrowser(TestCase):
-
     """Test the Browser resource, and general Resource functions."""
 
     def test_load_at_init(self):
@@ -57,9 +55,9 @@ class TestBrowser(TestCase):
 
     def test_load_by_attribute(self):
         browser = Browser()
-        browser.id = "6"
+        browser.id = '6'
         self.assertIsInstance(browser.id, Link)
-        self.assertEqual("6", browser.id.id)
+        self.assertEqual('6', browser.id.id)
 
     def test_missing_attribute(self):
         raised = False
@@ -72,35 +70,35 @@ class TestBrowser(TestCase):
 
     def test_from_json_api(self):
         rep = {
-            "browsers": {
-                "id": "1",
-                "slug": "chrome",
-                "name": {"en": "Chrome"},
-                "note": None,
-                "links": {
-                    "history": ["1"],
-                    "history_current": "1",
-                    "versions": ["1"],
+            'browsers': {
+                'id': '1',
+                'slug': 'chrome',
+                'name': {'en': 'Chrome'},
+                'note': None,
+                'links': {
+                    'history': ['1'],
+                    'history_current': '1',
+                    'versions': ['1'],
                 }
             },
-            "links": {
-                "browsers.history": {
-                    "href": (
-                        "http://example.com/api/v1/historical_browsers/"
-                        "{browsers.history}"),
-                    "type": "historical_browsers"
+            'links': {
+                'browsers.history': {
+                    'href': (
+                        'http://example.com/api/v1/historical_browsers/'
+                        '{browsers.history}'),
+                    'type': 'historical_browsers'
                 },
-                "browsers.history_current": {
-                    "href": (
-                        "http://localhost:8000/api/v1/historical_browsers/"
-                        "{browsers.history_current}"),
-                    "type": "historical_browsers"
+                'browsers.history_current': {
+                    'href': (
+                        'http://localhost:8000/api/v1/historical_browsers/'
+                        '{browsers.history_current}'),
+                    'type': 'historical_browsers'
                 },
-                "browsers.versions": {
-                    "href": (
-                        "http://localhost:8000/api/v1/versions/"
-                        "{browsers.versions}"),
-                    "type": "versions"
+                'browsers.versions': {
+                    'href': (
+                        'http://localhost:8000/api/v1/versions/'
+                        '{browsers.versions}'),
+                    'type': 'versions'
                 }
             }
         }
@@ -115,16 +113,16 @@ class TestBrowser(TestCase):
 
         browser.from_json_api(rep)
         self.assertIsInstance(browser.id, Link)
-        self.assertEqual("1", browser.id.id)
-        self.assertEqual("chrome", browser.slug)
+        self.assertEqual('1', browser.id.id)
+        self.assertEqual('chrome', browser.slug)
         self.assertEqual({'en': 'Chrome'}, browser.name)
         self.assertIsNone(browser.note)
         self.assertIsInstance(browser.history, LinkList)
-        self.assertEqual(["1"], browser.history.ids)
+        self.assertEqual(['1'], browser.history.ids)
         self.assertIsInstance(browser.history_current, Link)
-        self.assertEqual("1", browser.history_current.id)
+        self.assertEqual('1', browser.history_current.id)
         self.assertIsInstance(browser.versions, LinkList)
-        self.assertEqual(["1"], browser.versions.ids)
+        self.assertEqual(['1'], browser.versions.ids)
 
     def test_get_data_id(self):
         browser = Browser(slug='firefox')
@@ -144,8 +142,8 @@ class TestBrowser(TestCase):
         browser = Browser()
         browser.name = {'en': 'Browser'}
         expected = {
-            "browsers": {
-                "name": {'en': 'Browser'}
+            'browsers': {
+                'name': {'en': 'Browser'}
             }
         }
         actual = browser.to_json_api()
@@ -153,12 +151,12 @@ class TestBrowser(TestCase):
 
     def test_to_json_api_complex(self):
         browser = Browser(
-            id="1", slug="chrome", name={"en": "Chrome"}, history=["1"],
-            history_current="1", versions=["1"])
+            id='1', slug='chrome', name={'en': 'Chrome'}, history=['1'],
+            history_current='1', versions=['1'])
         expected = {
-            "browsers": {
-                "slug": "chrome",
-                "name": {"en": "Chrome"},
+            'browsers': {
+                'slug': 'chrome',
+                'name': {'en': 'Chrome'},
             }
         }
         actual = browser.to_json_api(with_sorted=False)
@@ -166,13 +164,13 @@ class TestBrowser(TestCase):
 
     def test_to_json_api_complex_with_sorted(self):
         browser = Browser(
-            id="1", slug="chrome", name={"en": "Chrome"}, history=["1"],
-            history_current="1", versions=["1"])
+            id='1', slug='chrome', name={'en': 'Chrome'}, history=['1'],
+            history_current='1', versions=['1'])
         expected = {
-            "browsers": {
-                "slug": "chrome",
-                "name": {"en": "Chrome"},
-                "links": {"versions": ["1"]},
+            'browsers': {
+                'slug': 'chrome',
+                'name': {'en': 'Chrome'},
+                'links': {'versions': ['1']},
             }
         }
         actual = browser.to_json_api()
@@ -182,23 +180,23 @@ class TestBrowser(TestCase):
 class TestVersion(TestCase):
     def test_load_by_json(self):
         rep = {
-            "versions": {
-                "id": "2",
-                "version": "0.2",
-                "release_day": None,
-                "retirement_day": None,
-                "status": "unknown",
-                "release_notes_uri": None,
-                "note": None,
-                "order": 1,
-                "links": {
-                    "browser": "1",
-                    "supports": [
-                        "1120", "1119", "1118", "1117", "1116", "1115", "1114",
-                        "1113", "1112", "1111", "1110", "1109",
+            'versions': {
+                'id': '2',
+                'version': '0.2',
+                'release_day': None,
+                'retirement_day': None,
+                'status': 'unknown',
+                'release_notes_uri': None,
+                'note': None,
+                'order': 1,
+                'links': {
+                    'browser': '1',
+                    'supports': [
+                        '1120', '1119', '1118', '1117', '1116', '1115', '1114',
+                        '1113', '1112', '1111', '1110', '1109',
                     ],
-                    "history": ["2"],
-                    "history_current": "2"
+                    'history': ['2'],
+                    'history_current': '2'
                 }
             },
         }
@@ -216,8 +214,8 @@ class TestVersion(TestCase):
 
         version.from_json_api(rep)
         self.assertIsInstance(version.id, Link)
-        self.assertEqual("2", version.id.id)
-        self.assertEqual("0.2", version.version)
+        self.assertEqual('2', version.id.id)
+        self.assertEqual('0.2', version.version)
         self.assertIsNone(version.release_day)
         self.assertIsNone(version.retirement_day)
         self.assertEqual('unknown', version.status)
@@ -229,13 +227,13 @@ class TestVersion(TestCase):
              '1112', '1111', '1110', '1109'],
             version.supports.ids)
         self.assertIsInstance(version.history_current, Link)
-        self.assertEqual("2", version.history_current.id)
+        self.assertEqual('2', version.history_current.id)
         self.assertIsInstance(version.history, LinkList)
-        self.assertEqual(["2"], version.history.ids)
+        self.assertEqual(['2'], version.history.ids)
 
     def test_get_data_id(self):
-        version = Version(id="254", version="0.2", browser="2")
-        browser = Browser(id="2", slug="the_browser")
+        version = Version(id='254', version='0.2', browser='2')
+        browser = Browser(id='2', slug='the_browser')
         collection = Collection()
         collection.add(version)
         collection.add(browser)
@@ -243,8 +241,8 @@ class TestVersion(TestCase):
             ('versions', 'the_browser', '0.2'), version.get_data_id())
 
     def test_get_data_id_null_version(self):
-        version = Version(id="254", version=None, browser="2")
-        browser = Browser(id="2", slug="the_browser")
+        version = Version(id='254', version=None, browser='2')
+        browser = Browser(id='2', slug='the_browser')
         collection = Collection()
         collection.add(version)
         collection.add(browser)
@@ -253,14 +251,14 @@ class TestVersion(TestCase):
 
     def test_to_json(self):
         version = Version(
-            id="2", version="0.2", status="unknown", supports=["1120", "1119"],
-            browser="2")
+            id='2', version='0.2', status='unknown', supports=['1120', '1119'],
+            browser='2')
         expected = {
-            "versions": {
-                "version": "0.2",
-                "status": "unknown",
-                "links": {
-                    "browser": "2"
+            'versions': {
+                'version': '0.2',
+                'status': 'unknown',
+                'links': {
+                    'browser': '2'
                 }
             }
         }
@@ -269,24 +267,24 @@ class TestVersion(TestCase):
 
 class TestFeature(TestCase):
     def test_to_json_no_parent(self):
-        feature = Feature(id="1", slug="web", name={"en": "Web"})
+        feature = Feature(id='1', slug='web', name={'en': 'Web'})
         expected = {
-            "features": {
-                "slug": "web",
-                "name": {"en": "Web"},
+            'features': {
+                'slug': 'web',
+                'name': {'en': 'Web'},
             }
         }
         self.assertEqual(expected, feature.to_json_api())
 
     def test_to_json_null_parent(self):
         feature = Feature(
-            id="1", slug="web", name={"en": "Web"}, parent=None)
+            id='1', slug='web', name={'en': 'Web'}, parent=None)
         expected = {
-            "features": {
-                "slug": "web",
-                "name": {"en": "Web"},
-                "links": {
-                    "parent": None
+            'features': {
+                'slug': 'web',
+                'name': {'en': 'Web'},
+                'links': {
+                    'parent': None
                 }
             }
         }
@@ -296,13 +294,13 @@ class TestFeature(TestCase):
 class TestSupport(TestCase):
     def test_to_json(self):
         support = Support(
-            support="unknown", version="_version", feature="_feature")
+            support='unknown', version='_version', feature='_feature')
         expected = {
-            "supports": {
-                "support": "unknown",
-                "links": {
-                    "version": "_version",
-                    "feature": "_feature",
+            'supports': {
+                'support': 'unknown',
+                'links': {
+                    'version': '_version',
+                    'feature': '_feature',
                 }}}
         self.assertEqual(expected, support.to_json_api())
 
@@ -310,17 +308,17 @@ class TestSupport(TestCase):
 class TestSpecification(TestCase):
     def test_to_json(self):
         spec = Specification(
-            slug="css1", mdn_key='CSS1', name={'en': 'CSS Level&nbsp;1'},
-            uri={'en': "http://www.w3.org/TR/CSS1/"}, maturity="1",
-            sections=["2"])
+            slug='css1', mdn_key='CSS1', name={'en': 'CSS Level&nbsp;1'},
+            uri={'en': 'http://www.w3.org/TR/CSS1/'}, maturity='1',
+            sections=['2'])
         expected = {
-            "specifications": {
+            'specifications': {
                 'slug': 'css1',
                 'mdn_key': 'CSS1',
-                "name": {"en": "CSS Level&nbsp;1"},
-                "uri": {"en": "http://www.w3.org/TR/CSS1/"},
-                "links": {
-                    "maturity": "1",
+                'name': {'en': 'CSS Level&nbsp;1'},
+                'uri': {'en': 'http://www.w3.org/TR/CSS1/'},
+                'links': {
+                    'maturity': '1',
                 },
             },
         }
@@ -328,18 +326,18 @@ class TestSpecification(TestCase):
 
     def test_to_json_with_sorted(self):
         spec = Specification(
-            slug="css1", mdn_key='CSS1', name={'en': 'CSS Level&nbsp;1'},
-            uri={'en': "http://www.w3.org/TR/CSS1/"}, maturity="1",
-            sections=["2"])
+            slug='css1', mdn_key='CSS1', name={'en': 'CSS Level&nbsp;1'},
+            uri={'en': 'http://www.w3.org/TR/CSS1/'}, maturity='1',
+            sections=['2'])
         expected = {
-            "specifications": {
+            'specifications': {
                 'slug': 'css1',
                 'mdn_key': 'CSS1',
-                "name": {"en": "CSS Level&nbsp;1"},
-                "uri": {"en": "http://www.w3.org/TR/CSS1/"},
-                "links": {
-                    "maturity": "1",
-                    "sections": ["2"],
+                'name': {'en': 'CSS Level&nbsp;1'},
+                'uri': {'en': 'http://www.w3.org/TR/CSS1/'},
+                'links': {
+                    'maturity': '1',
+                    'sections': ['2'],
                 },
             },
         }
@@ -352,22 +350,22 @@ class TestSection(TestCase):
             number={'en': '1.2.3'}, name={'en': 'section foo'},
             subpath={'en': '/foo'}, specification='_spec')
         expected = {
-            "sections": {
-                "number": {'en': '1.2.3'},
-                "name": {'en': 'section foo'},
-                "subpath": {'en': '/foo'},
-                "links": {
-                    "specification": "_spec",
+            'sections': {
+                'number': {'en': '1.2.3'},
+                'name': {'en': 'section foo'},
+                'subpath': {'en': '/foo'},
+                'links': {
+                    'specification': '_spec',
                 }}}
         self.assertEqual(expected, section.to_json_api())
 
     def test_get_data_id_with_number(self):
-        maturity = Maturity(id="2")
-        spec = Specification(id="22", maturity="2", mdn_key="SPEC")
-        feature = Feature(id="222")
+        maturity = Maturity(id='2')
+        spec = Specification(id='22', maturity='2', mdn_key='SPEC')
+        feature = Feature(id='222')
         section = Section(
-            id="_sec", specification="22", features=["222"],
-            number={"en": "1.2.3"}, subpath={"en": "#123"})
+            id='_sec', specification='22', features=['222'],
+            number={'en': '1.2.3'}, subpath={'en': '#123'})
         collection = Collection()
         collection.add(maturity)
         collection.add(spec)
@@ -380,19 +378,19 @@ class TestSection(TestCase):
             name={'en': 'section foo'}, subpath={'en': '/foo'},
             specification='_spec')
         expected = {
-            "sections": {
-                "name": {'en': 'section foo'},
-                "subpath": {'en': '/foo'},
-                "links": {
-                    "specification": "_spec",
+            'sections': {
+                'name': {'en': 'section foo'},
+                'subpath': {'en': '/foo'},
+                'links': {
+                    'specification': '_spec',
                 }}}
         self.assertEqual(expected, section.to_json_api())
 
     def test_get_data_id_without_subpath(self):
-        maturity = Maturity(id="2")
-        spec = Specification(id="22", maturity="2", mdn_key="SPEC")
-        feature = Feature(id="222")
-        section = Section(id="_sec", specification="22", features=["222"])
+        maturity = Maturity(id='2')
+        spec = Specification(id='22', maturity='2', mdn_key='SPEC')
+        feature = Feature(id='222')
+        section = Section(id='_sec', specification='22', features=['222'])
         collection = Collection()
         collection.add(maturity)
         collection.add(spec)
@@ -405,21 +403,21 @@ class TestSection(TestCase):
             name={'en': 'section foo'}, subpath={'en': '/foo'},
             specification='_spec', number={})
         expected = {
-            "sections": {
-                "name": {'en': 'section foo'},
-                "number": {},
-                "subpath": {'en': '/foo'},
-                "links": {
-                    "specification": "_spec",
+            'sections': {
+                'name': {'en': 'section foo'},
+                'number': {},
+                'subpath': {'en': '/foo'},
+                'links': {
+                    'specification': '_spec',
                 }}}
         self.assertEqual(expected, section.to_json_api())
 
     def test_get_data_id_with_empty_subpath(self):
-        maturity = Maturity(id="2")
-        spec = Specification(id="22", maturity="2", mdn_key="SPEC")
-        feature = Feature(id="222")
+        maturity = Maturity(id='2')
+        spec = Specification(id='22', maturity='2', mdn_key='SPEC')
+        feature = Feature(id='222')
         section = Section(
-            id="_sec", specification="22", features=["222"], subpath={})
+            id='_sec', specification='22', features=['222'], subpath={})
         collection = Collection()
         collection.add(maturity)
         collection.add(spec)
@@ -431,11 +429,11 @@ class TestSection(TestCase):
 class TestMaturity(TestCase):
     def test_to_json(self):
         maturity = Maturity(
-            id="_mat", slug="REC", name={'en': 'Recommendation'})
+            id='_mat', slug='REC', name={'en': 'Recommendation'})
         expected = {
-            "maturities": {
-                "slug": "REC",
-                "name": {'en': 'Recommendation'},
+            'maturities': {
+                'slug': 'REC',
+                'name': {'en': 'Recommendation'},
             }}
         self.assertEqual(expected, maturity.to_json_api())
 
@@ -528,63 +526,63 @@ class TestCollection(TestCase):
     def test_load_all(self):
         self.col.client = mock.Mock(spec_set=['get_resource_collection'])
         self.col.client.get_resource_collection.return_value = {
-            "browsers": [{
-                "id": "1",
-                "slug": "chrome",
-                "name": {"en": "Chrome"},
-                "note": None,
-                "links": {
-                    "history": ["1"],
-                    "history_current": "1",
-                    "versions": ["1", "2"],
+            'browsers': [{
+                'id': '1',
+                'slug': 'chrome',
+                'name': {'en': 'Chrome'},
+                'note': None,
+                'links': {
+                    'history': ['1'],
+                    'history_current': '1',
+                    'versions': ['1', '2'],
                 }
             }, {
-                "id": "2",
-                "slug": "firefox",
-                "name": {"en": "Firefox"},
-                "note": None,
-                "links": {
-                    "history": ["2"],
-                    "history_current": "2",
-                    "versions": ["40", "41", "42"],
+                'id': '2',
+                'slug': 'firefox',
+                'name': {'en': 'Firefox'},
+                'note': None,
+                'links': {
+                    'history': ['2'],
+                    'history_current': '2',
+                    'versions': ['40', '41', '42'],
                 }
             }, {
-                "id": "3",
-                "slug": "internet_explorer",
-                "name": {"en": "Internet Explorer"},
-                "note": None,
-                "links": {
-                    "history": ["3"],
-                    "history_current": "3",
-                    "versions": ["70", "71", "72"],
+                'id': '3',
+                'slug': 'internet_explorer',
+                'name': {'en': 'Internet Explorer'},
+                'note': None,
+                'links': {
+                    'history': ['3'],
+                    'history_current': '3',
+                    'versions': ['70', '71', '72'],
                 },
             }],
-            "links": {
-                "browsers.history": {
-                    "href": (
-                        "http://example.com/api/v1/historical_browsers/"
-                        "{browsers.history}"),
-                    "type": "historical_browsers"
+            'links': {
+                'browsers.history': {
+                    'href': (
+                        'http://example.com/api/v1/historical_browsers/'
+                        '{browsers.history}'),
+                    'type': 'historical_browsers'
                 },
-                "browsers.history_current": {
-                    "href": (
-                        "http://example.com/api/v1/historical_browsers/"
-                        "{browsers.history_current}"),
-                    "type": "historical_browsers"
+                'browsers.history_current': {
+                    'href': (
+                        'http://example.com/api/v1/historical_browsers/'
+                        '{browsers.history_current}'),
+                    'type': 'historical_browsers'
                 },
-                "browsers.versions": {
-                    "href": (
-                        "http://example.com/api/v1/versions/"
-                        "{browsers.versions}"),
-                    "type": "versions"
+                'browsers.versions': {
+                    'href': (
+                        'http://example.com/api/v1/versions/'
+                        '{browsers.versions}'),
+                    'type': 'versions'
                 }
             },
-            "meta": {
-                "pagination": {
-                    "browsers": {
-                        "previous": None,
-                        "next": None,
-                        "count": 3
+            'meta': {
+                'pagination': {
+                    'browsers': {
+                        'previous': None,
+                        'next': None,
+                        'count': 3
                     }
                 }
             }
@@ -616,10 +614,10 @@ class TestCollection(TestCase):
 
         # JSON API representation changes
         expected = {
-            "versions": {
-                "version": "1.0",
-                "links": {
-                    "browser": "_chrome",
+            'versions': {
+                'version': '1.0',
+                'links': {
+                    'browser': '_chrome',
                 },
             }
         }
@@ -670,10 +668,10 @@ class TestCollection(TestCase):
 
         # JSON API representation changes
         expected = {
-            "versions": {
-                "version": "1.0",
-                "links": {
-                    "browser": "1",
+            'versions': {
+                'version': '1.0',
+                'links': {
+                    'browser': '1',
                 },
             }
         }
@@ -691,22 +689,22 @@ class TestCollection(TestCase):
         self.assertEqual(None, self.col.get('browsers', '1'))
 
         other_col = Collection()
-        other_firefox = Browser(id="1", slug="firefox")
+        other_firefox = Browser(id='1', slug='firefox')
         other_col.add(other_firefox)
         self.col.override_ids_to_match(other_col)
         self.assertEqual(firefox, self.col.get('browsers', '1'))
         self.assertIsNone(chrome.id)
 
     def test_override_ids_resource_with_falsy_id(self):
-        firefox = Browser(id="", slug='firefox')
+        firefox = Browser(id='', slug='firefox')
         chrome = Browser(id=0, slug='chrome')
         self.col.add(firefox)
         self.col.add(chrome)
         self.assertEqual(None, self.col.get('browsers', '1'))
 
         other_col = Collection()
-        other_chrome = Browser(id="1", slug="chrome")
-        other_firefox = Browser(id="2", slug="firefox")
+        other_chrome = Browser(id='1', slug='chrome')
+        other_firefox = Browser(id='2', slug='firefox')
         other_col.add(other_chrome)
         other_col.add(other_firefox)
         self.col.override_ids_to_match(other_col)
@@ -786,13 +784,13 @@ class TestCollectionChangeset(TestCase):
     def test_empty(self):
         cc = CollectionChangeset(self.orig_col, self.new_col)
         expected = {
-            "new": OrderedDict(),
-            "same": OrderedDict(),
-            "changed": OrderedDict(),
-            "deleted": OrderedDict(),
+            'new': OrderedDict(),
+            'same': OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict(),
         }
         self.assertEqual(expected, cc.changes)
-        expected_summary = ""
+        expected_summary = ''
         self.assertEqual(expected_summary, cc.summarize())
 
     def setup_new(self):
@@ -806,13 +804,13 @@ class TestCollectionChangeset(TestCase):
     def test_changes_new_items(self):
         (browser, version), cc = self.setup_new()
         expected = {
-            "new": OrderedDict([
+            'new': OrderedDict([
                 (('browsers', 'chrome'), browser),
                 (('versions', 'chrome', '2.0'), version),
             ]),
-            "same": OrderedDict(),
-            "changed": OrderedDict(),
-            "deleted": OrderedDict(),
+            'same': OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict(),
         }
         self.assertEqual(expected, cc.changes)
 
@@ -829,9 +827,9 @@ class TestCollectionChangeset(TestCase):
                 return {'browsers': {'id': '_browser', 'slug': 'chrome'}}
             elif method == 'POST' and resource_type == 'versions':
                 expected_data = {
-                    "versions": {
-                        "version": "2.0",
-                        "links": {"browser": "_browser"}}}
+                    'versions': {
+                        'version': '2.0',
+                        'links': {'browser': '_browser'}}}
                 self.assertEqual(expected_data, data)
                 returned_data = expected_data.copy()
                 returned_data['versions']['id'] = '_version'
@@ -896,10 +894,10 @@ New:
             (('features', 'grandchild'), grandchild),
         ])
         expected = {
-            "new": expected_order,
-            "same": OrderedDict(),
-            "changed": OrderedDict(),
-            "deleted": OrderedDict(),
+            'new': expected_order,
+            'same': OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict(),
         }
         self.assertEqual(expected_order.keys(), cc.changes['new'].keys())
         self.assertEqual(expected, cc.changes)
@@ -925,10 +923,10 @@ New:
             (('features', 'feature'), feature),
         ])
         expected = {
-            "new": expected_order,
-            "same": OrderedDict(),
-            "changed": OrderedDict(),
-            "deleted": OrderedDict(),
+            'new': expected_order,
+            'same': OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict(),
         }
         self.assertEqual(expected_order.keys(), cc.changes['new'].keys())
         self.assertEqual(expected, cc.changes)
@@ -1021,10 +1019,10 @@ New:
     def test_changes_deleted_items(self):
         (browser, version), cc = self.setup_deleted()
         expected = {
-            "new": OrderedDict(),
-            "same": OrderedDict(),
-            "changed": OrderedDict(),
-            "deleted": OrderedDict([
+            'new': OrderedDict(),
+            'same': OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict([
                 (('browsers', 'chrome'), browser),
                 (('versions', 'chrome', '2.0'), version),
             ]),
@@ -1087,7 +1085,7 @@ Deleted http://example.com/api/v1/versions/_chrome_2:
     def test_summary_deleted_items_skipped(self):
         _, cc = self.setup_deleted(True)
         expected = self.expected_delete_summary.replace(
-            "Deleted", "Deleted (but skipped)")
+            'Deleted', 'Deleted (but skipped)')
         self.assertEqual(expected, cc.summarize())
 
     def setup_matched(self):
@@ -1112,14 +1110,14 @@ Deleted http://example.com/api/v1/versions/_chrome_2:
         (version, browser_same, version_diff), cc = self.setup_matched()
 
         expected = {
-            "new": OrderedDict(),
-            "same": OrderedDict([
+            'new': OrderedDict(),
+            'same': OrderedDict([
                 (('browsers', 'chrome'), browser_same),
             ]),
-            "changed": OrderedDict([
+            'changed': OrderedDict([
                 (('versions', 'chrome', '2.0'), version_diff),
             ]),
-            "deleted": OrderedDict(),
+            'deleted': OrderedDict(),
         }
         self.assertEqual(expected, cc.changes)
         changed = cc.changes['changed'][('versions', 'chrome', '2.0')]
@@ -1187,10 +1185,10 @@ Changed: http://example.com/api/v1/versions/1:
             (('versions', 'browser', '2.0'), v_2),
         ])
         expected = {
-            "new": expected_order,
-            "same": OrderedDict(),
-            "changed": OrderedDict(),
-            "deleted": OrderedDict(),
+            'new': expected_order,
+            'same': OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict(),
         }
         self.assertEqual(expected_order.keys(), cc.changes['new'].keys())
         self.assertEqual(expected, cc.changes)
@@ -1218,14 +1216,14 @@ Changed: http://example.com/api/v1/versions/1:
             (('versions', 'browser', '2.0'), v_2),
         ])
         expected = {
-            "new": expected_order,
-            "same": OrderedDict([
+            'new': expected_order,
+            'same': OrderedDict([
                 (('versions', 'browser', '1.0'), v_1_same),
             ]),
-            "changed": OrderedDict([
+            'changed': OrderedDict([
                 (('browsers', 'browser'), browser_new),
             ]),
-            "deleted": OrderedDict(),
+            'deleted': OrderedDict(),
         }
         self.assertEqual(expected_order.keys(), cc.changes['new'].keys())
         self.assertEqual(expected, cc.changes)
@@ -1235,11 +1233,11 @@ Changed: http://example.com/api/v1/versions/1:
         self.new_col.add(root)
         cc = CollectionChangeset(self.orig_col, self.new_col)
         expected = {
-            "new": OrderedDict([
+            'new': OrderedDict([
                 (('features', 'root'), root),
             ]),
-            "changed": OrderedDict(),
-            "deleted": OrderedDict(),
-            "same": OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict(),
+            'same': OrderedDict(),
         }
         self.assertEqual(expected, cc.changes)

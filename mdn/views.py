@@ -31,7 +31,7 @@ def can_refresh(user):
 
 class FeaturePageListView(ListView):
     model = FeaturePage
-    template_name = "mdn/feature_page_list.html"
+    template_name = 'mdn/feature_page_list.html'
     paginate_by = 50
     topics = (
         'docs/Web/API',
@@ -133,7 +133,7 @@ class FeaturePageListView(ListView):
             count = status_counts.get(status, 0)
             if count:
                 raw = floor(1000.0 * (float(count) / float(have_data_count)))
-                percent = "%0.1f" % (raw / 10.0)
+                percent = '%0.1f' % (raw / 10.0)
             else:
                 percent = 0
             data_counts_list.append((name, classes, count, percent))
@@ -152,7 +152,7 @@ class FeaturePageListView(ListView):
 
 class FeaturePageCreateView(CreateView):
     model = FeaturePage
-    template_name = "mdn/feature_page_form.html"
+    template_name = 'mdn/feature_page_form.html'
     fields = ['url', 'feature']
 
     def get_initial(self):
@@ -173,7 +173,7 @@ class FeaturePageCreateView(CreateView):
 
 class FeaturePageDetailView(DetailView):
     model = FeaturePage
-    template_name = "mdn/feature_page_detail.html"
+    template_name = 'mdn/feature_page_detail.html'
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageDetailView, self).get_context_data(**kwargs)
@@ -215,16 +215,17 @@ class SlugSearchForm(forms.Form):
         try:
             fp = FeaturePage.objects.get(feature__slug=slug)
         except FeaturePage.DoesNotExist:
-            raise forms.ValidationError("No Feature with this slug.")
+            raise forms.ValidationError('No Feature with this slug.')
         else:
             self.feature_id = fp.feature_id
             return slug
 
 
 class FeaturePageSlugSearch(GetFormView):
-    """Search for an importer page by Feature slug"""
+    """Search for an importer page by Feature slug."""
+
     form_class = SlugSearchForm
-    template_name = "mdn/feature_page_form.html"
+    template_name = 'mdn/feature_page_form.html'
 
     def form_valid(self, form):
         slug = form.cleaned_data['slug']
@@ -234,7 +235,7 @@ class FeaturePageSlugSearch(GetFormView):
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageSlugSearch, self).get_context_data(**kwargs)
-        ctx['action'] = "Search by Feature Slug"
+        ctx['action'] = 'Search by Feature Slug'
         ctx['action_url'] = reverse('feature_page_slug_search')
         ctx['method'] = 'get'
         return ctx
@@ -248,7 +249,7 @@ class URLSearchForm(forms.Form):
     def clean_url(self):
         data = self.cleaned_data['url']
         scheme, netloc, path, params, query, fragment = urlparse(data)
-        if "%" not in path:
+        if '%' not in path:
             path = quote(path)
         cleaned = urlunparse((scheme, netloc, path, '', '', ''))
         validate_mdn_url(cleaned)
@@ -256,13 +257,14 @@ class URLSearchForm(forms.Form):
 
 
 class FeaturePageURLSearch(GetFormView):
-    """Search for a MDN URI via GET"""
+    """Search for a MDN URI via GET."""
+
     form_class = URLSearchForm
-    template_name = "mdn/feature_page_form.html"
+    template_name = 'mdn/feature_page_form.html'
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageURLSearch, self).get_context_data(**kwargs)
-        ctx['action'] = "Search by URL"
+        ctx['action'] = 'Search by URL'
         ctx['action_url'] = reverse('feature_page_url_search')
         ctx['method'] = 'get'
         return ctx
@@ -307,17 +309,17 @@ class FeaturePageURLSearch(GetFormView):
 class FeaturePageReParse(UpdateView):
     model = FeaturePage
     fields = []
-    template_name = "mdn/feature_page_form.html"
+    template_name = 'mdn/feature_page_form.html'
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageReParse, self).get_context_data(**kwargs)
         pk = ctx['object'].pk
-        ctx['action'] = "Re-parse MDN Page"
+        ctx['action'] = 'Re-parse MDN Page'
         ctx['action_url'] = reverse(
             'feature_page_reparse', kwargs={'pk': pk})
         ctx['back_url'] = reverse(
             'feature_page_detail', kwargs={'pk': pk})
-        ctx['back'] = "Back to Details"
+        ctx['back'] = 'Back to Details'
         return ctx
 
     def form_valid(self, form):
@@ -328,7 +330,7 @@ class FeaturePageReParse(UpdateView):
         self.object.reset_data()
         self.object.save()
         messages.add_message(
-            self.request, messages.INFO, "Re-parsed the page.")
+            self.request, messages.INFO, 'Re-parsed the page.')
         parse_page.delay(self.object.id)
         return redirect
 
@@ -336,17 +338,17 @@ class FeaturePageReParse(UpdateView):
 class FeaturePageReset(UpdateView):
     model = FeaturePage
     fields = []
-    template_name = "mdn/feature_page_form.html"
+    template_name = 'mdn/feature_page_form.html'
 
     def get_context_data(self, **kwargs):
         ctx = super(FeaturePageReset, self).get_context_data(**kwargs)
         pk = ctx['object'].pk
-        ctx['action'] = "Reset MDN Page"
+        ctx['action'] = 'Reset MDN Page'
         ctx['action_url'] = reverse(
             'feature_page_reset', kwargs={'pk': pk})
         ctx['back_url'] = reverse(
             'feature_page_detail', kwargs={'pk': pk})
-        ctx['back'] = "Back to Details"
+        ctx['back'] = 'Back to Details'
         return ctx
 
     def form_valid(self, form):
@@ -356,13 +358,13 @@ class FeaturePageReset(UpdateView):
         self.object.reset()
         messages.add_message(
             self.request, messages.INFO,
-            "Resetting cached MDN pages, re-parsing.")
+            'Resetting cached MDN pages, re-parsing.')
         start_crawl.delay(self.object.id)
         return redirect
 
 
 class IssuesSummary(TemplateView):
-    template_name = "mdn/issues_summary.html"
+    template_name = 'mdn/issues_summary.html'
 
     def get_context_data(self, **kwargs):
         ctx = super(IssuesSummary, self).get_context_data(**kwargs)
@@ -382,7 +384,7 @@ class IssuesSummary(TemplateView):
 
 
 class IssuesDetail(TemplateView):
-    template_name = "mdn/issues_detail.html"
+    template_name = 'mdn/issues_detail.html'
     headers_by_issue = {
         'exception': (),
         'failed_download': (),
@@ -455,7 +457,7 @@ def issues_summary_csv(request):
     raw_counts = Issue.objects.values('slug').annotate(total=Count('slug'))
     counts = [(raw['total'], raw['slug']) for raw in raw_counts]
     counts.sort(reverse=True)
-    return csv_response("import_issue_counts.csv", ['Count', 'Issue'], counts)
+    return csv_response('import_issue_counts.csv', ['Count', 'Issue'], counts)
 
 
 def issues_detail_csv(request, slug):
@@ -472,7 +474,7 @@ def issues_detail_csv(request, slug):
         raw_headers.update(set(issue.params.keys()))
     headers = sorted(raw_headers)
     for line, params in zip(lines, raw_params):
-        line.extend([params.get(header, "") for header in headers])
+        line.extend([params.get(header, '') for header in headers])
 
     filename = 'import_issues_for_{}.csv'.format(slug)
     csv_headers = (

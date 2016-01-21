@@ -1,3 +1,4 @@
+"""Support (non-API) views."""
 from django.views.generic import TemplateView
 
 

@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Define base TestCase for MDN tests"""
+"""Define base TestCase for MDN tests."""
 from webplatformcompat.tests.base import TestCase as BaseTestCase
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Version)
@@ -7,6 +7,7 @@ from webplatformcompat.models import (
 
 class TestCase(BaseTestCase):
     """TestCase that provides get_instance for loading specification data."""
+
     longMessage = True  # On assertions, print values and message
     _instance_specs = {
         ('Maturity', 'CR'): {'name': '{"en": "Candidate Recommendation"}'},

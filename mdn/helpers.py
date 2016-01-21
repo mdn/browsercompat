@@ -1,4 +1,4 @@
-"""Helper functions for Jinja2 templates
+"""Helper functions for Jinja2 templates.
 
 This file is loaded by jingo and must be named helpers.py
 """
@@ -11,7 +11,7 @@ from .views import can_create, can_refresh
 
 @contextfunction
 def add_filter_to_current_url(context, name, value):
-    """Add a filter to the current URL"""
+    """Add a filter to the current URL."""
     query_parts = []
     added = False
     for qs_name, qs_value in context['request'].GET.items():
@@ -22,19 +22,19 @@ def add_filter_to_current_url(context, name, value):
             query_parts.append((qs_name, qs_value))
     if not added:
         query_parts.append((name, value))
-    return context['request'].path + "?" + urlencode(query_parts)
+    return context['request'].path + '?' + urlencode(query_parts)
 
 
 @contextfunction
 def drop_filter_from_current_url(context, name):
-    """Drop a filter from the current URL"""
+    """Drop a filter from the current URL."""
     query_parts = []
     for qs_name, qs_value in context['request'].GET.items():
         if qs_name != name:
             query_parts.append((qs_name, qs_value))
     path = context['request'].path
     if query_parts:
-        return path + "?" + urlencode(query_parts)
+        return path + '?' + urlencode(query_parts)
     else:
         return path
 
@@ -82,7 +82,7 @@ def pagination_control(context, page_obj):
     number of pages is low.  So, done as a function.
     """
     if not page_obj.has_other_pages():
-        return ""
+        return ''
     if page_obj.has_previous():
         prev_page = page_obj.previous_page_number()
         if prev_page == 1:
@@ -119,7 +119,7 @@ def pagination_control(context, page_obj):
             '<li{active}><a href="{page_url}">'
             '{page}</a></li>'.format(
                 active=active, page_url=page_url, page=page))
-    page_nav = "\n    ".join(page_navs)
+    page_nav = '\n    '.join(page_navs)
 
     if page_obj.has_next():
         next_page = page_obj.next_page_number()

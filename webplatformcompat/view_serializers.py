@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""API Serializers"""
+"""API Serializers."""
 
 from collections import OrderedDict
 from itertools import chain
@@ -30,7 +30,6 @@ from .serializers import (
 # section->specification->maturity), so omit the "reverse" relations
 # (browser.versions, specification.sections) to reduce size of response.
 #
-
 class ViewBrowserSerializer(BrowserSerializer):
     class Meta(BrowserSerializer.Meta):
         # Omit versions
@@ -84,7 +83,8 @@ view_cls_by_name = {
 
 class ViewFeatureListSerializer(
         FieldMapMixin, FieldsExtraMixin, ModelSerializer):
-    """Get list of features"""
+    """Get list of features."""
+
     href = SerializerMethodField()
 
     def get_href(self, obj):
@@ -106,7 +106,8 @@ class ViewFeatureListSerializer(
 
 
 class DjangoResourceClient(object):
-    """Implement tools.client.Client using Django native functions"""
+    """Implement tools.client.Client using Django native functions."""
+
     namespace = 'v1'
 
     def url(self, resource_type, resource_id=None):
@@ -151,25 +152,26 @@ class DjangoResourceClient(object):
         return {'id': obj.id}
 
     def delete(self, resource_type, resource_id):
-        raise NotImplementedError("delete not implemented for safety")
+        raise NotImplementedError('delete not implemented for safety')
 
 
 class FeatureExtra(object):
-    """Handle new and updated data in a view_feature update"""
+    """Handle new and updated data in a view_feature update."""
+
     def __init__(self, data, feature, context):
         self.data = data
         self.feature = feature
         self.context = context
 
     def is_valid(self):
-        """Validate the linked data"""
+        """Validate the linked data."""
         self.errors = {}
         self._process_data()
         self._validate_changes()
         return not self.errors
 
     def load_resource(self, resource_cls, data):
-        """Load a resource, converting data to look like wire data
+        """Load a resource, converting data to look like wire data.
 
         Conversions:
         - Stringify IDs (5 -> "5")
@@ -203,9 +205,9 @@ class FeatureExtra(object):
 
     def _process_data(self):
         """Load the linked data and compare to current data."""
-        assert not hasattr(self, 'changes'), "_process_data called twice."
+        assert not hasattr(self, 'changes'), '_process_data called twice.'
         assert hasattr(self, 'errors'), (
-            "_process_data not called by is_valid().")
+            '_process_data not called by is_valid().')
         r_by_t = Collection.resource_by_type
 
         # Create and load collection of new data
@@ -254,7 +256,7 @@ class FeatureExtra(object):
                 rtype = item._resource_type
                 resource = r_by_t[rtype]()
                 json_api_rep = item.to_json_api()
-                json_api_rep[rtype]["id"] = item.id.id
+                json_api_rep[rtype]['id'] = item.id.id
                 resource.from_json_api(json_api_rep)
                 resource._seq = None
                 new_collection.add(resource)
@@ -364,7 +366,7 @@ class FeatureExtra(object):
 
             if f is None or f.parent.id is None:
                 error = (
-                    "Feature must be a descendant of feature %s." % target_id)
+                    'Feature must be a descendant of feature %s.' % target_id)
                 self.add_error('features', feature._seq, 'parent', error)
 
         # Validate that "expert" objects are not added
@@ -390,12 +392,12 @@ class FeatureExtra(object):
                 orig_json = dict(item._original.to_json_api()[rtype])
                 orig_json.update(orig_json.pop('links', {}))
                 for key, value in orig_json.items():
-                    if value != new_json.get(key, "(missing)"):
+                    if value != new_json.get(key, '(missing)'):
                         err = change_err % (dumps(value), dumps(new_json[key]))
                         self.add_error(rtype, item._seq, key, err)
 
     def save(self, **kwargs):
-        """Commit changes to linked data"""
+        """Commit changes to linked data."""
         self.changeset.change_original_collection()
 
         # Adding sub-features will change the MPTT tree through direct SQL.
@@ -420,6 +422,7 @@ class FeatureExtra(object):
 
 class ViewFeatureExtraSerializer(ModelSerializer):
     """Linked resources and metadata for ViewFeatureSerializer."""
+
     browsers = ViewBrowserSerializer(source='all_browsers', many=True)
     features = FeatureSerializer(source='child_features', many=True)
     maturities = ViewMaturitySerializer(source='all_maturities', many=True)
@@ -481,7 +484,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             Cache(), Browser.objects.all(), sorted(browser_pks)))
 
     def get_all_descendants(self, obj, per_page):
-        """Return a CachedQueryset of all the descendants
+        """Return a CachedQueryset of all the descendants.
 
         This includes row features that model rows in the MDN table,
         and page features that model sub-pages on MDN, which may have
@@ -497,7 +500,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         return CachedQueryset(Cache(), Feature.objects.all(), descendant_pks)
 
     def get_row_descendants(self, obj):
-        """Return a CachedQueryset of just the row descendants
+        """Return a CachedQueryset of just the row descendants.
 
         This includes row features, and subfeatures of rows that are also
         row features.
@@ -726,11 +729,11 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             if obj.page_child_features.has_previous():
                 page = obj.page_child_features.previous_page_number()
                 pagination['previous'] = (
-                    "%s?child_pages=1&page=%s" % (url, page))
+                    '%s?child_pages=1&page=%s' % (url, page))
             if obj.page_child_features.has_next():
                 page = obj.page_child_features.next_page_number()
                 pagination['next'] = (
-                    "%s?child_pages=1&page=%s" % (url, page))
+                    '%s?child_pages=1&page=%s' % (url, page))
         else:
             # Don't paginate results. The client probabaly wants to generate a
             # complete table, so pagination would get in the way.
@@ -793,7 +796,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
 
 
 class ViewFeatureSerializer(FeatureSerializer):
-    """Feature Serializer, plus related data and MDN browser compat logic"""
+    """Feature Serializer, plus related data and MDN browser compat logic."""
 
     _view_extra = ViewFeatureExtraSerializer(source='*')
 
@@ -822,5 +825,6 @@ class ViewFeatureSerializer(FeatureSerializer):
 
 class ViewFeatureRowChildrenSerializer(ViewFeatureSerializer):
     """Adjust serializer when page children are omitted."""
+
     children = PrimaryKeyRelatedField(
         many=True, queryset=Feature.objects.all(), source='row_children')

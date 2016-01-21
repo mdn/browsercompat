@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+"""Import features from MDN.
+
+For each Feature in the API, run the importer to re-parse the MDN page for
+compatibility data. This can work with the last fetched copy of the MDN page,
+or re-download all the MDN pages.
+
+This will not detect new MDN pages - see mirror_mdn_features.py. It will take
+hours to run, even on a fast connection.
+"""
+
 import time
 
 from requests import RequestException
@@ -9,14 +19,15 @@ from resources import Collection
 
 class ImportMDNData(Tool):
     """Import features from MDN, or reparse imported features."""
+
     logger_name = 'tools.import_mdn'
     parser_options = ['api', 'user', 'password']
 
     def get_parser(self):
         parser = super(ImportMDNData, self).get_parser()
         parser.add_argument(
-            '--reparse', action="store_true",
-            help="Re-parse cached pages instead of downloading fresh")
+            '--reparse', action='store_true',
+            help='Re-parse cached pages instead of downloading fresh')
         return parser
 
     def run(self, rate=5, *args, **kwargs):
@@ -31,9 +42,9 @@ class ImportMDNData(Tool):
                 uris.append((feature.mdn_uri['en'], feature.id.id))
         total = len(uris)
         if self.reparse:
-            action = "Reparsing cached pages..."
+            action = 'Reparsing cached pages...'
         else:
-            action = "Reparsing latest pages..."
+            action = 'Reparsing latest pages...'
         self.logger.info(
             'Features loaded, %d MDN pages found. %s', total, action)
 
@@ -49,12 +60,12 @@ class ImportMDNData(Tool):
             while attempt <= max_attempt:
                 if attempt > 1:
                     self.logger.info(
-                        "Attempt %d of %d for %s", attempt, max_attempt, uri)
+                        'Attempt %d of %d for %s', attempt, max_attempt, uri)
                 try:
                     import_type = self.import_page(uri, feature_id)
                 except RequestException as exception:
                     if attempt < max_attempt:
-                        self.logger.error("%s", exception)
+                        self.logger.error('%s', exception)
                         self.logger.info('Pausing 5 seconds...')
                         time.sleep(5)
                     else:
@@ -75,8 +86,8 @@ class ImportMDNData(Tool):
                 if time.time < target:
                     rest = int(target - current_time) + 1
                     self.logger.warning(
-                        "%d pages fetched, %0.2f per second, target rate %d"
-                        " per second.  Resting %d seconds.",
+                        '%d pages fetched, %0.2f per second, target rate %d'
+                        ' per second.  Resting %d seconds.',
                         mdn_requests, current_rate, rate, rest)
                     time.sleep(rest)
                     logged_at = time.time()
@@ -87,7 +98,7 @@ class ImportMDNData(Tool):
                 processed = sum(counts.values())
                 percent = int(100 * (float(processed) / total))
                 self.logger.info(
-                    "  Processed %d of %d MDN pages (%d%%)...",
+                    '  Processed %d of %d MDN pages (%d%%)...',
                     processed, total, percent)
                 logged_at = current_time
 
@@ -128,25 +139,25 @@ class ImportMDNData(Tool):
 if __name__ == '__main__':
     tool = ImportMDNData()
     tool.init_from_command_line()
-    tool.logger.info("Loading data into {tool.api}".format(tool=tool))
+    tool.logger.info('Loading data into {tool.api}'.format(tool=tool))
     counts = tool.run()
 
     if counts:
-        tool.logger.info("Import complete. Counts:")
+        tool.logger.info('Import complete. Counts:')
         c_new = counts.get('new', 0)
         c_reset = counts.get('reset', 0)
         c_reparsed = counts.get('reparsed', 0)
         c_unchanged = counts.get('unchanged', 0)
         c_text = []
         if c_new:
-            c_text.append("%d new" % c_new)
+            c_text.append('%d new' % c_new)
         if c_reset:
-            c_text.append("%d reset" % c_reset)
+            c_text.append('%d reset' % c_reset)
         if c_reparsed:
-            c_text.append("%d reparsed" % c_reparsed)
+            c_text.append('%d reparsed' % c_reparsed)
         if c_unchanged:
-            c_text.append("%d unchanged" % c_unchanged)
+            c_text.append('%d unchanged' % c_unchanged)
         if c_text:
             tool.logger.info(', '.join(c_text))
     else:
-        tool.logger.info("No data uploaded.")
+        tool.logger.info('No data uploaded.')

@@ -14,7 +14,7 @@ from rest_framework.serializers import (
 
 
 class CurrentHistoryField(PrimaryKeyRelatedField):
-    """Field is the current history object
+    """Field is the current history object.
 
     To use this field, initialize the manager to the name of the
     HistoricalRecords object (defaults to 'history')
@@ -31,7 +31,7 @@ class CurrentHistoryField(PrimaryKeyRelatedField):
             *args, **kwargs)
 
     def bind(self, field_name, parent):
-        """Initialize the field_name and parent for the instance
+        """Initialize the field_name and parent for the instance.
 
         history_current only makes sense in the context of an object.
         However, some views, such as the browsable API, might try to access
@@ -49,7 +49,7 @@ class CurrentHistoryField(PrimaryKeyRelatedField):
         return obj
 
     def to_representation(self, obj):
-        """Convert to the ID of the current history
+        """Convert to the ID of the current history.
 
         With a valid object, the queryset can be set to the proper history for
         this object.  In some views, such as the browsable API for the list,
@@ -60,7 +60,7 @@ class CurrentHistoryField(PrimaryKeyRelatedField):
 
 
 class HistoricalObjectField(PrimaryKeyRelatedField):
-    """Field is the ID of the historical object"""
+    """Field is the ID of the historical object."""
 
     def __init__(self, *args, **kwargs):
         source = kwargs.pop('source', 'history_object')
@@ -78,7 +78,7 @@ class HistoricalObjectField(PrimaryKeyRelatedField):
 
 
 class HistoryField(PrimaryKeyRelatedField):
-    """Field is the history manager
+    """Field is the history manager.
 
     To use this field, initialize 'source' to the name of the
     HistoricalRecords object (defaults to 'history')
@@ -109,7 +109,7 @@ class ManyHistoryField(ManyRelatedField):
 
 
 class MPTTRelationField(PrimaryKeyRelatedField):
-    """Field is a property returning an MPTT related queryset
+    """Field is a property returning an MPTT related queryset.
 
     Used against a property, such as:
 
@@ -130,7 +130,8 @@ class MPTTRelationField(PrimaryKeyRelatedField):
 
 
 class OptionalCharField(CharField):
-    """Field is a CharField that serializes as None when omitted"""
+    """Field is a CharField that serializes as None when omitted."""
+
     def to_representation(self, value):
         if value:
             return value
@@ -151,7 +152,7 @@ class OptionalCharField(CharField):
 
 
 class OptionalIntegerField(IntegerField):
-    """Field is a IntegerField that serialized as None when 0"""
+    """Field is a IntegerField that serialized as None when 0."""
 
     def to_representation(self, value):
         if value:
@@ -167,7 +168,7 @@ class OptionalIntegerField(IntegerField):
 
 
 class TranslatedTextField(CharField):
-    """Field is a dictionary of language codes to text
+    """Field is a dictionary of language codes to text.
 
     If allow_canonical=True (default False), then a non-linguistic string is
     allowed, such as an HTML attribute like "<input>".  This is stored in the
@@ -177,12 +178,13 @@ class TranslatedTextField(CharField):
     If blank=True, then empty strings and other falsy values are allowed, and
     are serialized as null.
     """
+
     def __init__(self, *args, **kwargs):
         self.allow_canonical = kwargs.pop('allow_canonical', False)
         super(TranslatedTextField, self).__init__(*args, **kwargs)
 
     def to_representation(self, value):
-        """Convert from model Python to serializable data"""
+        """Convert from model Python to serializable data."""
         if value:
             if list(value.keys()) == ['zxx']:
                 if self.allow_canonical:
@@ -201,7 +203,7 @@ class TranslatedTextField(CharField):
             return None
 
     def to_internal_value(self, value):
-        """Convert from serializable data to model"""
+        """Convert from serializable data to model."""
         if isinstance(value, dict):
             return value or None
         if value:

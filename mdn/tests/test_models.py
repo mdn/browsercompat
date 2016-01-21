@@ -15,7 +15,7 @@ from webplatformcompat.tests.base import TestCase
 
 class TestValidateMdnUrl(TestCase):
     def setUp(self):
-        self.url = "https://developer.mozilla.org/en-US/docs/Web/CSS/float"
+        self.url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/float'
 
     def test_OK(self):
         validate_mdn_url(self.url)
@@ -33,7 +33,7 @@ class TestValidateMdnUrl(TestCase):
         self.assertRaises(ValidationError, validate_mdn_url, url)
 
     def test_bad_domain(self):
-        url = "http://docs.webplatform.org/wiki/html/elements/ruby"
+        url = 'http://docs.webplatform.org/wiki/html/elements/ruby'
         self.assertRaises(ValidationError, validate_mdn_url, url)
 
 
@@ -41,24 +41,24 @@ class TestFeaturePageModel(TestCase):
     def setUp(self):
         self.feature = self.create(Feature, slug='web-css-float')
         self.fp = FeaturePage.objects.create(
-            url="https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+            url='https://developer.mozilla.org/en-US/docs/Web/CSS/float',
             feature=self.feature, status=FeaturePage.STATUS_META)
         self.metadata = {
-            "locale": "en-US",
-            "url": "/en-US/docs/Web/CSS/float",
-            "title": "<float>",
-            "translations": [{
-                "locale": "de",
-                "url": "/de/docs/Web/CSS/float",
-                "title": "<float>",
+            'locale': 'en-US',
+            'url': '/en-US/docs/Web/CSS/float',
+            'title': '<float>',
+            'translations': [{
+                'locale': 'de',
+                'url': '/de/docs/Web/CSS/float',
+                'title': '<float>',
             }],
         }
 
     def test_domain(self):
-        self.assertEqual("https://developer.mozilla.org", self.fp.domain())
+        self.assertEqual('https://developer.mozilla.org', self.fp.domain())
 
     def test_str(self):
-        expected = "Fetching Metadata for docs/Web/CSS/float"
+        expected = 'Fetching Metadata for docs/Web/CSS/float'
         self.assertEqual(expected, str(self.fp))
 
     def test_meta_new(self):
@@ -95,10 +95,10 @@ class TestFeaturePageModel(TestCase):
             raw=dumps(self.metadata))
         TranslatedContent.objects.create(
             page=self.fp, locale='en', path='/foo/en/path', title='title',
-            status=PageMeta.STATUS_FETCHED, raw="Black, White, Yellow, Red")
+            status=PageMeta.STATUS_FETCHED, raw='Black, White, Yellow, Red')
         TranslatedContent.objects.create(
             page=self.fp, locale='de', path='/foo/de/path', title='title',
-            status=PageMeta.STATUS_ERROR, raw="Schwarz, Weiß, Gelb, Rot")
+            status=PageMeta.STATUS_ERROR, raw='Schwarz, Weiß, Gelb, Rot')
 
     def test_reset(self):
         self.setup_content()
@@ -190,12 +190,12 @@ class TestFeaturePageModel(TestCase):
 class TestIssue(TestCase):
     def setUp(self):
         self.fp = FeaturePage(
-            url="https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+            url='https://developer.mozilla.org/en-US/docs/Web/CSS/float',
             feature_id=666, status=FeaturePage.STATUS_PARSED)
         self.en_content = TranslatedContent(
-            page=self.fp, locale="en-US", path="/en-US/docs/Web/CSS/float")
+            page=self.fp, locale='en-US', path='/en-US/docs/Web/CSS/float')
         self.de_content = TranslatedContent(
-            page=self.fp, locale="de", path="/de/docs/Web/CSS/float")
+            page=self.fp, locale='de', path='/de/docs/Web/CSS/float')
         self.issue = Issue(
             page=self.fp, slug='bad_json', start=0, end=0,
             params={'url': 'THE URL', 'content': 'NOT JSON'},
@@ -216,11 +216,11 @@ class TestIssue(TestCase):
         self.assertEqual(expected, text_type(self.issue))
 
     def test_brief_description(self):
-        expected = "Response from THE URL is not JSON"
+        expected = 'Response from THE URL is not JSON'
         self.assertEqual(expected, self.issue.brief_description)
 
     def test_long_description(self):
-        expected = "Actual content:\nNOT JSON"
+        expected = 'Actual content:\nNOT JSON'
         self.assertEqual(expected, self.issue.long_description)
 
     def test_severity(self):
@@ -247,10 +247,10 @@ Enjoy.
 
     def test_context_without_content(self):
         self.issue.content = None
-        self.assertEqual("", self.issue.context)
+        self.assertEqual('', self.issue.context)
 
     def test_context_end_of_page(self):
-        content = "Line1\nLine2"
+        content = 'Line1\nLine2'
         self.en_content.raw = content
         self.issue.start = content.find('Line2')
         self.issue.end = self.issue.start + len('Line')
@@ -266,17 +266,17 @@ class TestPageMetaModel(TestCase):
         feature = self.create(Feature)
         fp = FeaturePage.objects.create(
             feature=feature,
-            url="https://developer.mozilla.org/en-US/docs/Web/CSS/display",
+            url='https://developer.mozilla.org/en-US/docs/Web/CSS/display',
             status=FeaturePage.STATUS_PARSED)
         self.meta = PageMeta.objects.create(
-            page=fp, path="/de/docs/Web/CSS/display")
+            page=fp, path='/de/docs/Web/CSS/display')
 
     def test_str(self):
         expected = u'/de/docs/Web/CSS/display retrieved 0\xa0minutes ago'
         self.assertEqual(expected, text_type(self.meta))
 
     def test_url(self):
-        expected = "https://developer.mozilla.org/de/docs/Web/CSS/display"
+        expected = 'https://developer.mozilla.org/de/docs/Web/CSS/display'
         self.assertEqual(expected, self.meta.url())
 
     def test_data_fetched(self):
@@ -315,17 +315,17 @@ class TestPageMetaModel(TestCase):
 class TestTranslatedContentModel(TestCase):
     def setUp(self):
         fp = FeaturePage(
-            url="https://developer.mozilla.org/en-US/docs/Web/CSS/float",
+            url='https://developer.mozilla.org/en-US/docs/Web/CSS/float',
             feature_id=666,
             status=FeaturePage.STATUS_PARSED)
         self.c = TranslatedContent(
-            page=fp, locale="de", title='<float>',
-            path="/de/docs/Web/CSS/float")
+            page=fp, locale='de', title='<float>',
+            path='/de/docs/Web/CSS/float')
 
     def test_str(self):
         expected = u'/de/docs/Web/CSS/float retrieved 0\xa0minutes ago'
         self.assertEqual(expected, text_type(self.c))
 
     def test_url(self):
-        expected = "https://developer.mozilla.org/de/docs/Web/CSS/float"
+        expected = 'https://developer.mozilla.org/de/docs/Web/CSS/float'
         self.assertEqual(expected, self.c.url())

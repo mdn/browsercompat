@@ -43,6 +43,7 @@ class Visitor(Recorder, NodeVisitor):
 
     The Parsimonious NodeVisitor works from leaf nodes up to trunk nodes.
     """
+
     def __init__(self, offset=0, data=None):
         super(Visitor, self).__init__()
         self.initialize_tracker(offset=offset, data=data)
@@ -53,7 +54,8 @@ class Extractor(Recorder):
 
     The Extractor works from trunk nodes to leaf nodes.
     """
-    extractor_name = "Extractor"
+
+    extractor_name = 'Extractor'
 
     def initialize_extractor(self, elements=None, debug=False, **kwargs):
         """Setup extractor plus common variables."""
@@ -68,7 +70,7 @@ class Extractor(Recorder):
         subtree processing during parsing.
         """
         self.setup_extract()
-        state = "begin"
+        state = 'begin'
         for element in self.elements:
             state = self.walk(state, element)
         return self.extracted_data()
@@ -91,14 +93,14 @@ class Extractor(Recorder):
         old_state = state
         state, recurse = self.entering_element(state, element)
         if state != old_state:
-            self.report_transition("entering", element, old_state, state)
+            self.report_transition('entering', element, old_state, state)
         if recurse and hasattr(element, 'children'):
             for child in element.children:
                 state = self.walk(state, child)
         old_state = state
         state = self.leaving_element(state, element)
         if state != old_state:
-            self.report_transition("leaving", element, old_state, state)
+            self.report_transition('leaving', element, old_state, state)
         return state
 
     def report_transition(self, phase, element, old_state, new_state):

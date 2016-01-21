@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Extensions of simplehistory for webplatformcompat"""
+"""Extensions of simplehistory for webplatformcompat."""
 
 from __future__ import unicode_literals
 from json import dumps
@@ -30,7 +30,7 @@ def register(
         records_class = records_class or HistoricalRecords
         records = records_class(**records_config)
         records.manager_name = manager_name
-        records.module = app and ("%s.models" % app) or model.__module__
+        records.module = app and ('%s.models' % app) or model.__module__
         records.add_extra_methods(model)
         records.finalize(model)
         models.registered_models[model._meta.db_table] = model
@@ -39,7 +39,7 @@ def register(
 
 
 class Changeset(models.Model):
-    """Changeset combining historical records"""
+    """Changeset combining historical records."""
 
     TARGET_RESOURCES = [
         'browsers', 'features', 'maturities', 'sections', 'specifications',
@@ -48,18 +48,18 @@ class Changeset(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(user_model, related_name="changesets")
+    user = models.ForeignKey(user_model, related_name='changesets')
     closed = models.BooleanField(
-        help_text="Is the changeset closed to new changes?",
+        help_text='Is the changeset closed to new changes?',
         default=False)
     target_resource_type = models.CharField(
-        help_text="Type of target resource",
+        help_text='Type of target resource',
         max_length=12, blank=True, choices=[(r, r) for r in TARGET_RESOURCES])
     target_resource_id = models.PositiveIntegerField(
-        default=0, help_text="ID of target resource")
+        default=0, help_text='ID of target resource')
 
     def save(self, update_cache=True, *args, **kwargs):
-        """Refresh cache of the items updated in changeset"""
+        """Refresh cache of the items updated in changeset."""
         super(Changeset, self).save(*args, **kwargs)
         if self.closed and update_cache:
             from .tasks import update_cache_for_instance
@@ -72,16 +72,17 @@ class Changeset(models.Model):
 
 
 class HistoricalRecords(BaseHistoricalRecords):
-    """simple_history.HistoricalRecords with modifications
+    """simple_history.HistoricalRecords with modifications.
 
     Changes from simple_history:
     * Can add additional fields (e.g., preserve relationship order)
     * References a history_changeset instead of a history_user
     """
+
     additional_fields = {}
 
     def copy_fields(self, model):
-        """Add additional_fields to the historic model"""
+        """Add additional_fields to the historic model."""
         fields = super(HistoricalRecords, self).copy_fields(model)
         for name, field in self.additional_fields.items():
             assert name not in fields
@@ -90,7 +91,7 @@ class HistoricalRecords(BaseHistoricalRecords):
         return fields
 
     def get_extra_fields(self, model, fields):
-        """Remove fields moved to changeset"""
+        """Remove fields moved to changeset."""
         extra_fields = super(HistoricalRecords, self).get_extra_fields(
             model, fields)
         related_name = 'historical_' + model._meta.verbose_name_plural.lower()
@@ -99,7 +100,7 @@ class HistoricalRecords(BaseHistoricalRecords):
         return extra_fields
 
     def get_history_changeset(self, instance):
-        """Get the changeset from the instance or middleware"""
+        """Get the changeset from the instance or middleware."""
         # Load user from instance or request
         user = self.get_history_user(instance)
         assert user, 'History User is required'
@@ -109,7 +110,7 @@ class HistoricalRecords(BaseHistoricalRecords):
             changeset = instance._history_changeset
         except AttributeError:
             # Load existing changeset
-            changeset = getattr(self.thread.request, "changeset", None)
+            changeset = getattr(self.thread.request, 'changeset', None)
             if changeset is None:
                 # Create new, auto-closing changeset
                 changeset = Changeset.objects.create(user=user)
@@ -123,7 +124,7 @@ class HistoricalRecords(BaseHistoricalRecords):
         return changeset
 
     def create_historical_record(self, instance, history_type):
-        """Create the historical record and associated objects
+        """Create the historical record and associated objects.
 
         Changes from simple_history:
         * Add data from additional_fields
@@ -147,7 +148,8 @@ class HistoricalRecords(BaseHistoricalRecords):
 
 
 class HistoryChangesetMiddleware(BaseHistoryRequestMiddleware):
-    """Add a changeset to the HistoricalRecords request"""
+    """Add a changeset to the HistoricalRecords request."""
+
     def process_request(self, request):
         """Load requested changeset or prepare auto-changeset."""
         super(HistoryChangesetMiddleware, self).process_request(request)
@@ -183,9 +185,9 @@ class HistoryChangesetMiddleware(BaseHistoryRequestMiddleware):
 
     def process_response(self, request, response):
         """Close an auto-changeset."""
-        changeset = getattr(request, "changeset", None)
-        close_changeset = getattr(request, "close_changeset", True)
-        update_cache = getattr(request, "delay_cache", False)
+        changeset = getattr(request, 'changeset', None)
+        close_changeset = getattr(request, 'close_changeset', True)
+        update_cache = getattr(request, 'delay_cache', False)
         if changeset and close_changeset:
             # Close changeset, but assume related item caches already updated
             changeset.closed = True

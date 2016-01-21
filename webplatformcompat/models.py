@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""API database models.
+
+Additional models (Changeset, historical models) are defined in history.py.
+"""
+
 from __future__ import unicode_literals
 
 from django.conf import settings
@@ -19,7 +24,7 @@ from .validators import VersionAndStatusValidator
 
 class CachingManagerMixin(object):
     def delay_create(self, **kwargs):
-        """Add the _delay_cache value to the object before saving"""
+        """Add the _delay_cache value to the object before saving."""
         delay_cache = kwargs.pop('_delay_cache', False)
         obj = self.model(**kwargs)
         self._for_write = True
@@ -44,14 +49,15 @@ class CachingTreeManager(TreeManager, CachingManagerMixin):
 
 @python_2_unicode_compatible
 class Browser(models.Model):
-    """A browser or other web client"""
+    """A browser or other web client."""
+
     slug = models.SlugField(
-        help_text="Unique, human-friendly slug.",
+        help_text='Unique, human-friendly slug.',
         unique=True)
     name = TranslatedField(
-        help_text="Branding name of browser, client, or platform.")
+        help_text='Branding name of browser, client, or platform.')
     note = TranslatedField(
-        help_text="Extended information about browser, client, or platform.",
+        help_text='Extended information about browser, client, or platform.',
         blank=True, null=True)
     objects = CachingManager()
     # history = HistoricalRecords()  # Registered below
@@ -62,38 +68,38 @@ class Browser(models.Model):
 
 @python_2_unicode_compatible
 class Feature(MPTTModel):
-    """A web technology"""
+    """A web technology."""
 
     slug = models.SlugField(
-        help_text="Unique, human-friendly slug.",
+        help_text='Unique, human-friendly slug.',
         unique=True)
     mdn_uri = TranslatedField(
         help_text='The URI of the MDN page that documents this feature.',
         blank=True, null=True)
     experimental = models.BooleanField(
         help_text=(
-            "True if a feature is considered experimental, such as being"
-            " non-standard or part of an non-ratified spec."),
+            'True if a feature is considered experimental, such as being'
+            ' non-standard or part of an non-ratified spec.'),
         default=False)
     standardized = models.BooleanField(
         help_text=(
-            "True if a feature is described in a standards-track spec,"
-            " regardless of the spec’s maturity."),
+            'True if a feature is described in a standards-track spec,'
+            ' regardless of the spec’s maturity.'),
         default=True)
     stable = models.BooleanField(
         help_text=(
-            "True if a feature is considered suitable for production"
-            " websites."),
+            'True if a feature is considered suitable for production'
+            ' websites.'),
         default=True)
     obsolete = models.BooleanField(
         help_text=(
-            "True if a feature should not be used in new development."),
+            'True if a feature should not be used in new development.'),
         default=False)
     name = TranslatedField(
-        help_text="Feature name, in canonical or localized form.",
+        help_text='Feature name, in canonical or localized form.',
         allow_canonical=True)
     parent = TreeForeignKey(
-        'self', help_text="Feature set that contains this feature",
+        'self', help_text='Feature set that contains this feature',
         null=True, blank=True, related_name='children')
     sections = SortedManyToManyField(
         'Section', related_name='features', blank=True)
@@ -113,7 +119,7 @@ class Feature(MPTTModel):
         current_children = list(self.get_children())
         current_set = set([child.pk for child in current_children])
         new_set = set([child.pk for child in children])
-        assert current_set == new_set, "Can not add/remove child features."
+        assert current_set == new_set, 'Can not add/remove child features.'
 
         # Set order, refreshing as we go
         prev_child = None
@@ -124,9 +130,9 @@ class Feature(MPTTModel):
                     prev_child.refresh_from_db()
                     next_child.refresh_from_db()
                 if prev_child is None:
-                    next_child.move_to(self, "first-child")
+                    next_child.move_to(self, 'first-child')
                 else:
-                    next_child.move_to(prev_child, "right")
+                    next_child.move_to(prev_child, 'right')
                 current_children = list(self.get_children())
                 moved = True
             prev_child = next_child
@@ -180,14 +186,15 @@ class Feature(MPTTModel):
 
 @python_2_unicode_compatible
 class Maturity(models.Model):
-    """Maturity of a specification document"""
+    """Maturity of a specification document."""
+
     slug = models.SlugField(
         help_text=(
-            "Unique, human-friendly slug, sourced from the KumaScript macro"
-            " Spec2"),
+            'Unique, human-friendly slug, sourced from the KumaScript macro'
+            ' Spec2'),
         unique=True)
     name = TranslatedField(
-        help_text="Name of maturity")
+        help_text='Name of maturity')
     objects = CachingManager()
     # history = HistoricalMaturityRecords()  # Registered below
 
@@ -200,20 +207,21 @@ class Maturity(models.Model):
 
 @python_2_unicode_compatible
 class Section(models.Model):
-    """A section of a specification document"""
+    """A section of a specification document."""
+
     specification = models.ForeignKey('Specification', related_name='sections')
     number = TranslatedField(
-        help_text="Section number",
+        help_text='Section number',
         blank=True)
     name = TranslatedField(
-        help_text="Name of section, without section number")
+        help_text='Name of section, without section number')
     subpath = TranslatedField(
         help_text=(
-            "A subpage (possible with an #anchor) to get to the subsection"
-            " in the specification."),
+            'A subpage (possible with an #anchor) to get to the subsection'
+            ' in the specification.'),
         blank=True)
     note = TranslatedField(
-        help_text="Notes for this section",
+        help_text='Notes for this section',
         blank=True)
     objects = CachingManager()
     history = HistoricalRecords()
@@ -230,18 +238,19 @@ class Section(models.Model):
 
 @python_2_unicode_compatible
 class Specification(models.Model):
-    """A Specification document"""
+    """A Specification document."""
+
     maturity = models.ForeignKey('Maturity', related_name='specifications')
     slug = models.SlugField(
-        help_text="Unique, human-friendly slug",
+        help_text='Unique, human-friendly slug',
         unique=True)
     mdn_key = models.CharField(
-        help_text="Key used in the KumaScript macro SpecName",
+        help_text='Key used in the KumaScript macro SpecName',
         max_length=30, blank=True)
     name = TranslatedField(
-        help_text="Name of specification")
+        help_text='Name of specification')
     uri = TranslatedField(
-        help_text="Specification URI, without subpath and anchor")
+        help_text='Specification URI, without subpath and anchor')
     objects = CachingManager()
     # history = HistoricalRecords()  # Registered below
 
@@ -251,7 +260,7 @@ class Specification(models.Model):
 
 @python_2_unicode_compatible
 class Support(models.Model):
-    """Does a browser version support a feature?"""
+    """Detail the support of a browser version for a feature."""
 
     SUPPORT_CHOICES = [(k, k) for k in (
         'yes',
@@ -263,31 +272,31 @@ class Support(models.Model):
     version = models.ForeignKey('Version', related_name='supports')
     feature = models.ForeignKey('Feature', related_name='supports')
     support = models.CharField(
-        help_text="Does the browser version support this feature?",
+        help_text='Does the browser version support this feature?',
         max_length=10, choices=SUPPORT_CHOICES, default='yes')
     prefix = models.CharField(
-        help_text="Prefix to apply to the feature name.",
+        help_text='Prefix to apply to the feature name.',
         max_length=20, blank=True)
     prefix_mandatory = models.BooleanField(
-        help_text="Is the prefix required?", default=False)
+        help_text='Is the prefix required?', default=False)
     alternate_name = models.CharField(
-        help_text="Alternate name for this feature.",
+        help_text='Alternate name for this feature.',
         max_length=50, blank=True)
     alternate_mandatory = models.BooleanField(
-        help_text="Is the alternate name required?", default=False)
+        help_text='Is the alternate name required?', default=False)
     requires_config = models.CharField(
-        help_text="A configuration string to enable the feature.",
+        help_text='A configuration string to enable the feature.',
         max_length=100, blank=True)
     default_config = models.CharField(
-        help_text="The configuration string in the shipping browser.",
+        help_text='The configuration string in the shipping browser.',
         max_length=100, blank=True)
     protected = models.BooleanField(
         help_text=(
-            "True if feature requires additional steps to enable in order to"
-            " protect the user's security or privacy."),
+            'True if feature requires additional steps to enable in order to'
+            ' protect the user\'s security or privacy.'),
         default=False)
     note = TranslatedField(
-        help_text="Notes for this support",
+        help_text='Notes for this support',
         null=True, blank=True)
     objects = CachingManager()
     history = HistoricalRecords()
@@ -297,13 +306,14 @@ class Support(models.Model):
 
     def __str__(self):
         return (
-            "%s support for feature %s is %s" %
+            '%s support for feature %s is %s' %
             (self.version, self.feature, self.support))
 
 
 @python_2_unicode_compatible
 class Version(models.Model):
-    """A version of a browser"""
+    """A version of a browser."""
+
     STATUS_CHOICES = [(k, k) for k in (
         'unknown',
         'current',
@@ -315,27 +325,27 @@ class Version(models.Model):
 
     browser = models.ForeignKey('Browser', related_name='versions')
     version = models.CharField(
-        help_text="Version string.",
+        help_text='Version string.',
         max_length=20)
     release_day = models.DateField(
-        help_text="Day of release to public, ISO 8601 format.",
+        help_text='Day of release to public, ISO 8601 format.',
         blank=True, null=True)
     retirement_day = models.DateField(
-        help_text="Day this version stopped being supported, ISO 8601 format.",
+        help_text='Day this version stopped being supported, ISO 8601 format.',
         blank=True, null=True)
     status = models.CharField(
         max_length=15, choices=STATUS_CHOICES, default='unknown')
     release_notes_uri = TranslatedField(
-        help_text="URI of release notes.",
+        help_text='URI of release notes.',
         blank=True, null=True)
     note = TranslatedField(
-        help_text="Notes about this version.",
+        help_text='Notes about this version.',
         blank=True, null=True)
     objects = CachingManager()
     history = HistoricalRecords()
 
     def __str__(self):
-        return "{0} {1}".format(self.browser, self.version)
+        return '{0} {1}'.format(self.browser, self.version)
 
     def clean(self):
         super(Version, self).clean()
@@ -412,7 +422,7 @@ cached_model_names = (
     dispatch_uid='m2m_changed_feature_section')
 def feature_sections_changed_update_order(
         sender, instance, action, reverse, model, pk_set, **kwargs):
-    """Maintain feature.section_order"""
+    """Maintain feature.section_order."""
     if action not in ('post_add', 'post_remove', 'post_clear'):
         # post_clear is not handled, because clear is called in
         # django.db.models.fields.related.ReverseManyRelatedObjects.__set__
@@ -475,6 +485,6 @@ def add_user_to_change_resource_group(
     if created and not raw:
         from django.contrib.auth.models import Group
         instance.groups.add(Group.objects.get(name='change-resource'))
-        if hasattr(instance, "group_names"):
+        if hasattr(instance, 'group_names'):
             del instance.group_names
         post_save_update_cache(sender, instance, created, raw, **kwargs)

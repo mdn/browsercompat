@@ -153,7 +153,7 @@ class TestCache(TestCase):
             'standardized': True,
             'stable': True,
             'obsolete': False,
-            'name': {"en": "A Name"},
+            'name': {'en': 'A Name'},
             'descendant_count': 0,
             'supports:PKList': {
                 'app': 'webplatformcompat',
@@ -264,7 +264,7 @@ class TestCache(TestCase):
         expected = {
             'id': maturity.id,
             'slug': 'REC',
-            'name': {"en-US": "Recommendation"},
+            'name': {'en-US': 'Recommendation'},
             'specifications:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'specification',
@@ -304,7 +304,7 @@ class TestCache(TestCase):
 
     def test_section_v1_serializer(self):
         maturity = self.create(
-            Maturity, slug="REC", name={'en': 'Recommendation'})
+            Maturity, slug='REC', name={'en': 'Recommendation'})
         spec = self.create(
             Specification, slug='mathml2', mdn_key='MathML2',
             maturity=maturity,
@@ -318,8 +318,8 @@ class TestCache(TestCase):
         out = self.cache.section_v1_serializer(section)
         expected = {
             'id': section.id,
-            'number': {"en": '3.2.4'},
-            'name': {"en": "Number (mn)"},
+            'number': {'en': '3.2.4'},
+            'name': {'en': 'Number (mn)'},
             'subpath': {'en': 'chapter3.html#presm.mn'},
             'note': {},
             'specification:PK': {
@@ -387,9 +387,9 @@ class TestCache(TestCase):
 
     def test_specification_v1_serializer(self):
         maturity = self.create(
-            Maturity, slug="REC", name={'en': 'Recommendation'})
+            Maturity, slug='REC', name={'en': 'Recommendation'})
         spec = self.create(
-            Specification, slug="mathml2", mdn_key='MathML2',
+            Specification, slug='mathml2', mdn_key='MathML2',
             maturity=maturity,
             name='{"en": "MathML 2.0"}',
             uri='{"en": "http://www.w3.org/TR/MathML2/"}')
@@ -399,8 +399,8 @@ class TestCache(TestCase):
             'id': spec.id,
             'slug': 'mathml2',
             'mdn_key': 'MathML2',
-            'name': {"en": "MathML 2.0"},
-            'uri': {"en": "http://www.w3.org/TR/MathML2/"},
+            'name': {'en': 'MathML 2.0'},
+            'uri': {'en': 'http://www.w3.org/TR/MathML2/'},
             'sections:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'section',
@@ -465,15 +465,15 @@ class TestCache(TestCase):
         out = self.cache.support_v1_serializer(support)
         expected = {
             'id': support.id,
-            "support": u"yes",
-            "prefix": u"",
-            "prefix_mandatory": False,
-            "alternate_name": u"",
-            "alternate_mandatory": False,
-            "requires_config": u"",
-            "default_config": u"",
-            "protected": False,
-            "note": {},
+            'support': u'yes',
+            'prefix': u'',
+            'prefix_mandatory': False,
+            'alternate_name': u'',
+            'alternate_mandatory': False,
+            'requires_config': u'',
+            'default_config': u'',
+            'protected': False,
+            'note': {},
             'version:PK': {
                 'app': u'webplatformcompat',
                 'model': 'version',

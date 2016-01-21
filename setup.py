@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Python packaging script."""
 
 import os
 import sys
@@ -15,9 +16,9 @@ version = webplatformcompat.__version__
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
-    print("You probably want to also tag the version now:")
-    print("  git tag -a %s -m 'version %s'" % (version, version))
-    print("  git push --tags")
+    print('You probably want to also tag the version now:')
+    print('  git tag -a %s -m "version %s"' % (version, version))
+    print('  git push --tags')
     sys.exit()
 
 readme = open('README.rst').read()
@@ -26,7 +27,7 @@ readme = open('README.rst').read()
 setup(
     name='browsercompat',
     version=version,
-    description="""Browser Compatibility API""",
+    description='Browser Compatibility API',
     long_description=readme,
     author='John Whitlock',
     author_email='jwhitlock@mozilla.com',
@@ -38,7 +39,7 @@ setup(
     install_requires=[
     ],
     test_suite='wpcsite.runtests.runtests',
-    license="MPL 2.0",
+    license='MPL 2.0',
     zip_safe=False,
     keywords='browsercompat',
     classifiers=[

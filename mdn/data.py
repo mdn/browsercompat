@@ -156,10 +156,10 @@ class Data(object):
             support_id = support.id
         else:
             # New support
-            support_id = "_%s-%s" % (feature_id, version_id)
+            support_id = '_%s-%s' % (feature_id, version_id)
         return support_id
 
-    VersionParams = namedtuple("VersionParams", ["version", "version_id"])
+    VersionParams = namedtuple('VersionParams', ['version', 'version_id'])
 
     def lookup_version_params(
             self, browser_id, browser_name, version_name):
@@ -189,6 +189,6 @@ class Data(object):
             version_id = version.id
         else:
             # New version
-            version_id = "_%s-%s" % (browser_name, version_name)
+            version_id = '_%s-%s' % (browser_name, version_name)
 
         return self.VersionParams(version, version_id)

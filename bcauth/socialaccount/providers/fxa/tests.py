@@ -36,4 +36,4 @@ class FirefoxAccountsTest(base_class):
         """
         resp = self.client.get(reverse(self.provider.id + '_callback'))
         self.assertContains(
-            resp, "<title>Social Network Login Failure</title>", html=True)
+            resp, '<title>Social Network Login Failure</title>', html=True)

@@ -1,8 +1,9 @@
+"""Customize filters for the API."""
 from rest_framework.filters import DjangoFilterBackend
 
 
 class UnorderedDjangoFilterBackend(DjangoFilterBackend):
-    """DjangoFilterBackend without ordering"""
+    """DjangoFilterBackend without ordering."""
 
     def get_filter_class(self, view, queryset=None):
         """

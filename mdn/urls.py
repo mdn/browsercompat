@@ -1,3 +1,4 @@
+"""URLs for MDN data importer."""
 from django.conf.urls import patterns, url
 
 

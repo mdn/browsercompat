@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Test mdn.data"""
+"""Test mdn.data."""
 from __future__ import unicode_literals
 
 from mdn.data import Data
@@ -100,17 +100,17 @@ class TestLookupSectionId(TestDataBase):
 
     def test_not_found(self):
         self.assertIsNone(
-            self.data.lookup_section_id(self.spec.id, "#the-background-size"))
+            self.data.lookup_section_id(self.spec.id, '#the-background-size'))
 
     def test_found(self):
         section = self.get_instance('Section', 'background-size')
         section_id = self.data.lookup_section_id(
-            self.spec.id, "#the-background-size")
+            self.spec.id, '#the-background-size')
         self.assertEqual(section_id, section.id)
 
     def test_not_found_but_others(self):
         self.get_instance('Section', 'background-size')
-        self.assertIsNone(self.data.lookup_section_id(self.spec.id, "#other"))
+        self.assertIsNone(self.data.lookup_section_id(self.spec.id, '#other'))
 
 
 class TestLookupSupportId(TestDataBase):

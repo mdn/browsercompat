@@ -1,4 +1,4 @@
-"""Cache functions"""
+"""Cache functions."""
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -10,7 +10,8 @@ from .models import (
 
 
 class Cache(BaseCache):
-    """Instance Cache for webplatformcompat"""
+    """Instance Cache for API resources."""
+
     versions = ('v1',)
     default_version = 'v1'
 
@@ -384,8 +385,8 @@ class Cache(BaseCache):
 
     def support_v1_invalidator(self, obj):
         return [
-            ("Version", obj.version_id, True),
-            ("Feature", obj.feature_id, True),
+            ('Version', obj.version_id, True),
+            ('Feature', obj.feature_id, True),
         ]
 
     def version_v1_serializer(self, obj):
@@ -434,7 +435,7 @@ class Cache(BaseCache):
 
     def version_v1_invalidator(self, obj):
         return [
-            ("Browser", obj.browser_id, True)]
+            ('Browser', obj.browser_id, True)]
 
     def user_v1_serializer(self, obj):
         if not obj or not obj.is_active:
@@ -451,7 +452,7 @@ class Cache(BaseCache):
         ))
 
     def user_v1_add_related_pks(self, obj):
-        """Add related primary keys and data to a User instance"""
+        """Add related primary keys and data to a User instance."""
         if not hasattr(obj, 'group_names'):
             obj.group_names = sorted(obj.groups.values_list('name', flat=True))
         if not hasattr(obj, '_changeset_pks'):

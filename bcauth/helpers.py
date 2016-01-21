@@ -1,4 +1,4 @@
-"""Helper functions for Jinja2 templates"""
+"""Helper functions for Jinja2 templates."""
 
 from allauth.account.utils import user_display
 from allauth.socialaccount import providers

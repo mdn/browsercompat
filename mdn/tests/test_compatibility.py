@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Test mdn.compatibility"""
+"""Test mdn.compatibility."""
 from __future__ import unicode_literals
 
 from django.utils.six import text_type
@@ -111,8 +111,8 @@ class TestCompatSectionExtractor(TestCase):
 
     def test_footnote(self):
         html = self.construct_html(
-            support="1.0 [1]",
-            after_table="<p>[1] This is a footnote.</p>")
+            support='1.0 [1]',
+            after_table='<p>[1] This is a footnote.</p>')
         expected = self.get_default_compat_div()
         expected['supports'][0]['footnote'] = 'This is a footnote.'
         expected['supports'][0]['footnote_id'] = ('1', 322, 325)
@@ -120,8 +120,8 @@ class TestCompatSectionExtractor(TestCase):
 
     def test_footnote_mismatch(self):
         html = self.construct_html(
-            support="1.0 [1]",
-            after_table="<p>[2] Oops, footnote ID is wrong.</p>")
+            support='1.0 [1]',
+            after_table='<p>[2] Oops, footnote ID is wrong.</p>')
         expected = self.get_default_compat_div()
         expected['supports'][0]['footnote_id'] = ('1', 322, 325)
         footnotes = {'2': ('Oops, footnote ID is wrong.', 374, 412)}
@@ -136,7 +136,7 @@ class TestCompatSectionExtractor(TestCase):
         # Reference/Global_Objects/WeakSet, March 2015
         html = self.construct_html()
         html = html.replace(
-            "<td>1.0</td>", "<td>1.0</td><td>{{CompatUnknown()}}</td>")
+            '<td>1.0</td>', '<td>1.0</td><td>{{CompatUnknown()}}</td>')
         self.assertTrue('CompatUnknown' in html)
         expected = self.get_default_compat_div()
         issue = ('extra_cell', 326, 354, {})
@@ -207,7 +207,7 @@ class TestCompatSectionExtractor(TestCase):
         self.assert_extract(html, [expected], issues=[issue])
 
     def test_support_issue(self):
-        html = self.construct_html(support="1.0 (or earlier)")
+        html = self.construct_html(support='1.0 (or earlier)')
         expected = self.get_default_compat_div()
         issue = ('inline_text', 322, 334, {'text': '(or earlier)'})
         self.assert_extract(html, [expected], issues=[issue])
@@ -222,7 +222,7 @@ class TestCompatSectionExtractor(TestCase):
         # https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
         html = self.construct_html()
         html = html.replace(
-            '</div>', "<h3>Gecko Notes</h3><p>It rocks</p></div>")
+            '</div>', '<h3>Gecko Notes</h3><p>It rocks</p></div>')
         expected = self.get_default_compat_div()
         issues = [
             ('skipped_content', 58, 126, {}),
@@ -233,7 +233,7 @@ class TestCompatSectionExtractor(TestCase):
     def test_support_colspan_exceeds_table_width(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
         html = self.construct_html()
-        html = html.replace("<td>1.0", '<td colspan="2">1.0')
+        html = html.replace('<td>1.0', '<td colspan="2">1.0')
         expected = self.get_default_compat_div()
         issue = ('cell_out_of_bounds', 314, 338, {})
         self.assert_extract(html, [expected], issues=[issue])
@@ -289,7 +289,7 @@ class TestFeatureVisitor(TestCase):
             self, contents, feature_id, name, slug, canonical=False,
             experimental=False, standardized=True, obsolete=False,
             issues=None):
-        row_cell = "<td>%s</td>" % contents
+        row_cell = '<td>%s</td>' % contents
         parsed = compat_feature_grammar['html'].parse(row_cell)
         self.visitor.visit(parsed)
         feature_dict = self.visitor.to_feature_dict()
@@ -493,48 +493,48 @@ class TestFeatureVisitor(TestCase):
 class TestSupportGrammar(TestCase):
     def assert_version(self, text, version, eng_version=None):
         ws1, version_node, ws2 = (
-            compat_support_grammar["cell_version"].parse(text))
+            compat_support_grammar['cell_version'].parse(text))
         match = version_node.match.groupdict()
-        expected = {"version": version, "eng_version": eng_version}
+        expected = {'version': version, 'eng_version': eng_version}
         self.assertEqual(expected, match)
 
     def test_version_number(self):
-        self.assert_version("1", version="1")
+        self.assert_version('1', version='1')
 
     def test_cell_version_number_dotted(self):
-        self.assert_version("1.0", version="1.0")
+        self.assert_version('1.0', version='1.0')
 
     def test_cell_version_number_spaces(self):
-        self.assert_version("1 ", version="1")
+        self.assert_version('1 ', version='1')
 
     def test_cell_version_number_dotted_spaces(self):
-        self.assert_version("1.0\n\t", version="1.0")
+        self.assert_version('1.0\n\t', version='1.0')
 
     def test_cell_version_number_with_engine(self):
-        self.assert_version("1.0 (85)", version="1.0", eng_version="85")
+        self.assert_version('1.0 (85)', version='1.0', eng_version='85')
 
     def test_cell_version_number_with_dotted_engine(self):
-        self.assert_version("5.0 (532.5)", version="5.0", eng_version="532.5")
+        self.assert_version('5.0 (532.5)', version='5.0', eng_version='532.5')
 
     def assert_no_prefix(self, text):
-        node = compat_support_grammar["cell_noprefix"].parse(text)
+        node = compat_support_grammar['cell_noprefix'].parse(text)
         self.assertEqual(text, node.text)
 
     def test_unprefixed(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/AudioContext.createBufferSource
-        self.assert_no_prefix(" (unprefixed) ")
+        self.assert_no_prefix(' (unprefixed) ')
 
     def test_noprefix(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/Navigator.vibrate
-        self.assert_no_prefix(" (no prefix) ")
+        self.assert_no_prefix(' (no prefix) ')
 
     def test_without_prefix_naked(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-line
-        self.assert_no_prefix("without prefix")
+        self.assert_no_prefix('without prefix')
 
     def test_without_prefix(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/BatteryManager
-        self.assert_no_prefix(" (without prefix) ")
+        self.assert_no_prefix(' (without prefix) ')
 
     def assert_partial(self, text):
         node = compat_support_grammar['cell_partial'].parse(text)
@@ -542,11 +542,11 @@ class TestSupportGrammar(TestCase):
 
     def test_comma_partial(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor
-        self.assert_partial(", partial")
+        self.assert_partial(', partial')
 
     def test_parens_partal(self):
         # https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration
-        self.assert_partial("(partial)")
+        self.assert_partial('(partial)')
 
 
 class TestCompatVersion(TestCase):
@@ -584,7 +584,7 @@ class TestSupportVisitor(TestCase):
     def assert_support(
             self, contents, expected_versions=None, expected_supports=None,
             issues=None):
-        row_cell = "<td>%s</td>" % contents
+        row_cell = '<td>%s</td>' % contents
         parsed = compat_support_grammar['html'].parse(row_cell)
         self.visitor = CompatSupportVisitor(
             self.feature_id, self.browser_id, self.browser_name,
@@ -623,7 +623,7 @@ class TestSupportVisitor(TestCase):
         issue = (
             'unknown_version', 4, 7,
             {'browser_id': browser.id,
-             'browser_name': {"en": "Firefox for Desktop"},
+             'browser_name': {'en': 'Firefox for Desktop'},
              'browser_slug': 'firefox_desktop', 'version': '2.0'})
         self.assert_support(
             '2.0', [{'version': '2.0'}], [{'support': 'yes'}], issues=[issue])
@@ -699,7 +699,7 @@ class TestSupportVisitor(TestCase):
             'unknown_kumascript', 4, 19,
             {'name': 'UnknownKuma', 'args': [],
              'scope': 'compatibility support',
-             'kumascript': "{{UnknownKuma}}"})]
+             'kumascript': '{{UnknownKuma}}'})]
         self.assert_support('{{UnknownKuma}}', issues=issues)
 
     def test_with_prefix_and_break(self):
@@ -862,18 +862,18 @@ class TestFootnoteVisitor(TestCase):
         self.assert_footnotes(footnotes, expected)
 
     def test_simple(self):
-        footnotes = "<p>[1] A footnote.</p>"
+        footnotes = '<p>[1] A footnote.</p>'
         expected = {'1': ('A footnote.', 0, 22)}
         self.assert_footnotes(footnotes, expected)
 
     def test_multi_paragraph(self):
-        footnotes = "<p>[1] Footnote line 1.</p><p>Footnote line 2.</p>"
+        footnotes = '<p>[1] Footnote line 1.</p><p>Footnote line 2.</p>'
         expected = {
-            '1': ("<p>Footnote line 1.</p>\n<p>Footnote line 2.</p>", 0, 50)}
+            '1': ('<p>Footnote line 1.</p>\n<p>Footnote line 2.</p>', 0, 50)}
         self.assert_footnotes(footnotes, expected)
 
     def test_multiple_footnotes(self):
-        footnotes = "<p>[1] Footnote 1.</p><p>[2] Footnote 2.</p>"
+        footnotes = '<p>[1] Footnote 1.</p><p>[2] Footnote 2.</p>'
         expected = {'1': ('Footnote 1.', 0, 22), '2': ('Footnote 2.', 22, 44)}
         self.assert_footnotes(footnotes, expected)
 
@@ -888,7 +888,7 @@ class TestFootnoteVisitor(TestCase):
 
     def test_unknown_kumascriptscript(self):
         footnotes = (
-            "<p>[1] Footnote {{UnknownKuma}} but the beat continues.</p>")
+            '<p>[1] Footnote {{UnknownKuma}} but the beat continues.</p>')
         expected = {'1': ('Footnote but the beat continues.', 0, 59)}
         issue = (
             'unknown_kumascript', 16, 32,
@@ -919,7 +919,7 @@ class TestFootnoteVisitor(TestCase):
         expected = {
             '1': (
                 "<p>Here's some code:</p>\n<pre>\n"
-                ".foo {background-image: url(bg-image.png);}\n</pre>",
+                '.foo {background-image: url(bg-image.png);}\n</pre>',
                 0, 103)}
         issue = (
             'unexpected_attribute', 34, 51,
@@ -928,17 +928,17 @@ class TestFootnoteVisitor(TestCase):
         self.assert_footnotes(footnotes, expected, issues=[issue])
 
     def test_asterisk(self):
-        footnotes = "<p>[*] A footnote</p>"
+        footnotes = '<p>[*] A footnote</p>'
         expected = {'1': ('A footnote', 0, 21)}
         self.assert_footnotes(footnotes, expected)
 
     def test_bad_footnote(self):
-        footnotes = "<p>A footnote.</p>"
+        footnotes = '<p>A footnote.</p>'
         issue = ('footnote_no_id', 0, 18, {})
         self.assert_footnotes(footnotes, {}, issues=[issue])
 
     def test_bad_footnote_prefix(self):
-        footnotes = "<p>Footnote [1] - The content.</p>"
+        footnotes = '<p>Footnote [1] - The content.</p>'
         expected = {'1': ('- The content.', 16, 30)}
         issue = ('footnote_no_id', 3, 12, {})
         self.assert_footnotes(footnotes, expected, issues=[issue])
@@ -1024,10 +1024,10 @@ class TestFootnoteVisitor(TestCase):
 
     def test_br_footnotes(self):
         # https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/hash
-        footnote = "<p>[1] Footnote 1.<br>[2] Footnote 2.</p>"
-        expected = {'1': ("Footnote 1.", 7, 18), '2': ("Footnote 2.", 26, 37)}
+        footnote = '<p>[1] Footnote 1.<br>[2] Footnote 2.</p>'
+        expected = {'1': ('Footnote 1.', 7, 18), '2': ('Footnote 2.', 26, 37)}
         self.assert_footnotes(footnote, expected)
 
     def test_embedcompattable(self):
         footnote = '<div>{{EmbedCompatTable("foo")}}</div>'
-        self.assert_footnotes(footnote, {}, embedded=["foo"])
+        self.assert_footnotes(footnote, {}, embedded=['foo'])
