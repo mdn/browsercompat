@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from mdn.urls import mdn_urlpatterns
 from webplatformcompat.v1.routers import router as v1_router
+from webplatformcompat.v2.routers import router as v2_router
 
 from .views import ViewFeature
 
@@ -24,6 +25,7 @@ webplatformcompat_urlpatterns = patterns(
     url(r'^api/$', RedirectView.as_view(url='/api/v1/', permanent=False),
         name='api_root'),
     url(r'^api/v1/', include(v1_router.urls, namespace='v1')),
+    url(r'^api/v2/', include(v2_router.urls, namespace='v2')),
     url(r'^importer$', RedirectView.as_view(
         url='/importer/', permanent=False)),
     url(r'^importer/', include(mdn_urlpatterns)),

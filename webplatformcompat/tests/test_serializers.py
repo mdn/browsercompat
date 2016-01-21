@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Tests for API serializers."""
 
+from django.contrib.auth import get_user_model
+
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Version)
 from webplatformcompat.serializers import (
@@ -194,12 +196,22 @@ class TestSpecificationSerializer(TestCase):
 class TestUserSerializer(TestCase):
     """Test UserSerializer."""
 
-    def test_to_representation(self):
-        user = self.login_user()
+    def assert_representation(self, user):
         serializer = UserSerializer()
         representation = serializer.to_representation(user)
         self.assertEqual(representation['agreement'], 0)
         self.assertEqual(representation['permissions'], ['change-resource'])
+
+    def test_to_representation_cached(self):
+        """Test serialization with a cached user."""
+        user = self.login_user()  # cache backend will add related fields
+        self.assert_representation(user)
+
+    def test_to_representation_uncached(self):
+        """Test serialization with a Django uncached user."""
+        user = self.login_user()
+        user = get_user_model().objects.get(pk=user.pk)
+        self.assert_representation(user)
 
 
 class TestHistoricalFeatureSerializer(TestCase):
@@ -241,7 +253,8 @@ class TestHistoricalMaturitySerializer(TestCase):
             'id': {
                 'archived_resource': True,
                 'link': 'self',
-                'resource': 'historical_maturities'
+                'resource': 'historical_maturities',
+                'singular': 'historical_maturity',
             },
             'changeset': {
                 'link': 'to_one', 'resource': 'changesets'},
