@@ -136,6 +136,8 @@ class TestJsonApiV10Parser(TestCase):
     def test_duplicate_in_attribute_and_relationships(self):
         data = {
             'data': {
+                'id': '139',
+                'type': 'features',
                 'attributes': {
                     'parent': None,
                 },
@@ -156,6 +158,8 @@ class TestJsonApiV10Parser(TestCase):
     def test_view_extra_in_attributes(self):
         data = {
             'data': {
+                'id': '161',
+                'type': 'features',
                 'attributes': {
                     '_view_extra': 'foo'
                 },
@@ -170,6 +174,8 @@ class TestJsonApiV10Parser(TestCase):
     def test_meta_in_relationships(self):
         data = {
             'data': {
+                'id': '177',
+                'type': 'features',
                 'relationships': {
                     'meta': {
                         'data': {'type': 'features', 'id': '_meta'},
@@ -181,6 +187,26 @@ class TestJsonApiV10Parser(TestCase):
             self.parse(data)
         expected_msg = '"meta" is not allowed in data.relationships.'
         self.assertEqual(str(pe.exception), expected_msg)
+
+    def test_id_is_optional(self):
+        """Test that 'id' can be omitted.
+
+        For example, id is omitted when creating a resource.
+        """
+        resource = self.parse({
+            'data': {
+                'type': 'features',
+                'attributes': {
+                    'slug': 'the_feature',
+                    'name': {'en': 'The Feature'},
+                },
+            }
+        })
+        expected = {
+            'slug': 'the_feature',
+            'name': {'en': 'The Feature'},
+        }
+        self.assertDataEqual(resource, expected)
 
     def test_omit_main_type(self):
         data = {
@@ -323,6 +349,8 @@ class TestJsonApiV10Parser(TestCase):
     def test_clear_parent_by_null_data(self):
         resource = self.parse({
             'data': {
+                'id': '352',
+                'type': 'features',
                 'relationships': {
                     'parent': {
                         'data': None,
@@ -331,6 +359,7 @@ class TestJsonApiV10Parser(TestCase):
             }
         })
         expected = {
+            'id': '352',
             'parent': None
         }
         self.assertEqual(resource, expected)
@@ -338,6 +367,8 @@ class TestJsonApiV10Parser(TestCase):
     def test_clear_parent_by_null_id(self):
         resource = self.parse({
             'data': {
+                'id': '370',
+                'type': 'features',
                 'relationships': {
                     'parent': {
                         'data': {'type': 'features', 'id': None},
@@ -346,6 +377,7 @@ class TestJsonApiV10Parser(TestCase):
             }
         })
         expected = {
+            'id': '370',
             'parent': None
         }
         self.assertEqual(resource, expected)
@@ -353,6 +385,8 @@ class TestJsonApiV10Parser(TestCase):
     def test_relationship_without_data(self):
         data = {
             'data': {
+                'id': '388',
+                'type': 'features',
                 'relationships': {
                     'parent': {
                         'not-data': []
@@ -369,6 +403,8 @@ class TestJsonApiV10Parser(TestCase):
         """Test that no 'resource' in fields_extra uses the name as type."""
         resource = self.parse({
             'data': {
+                'id': '406',
+                'type': 'features',
                 'relationships': {
                     'sections': {
                         'data': [
@@ -378,13 +414,15 @@ class TestJsonApiV10Parser(TestCase):
                 }
             }
         })
-        expected = {'sections': ['101']}
+        expected = {'id': '406', 'sections': ['101']}
         self.assertEqual(resource, expected)
 
     def test_unknown_relationship(self):
         """Unknown relationhips are parsed without verification."""
         resource = self.parse({
             'data': {
+                'id': '424',
+                'type': 'features',
                 'relationships': {
                     'future': {
                         'data': [
@@ -394,5 +432,5 @@ class TestJsonApiV10Parser(TestCase):
                 }
             }
         })
-        expected = {'future': ['2016']}
+        expected = {'id': '424', 'future': ['2016']}
         self.assertEqual(resource, expected)
