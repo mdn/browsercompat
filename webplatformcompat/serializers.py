@@ -279,6 +279,7 @@ class MaturitySerializer(HistoricalModelSerializer):
             'id': {
                 'link': 'self',
                 'resource': 'maturities',
+                'singular': 'maturity',
             },
             'specifications': {
                 'archive': 'omit',
@@ -560,13 +561,13 @@ class UserSerializer(FieldsExtraMixin, ModelSerializer):
         return 0
 
     def get_permissions(self, obj):
-        """Return names of django.contrib.auth Groups.
-
-        Can not be used with a writable view, since django.contrib.auth User
-        doesn't have this method.  Will need updating or a proxy class.
-        """
-        assert hasattr(obj, 'group_names'), 'Expecting cached User object'
-        return obj.group_names
+        """Return names of django.contrib.auth Groups."""
+        try:
+            # Cached objects (or those that have run through
+            #  cache.user_v1_serializer) have this property
+            return obj.group_names
+        except AttributeError:
+            return sorted(obj.groups.values_list('name', flat=True))
 
     class Meta:
         model = User
@@ -636,12 +637,14 @@ class HistoricalObjectSerializer(ModelSerializer):
         extra = deepcopy(cls.Meta.fields_extra)
         archive_extra = cls.Meta.archive_extra
         extra['id']['resource'] = archive_extra['history_resource']
+        history_resource_singular = archive_extra.get(
+            'history_resource_singular')
+        if history_resource_singular:
+            extra['id']['singular'] = history_resource_singular
         object_resource = archive_extra['object_resource']
         extra['object_id']['resource'] = object_resource
-        if object_resource == 'maturities':
-            extra['object_id']['name'] = 'maturity'
-        else:
-            extra['object_id']['name'] = object_resource[:-1]
+        singular = archive_extra.get('singular', object_resource[:-1])
+        extra['object_id']['name'] = singular
         extra['archived_representation']['resource'] = object_resource
         extra['archived_representation']['is_archive_of'] = cls.ArchivedObject
         extra['archived_representation']['name'] = object_resource
@@ -741,7 +744,9 @@ class HistoricalMaturitySerializer(HistoricalObjectSerializer):
         model = Maturity.history.model
         archive_extra = {
             'history_resource': 'historical_maturities',
+            'history_resource_singular': 'historical_maturity',
             'object_resource': 'maturities',
+            'singular': 'maturity',
         }
 
 

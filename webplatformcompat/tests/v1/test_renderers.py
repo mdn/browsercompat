@@ -8,7 +8,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 import mock
 
 from .base import TestCase
-from webplatformcompat.renderers import JsonApiRC1Renderer
+from webplatformcompat.v1.renderers import JsonApiRC1Renderer
 from webplatformcompat.serializers import BrowserSerializer, FeatureSerializer
 
 

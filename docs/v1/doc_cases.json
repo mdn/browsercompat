@@ -409,7 +409,7 @@
     }, {
         "name": "specification-by-mdn-key",
         "method": "GET",
-        "endpoint": "specifications?mdn-key=CSS2.1"
+        "endpoint": "specifications?mdn_key=CSS2.1"
     }, {
         "name": "specification-create",
         "method": "POST",
@@ -497,7 +497,7 @@
         "endpoint": "sections/6",
         "data": {
             "sections": {
-                "maturity": "6"
+                "specification": "4"
             }
         }
     }, {

@@ -42,13 +42,21 @@ class CachingTreeManager(TreeManager, CachingManagerMixin):
     # Django magic prevents a standard override of create
     create = CachingManagerMixin.delay_create
 
+
+class HistoryMixin(object):
+    @property
+    def current_history_id(self):
+        """Return the current history ID, used in many views."""
+        return getattr(self, 'history').only('history_id').latest().history_id
+
+
 #
 # "Regular" (non-historical) models
 #
 
 
 @python_2_unicode_compatible
-class Browser(models.Model):
+class Browser(HistoryMixin, models.Model):
     """A browser or other web client."""
 
     slug = models.SlugField(
@@ -67,7 +75,7 @@ class Browser(models.Model):
 
 
 @python_2_unicode_compatible
-class Feature(MPTTModel):
+class Feature(HistoryMixin, MPTTModel):
     """A web technology."""
 
     slug = models.SlugField(
@@ -185,7 +193,7 @@ class Feature(MPTTModel):
 
 
 @python_2_unicode_compatible
-class Maturity(models.Model):
+class Maturity(HistoryMixin, models.Model):
     """Maturity of a specification document."""
 
     slug = models.SlugField(
@@ -206,7 +214,7 @@ class Maturity(models.Model):
 
 
 @python_2_unicode_compatible
-class Section(models.Model):
+class Section(HistoryMixin, models.Model):
     """A section of a specification document."""
 
     specification = models.ForeignKey('Specification', related_name='sections')
@@ -237,7 +245,7 @@ class Section(models.Model):
 
 
 @python_2_unicode_compatible
-class Specification(models.Model):
+class Specification(HistoryMixin, models.Model):
     """A Specification document."""
 
     maturity = models.ForeignKey('Maturity', related_name='specifications')
@@ -259,7 +267,7 @@ class Specification(models.Model):
 
 
 @python_2_unicode_compatible
-class Support(models.Model):
+class Support(HistoryMixin, models.Model):
     """Detail the support of a browser version for a feature."""
 
     SUPPORT_CHOICES = [(k, k) for k in (
@@ -311,7 +319,7 @@ class Support(models.Model):
 
 
 @python_2_unicode_compatible
-class Version(models.Model):
+class Version(HistoryMixin, models.Model):
     """A version of a browser."""
 
     STATUS_CHOICES = [(k, k) for k in (

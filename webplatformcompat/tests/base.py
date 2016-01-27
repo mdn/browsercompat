@@ -14,7 +14,6 @@ class TestMixin(object):
     """Useful methods for testing."""
 
     maxDiff = None
-    namespace = 'v1'
 
     def tearDown(self):
         cache.clear()
