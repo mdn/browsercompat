@@ -1,0 +1,7 @@
+PATCH /api/v2/supports/26 HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json
+Content-Length: 138
+Content-Type: application/vnd.api+json
+Cookie: csrftoken=p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn; sessionid=wurexa2wq416ftlvd5plesngwa28183h
+X-Csrftoken: p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn

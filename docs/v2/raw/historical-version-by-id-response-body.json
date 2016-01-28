@@ -1,0 +1,79 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_versions/49"
+    },
+    "data": {
+        "type": "historical_versions",
+        "id": "49",
+        "attributes": {
+            "date": "2016-01-14T07:52:04.749000Z",
+            "event": "created",
+            "archive_data": {
+                "type": "versions",
+                "id": "49",
+                "attributes": {
+                    "version": "19.0",
+                    "release_day": "2013-02-19",
+                    "retirement_day": "2013-04-02",
+                    "status": "retired",
+                    "release_notes_uri": {
+                        "en": "https://developer.mozilla.org/en/Firefox/Releases/19",
+                        "de": "https://developer.mozilla.org/de/Firefox/Releases/19",
+                        "es": "https://developer.mozilla.org/es/docs/Firefox_19_para_desarrolladores",
+                        "fr": "https://developer.mozilla.org/fr/Firefox/Versions/19",
+                        "ja": "https://developer.mozilla.org/ja/Firefox/Releases/19",
+                        "ko": "https://developer.mozilla.org/ko/Firefox/Releases/19",
+                        "pl": "https://developer.mozilla.org/pl/Firefox/Releases/19",
+                        "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/19",
+                        "ru": "https://developer.mozilla.org/ru/Firefox/Releases/19",
+                        "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/19",
+                        "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/19"
+                    },
+                    "note": {
+                        "en": "Released to beta channel on January 10, 2013"
+                    },
+                    "order": 6
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers",
+                            "id": "7"
+                        }
+                    },
+                    "history_current": {
+                        "data": {
+                            "type": "historical_versions",
+                            "id": "49"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/49"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_versions/49/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_versions/49/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "13"
+                }
+            },
+            "version": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_versions/49/relationships/version",
+                    "related": "https://browsercompat.org/api/v2/historical_versions/49/version"
+                },
+                "data": {
+                    "type": "versions",
+                    "id": "49"
+                }
+            }
+        }
+    }
+}

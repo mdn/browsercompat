@@ -1,0 +1,10 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_versions/49/relationships/changeset",
+        "related": "https://browsercompat.org/api/v2/historical_versions/49/changeset"
+    },
+    "data": {
+        "type": "changesets",
+        "id": "13"
+    }
+}

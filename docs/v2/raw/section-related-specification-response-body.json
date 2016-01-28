@@ -1,0 +1,65 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/sections/3/specification"
+    },
+    "data": {
+        "type": "specifications",
+        "id": "3",
+        "attributes": {
+            "slug": "css3_box",
+            "mdn_key": "CSS3 Box",
+            "name": {
+                "en": "CSS Basic Box Model"
+            },
+            "uri": {
+                "en": "http://dev.w3.org/csswg/css3-box/"
+            }
+        },
+        "relationships": {
+            "maturity": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/3/relationships/maturity",
+                    "related": "https://browsercompat.org/api/v2/specifications/3/maturity"
+                },
+                "data": {
+                    "type": "maturities",
+                    "id": "2"
+                }
+            },
+            "sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/3/relationships/sections",
+                    "related": "https://browsercompat.org/api/v2/specifications/3/sections"
+                },
+                "data": [
+                    {
+                        "type": "sections",
+                        "id": "3"
+                    }
+                ]
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/3/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/specifications/3/history_current"
+                },
+                "data": {
+                    "type": "historical_specifications",
+                    "id": "3"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/specifications/3/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/specifications/3/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_specifications",
+                        "id": "3"
+                    }
+                ]
+            }
+        }
+    }
+}

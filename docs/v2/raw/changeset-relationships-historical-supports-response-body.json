@@ -1,0 +1,12 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/35/relationships/historical_supports",
+        "related": "https://browsercompat.org/api/v2/changesets/35/historical_supports"
+    },
+    "data": [
+        {
+            "type": "historical_supports",
+            "id": "27"
+        }
+    ]
+}

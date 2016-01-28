@@ -18,7 +18,10 @@ Contents:
    installation
    contributing
    technologies
+   entrypoints
    v1/intro
+   v2/intro
+   services
    tools
    issues
    history

@@ -1,0 +1,18 @@
+{
+    "data": {
+        "type": "sections",
+        "attributes": {
+            "name": {
+                "en": "'font-family'"
+            }
+        },
+        "relationships": {
+            "specification": {
+                "data": {
+                    "type": "specifications",
+                    "id": "1"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,71 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/sections/8"
+    },
+    "data": {
+        "type": "sections",
+        "id": "8",
+        "attributes": {
+            "number": {
+                "en": "2.1"
+            },
+            "name": {
+                "en": "Ruby-specific 'display' Values"
+            },
+            "subpath": {
+                "en": "#ruby-display"
+            },
+            "note": null
+        },
+        "relationships": {
+            "specification": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/8/relationships/specification",
+                    "related": "https://browsercompat.org/api/v2/sections/8/specification"
+                },
+                "data": {
+                    "type": "specifications",
+                    "id": "4"
+                }
+            },
+            "features": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/8/relationships/features",
+                    "related": "https://browsercompat.org/api/v2/sections/8/features"
+                },
+                "data": [
+                    {
+                        "type": "features",
+                        "id": "13"
+                    }
+                ]
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/8/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/sections/8/history_current"
+                },
+                "data": {
+                    "type": "historical_sections",
+                    "id": "9"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/8/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/sections/8/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_sections",
+                        "id": "9"
+                    },
+                    {
+                        "type": "historical_sections",
+                        "id": "8"
+                    }
+                ]
+            }
+        }
+    }
+}

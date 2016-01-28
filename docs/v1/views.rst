@@ -4,7 +4,7 @@ Views
 A **View** is a combination of resources for a particular presentation.  It is
 suitable for anonymous viewing of content. It uses the flexibility of the
 JSON API specification to include a basket of related resources in a response,
-but doesn't use the offical method of `Inclusion of Related Resources`_.
+but doesn't use the official method of `Inclusion of Related Resources`_.
 
 View a Feature
 ~~~~~~~~~~~~~~
@@ -61,7 +61,7 @@ One way to use this representation is:
             - If just one, display "<``version``>", or "<``support``>",
               depending on the defined attributes
             - If multiple, display as subcells
-            - Add prefixes, alternate names, config, ank notes link
+            - Add prefixes, alternate names, config, and notes link
               as appropriate
     5. Close each table, add an edit button
     6. Add notes for displayed supports

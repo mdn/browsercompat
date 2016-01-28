@@ -1,0 +1,56 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_maturities/10"
+    },
+    "data": {
+        "type": "historical_maturities",
+        "id": "10",
+        "attributes": {
+            "date": "2016-01-14T08:04:58.382000Z",
+            "event": "created",
+            "archive_data": {
+                "type": "maturities",
+                "id": "10",
+                "attributes": {
+                    "slug": "Idea",
+                    "name": {
+                        "en": "Idea"
+                    }
+                },
+                "relationships": {
+                    "history_current": {
+                        "data": {
+                            "type": "historical_maturities",
+                            "id": "10"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/maturities/10"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_maturities/10/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_maturities/10/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "52"
+                }
+            },
+            "maturity": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_maturities/10/relationships/maturity",
+                    "related": "https://browsercompat.org/api/v2/historical_maturities/10/maturity"
+                },
+                "data": {
+                    "type": "maturities",
+                    "id": "10"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "data": {
+        "id": "8",
+        "type": "sections",
+        "relationships": {
+            "specification": {
+                "data": {
+                    "type": "specifications",
+                    "id": "4"
+                }
+            }
+        }
+    }
+}

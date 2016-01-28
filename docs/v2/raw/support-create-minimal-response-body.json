@@ -1,0 +1,64 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/supports"
+    },
+    "data": {
+        "type": "supports",
+        "id": "27",
+        "attributes": {
+            "support": "yes",
+            "prefix": null,
+            "prefix_mandatory": false,
+            "alternate_name": null,
+            "alternate_mandatory": false,
+            "requires_config": null,
+            "default_config": null,
+            "protected": false,
+            "note": null
+        },
+        "relationships": {
+            "version": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/relationships/version",
+                    "related": "https://browsercompat.org/api/v2/supports/version"
+                },
+                "data": {
+                    "type": "versions",
+                    "id": "4"
+                }
+            },
+            "feature": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/relationships/feature",
+                    "related": "https://browsercompat.org/api/v2/supports/feature"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "6"
+                }
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/supports/history_current"
+                },
+                "data": {
+                    "type": "historical_supports",
+                    "id": "27"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/supports/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_supports",
+                        "id": "27"
+                    }
+                ]
+            }
+        }
+    }
+}

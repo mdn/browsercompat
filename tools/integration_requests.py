@@ -17,6 +17,7 @@ logger = logging.getLogger('tools.integration_requests')
 my_dir = os.path.dirname(os.path.realpath(__file__))
 doc_dir = os.path.realpath(os.path.join(my_dir, '..', 'docs', 'v1'))
 default_api = 'http://localhost:8000'
+default_api_version = 'v1'
 default_cases_file = os.path.realpath(os.path.join(doc_dir, 'doc_cases.json'))
 default_raw_dir = os.path.realpath(os.path.join(doc_dir, 'raw'))
 
@@ -32,6 +33,7 @@ class CaseRunner(object):
         'PUT': 200,
         'DELETE': 204,
         'OPTIONS': 200,
+        'PATCH': 200,
     }
     doc_csrf = 'p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn'
     doc_session = 'wurexa2wq416ftlvd5plesngwa28183h'
@@ -39,9 +41,10 @@ class CaseRunner(object):
 
     def __init__(
             self, cases=None, api=None, raw_dir=None, mode=None,
-            username=None, password=None, stop=False):
+            username=None, password=None, stop=False, apiversion=None):
         self.cases = cases or default_cases_file
         self.api = api or default_api
+        self.apiversion = apiversion or default_api_version
         self.raw_dir = raw_dir or default_raw_dir
         self.mode = mode or 'verify'
         assert self.mode in ('verify', 'display', 'generate'), 'Invalid mode'
@@ -55,7 +58,7 @@ class CaseRunner(object):
         self.stop = stop
 
     def uri(self, endpoint):
-        return self.api + '/api/v1/' + endpoint
+        return '%s/api/%s/%s' % (self.api, self.apiversion, endpoint)
 
     @property
     def user_session(self):
@@ -63,7 +66,7 @@ class CaseRunner(object):
             assert (self.username and self.password), (
                 'Must set a username and password')
             session = requests.Session()
-            next_path = '/api/v1/browsers'
+            next_path = '/api/%s/browsers' % self.apiversion
 
             # Get login page
             params = {'next': next_path}
@@ -414,6 +417,9 @@ if __name__ == '__main__':
         'casenames', metavar='case name', nargs='*',
         help='Case names to run, defaults to all cases')
     parser.add_argument(
+        '--apiversion', metavar='VER', default=default_api_version,
+        help='API version to test, defaults to v1')
+    parser.add_argument(
         '-r', '--raw', default=default_raw_dir,
         help='Path to requests/responses folder')
     parser.add_argument(
@@ -431,6 +437,7 @@ if __name__ == '__main__':
         help='In verify mode, stop after first failure')
     args = parser.parse_args()
     api = args.api
+    apiversion = args.apiversion
     mode = args.mode
     logger.info('Making API requests against %s for %s', api, mode)
     if mode == 'display':
@@ -447,7 +454,8 @@ if __name__ == '__main__':
         cases = json.load(cases_file, object_pairs_hook=OrderedDict)
     runner = CaseRunner(
         cases=cases, api=api, raw_dir=args.raw, mode=mode,
-        username=args.user, password=password, stop=args.stop)
+        username=args.user, password=password, stop=args.stop,
+        apiversion=apiversion)
     success, failure, skipped = runner.run(args.casenames, include_mod)
 
     if skipped:

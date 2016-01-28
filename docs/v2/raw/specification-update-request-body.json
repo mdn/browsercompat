@@ -1,0 +1,13 @@
+{
+    "data": {
+        "type": "specifications",
+        "relationships": {
+            "maturity": {
+                "data": {
+                    "type": "maturities",
+                    "id": "5"
+                }
+            }
+        }
+    }
+}

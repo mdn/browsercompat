@@ -67,6 +67,7 @@ A sample response is:
 
 Retrieve by ID
 **************
+*Note:* `bug 1230306`_ *is proposing switching IDs to UUIDs.*
 
 To request a single **browser** with a known ID:
 
@@ -84,7 +85,7 @@ A sample response is:
 Retrieve by Slug
 ****************
 
-*Note:* `bug 1078699` *is proposing an alternate URL format.*
+*Note:* `bug 1078699`_ *is proposing an alternate URL format.*
 
 
 To request a **browser** by slug:
@@ -276,7 +277,7 @@ The **versions** representation includes:
     - **release_notes_uri** *(localized)* - URI of release notes for this
       version, or null if none.
     - **note** *(localized)* - Engine, OS, etc. information, or null
-    - **order** *(read-only)* - The relative order amoung versions for this
+    - **order** *(read-only)* - The relative order among versions for this
       browser. The order can be changed on the **browser** resource.
 * **links**
     - **browser** - The related **browser**
@@ -318,7 +319,7 @@ Features
 --------
 A **feature** is a web technology.  This could be a precise technology, such
 as the value ``cover`` for the CSS ``background-size`` property.  It could be
-a heirarchical group of related technologies, such as the CSS
+a hierarchical group of related technologies, such as the CSS
 ``background-size`` property or the set of all CSS properties.  Some features
 correspond to a page on MDN_, which will display the list of specifications
 and a browser compatibility table of the sub-features.
@@ -532,8 +533,8 @@ The **maturity** representation includes:
 
 * **attributes**
     - **id** *(server selected)* - Database ID
-    - **slug** - A human-friendly identifier for this maturity.  When applicabile,
-      it match the key in the KumaScript macro Spec2_
+    - **slug** - A human-friendly identifier for this maturity.  When applicable,
+      it matches the key in the KumaScript macro Spec2_
     - **name** *(localized)* - Status name
 * **links**
     - **specifications** *(many)* - Associated specifications_.  In ID order,
@@ -573,6 +574,7 @@ A sample response is:
 
 .. _`bug 1078699`: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699
 .. _`bug 1216786`: https://bugzilla.mozilla.org/show_bug.cgi?id=1216786
+.. _`bug 1230306`: https://bugzilla.mozilla.org/show_bug.cgi?id=1230306
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601
 .. _MDN: https://developer.mozilla.org

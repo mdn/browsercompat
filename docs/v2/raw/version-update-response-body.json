@@ -1,0 +1,84 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/versions/21"
+    },
+    "data": {
+        "type": "versions",
+        "id": "21",
+        "attributes": {
+            "version": "16.0",
+            "release_day": "2012-10-09",
+            "retirement_day": "2012-11-20",
+            "status": "unknown",
+            "release_notes_uri": {
+                "en": "https://developer.mozilla.org/en/Firefox/Releases/16",
+                "de": "https://developer.mozilla.org/de/Firefox/Releases/16",
+                "es": "https://developer.mozilla.org/es/Firefox/Releases/16",
+                "fr": "https://developer.mozilla.org/fr/Firefox/Versions/16",
+                "ja": "https://developer.mozilla.org/ja/Firefox/Releases/16",
+                "ko": "https://developer.mozilla.org/ko/Firefox/Releases/16",
+                "pl": "https://developer.mozilla.org/pl/Firefox/Releases/16",
+                "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/16",
+                "ru": "https://developer.mozilla.org/ru/Firefox/Releases/16",
+                "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/16",
+                "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/16"
+            },
+            "note": null,
+            "order": 4
+        },
+        "relationships": {
+            "browser": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/21/relationships/browser",
+                    "related": "https://browsercompat.org/api/v2/versions/21/browser"
+                },
+                "data": {
+                    "type": "browsers",
+                    "id": "7"
+                }
+            },
+            "supports": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/21/relationships/supports",
+                    "related": "https://browsercompat.org/api/v2/versions/21/supports"
+                },
+                "data": [
+                    {
+                        "type": "supports",
+                        "id": "12"
+                    },
+                    {
+                        "type": "supports",
+                        "id": "22"
+                    }
+                ]
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/21/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/versions/21/history_current"
+                },
+                "data": {
+                    "type": "historical_versions",
+                    "id": "50"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/versions/21/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/versions/21/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_versions",
+                        "id": "50"
+                    },
+                    {
+                        "type": "historical_versions",
+                        "id": "21"
+                    }
+                ]
+            }
+        }
+    }
+}

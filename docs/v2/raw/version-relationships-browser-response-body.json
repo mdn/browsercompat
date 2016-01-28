@@ -1,0 +1,10 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/versions/21/relationships/browser",
+        "related": "https://browsercompat.org/api/v2/versions/21/browser"
+    },
+    "data": {
+        "type": "browsers",
+        "id": "7"
+    }
+}

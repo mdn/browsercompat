@@ -1,0 +1,62 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/browsers/7/history",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_browsers",
+            "id": "7",
+            "attributes": {
+                "date": "2016-01-08T22:33:20.350402Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "browsers",
+                    "id": "7",
+                    "attributes": {
+                        "slug": "firefox_desktop",
+                        "name": {
+                            "en": "Firefox for Desktop"
+                        },
+                        "note": null
+                    },
+                    "relationships": {
+                        "versions": {
+                            "data": []
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_browsers",
+                                "id": "7"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/browsers/7"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "1"
+                    }
+                },
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "7"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_browsers/7"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

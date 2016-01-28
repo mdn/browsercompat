@@ -1,0 +1,242 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/browsers?page=2",
+        "next": null,
+        "prev": "https://browsercompat.org/api/v2/browsers"
+    },
+    "data": [
+        {
+            "type": "browsers",
+            "id": "11",
+            "attributes": {
+                "slug": "opera_desktop",
+                "name": {
+                    "en": "Opera for Desktop"
+                },
+                "note": null
+            },
+            "relationships": {
+                "versions": {
+                    "data": [
+                        {
+                            "type": "versions",
+                            "id": "33"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "34"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "35"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "36"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_browsers",
+                        "id": "11"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_browsers",
+                            "id": "11"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/browsers/11"
+            }
+        },
+        {
+            "type": "browsers",
+            "id": "12",
+            "attributes": {
+                "slug": "opera_mini",
+                "name": {
+                    "en": "Opera Mini"
+                },
+                "note": null
+            },
+            "relationships": {
+                "versions": {
+                    "data": [
+                        {
+                            "type": "versions",
+                            "id": "37"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_browsers",
+                        "id": "12"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_browsers",
+                            "id": "12"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/browsers/12"
+            }
+        },
+        {
+            "type": "browsers",
+            "id": "13",
+            "attributes": {
+                "slug": "opera_mobile",
+                "name": {
+                    "en": "Opera Mobile"
+                },
+                "note": null
+            },
+            "relationships": {
+                "versions": {
+                    "data": [
+                        {
+                            "type": "versions",
+                            "id": "38"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "39"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "40"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_browsers",
+                        "id": "13"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_browsers",
+                            "id": "13"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/browsers/13"
+            }
+        },
+        {
+            "type": "browsers",
+            "id": "14",
+            "attributes": {
+                "slug": "safari_desktop",
+                "name": {
+                    "en": "Safari for Desktop"
+                },
+                "note": null
+            },
+            "relationships": {
+                "versions": {
+                    "data": [
+                        {
+                            "type": "versions",
+                            "id": "41"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "42"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "43"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "44"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_browsers",
+                        "id": "14"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_browsers",
+                            "id": "14"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/browsers/14"
+            }
+        },
+        {
+            "type": "browsers",
+            "id": "15",
+            "attributes": {
+                "slug": "safari_ios",
+                "name": {
+                    "en": "Safari for iOS"
+                },
+                "note": null
+            },
+            "relationships": {
+                "versions": {
+                    "data": [
+                        {
+                            "type": "versions",
+                            "id": "45"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "46"
+                        },
+                        {
+                            "type": "versions",
+                            "id": "47"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_browsers",
+                        "id": "15"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_browsers",
+                            "id": "15"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/browsers/15"
+            }
+        }
+    ],
+    "meta": {
+        "count": 15
+    }
+}

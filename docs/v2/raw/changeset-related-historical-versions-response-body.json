@@ -1,0 +1,67 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/12/historical_versions",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_versions",
+            "id": "48",
+            "attributes": {
+                "date": "2016-01-14T18:19:04.786678Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "versions",
+                    "id": "48",
+                    "attributes": {
+                        "version": "17.0",
+                        "release_day": null,
+                        "retirement_day": null,
+                        "status": "unknown",
+                        "release_notes_uri": null,
+                        "note": null,
+                        "order": 5
+                    },
+                    "relationships": {
+                        "browser": {
+                            "data": {
+                                "type": "browsers",
+                                "id": "7"
+                            }
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_versions",
+                                "id": "48"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/versions/48"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "12"
+                    }
+                },
+                "version": {
+                    "data": {
+                        "type": "versions",
+                        "id": "48"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_versions/48"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

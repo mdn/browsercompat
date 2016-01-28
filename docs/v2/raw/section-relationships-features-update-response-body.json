@@ -1,0 +1,16 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/sections/8/relationships/features",
+        "related": "https://browsercompat.org/api/v2/sections/8/features"
+    },
+    "data": [
+        {
+            "type": "features",
+            "id": "13"
+        },
+        {
+            "type": "features",
+            "id": "12"
+        }
+    ]
+}

@@ -1,0 +1,75 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/supports/22/history",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_supports",
+            "id": "22",
+            "attributes": {
+                "date": "2016-01-13T21:41:21.851748Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "supports",
+                    "id": "22",
+                    "attributes": {
+                        "support": "yes",
+                        "prefix": null,
+                        "prefix_mandatory": false,
+                        "alternate_name": null,
+                        "alternate_mandatory": false,
+                        "requires_config": null,
+                        "default_config": null,
+                        "protected": false,
+                        "note": null
+                    },
+                    "relationships": {
+                        "version": {
+                            "data": {
+                                "type": "versions",
+                                "id": "21"
+                            }
+                        },
+                        "feature": {
+                            "data": {
+                                "type": "features",
+                                "id": "12"
+                            }
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_supports",
+                                "id": "22"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/supports/22"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "1"
+                    }
+                },
+                "support": {
+                    "data": {
+                        "type": "supports",
+                        "id": "22"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_supports/22"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

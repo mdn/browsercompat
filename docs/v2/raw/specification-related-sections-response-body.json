@@ -1,0 +1,63 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/specifications/2/sections",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "sections",
+            "id": "2",
+            "attributes": {
+                "number": {
+                    "en": "9.5.1"
+                },
+                "name": {
+                    "en": "Positioning the float: the 'float' property"
+                },
+                "subpath": {
+                    "en": "visuren.html#float-position"
+                },
+                "note": {
+                    "en": "No change."
+                }
+            },
+            "relationships": {
+                "specification": {
+                    "data": {
+                        "type": "specifications",
+                        "id": "2"
+                    }
+                },
+                "features": {
+                    "data": [
+                        {
+                            "type": "features",
+                            "id": "5"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_sections",
+                        "id": "2"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_sections",
+                            "id": "2"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/sections/2"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

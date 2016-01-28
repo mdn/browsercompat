@@ -1,0 +1,11 @@
+{
+    "data": {
+        "type": "maturities",
+        "attributes": {
+            "slug": "Idea",
+            "name": {
+                "en": "Idea"
+            }
+        }
+    }
+}

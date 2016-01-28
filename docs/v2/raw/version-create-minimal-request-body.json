@@ -1,0 +1,16 @@
+{
+    "data": {
+        "type": "versions",
+        "attributes": {
+            "version": "17.0"
+        },
+        "relationships": {
+            "browser": {
+                "data": {
+                    "type": "browsers",
+                    "id": "7"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,72 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/sections/3/history",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_sections",
+            "id": "3",
+            "attributes": {
+                "date": "2016-01-14T15:15:30.634690Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "sections",
+                    "id": "3",
+                    "attributes": {
+                        "number": {
+                            "en": "16"
+                        },
+                        "name": {
+                            "en": "The float property"
+                        },
+                        "subpath": {
+                            "en": "#the-float-property"
+                        },
+                        "note": {
+                            "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+                        }
+                    },
+                    "relationships": {
+                        "specification": {
+                            "data": {
+                                "type": "specifications",
+                                "id": "3"
+                            }
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_sections",
+                                "id": "3"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/sections/3"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "1"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "3"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_sections/3"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

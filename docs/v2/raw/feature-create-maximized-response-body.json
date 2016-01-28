@@ -1,0 +1,75 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features"
+    },
+    "data": {
+        "type": "features",
+        "id": "15",
+        "attributes": {
+            "slug": "web-css-display_ruby_ruby-base_ruby-text_ruby-base",
+            "mdn_uri": null,
+            "experimental": true,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": {
+                "en": "<code>ruby</code>, <code>ruby-base</code>, <code>ruby-text</code>, <code>ruby-base-container</code>, <code>ruby-text-container</code>"
+            }
+        },
+        "relationships": {
+            "parent": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/parent",
+                    "related": "https://browsercompat.org/api/v2/features/parent"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "14"
+                }
+            },
+            "children": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/children",
+                    "related": "https://browsercompat.org/api/v2/features/children"
+                },
+                "data": []
+            },
+            "sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/sections",
+                    "related": "https://browsercompat.org/api/v2/features/sections"
+                },
+                "data": []
+            },
+            "supports": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/supports",
+                    "related": "https://browsercompat.org/api/v2/features/supports"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/features/history_current"
+                },
+                "data": {
+                    "type": "historical_features",
+                    "id": "15"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/features/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_features",
+                        "id": "15"
+                    }
+                ]
+            }
+        }
+    }
+}

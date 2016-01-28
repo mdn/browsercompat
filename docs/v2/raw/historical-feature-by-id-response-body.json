@@ -1,0 +1,73 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_features/19"
+    },
+    "data": {
+        "type": "historical_features",
+        "id": "19",
+        "attributes": {
+            "date": "2016-01-14T08:02:33.132000Z",
+            "event": "created",
+            "archive_data": {
+                "type": "features",
+                "id": "17",
+                "attributes": {
+                    "slug": "web-html-element",
+                    "mdn_uri": null,
+                    "experimental": false,
+                    "standardized": true,
+                    "stable": true,
+                    "obsolete": false,
+                    "name": {
+                        "en": "Element"
+                    }
+                },
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "type": "features",
+                            "id": "16"
+                        }
+                    },
+                    "children": {
+                        "data": []
+                    },
+                    "sections": {
+                        "data": []
+                    },
+                    "history_current": {
+                        "data": {
+                            "type": "historical_features",
+                            "id": "19"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/17"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_features/19/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_features/19/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "27"
+                }
+            },
+            "feature": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_features/19/relationships/feature",
+                    "related": "https://browsercompat.org/api/v2/historical_features/19/feature"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "17"
+                }
+            }
+        }
+    }
+}

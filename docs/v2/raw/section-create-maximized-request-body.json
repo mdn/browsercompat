@@ -1,0 +1,33 @@
+{
+    "data": {
+        "type": "sections",
+        "attributes": {
+            "number": {
+                "en": "2.1"
+            },
+            "name": {
+                "en": "Ruby-specific 'display' Values"
+            },
+            "subpath": {
+                "en": "#ruby-display"
+            },
+            "note": null
+        },
+        "relationships": {
+            "specification": {
+                "data": {
+                    "type": "specifications",
+                    "id": "5"
+                }
+            },
+            "features": {
+                "data": [
+                    {
+                        "type": "features",
+                        "id": "13"
+                    }
+                ]
+            }
+        }
+    }
+}

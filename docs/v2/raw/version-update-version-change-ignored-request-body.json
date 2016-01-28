@@ -1,0 +1,10 @@
+{
+    "data": {
+        "type": "versions",
+        "id": "21",
+        "attributes": {
+            "version": "Nightly",
+            "status": "beta"
+        }
+    }
+}

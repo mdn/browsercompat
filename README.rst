@@ -23,7 +23,7 @@ BrowserCompat API
 The Browser Compatibility API will support compatibility data on the `Mozilla
 Developer Network`_.  This currently takes the form of browser compatibility
 tables, such as the one on the `CSS display property`_ page.  The API will
-centralize this data, and allow it to be kept consistant across languages and
+centralize this data, and allow it to be kept consistent across languages and
 presentations.
 
 .. _Mozilla Developer Network: https://developer.mozilla.org

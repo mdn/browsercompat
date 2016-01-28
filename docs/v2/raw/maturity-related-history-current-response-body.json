@@ -1,0 +1,59 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/maturities/2/history_current"
+    },
+    "data": {
+        "type": "historical_maturities",
+        "id": "2",
+        "attributes": {
+            "date": "2016-01-14T16:10:55.867544Z",
+            "event": "created",
+            "archive_data": {
+                "type": "maturities",
+                "id": "2",
+                "attributes": {
+                    "slug": "WD",
+                    "name": {
+                        "en": "Working Draft",
+                        "de": "Arbeitsentwurf",
+                        "ja": "草案",
+                        "ru": "Рабочий черновик"
+                    }
+                },
+                "relationships": {
+                    "history_current": {
+                        "data": {
+                            "type": "historical_maturities",
+                            "id": "2"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/maturities/2"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_maturities/2/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_maturities/2/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "1"
+                }
+            },
+            "maturity": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_maturities/2/relationships/maturity",
+                    "related": "https://browsercompat.org/api/v2/historical_maturities/2/maturity"
+                },
+                "data": {
+                    "type": "maturities",
+                    "id": "2"
+                }
+            }
+        }
+    }
+}

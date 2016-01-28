@@ -1,0 +1,108 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features/10/parent"
+    },
+    "data": {
+        "type": "features",
+        "id": "2",
+        "attributes": {
+            "slug": "web-css",
+            "mdn_uri": null,
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": {
+                "en": "CSS"
+            }
+        },
+        "relationships": {
+            "parent": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/2/relationships/parent",
+                    "related": "https://browsercompat.org/api/v2/features/2/parent"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "1"
+                }
+            },
+            "children": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/2/relationships/children",
+                    "related": "https://browsercompat.org/api/v2/features/2/children"
+                },
+                "data": [
+                    {
+                        "type": "features",
+                        "id": "3"
+                    },
+                    {
+                        "type": "features",
+                        "id": "4"
+                    },
+                    {
+                        "type": "features",
+                        "id": "5"
+                    },
+                    {
+                        "type": "features",
+                        "id": "7"
+                    },
+                    {
+                        "type": "features",
+                        "id": "8"
+                    },
+                    {
+                        "type": "features",
+                        "id": "9"
+                    },
+                    {
+                        "type": "features",
+                        "id": "10"
+                    },
+                    {
+                        "type": "features",
+                        "id": "13"
+                    }
+                ]
+            },
+            "sections": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/2/relationships/sections",
+                    "related": "https://browsercompat.org/api/v2/features/2/sections"
+                },
+                "data": []
+            },
+            "supports": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/2/relationships/supports",
+                    "related": "https://browsercompat.org/api/v2/features/2/supports"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/2/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/features/2/history_current"
+                },
+                "data": {
+                    "type": "historical_features",
+                    "id": "2"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/2/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/features/2/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_features",
+                        "id": "2"
+                    }
+                ]
+            }
+        }
+    }
+}

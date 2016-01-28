@@ -1,0 +1,12 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/specifications/2/relationships/sections",
+        "related": "https://browsercompat.org/api/v2/specifications/2/sections"
+    },
+    "data": [
+        {
+            "type": "sections",
+            "id": "2"
+        }
+    ]
+}

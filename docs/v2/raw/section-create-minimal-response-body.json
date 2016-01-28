@@ -1,0 +1,58 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/sections"
+    },
+    "data": {
+        "type": "sections",
+        "id": "7",
+        "attributes": {
+            "number": null,
+            "name": {
+                "en": "'font-family'"
+            },
+            "subpath": null,
+            "note": null
+        },
+        "relationships": {
+            "specification": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/specification",
+                    "related": "https://browsercompat.org/api/v2/sections/specification"
+                },
+                "data": {
+                    "type": "specifications",
+                    "id": "1"
+                }
+            },
+            "features": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/features",
+                    "related": "https://browsercompat.org/api/v2/sections/features"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/sections/history_current"
+                },
+                "data": {
+                    "type": "historical_sections",
+                    "id": "7"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/sections/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_sections",
+                        "id": "7"
+                    }
+                ]
+            }
+        }
+    }
+}

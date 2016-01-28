@@ -1,0 +1,68 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_sections/8"
+    },
+    "data": {
+        "type": "historical_sections",
+        "id": "8",
+        "attributes": {
+            "date": "2016-01-14T08:05:47.948000Z",
+            "event": "created",
+            "archive_data": {
+                "type": "sections",
+                "id": "8",
+                "attributes": {
+                    "number": {
+                        "en": "2.1"
+                    },
+                    "name": {
+                        "en": "Ruby-specific 'display' Values"
+                    },
+                    "subpath": {
+                        "en": "#ruby-display"
+                    },
+                    "note": null
+                },
+                "relationships": {
+                    "specification": {
+                        "data": {
+                            "type": "specifications",
+                            "id": "5"
+                        }
+                    },
+                    "history_current": {
+                        "data": {
+                            "type": "historical_sections",
+                            "id": "8"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/8"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_sections/8/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_sections/8/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "46"
+                }
+            },
+            "section": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_sections/8/relationships/section",
+                    "related": "https://browsercompat.org/api/v2/historical_sections/8/section"
+                },
+                "data": {
+                    "type": "sections",
+                    "id": "8"
+                }
+            }
+        }
+    }
+}

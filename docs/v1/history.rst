@@ -43,42 +43,42 @@ Historical Versions
 A **historical_versions** resource represents the state of a
 version_ at a point in time, and who is responsible for that
 representation.  See historical_browsers_ and versions_ for an idea of
-the represention.
+the representation.
 
 Historical Features
 -------------------
 
 A **historical_features** resource represents the state of a feature_ at a point
 in time, and who is responsible for that representation.  See
-historical_browsers_ and features_ for an idea of the represention.
+historical_browsers_ and features_ for an idea of the representation.
 
 Historical Sections
 -------------------
 
 A **historical_sections** resource represents the state of a section_ at a point
 in time, and who is responsible for that representation.  See
-historical_browsers_ and sections_ for an idea of the represention.
+historical_browsers_ and sections_ for an idea of the representation.
 
 Historical Specifications
 -------------------------
 
 A **historical_specifications** resource represents the state of a specification_ at a point
 in time, and who is responsible for that representation.  See
-historical_browsers_ and specifications_ for an idea of the represention.
+historical_browsers_ and specifications_ for an idea of the representation.
 
 Historical Supports
 -------------------
 
 A **historical_supports** resource represents the state of a support_ at a point
 in time, and who is responsible for that representation.  See
-historical_browsers_ and supports_ for an idea of the represention.
+historical_browsers_ and supports_ for an idea of the representation.
 
 Historical Maturities
 ---------------------
 
 A **historical_maturities** resource represents the state of a maturity_ at a point
 in time, and who is responsible for that representation.  See
-historical_browsers_ and maturities_ for an idea of the represention.
+historical_browsers_ and maturities_ for an idea of the representation.
 
 
 .. _historical_browser: `Historical Browsers`_

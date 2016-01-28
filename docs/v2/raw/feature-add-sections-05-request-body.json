@@ -1,0 +1,19 @@
+{
+    "data": {
+        "type": "features",
+        "attributes": {
+            "slug": "web-html",
+            "name": {
+                "en": "HTML"
+            }
+        },
+        "relationships": {
+            "parent": {
+                "data": {
+                    "type": "features",
+                    "id": "1"
+                }
+            }
+        }
+    }
+}

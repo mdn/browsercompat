@@ -1,0 +1,17 @@
+{
+    "data": {
+        "type": "versions",
+        "attributes": {
+            "version": "2.0",
+            "status": "retired"
+        },
+        "relationships": {
+            "browser": {
+                "data": {
+                    "type": "browsers",
+                    "id": "3"
+                }
+            }
+        }
+    }
+}

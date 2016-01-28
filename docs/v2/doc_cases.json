@@ -1,0 +1,1933 @@
+[
+    {
+        "name": "user-by-id",
+        "method": "GET",
+        "endpoint": "users/1",
+        "standardize": {
+            "created": "2016-01-08T22:21:50.254130Z"
+        }
+    }, {
+        "name": "user-by-username",
+        "method": "GET",
+        "endpoint": "users?filter[username]=user",
+        "standardize": {
+            "created": "2016-01-08T22:22:03.989333Z"
+        }
+    }, {
+        "name": "user-related-changesets",
+        "method": "GET",
+        "endpoint": "users/1/changesets",
+        "standardize": {
+            "created": "2016-01-08T22:35:47.583042Z",
+            "modified": "2016-01-08T22:36:05.470143Z"
+        }
+    }, {
+        "name": "user-relationships-changesets",
+        "method": "GET",
+        "endpoint": "users/1/relationships/changesets"
+    }, {
+        "name": "browser-list",
+        "method": "GET",
+        "endpoint": "browsers"
+    }, {
+        "name": "browser-list-page2",
+        "method": "GET",
+        "endpoint": "browsers?page=2"
+    }, {
+        "name": "browser-by-id",
+        "method": "GET",
+        "endpoint": "browsers/7"
+    }, {
+        "name": "browser-filter-by-slug",
+        "method": "GET",
+        "endpoint": "browsers?filter[slug]=firefox_desktop"
+    }, {
+        "name": "browser-related-versions",
+        "method": "GET",
+        "endpoint": "browsers/7/versions"
+    }, {
+        "name": "browser-relationships-versions",
+        "method": "GET",
+        "endpoint": "browsers/7/relationships/versions"
+    }, {
+        "name": "browser-related-history-current",
+        "method": "GET",
+        "endpoint": "browsers/7/history_current",
+        "standardize": {
+            "date": "2016-01-08T22:34:53.385600Z"
+        }
+    }, {
+        "name": "browser-relationships-history-current",
+        "method": "GET",
+        "endpoint": "browsers/7/relationships/history_current"
+    }, {
+        "name": "browser-related-history",
+        "method": "GET",
+        "endpoint": "browsers/7/history",
+        "standardize": {
+            "date": "2016-01-08T22:33:20.350402Z"
+        }
+    }, {
+        "name": "browser-relationships-history",
+        "method": "GET",
+        "endpoint": "browsers/7/relationships/history"
+    }, {
+        "name": "browser-create-minimal",
+        "method": "POST",
+        "endpoint": "browsers",
+        "data": {
+            "data": {
+                "type": "browsers",
+                "attributes": {
+                    "slug": "amazon-silk-mobile",
+                    "name" : {
+                        "en": "Amazon Silk Mobile"
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "browser-create-maximized",
+        "method": "POST",
+        "endpoint": "browsers",
+        "data": {
+            "data": {
+                "type": "browsers",
+                "attributes": {
+                    "slug": "konqueror",
+                    "name" : {
+                        "en": "Konqueror"
+                    },
+                    "note": {
+                        "en": "First comes the Navigator, then Explorer, and then the Konqueror."
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "browser-create-in-changeset-1",
+        "method": "POST",
+        "endpoint": "changesets",
+        "data": {
+            "data": {
+                "type": "changesets",
+                "attributes": {
+                    "closed": false
+                }
+            }
+        },
+        "standardize": {
+            "created": "2016-01-08T22:22:22.292921Z",
+            "modified": "2016-01-08T22:22:33.916387Z"
+        }
+    }, {
+        "name": "browser-create-in-changeset-2",
+        "method": "POST",
+        "endpoint": "browsers?changeset=4",
+        "data": {
+            "data": {
+                "type": "browsers",
+                "attributes": {
+                    "slug": "nintendo-ds",
+                    "name": {
+                        "en": "Nintendo DS Browser",
+                        "ja": "ニンテンドーＤＳブラウザ"
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "browser-create-in-changeset-3",
+        "method": "PATCH",
+        "endpoint": "changesets/4",
+        "data": {
+            "data": {
+                "type": "changesets",
+                "attributes": {
+                    "closed": true
+                }
+            }
+        },
+        "standardize": {
+            "created": "2016-01-08T22:22:46.419281Z",
+            "modified": "2016-01-08T22:22:54.978989Z"
+        }
+    }, {
+        "name": "browser-update-full",
+        "method": "PATCH",
+        "endpoint": "browsers/9",
+        "data": {
+            "data": {
+                "type": "browsers",
+                "id": "9",
+                "attributes": {
+                    "slug": "ie_desktop",
+                    "name": {
+                        "en": "Microsoft Internet Explorer"
+                    },
+                    "note": null
+                },
+                "relationships": {
+                    "versions": {
+                        "data": [
+                            {"type": "versions", "id": "25"},
+                            {"type": "versions", "id": "26"},
+                            {"type": "versions", "id": "27"},
+                            {"type": "versions", "id": "28"},
+                            {"type": "versions", "id": "29"}
+                        ],
+                        "links": {}
+                    },
+                    "history_current": {
+                        "data": {
+                            "type": "historical_browsers", "id": "9"
+                        },
+                        "links": {}
+                    },
+                    "history": {
+                        "data": [
+                            {"type": "historical_browsers", "id": "9"}
+                        ],
+                        "links": {}
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "browser-update-partial",
+        "method": "PATCH",
+        "endpoint": "browsers/9",
+        "data": {
+            "data": {
+                "type": "browsers",
+                "id": "9",
+                "attributes":  {
+                    "name": {
+                        "en": "IE"
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "browser-update-versions-order",
+        "method": "PATCH",
+        "endpoint": "browsers/9",
+        "data": {
+            "data": {
+                "type": "browsers",
+                "id": "9",
+                "relationships": {
+                    "versions": {
+                        "data": [
+                            {"type": "versions", "id": "25"},
+                            {"type": "versions", "id": "26"},
+                            {"type": "versions", "id": "27"},
+                            {"type": "versions", "id": "29"},
+                            {"type": "versions", "id": "28"}
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "browser-update-relationships-versions-order",
+        "method": "PATCH",
+        "endpoint": "browsers/9/relationships/versions",
+        "data": {
+            "data": [
+                {"type": "versions", "id": "29"},
+                {"type": "versions", "id": "28"},
+                {"type": "versions", "id": "27"},
+                {"type": "versions", "id": "26"},
+                {"type": "versions", "id": "25"}
+            ]
+        }
+    }, {
+        "name": "browser-revert-relationships-history-current",
+        "method": "PATCH",
+        "endpoint": "browsers/9/relationships/history_current",
+        "data": {
+            "data": {
+                "type": "historical_browsers", "id": "20"
+            }
+        }
+    }, {
+        "name": "browser-revert",
+        "method": "PATCH",
+        "endpoint": "browsers/9",
+        "data": {
+            "data": {
+                "type": "browsers",
+                "id": "9",
+                "relationships": {
+                    "history_current": {
+                        "data": {
+                            "type": "historical_browsers", "id": "9"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "browser-delete",
+        "method": "DELETE",
+        "endpoint": "browsers/16"
+    }, {
+        "name": "browser-list-options",
+        "method": "OPTIONS",
+        "endpoint": "browsers"
+    }, {
+        "name": "browser-detail-options",
+        "method": "OPTIONS",
+        "endpoint": "browsers/7"
+    }, {
+        "name": "version-list",
+        "method": "GET",
+        "endpoint": "versions"
+    }, {
+        "name": "version-by-id",
+        "method": "GET",
+        "endpoint": "versions/21"
+    }, {
+        "name": "version-by-browser",
+        "method": "GET",
+        "endpoint": "versions?filter[browser]=7"
+    }, {
+        "name": "version-by-version-1.0",
+        "method": "GET",
+        "endpoint": "versions?filter[version]=1.0"
+    }, {
+        "name": "version-by-version-status",
+        "method": "GET",
+        "endpoint": "versions?filter[status]=retired"
+    }, {
+        "name": "version-related-browser",
+        "method": "GET",
+        "endpoint": "versions/21/browser"
+    }, {
+        "name": "version-relationships-browser",
+        "method": "GET",
+        "endpoint": "versions/21/relationships/browser"
+    }, {
+        "name": "version-related-supports",
+        "method": "GET",
+        "endpoint": "versions/21/supports"
+    }, {
+        "name": "version-relationships-supports",
+        "method": "GET",
+        "endpoint": "versions/21/relationships/supports"
+    }, {
+        "name": "version-related-history-current",
+        "method": "GET",
+        "endpoint": "versions/21/history_current",
+        "standardize": {
+            "date": "2016-01-11T20:40:09.205645Z"
+        }
+    }, {
+        "name": "version-relationships-history-current",
+        "method": "GET",
+        "endpoint": "versions/21/relationships/history_current"
+    }, {
+        "name": "version-related-history",
+        "method": "GET",
+        "endpoint": "versions/21/history",
+        "standardize": {
+            "date": "2016-01-08T22:33:20.350402Z"
+        }
+    }, {
+        "name": "version-relationships-history",
+        "method": "GET",
+        "endpoint": "versions/21/relationships/history"
+    }, {
+        "name": "version-create-minimal",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "data": {
+                "type": "versions",
+                "attributes": {
+                    "version": "17.0"
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers", "id": "7"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "version-create-maximized",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "data": {
+                "type": "versions",
+                "attributes": {
+                    "version": "19.0",
+                    "release_day": "2013-02-19",
+                    "retirement_day": "2013-04-02",
+                    "status": "retired",
+                    "release_notes_uri": {
+                        "en": "https://developer.mozilla.org/en/Firefox/Releases/19",
+                        "de": "https://developer.mozilla.org/de/Firefox/Releases/19",
+                        "es": "https://developer.mozilla.org/es/docs/Firefox_19_para_desarrolladores",
+                        "fr": "https://developer.mozilla.org/fr/Firefox/Versions/19",
+                        "ja": "https://developer.mozilla.org/ja/Firefox/Releases/19",
+                        "ko": "https://developer.mozilla.org/ko/Firefox/Releases/19",
+                        "pl": "https://developer.mozilla.org/pl/Firefox/Releases/19",
+                        "pt-PT": "https://developer.mozilla.org/pt-PT/Firefox/Releases/19",
+                        "ru": "https://developer.mozilla.org/ru/Firefox/Releases/19",
+                        "zh-CN": "https://developer.mozilla.org/zh-CN/Firefox/Releases/19",
+                        "zh-TW": "https://developer.mozilla.org/zh-TW/Firefox/Releases/19"
+                    },
+                    "note": {
+                        "en": "Released to beta channel on January 10, 2013"
+                    }
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers", "id": "7"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "version-update",
+        "method": "PATCH",
+        "endpoint": "versions/21",
+        "data": {
+            "data": {
+                "type": "versions",
+                "id": "21",
+                "attributes": {
+                    "status": "unknown"
+                }
+            }
+        }
+    }, {
+        "name": "version-revert",
+        "method": "PATCH",
+        "endpoint": "versions/21",
+        "data": {
+            "data": {
+                "type": "versions",
+                "id": "21",
+                "relationships": {
+                    "history_current": {
+                        "data": {
+                            "type": "historical_versions", "id": "21"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "version-delete",
+        "method": "DELETE",
+        "endpoint": "versions/49"
+    }, {
+        "name": "version-update-error-status-future-version-numeric",
+        "method": "PATCH",
+        "endpoint": "versions/21",
+        "data": {
+            "data": {
+                "type": "versions",
+                "id": "21",
+                "attributes": {
+                    "status": "future"
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-update-version-change-ignored",
+        "method": "PATCH",
+        "endpoint": "versions/21",
+        "data": {
+            "data": {
+                "type": "versions",
+                "id": "21",
+                "attributes": {
+                    "version": "Nightly",
+                    "status": "beta"
+                }
+            }
+        },
+        "status": 200
+    }, {
+        "name": "version-create-error-blank-version",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "data": {
+                "type": "versions",
+                "attributes": {
+                    "version": "",
+                    "status": "unknown"
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers", "id": "6"
+                        }
+                    }
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-status-beta-text-version",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "data": {
+                "type": "versions",
+                "attributes": {
+                    "version": "Nightly",
+                    "status": "beta"
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers", "id": "6"
+                        }
+                    }
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-status-future-version-numeric",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "data": {
+                "type": "versions",
+                "attributes": {
+                    "version": "42.0",
+                    "status": "future"
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers", "id": "6"
+                        }
+                    }
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-status-current-version-text",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "data": {
+                "type": "versions",
+                "attributes": {
+                    "version": "Developer Edition",
+                    "status": "current"
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers", "id": "6"
+                        }
+                    }
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "version-create-error-status-unknown-version-current",
+        "method": "POST",
+        "endpoint": "versions",
+        "data": {
+            "data": {
+                "type": "versions",
+                "attributes": {
+                    "version": "current",
+                    "status": "unknown"
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers", "id": "6"
+                        }
+                    }
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "feature-by-id",
+        "method": "GET",
+        "endpoint": "features/12"
+    }, {
+        "name": "feature-by-id-canonical",
+        "method": "GET",
+        "endpoint": "features/10"
+    }, {
+        "name": "feature-by-slug",
+        "method": "GET",
+        "endpoint": "features?filter[slug]=web-css-transform-origin"
+    }, {
+        "name": "feature-by-parent",
+        "method": "GET",
+        "endpoint": "features?filter[parent]=10"
+    }, {
+        "name": "feature-by-no-parent",
+        "method": "GET",
+        "endpoint": "features?filter[parent]="
+    }, {
+        "name": "feature-related-parent",
+        "method": "GET",
+        "endpoint": "features/10/parent"
+    }, {
+        "name": "feature-relationships-parent",
+        "method": "GET",
+        "endpoint": "features/10/relationships/parent"
+    }, {
+        "name": "feature-related-empty-parent",
+        "method": "GET",
+        "endpoint": "features/1/parent"
+    }, {
+        "name": "feature-relationships-empty-parent",
+        "method": "GET",
+        "endpoint": "features/1/relationships/parent"
+    }, {
+        "name": "feature-related-children",
+        "method": "GET",
+        "endpoint": "features/10/children"
+    }, {
+        "name": "feature-relationships-children",
+        "method": "GET",
+        "endpoint": "features/10/relationships/children"
+    }, {
+        "name": "feature-related-sections",
+        "method": "GET",
+        "endpoint": "features/10/sections"
+    }, {
+        "name": "feature-relationships-sections",
+        "method": "GET",
+        "endpoint": "features/10/relationships/sections"
+    }, {
+        "name": "feature-related-supports",
+        "method": "GET",
+        "endpoint": "features/12/supports"
+    }, {
+        "name": "feature-relationships-supports",
+        "method": "GET",
+        "endpoint": "features/12/relationships/supports"
+    }, {
+        "name": "feature-related-history-current",
+        "method": "GET",
+        "endpoint": "features/10/history_current",
+        "standardize": {
+            "date": "2016-01-12T19:04:28.235059Z"
+        }
+    }, {
+        "name": "feature-relationships-history-current",
+        "method": "GET",
+        "endpoint": "features/10/relationships/history_current"
+    }, {
+        "name": "feature-related-history",
+        "method": "GET",
+        "endpoint": "features/10/history",
+        "standardize": {
+            "date": "2016-01-12T19:09:31.019071Z"
+        }
+    }, {
+        "name": "feature-relationships-history",
+        "method": "GET",
+        "endpoint": "features/10/relationships/history"
+    }, {
+        "name": "feature-create-minimal",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "data": {
+                "type": "features",
+                "attributes": {
+                    "slug": "web-css-display",
+                    "name": "display"
+                }
+            }
+        }
+    }, {
+        "name": "feature-create-maximized",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "data": {
+                "type": "features",
+                "attributes": {
+                    "slug": "web-css-display_ruby_ruby-base_ruby-text_ruby-base",
+                    "mdn_uri": null,
+                    "experimental": true,
+                    "standardized": true,
+                    "stable": true,
+                    "obsolete": false,
+                    "name": {
+                        "en": "<code>ruby</code>, <code>ruby-base</code>, <code>ruby-text</code>, <code>ruby-base-container</code>, <code>ruby-text-container</code>"
+                    }
+                },
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "type": "features", "id": "14"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-update",
+        "method": "PATCH",
+        "endpoint": "features/12",
+        "data": {
+            "data": {
+                "type": "features",
+                "id": "12",
+                "attributes": {
+                    "stable": false
+                }
+            }
+        }
+    }, {
+        "name": "feature-delete",
+        "method": "DELETE",
+        "endpoint": "features/15"
+    }, {
+        "name": "feature-add-sections-01",
+        "method": "POST",
+        "endpoint": "specifications",
+        "data": {
+            "data": {
+                "type": "specifications",
+                "attributes": {
+                    "slug": "html_whatwg",
+                    "mdn_key": "HTML WHATWG",
+                    "name": {
+                        "en": "WHATWG HTML Living Standard"
+                    },
+                    "uri": {
+                        "en": "https://html.spec.whatwg.org/multipage/"
+                    }
+                },
+                "relationships": {
+                    "maturity": {
+                        "data": {
+                            "type": "maturities", "id": "6"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-02",
+        "method": "POST",
+        "endpoint": "specifications",
+        "data": {
+            "data": {
+                "type": "specifications",
+                "attributes": {
+                    "slug": "html5_w3c",
+                    "mdn_key": "HTML5 W3C",
+                    "name": {
+                        "en": "HTML5"
+                    },
+                    "uri": {
+                        "en": "http://www.w3.org/TR/html5/"
+                    }
+                },
+                "relationships": {
+                    "maturity": {
+                        "data": {
+                            "type": "maturities", "id": "1"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-03",
+        "method": "POST",
+        "endpoint": "sections",
+        "data": {
+            "data": {
+                "type": "sections",
+                "attributes": {
+                    "number": {
+                        "en": "4.8.11"
+                    },
+                    "name": {
+                        "en": "The audio element"
+                    },
+                    "subpath": {
+                        "en": "embedded-content.html#the-audio-element"
+                    }
+                },
+                "relationships": {
+                    "specification": {
+                        "data": {
+                            "type": "specifications", "id": "5"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-04",
+        "method": "POST",
+        "endpoint": "sections",
+        "data": {
+            "data": {
+                "type": "sections",
+                "attributes": {
+                    "number": {
+                        "en": "4.7.7"
+                    },
+                    "name": {
+                        "en": "The audio element"
+                    },
+                    "subpath": {
+                        "en": "embedded-content-0.html#the-audio-element"
+                    }
+                },
+                "relationships": {
+                    "specification": {
+                        "data": {
+                            "type": "specifications", "id": "6"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-05",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "data": {
+                "type": "features",
+                "attributes": {
+                    "slug": "web-html",
+                    "name": {
+                        "en": "HTML"
+                    }
+                },
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "type": "features", "id": "1"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-06",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "data": {
+                "type": "features",
+                "attributes": {
+                    "slug": "web-html-element",
+                    "name": {
+                        "en": "Element"
+                    }
+                },
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "type": "features", "id": "16"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-07",
+        "method": "POST",
+        "endpoint": "features",
+        "data": {
+            "data": {
+                "type": "features",
+                "attributes": {
+                    "slug": "web-html-element-audio",
+                    "mdn_uri": {
+                        "en": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"
+                    },
+                    "name": "audio"
+                },
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "type": "features", "id": "17"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-08",
+        "method": "PATCH",
+        "endpoint": "features/18",
+        "data": {
+            "data": {
+                "type": "features",
+                "id": "18",
+                "relationships": {
+                    "sections": {
+                        "data": [
+                            {"type": "sections", "id": "6"}
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-sections-09",
+        "method": "PATCH",
+        "endpoint": "features/18/relationships/sections",
+        "data": {
+            "data": [
+                {"type": "sections", "id": "6"},
+                {"type": "sections", "id": "5"}
+            ]
+        }
+    }, {
+        "name": "feature-add-sections-10",
+        "method": "PATCH",
+        "endpoint": "features/18",
+        "data": {
+            "data": {
+                "type": "features",
+                "id": "10",
+                "relationships": {
+                    "sections": {
+                        "data": [
+                            {"type": "sections", "id": "5"},
+                            {"type": "sections", "id": "6"}
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-set-children-order",
+        "method": "PATCH",
+        "endpoint": "features/2",
+        "data": {
+            "data": {
+                "type": "features",
+                "id": "2",
+                "relationships": {
+                    "children": {
+                        "data": [
+                            {"type": "features", "id": "3"},
+                            {"type": "features", "id": "4"},
+                            {"type": "features", "id": "5"},
+                            {"type": "features", "id": "7"},
+                            {"type": "features", "id": "8"},
+                            {"type": "features", "id": "9"},
+                            {"type": "features", "id": "13"},
+                            {"type": "features", "id": "10"}
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-set-relationship-children-order",
+        "method": "PATCH",
+        "endpoint": "features/2/relationships/children",
+        "data": {
+            "data": [
+                {"type": "features", "id": "3"},
+                {"type": "features", "id": "4"},
+                {"type": "features", "id": "5"},
+                {"type": "features", "id": "7"},
+                {"type": "features", "id": "8"},
+                {"type": "features", "id": "13"},
+                {"type": "features", "id": "9"},
+                {"type": "features", "id": "10"}
+            ]
+        }
+    }, {
+        "name": "feature-set-children-order-omit-fails",
+        "method": "PATCH",
+        "endpoint": "features/2",
+        "data": {
+            "data": {
+                "type": "features",
+                "id": "2",
+                "relationships": {
+                    "children": {
+                        "data": [
+                            {"type": "features", "id": "3"},
+                            {"type": "features", "id": "4"},
+                            {"type": "features", "id": "5"},
+                            {"type": "features", "id": "7"},
+                            {"type": "features", "id": "8"},
+                            {"type": "features", "id": "9"},
+                            {"type": "features", "id": "10"}
+                        ]
+                    }
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "feature-set-children-order-add-fails",
+        "method": "PATCH",
+        "endpoint": "features/2",
+        "data": {
+            "data": {
+                "type": "features",
+                "id": "2",
+                "relationships": {
+                    "children": {
+                        "data": [
+                            {"type": "features", "id": "3"},
+                            {"type": "features", "id": "4"},
+                            {"type": "features", "id": "5"},
+                            {"type": "features", "id": "7"},
+                            {"type": "features", "id": "8"},
+                            {"type": "features", "id": "13"},
+                            {"type": "features", "id": "9"},
+                            {"type": "features", "id": "10"},
+                            {"type": "features", "id": "14"}
+                        ]
+                    }
+                }
+            }
+        },
+        "status": 400
+    }, {
+        "name": "feature-revert",
+        "method": "PATCH",
+        "endpoint": "features/12",
+        "data": {
+            "data": {
+                "type": "features",
+                "id": "12",
+                "relationships": {
+                    "history_current": {
+                        "data": {
+                            "type": "historical_features",
+                            "id": "12"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "support-by-id",
+        "method": "GET",
+        "endpoint": "supports/22"
+    }, {
+        "name": "support-by-feature",
+        "method": "GET",
+        "endpoint": "supports?filter[feature]=12"
+    }, {
+        "name": "support-by-version",
+        "method": "GET",
+        "endpoint": "supports?filter[version]=21"
+    }, {
+        "name": "support-related-version",
+        "method": "GET",
+        "endpoint": "supports/22/version"
+    }, {
+        "name": "support-relationships-version",
+        "method": "GET",
+        "endpoint": "supports/22/relationships/version"
+    }, {
+        "name": "support-related-feature",
+        "method": "GET",
+        "endpoint": "supports/22/feature"
+    }, {
+        "name": "support-relationships-feature",
+        "method": "GET",
+        "endpoint": "supports/22/relationships/feature"
+    }, {
+        "name": "support-related-history-current",
+        "method": "GET",
+        "endpoint": "supports/22/history_current",
+        "standardize": {
+            "date": "2016-01-13T21:41:13.795617Z"
+        }
+    }, {
+        "name": "support-relationships-history-current",
+        "method": "GET",
+        "endpoint": "supports/22/relationships/history_current"
+    }, {
+        "name": "support-related-history",
+        "method": "GET",
+        "endpoint": "supports/22/history",
+        "standardize": {
+            "date": "2016-01-13T21:41:21.851748Z"
+        }
+    }, {
+        "name": "support-relationships-history",
+        "method": "GET",
+        "endpoint": "supports/22/relationships/history"
+    }, {
+        "name": "support-create-minimal",
+        "method": "POST",
+        "endpoint": "supports",
+        "data": {
+            "data": {
+                "type": "supports",
+                "relationships": {
+                    "version": {
+                        "data": {
+                            "type": "versions", "id": "4"
+                        }
+                    },
+                    "feature": {
+                        "data": {
+                            "type": "features", "id": "6"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "support-create-maximized",
+        "method": "POST",
+        "endpoint": "supports",
+        "data": {
+            "data": {
+                "type": "supports",
+                "attributes": {
+                    "support": "partial",
+                    "prefix": "-o",
+                    "prefix_mandatory": true,
+                    "alternate_name": "float",
+                    "alternate_mandatory": true,
+                    "requires_config": "future=true",
+                    "default_config": "future=false",
+                    "protected": true,
+                    "note": {
+                        "en": "This is fake."
+                    }
+                },
+                "relationships": {
+                    "version": {
+                        "data": {
+                            "type": "versions", "id": "37"
+                        }
+                    },
+                    "feature": {
+                        "data": {
+                            "type": "features", "id": "6"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "support-update",
+        "method": "PATCH",
+        "endpoint": "supports/26",
+        "data": {
+            "data": {
+                "type": "supports",
+                "id": "26",
+                "attributes": {
+                    "support": "partial"
+                }
+            }
+        }
+    }, {
+        "name": "support-revert",
+        "method": "PATCH",
+        "endpoint": "supports/26",
+        "data": {
+            "data": {
+                "type": "supports",
+                "id": "26",
+                "relationships": {
+                    "history_current": {
+                        "data": {
+                            "type": "historical_supports", "id": "26"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "support-delete",
+        "method": "DELETE",
+        "endpoint": "supports/28"
+    }, {
+        "name": "specification-by-id",
+        "method": "GET",
+        "endpoint": "specifications/2"
+    }, {
+        "name": "specification-by-slug",
+        "method": "GET",
+        "endpoint": "specifications?filter[slug]=css2_1"
+    }, {
+        "name": "specification-by-mdn-key",
+        "method": "GET",
+        "endpoint": "specifications?filter[mdn_key]=CSS2.1"
+    }, {
+        "name": "specification-related-maturity",
+        "method": "GET",
+        "endpoint": "specifications/2/maturity"
+    }, {
+        "name": "specification-relationships-maturity",
+        "method": "GET",
+        "endpoint": "specifications/2/relationships/maturity"
+    }, {
+        "name": "specification-related-sections",
+        "method": "GET",
+        "endpoint": "specifications/2/sections"
+    }, {
+        "name": "specification-relationships-sections",
+        "method": "GET",
+        "endpoint": "specifications/2/relationships/sections"
+    }, {
+        "name": "specification-related-history-current",
+        "method": "GET",
+        "endpoint": "specifications/2/history_current",
+        "standardize": {
+            "date": "2016-01-14T14:52:07.616990Z"
+        }
+    }, {
+        "name": "specification-relationships-history-current",
+        "method": "GET",
+        "endpoint": "specifications/2/relationships/history_current"
+    }, {
+        "name": "specification-related-history",
+        "method": "GET",
+        "endpoint": "specifications/2/history",
+        "standardize": {
+            "date": "2016-01-14T14:53:44.405366Z"
+        }
+    }, {
+        "name": "specification-relationships-history",
+        "method": "GET",
+        "endpoint": "specifications/2/relationships/history"
+    }, {
+        "name": "specification-create",
+        "method": "POST",
+        "endpoint": "specifications",
+        "data": {
+            "data": {
+                "type": "specifications",
+                "attributes": {
+                    "slug": "css3-ruby",
+                    "mdn_key": "CSS3 Ruby",
+                    "name": {
+                        "en": "CSS Ruby Layout Module Level 1"
+                    },
+                    "uri": {
+                        "en": "http://dev.w3.org/csswg/css-ruby/"
+                    }
+                },
+                "relationships": {
+                    "maturity": {
+                        "data": {
+                            "type": "maturities", "id": "2"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "specification-update",
+        "method": "PATCH",
+        "endpoint": "specifications/7",
+        "data": {
+            "data": {
+                "type": "specifications",
+                "relationships": {
+                    "maturity": {
+                        "data": {
+                            "type": "maturities", "id": "5"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "specification-relationships-maturity-update",
+        "method": "PATCH",
+        "endpoint": "specifications/7/relationships/maturity",
+        "data": {
+            "data": {
+                "type": "maturities", "id": "4"
+            }
+        }
+    }, {
+        "name": "specification-revert",
+        "method": "PATCH",
+        "endpoint": "specifications/7",
+        "data": {
+            "specifications": {
+                "links": {
+                    "history_current": "7"
+                }
+            }
+        }
+    }, {
+        "name": "specification-delete",
+        "method": "DELETE",
+        "endpoint": "specifications/7"
+    }, {
+        "name": "section-by-id",
+        "method": "GET",
+        "endpoint": "sections/3"
+    }, {
+        "name": "section-related-specification",
+        "method": "GET",
+        "endpoint": "sections/3/specification"
+    }, {
+        "name": "section-relationships-specification",
+        "method": "GET",
+        "endpoint": "sections/3/relationships/specification"
+    }, {
+        "name": "section-related-features",
+        "method": "GET",
+        "endpoint": "sections/3/features"
+    }, {
+        "name": "section-relationships-features",
+        "method": "GET",
+        "endpoint": "sections/3/relationships/features"
+    }, {
+        "name": "section-related-history-current",
+        "method": "GET",
+        "endpoint": "sections/3/history_current",
+        "standardize": {
+            "date": "2016-01-14T15:15:03.148469Z"
+        }
+    }, {
+        "name": "section-relationships-history-current",
+        "method": "GET",
+        "endpoint": "sections/3/relationships/history_current"
+    }, {
+        "name": "section-related-history",
+        "method": "GET",
+        "endpoint": "sections/3/history",
+        "standardize": {
+            "date": "2016-01-14T15:15:30.634690Z"
+        }
+    }, {
+        "name": "section-relationships-history",
+        "method": "GET",
+        "endpoint": "sections/3/relationships/history"
+    }, {
+        "name": "section-create-minimal",
+        "method": "POST",
+        "endpoint": "sections",
+        "data": {
+            "data": {
+                "type": "sections",
+                "attributes": {
+                    "name": {
+                        "en": "'font-family'"
+                    }
+                },
+                "relationships": {
+                    "specification": {
+                        "data": {
+                            "type": "specifications", "id": "1"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "section-create-maximized",
+        "method": "POST",
+        "endpoint": "sections",
+        "data": {
+            "data": {
+                "type": "sections",
+                "attributes": {
+                    "number": {
+                        "en": "2.1"
+                    },
+                    "name": {
+                        "en": "Ruby-specific 'display' Values"
+                    },
+                    "subpath": {
+                        "en": "#ruby-display"
+                    },
+                    "note": null
+                },
+                "relationships": {
+                    "specification": {
+                        "data": {
+                            "type": "specifications", "id": "5"
+                        }
+                    },
+                    "features": {
+                        "data": [
+                            {"type": "features", "id": "13"}
+                        ]
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "section-update",
+        "method": "PATCH",
+        "endpoint": "sections/8",
+        "data": {
+            "data": {
+                "id": "8",
+                "type": "sections",
+                "relationships": {
+                    "specification": {
+                        "data": {
+                            "type": "specifications", "id": "4"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "section-relationships-specification-update",
+        "method": "PATCH",
+        "endpoint": "sections/8/relationships/specification",
+        "data": {
+            "data": {
+                "type": "specifications", "id": "4"
+            }
+        }
+    }, {
+        "name": "section-relationships-features-update",
+        "method": "PATCH",
+        "endpoint": "sections/8/relationships/features",
+        "data": {
+            "data": [
+                {"type": "features", "id": "12"},
+                {"type": "features", "id": "13"}
+            ]
+        }
+    }, {
+        "name": "section-revert",
+        "method": "PATCH",
+        "endpoint": "sections/8",
+        "data": {
+            "data": {
+                "type": "sections",
+                "id": "8",
+                "history_current": {
+                    "data": {
+                        "type": "historical_sections", "id": "8"
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "section-delete",
+        "method": "DELETE",
+        "endpoint": "sections/7"
+    }, {
+        "name": "maturity-by-id",
+        "method": "GET",
+        "endpoint": "maturities/1"
+    }, {
+        "name": "maturity-by-slug",
+        "method": "GET",
+        "endpoint": "maturities?filter[slug]=WD"
+    }, {
+        "name": "maturity-related-specifications",
+        "method": "GET",
+        "endpoint": "maturities/2/specifications"
+    }, {
+        "name": "maturity-relationships-specifications",
+        "method": "GET",
+        "endpoint": "maturities/2/relationships/specifications"
+    }, {
+        "name": "maturity-related-history-current",
+        "method": "GET",
+        "endpoint": "maturities/2/history_current",
+        "standardize": {
+            "date": "2016-01-14T16:10:55.867544Z"
+        }
+    }, {
+        "name": "maturity-relationships-history-current",
+        "method": "GET",
+        "endpoint": "maturities/2/relationships/history_current"
+    }, {
+        "name": "maturity-related-history",
+        "method": "GET",
+        "endpoint": "maturities/2/history",
+        "standardize": {
+            "date": "2016-01-14T16:11:32.187710Z"
+        }
+    }, {
+        "name": "maturity-relationships-history",
+        "method": "GET",
+        "endpoint": "maturities/2/relationships/history"
+    }, {
+        "name": "maturity-create",
+        "method": "POST",
+        "endpoint": "maturities",
+        "data": {
+            "data": {
+                "type": "maturities",
+                "attributes": {
+                    "slug": "Idea",
+                    "name": {
+                        "en": "Idea"
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "maturity-update",
+        "method": "PATCH",
+        "endpoint": "maturities/9",
+        "data": {
+            "data": {
+                "id": "9",
+                "type": "maturities",
+                "attributes": {
+                    "name": {
+                        "en": "Standard",
+                        "de": "Standard",
+                        "ru": "\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442",
+                        "fr": "Critère"
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "maturity-revert",
+        "method": "PATCH",
+        "endpoint": "maturities/9",
+        "data": {
+            "data": {
+                "id": "9",
+                "type": "maturities",
+                "relationships": {
+                    "history_current": {
+                        "data": {
+                            "type": "historical_maturities", "id": "9"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "maturity-delete",
+        "method": "DELETE",
+        "endpoint": "maturities/10"
+    }, {
+        "name": "changeset-by-id",
+        "method": "GET",
+        "endpoint": "changesets/2",
+        "standardize": {
+            "created": "2016-01-14T17:24:04.159902Z",
+            "modified": "2016-01-14T17:24:30.537134Z"
+        }
+    }, {
+        "name": "changeset-related-user",
+        "method": "GET",
+        "endpoint": "changesets/2/user",
+        "standardize": {
+            "created": "2016-01-14T17:30:15.525902Z"
+        }
+    }, {
+        "name": "changeset-relationships-user",
+        "method": "GET",
+        "endpoint": "changesets/2/relationships/user"
+    }, {
+        "name": "changeset-related-historical-browsers",
+        "method": "GET",
+        "endpoint": "changesets/2/historical_browsers",
+        "standardize": {
+            "date": "2016-01-14T17:44:18.450097Z"
+        }
+    }, {
+        "name": "changeset-relationships-historical-browsers",
+        "method": "GET",
+        "endpoint": "changesets/2/relationships/historical_browsers"
+    }, {
+        "name": "changeset-related-historical-features",
+        "method": "GET",
+        "endpoint": "changesets/18/historical_features",
+        "standardize": {
+            "date": "2016-01-14T18:19:05.373930Z"
+        }
+    }, {
+        "name": "changeset-relationships-historical-features",
+        "method": "GET",
+        "endpoint": "changesets/18/relationships/historical_features"
+    }, {
+        "name": "changeset-related-historical-maturities",
+        "method": "GET",
+        "endpoint": "changesets/52/historical_maturities",
+        "standardize": {
+            "date": "2016-01-14T18:19:07.471357Z"
+        }
+    }, {
+        "name": "changeset-relationships-historical-maturities",
+        "method": "GET",
+        "endpoint": "changesets/52/relationships/historical_maturities"
+    }, {
+        "name": "changeset-related-historical-sections",
+        "method": "GET",
+        "endpoint": "changesets/24/historical_sections",
+        "standardize": {
+            "date": "2016-01-14T18:19:05.644324Z"
+        }
+    }, {
+        "name": "changeset-relationships-historical-sections",
+        "method": "GET",
+        "endpoint": "changesets/24/relationships/historical_sections"
+    }, {
+        "name": "changeset-related-historical-specifications",
+        "method": "GET",
+        "endpoint": "changesets/22/historical_specifications",
+        "standardize": {
+            "date": "2016-01-14T18:19:05.596076Z"
+        }
+    }, {
+        "name": "changeset-relationships-historical-specifications",
+        "method": "GET",
+        "endpoint": "changesets/22/relationships/historical_specifications"
+    }, {
+        "name": "changeset-related-historical-supports",
+        "method": "GET",
+        "endpoint": "changesets/35/historical_supports",
+        "standardize": {
+            "date": "2016-01-14T18:19:06.558934Z"
+        }
+    }, {
+        "name": "changeset-relationships-historical-supports",
+        "method": "GET",
+        "endpoint": "changesets/35/relationships/historical_supports"
+    }, {
+        "name": "changeset-related-historical-versions",
+        "method": "GET",
+        "endpoint": "changesets/12/historical_versions",
+        "standardize": {
+            "date": "2016-01-14T18:19:04.786678Z"
+        }
+    }, {
+        "name": "changeset-relationships-historical-versions",
+        "method": "GET",
+        "endpoint": "changesets/12/relationships/historical_versions"
+    }, {
+        "name": "historical-browser-by-id",
+        "method": "GET",
+        "endpoint": "historical_browsers/17",
+        "standardize": {
+            "date": "2016-01-14T06:30:59.618000Z"
+        }
+    }, {
+        "name": "historical-browser-related-changeset",
+        "method": "GET",
+        "endpoint": "historical_browsers/17/changeset",
+        "standardize": {
+            "created": "2016-01-14T19:39:07.409305Z",
+            "modified": "2016-01-14T19:39:07.415442Z"
+        }
+    }, {
+        "name": "historical-browser-relationships-changeset",
+        "method": "GET",
+        "endpoint": "historical_browsers/17/relationships/changeset"
+    }, {
+        "name": "historical-browser-related-browser",
+        "method": "GET",
+        "endpoint": "historical_browsers/17/browser"
+    }, {
+        "name": "historical-browser-relationships-browser",
+        "method": "GET",
+        "endpoint": "historical_browsers/17/relationships/browser"
+    }, {
+        "name": "historical-feature-by-id",
+        "method": "GET",
+        "endpoint": "historical_features/19",
+        "standardize": {
+            "date": "2016-01-14T08:02:33.132000Z"
+        }
+    }, {
+        "name": "historical-feature-related-changeset",
+        "method": "GET",
+        "endpoint": "historical_features/19/changeset",
+        "standardize": {
+            "created": "2016-01-14T08:02:47.587000Z",
+            "modified": "2016-01-14T08:02:54.819000Z"
+        }
+    }, {
+        "name": "historical-feature-relationships-changeset",
+        "method": "GET",
+        "endpoint": "historical_features/19/relationships/changeset"
+    }, {
+        "name": "historical-feature-related-feature",
+        "method": "GET",
+        "endpoint": "historical_features/19/feature"
+    }, {
+        "name": "historical-feature-relationships-feature",
+        "method": "GET",
+        "endpoint": "historical_features/19/relationships/feature"
+    }, {
+        "name": "historical-maturity-by-id",
+        "method": "GET",
+        "endpoint": "historical_maturities/10",
+        "standardize": {
+            "date": "2016-01-14T08:04:58.382000Z"
+        }
+    }, {
+        "name": "historical-maturity-related-changeset",
+        "method": "GET",
+        "endpoint": "historical_maturities/10/changeset",
+        "standardize": {
+            "created": "2016-01-14T08:05:03.542000Z",
+            "modified": "2016-01-14T08:05:08.388000Z"
+        }
+    }, {
+        "name": "historical-maturity-relationships-changeset",
+        "method": "GET",
+        "endpoint": "historical_maturities/10/relationships/changeset"
+    }, {
+        "name": "historical-maturity-related-browser",
+        "method": "GET",
+        "endpoint": "historical_maturities/10/maturity"
+    }, {
+        "name": "historical-maturity-relationships-maturity",
+        "method": "GET",
+        "endpoint": "historical_maturities/10/relationships/maturity"
+    }, {
+        "name": "historical-sections-by-id",
+        "method": "GET",
+        "endpoint": "historical_sections/8",
+        "standardize": {
+            "date": "2016-01-14T08:05:47.948000Z"
+        }
+    }, {
+        "name": "historical-sections-related-changeset",
+        "method": "GET",
+        "endpoint": "historical_sections/8/changeset",
+        "standardize": {
+            "created": "2016-01-14T08:05:52.419000Z",
+            "modified": "2016-01-14T08:05:57.355000Z"
+        }
+    }, {
+        "name": "historical-sections-relationships-changeset",
+        "method": "GET",
+        "endpoint": "historical_sections/8/relationships/changeset"
+    }, {
+        "name": "historical-sections-related-section",
+        "method": "GET",
+        "endpoint": "historical_sections/8/section"
+    }, {
+        "name": "historical-sections-relationships-section",
+        "method": "GET",
+        "endpoint": "historical_sections/8/relationships/section"
+    }, {
+        "name": "historical-specification-by-id",
+        "method": "GET",
+        "endpoint": "historical_specifications/7",
+        "standardize": {
+            "date": "2016-01-14T08:07:26.056000Z"
+        }
+    }, {
+        "name": "historical-specification-related-changeset",
+        "method": "GET",
+        "endpoint": "historical_specifications/7/changeset",
+        "standardize": {
+            "created": "2016-01-14T08:07:30.064000Z",
+            "modified": "2016-01-14T08:07:35.695000Z"
+        }
+    }, {
+        "name": "historical-specification-relationships-changeset",
+        "method": "GET",
+        "endpoint": "historical_specifications/7/relationships/changeset"
+    }, {
+        "name": "historical-specification-related-specification",
+        "method": "GET",
+        "endpoint": "historical_specifications/7/specification"
+    }, {
+        "name": "historical-specification-relationships-specification",
+        "method": "GET",
+        "endpoint": "historical_specifications/7/relationships/specification"
+    }, {
+        "name": "historical-support-by-id",
+        "method": "GET",
+        "endpoint": "historical_supports/28",
+        "standardize": {
+            "date": "2016-01-14T08:08:03.582000Z"
+        }
+    }, {
+        "name": "historical-support-related-changeset",
+        "method": "GET",
+        "endpoint": "historical_supports/28/changeset",
+        "standardize": {
+            "created": "2016-01-14T08:08:07.758000Z",
+            "modified": "2016-01-14T08:08:12.918000Z"
+        }
+    }, {
+        "name": "historical-support-relationships-changeset",
+        "method": "GET",
+        "endpoint": "historical_supports/28/relationships/changeset"
+    }, {
+        "name": "historical-support-related-support",
+        "method": "GET",
+        "endpoint": "historical_supports/28/support"
+    }, {
+        "name": "historical-support-relationships-support",
+        "method": "GET",
+        "endpoint": "historical_supports/28/relationships/support"
+    }, {
+        "name": "historical-version-by-id",
+        "method": "GET",
+        "endpoint": "historical_versions/49",
+        "standardize": {
+            "date": "2016-01-14T07:52:04.749000Z"
+        }
+    }, {
+        "name": "historical-version-related-changeset",
+        "method": "GET",
+        "endpoint": "historical_versions/49/changeset",
+        "standardize": {
+            "created": "2016-01-14T07:52:16.669000Z",
+            "modified": "2016-01-14T07:52:22.524000Z"
+        }
+    }, {
+        "name": "historical-version-relationships-changeset",
+        "method": "GET",
+        "endpoint": "historical_versions/49/relationships/changeset"
+    }, {
+        "name": "historical-version-related-version",
+        "method": "GET",
+        "endpoint": "historical_versions/49/version"
+    }, {
+        "name": "historical-version-relationships-version",
+        "method": "GET",
+        "endpoint": "historical_versions/49/relationships/version"
+    }, {
+        "name": "view-features-list",
+        "method": "GET",
+        "endpoint": "view_features"
+    }, {
+        "name": "view-feature-by-id",
+        "method": "GET",
+        "endpoint": "view_features/5"
+    }, {
+        "name": "view-feature-by-id-with-child-pages",
+        "method": "GET",
+        "endpoint": "view_features/2?child_pages=1"
+    }, {
+        "name": "view-feature-update-parts-with-changeset-1",
+        "method": "POST",
+        "endpoint": "changesets",
+        "data": {
+            "data": {
+                "type": "changesets",
+                "attributes": {
+                    "target_resource_type": "features",
+                    "target_resource_id": "6"
+                }
+            }
+        },
+        "standardize": {
+            "created": "2016-01-14T08:16:02.171000Z",
+            "modified": "2016-01-14T08:16:06.763000Z"
+        }
+    }, {
+        "name": "view-feature-update-parts-with-changeset-2",
+        "method": "POST",
+        "endpoint": "versions?changeset=56",
+        "data": {
+            "data": {
+                "type": "versions",
+                "attributes": {
+                    "version": "2.0",
+                    "status": "retired"
+                },
+                "relationships": {
+                    "browser": {
+                        "data": {
+                            "type": "browsers", "id": "3"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "view-feature-update-parts-with-changeset-3",
+        "method": "POST",
+        "endpoint": "supports?changeset=56",
+        "data": {
+            "data": {
+                "type": "supports",
+                "relationships": {
+                    "version": {
+                        "data": {
+                            "type": "versions", "id": "50"
+                        }
+                    },
+                    "feature": {
+                        "data": {
+                            "type": "features", "id": "6"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "view-feature-update-parts-with-changeset-4",
+        "method": "PATCH",
+        "endpoint": "changesets/56",
+        "data": {
+            "data": {
+                "id": "56",
+                "type": "changesets",
+                "attributes": {
+                    "closed": true
+                }
+            }
+        },
+        "standardize": {
+            "created": "2016-01-14T08:16:02.171000Z",
+            "modified": "2016-01-14T08:18:58.220000Z"
+        }
+    }, {
+        "name": "view-feature-update-parts-with-changeset-5",
+        "method": "GET",
+        "endpoint": "view_features/5"
+    }, {
+        "name": "view-feature-update-put-subfeature",
+        "method": "PATCH",
+        "endpoint": "view_features/5",
+        "data": {
+            "data": {
+                "id": "5",
+                "type": "features"
+            },
+            "included": [{
+                "type": "features",
+                "id": "_New Subfeature",
+                "attributes": {
+                    "slug": "web-css-float_new-subfeature",
+                    "name": {
+                        "en": "New Subfeature"
+                    }
+                },
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "type": "features", "id": "5"
+                        }
+                    }
+                }
+            }]
+        }
+    }
+]

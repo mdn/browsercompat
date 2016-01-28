@@ -1,0 +1,20 @@
+{
+    "data": {
+        "type": "features",
+        "id": "10",
+        "relationships": {
+            "sections": {
+                "data": [
+                    {
+                        "type": "sections",
+                        "id": "5"
+                    },
+                    {
+                        "type": "sections",
+                        "id": "6"
+                    }
+                ]
+            }
+        }
+    }
+}

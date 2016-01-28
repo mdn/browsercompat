@@ -1,0 +1,24 @@
+{
+    "data": {
+        "type": "sections",
+        "attributes": {
+            "number": {
+                "en": "4.7.7"
+            },
+            "name": {
+                "en": "The audio element"
+            },
+            "subpath": {
+                "en": "embedded-content-0.html#the-audio-element"
+            }
+        },
+        "relationships": {
+            "specification": {
+                "data": {
+                    "type": "specifications",
+                    "id": "6"
+                }
+            }
+        }
+    }
+}

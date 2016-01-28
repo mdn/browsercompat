@@ -1,0 +1,32 @@
+{
+    "data": {
+        "type": "supports",
+        "attributes": {
+            "support": "partial",
+            "prefix": "-o",
+            "prefix_mandatory": true,
+            "alternate_name": "float",
+            "alternate_mandatory": true,
+            "requires_config": "future=true",
+            "default_config": "future=false",
+            "protected": true,
+            "note": {
+                "en": "This is fake."
+            }
+        },
+        "relationships": {
+            "version": {
+                "data": {
+                    "type": "versions",
+                    "id": "37"
+                }
+            },
+            "feature": {
+                "data": {
+                    "type": "features",
+                    "id": "6"
+                }
+            }
+        }
+    }
+}

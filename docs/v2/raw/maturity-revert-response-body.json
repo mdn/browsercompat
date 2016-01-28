@@ -1,0 +1,56 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/maturities/9"
+    },
+    "data": {
+        "type": "maturities",
+        "id": "9",
+        "attributes": {
+            "slug": "Standard",
+            "name": {
+                "en": "Standard",
+                "de": "Standard",
+                "ru": "Стандарт"
+            }
+        },
+        "relationships": {
+            "specifications": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/maturities/9/relationships/specifications",
+                    "related": "https://browsercompat.org/api/v2/maturities/9/specifications"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/maturities/9/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/maturities/9/history_current"
+                },
+                "data": {
+                    "type": "historical_maturities",
+                    "id": "12"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/maturities/9/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/maturities/9/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_maturities",
+                        "id": "12"
+                    },
+                    {
+                        "type": "historical_maturities",
+                        "id": "11"
+                    },
+                    {
+                        "type": "historical_maturities",
+                        "id": "9"
+                    }
+                ]
+            }
+        }
+    }
+}

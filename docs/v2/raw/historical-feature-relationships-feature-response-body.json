@@ -1,0 +1,10 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_features/19/relationships/feature",
+        "related": "https://browsercompat.org/api/v2/historical_features/19/feature"
+    },
+    "data": {
+        "type": "features",
+        "id": "17"
+    }
+}

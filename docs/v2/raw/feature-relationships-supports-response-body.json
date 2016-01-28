@@ -1,0 +1,36 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features/12/relationships/supports",
+        "related": "https://browsercompat.org/api/v2/features/12/supports"
+    },
+    "data": [
+        {
+            "type": "supports",
+            "id": "20"
+        },
+        {
+            "type": "supports",
+            "id": "21"
+        },
+        {
+            "type": "supports",
+            "id": "22"
+        },
+        {
+            "type": "supports",
+            "id": "23"
+        },
+        {
+            "type": "supports",
+            "id": "24"
+        },
+        {
+            "type": "supports",
+            "id": "25"
+        },
+        {
+            "type": "supports",
+            "id": "26"
+        }
+    ]
+}

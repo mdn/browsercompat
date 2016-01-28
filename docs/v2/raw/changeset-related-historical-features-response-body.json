@@ -1,0 +1,70 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/18/historical_features",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "historical_features",
+            "id": "14",
+            "attributes": {
+                "date": "2016-01-14T18:19:05.373930Z",
+                "event": "created",
+                "archive_data": {
+                    "type": "features",
+                    "id": "14",
+                    "attributes": {
+                        "slug": "web-css-display",
+                        "mdn_uri": null,
+                        "experimental": false,
+                        "standardized": true,
+                        "stable": true,
+                        "obsolete": false,
+                        "name": "display"
+                    },
+                    "relationships": {
+                        "parent": {
+                            "data": null
+                        },
+                        "children": {
+                            "data": []
+                        },
+                        "sections": {
+                            "data": []
+                        },
+                        "history_current": {
+                            "data": {
+                                "type": "historical_features",
+                                "id": "14"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "https://browsercompat.org/api/v2/features/14"
+                    }
+                }
+            },
+            "relationships": {
+                "changeset": {
+                    "data": {
+                        "type": "changesets",
+                        "id": "18"
+                    }
+                },
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "14"
+                    }
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/historical_features/14"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

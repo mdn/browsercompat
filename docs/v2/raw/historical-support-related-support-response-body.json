@@ -1,0 +1,70 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_supports/28/support"
+    },
+    "data": {
+        "type": "supports",
+        "id": "28",
+        "attributes": {
+            "support": "partial",
+            "prefix": "-o",
+            "prefix_mandatory": true,
+            "alternate_name": "float",
+            "alternate_mandatory": true,
+            "requires_config": "future=true",
+            "default_config": "future=false",
+            "protected": true,
+            "note": {
+                "en": "This is fake."
+            }
+        },
+        "relationships": {
+            "version": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/28/relationships/version",
+                    "related": "https://browsercompat.org/api/v2/supports/28/version"
+                },
+                "data": {
+                    "type": "versions",
+                    "id": "37"
+                }
+            },
+            "feature": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/28/relationships/feature",
+                    "related": "https://browsercompat.org/api/v2/supports/28/feature"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "6"
+                }
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/28/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/supports/28/history_current"
+                },
+                "data": {
+                    "type": "historical_supports",
+                    "id": "31"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/supports/28/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/supports/28/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_supports",
+                        "id": "31"
+                    },
+                    {
+                        "type": "historical_supports",
+                        "id": "28"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "data": {
+        "type": "versions",
+        "attributes": {
+            "version": "",
+            "status": "unknown"
+        },
+        "relationships": {
+            "browser": {
+                "data": {
+                    "type": "browsers",
+                    "id": "6"
+                }
+            }
+        }
+    }
+}

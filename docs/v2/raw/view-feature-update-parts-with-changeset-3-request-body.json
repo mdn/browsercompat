@@ -1,0 +1,19 @@
+{
+    "data": {
+        "type": "supports",
+        "relationships": {
+            "version": {
+                "data": {
+                    "type": "versions",
+                    "id": "50"
+                }
+            },
+            "feature": {
+                "data": {
+                    "type": "features",
+                    "id": "6"
+                }
+            }
+        }
+    }
+}

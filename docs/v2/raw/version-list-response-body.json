@@ -1,0 +1,441 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/versions",
+        "next": "https://browsercompat.org/api/v2/versions?page=2",
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "versions",
+            "id": "1",
+            "attributes": {
+                "version": "current",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "current",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 0
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "1"
+                    }
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "1"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "1"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/1"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "2",
+            "attributes": {
+                "version": "1.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "1"
+                    }
+                },
+                "supports": {
+                    "data": [
+                        {
+                            "type": "supports",
+                            "id": "1"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "2"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "2"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/2"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "3",
+            "attributes": {
+                "version": "6.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 2
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "1"
+                    }
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "3"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "3"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/3"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "4",
+            "attributes": {
+                "version": "current",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "current",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 0
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "2"
+                    }
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "4"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "4"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/4"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "5",
+            "attributes": {
+                "version": "current",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "current",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 0
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "3"
+                    }
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "5"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "5"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/5"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "6",
+            "attributes": {
+                "version": "6.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "3"
+                    }
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "6"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "6"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/6"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "7",
+            "attributes": {
+                "version": "10.2",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 2
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "3"
+                    }
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "7"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "7"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/7"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "8",
+            "attributes": {
+                "version": "current",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "current",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 0
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "4"
+                    }
+                },
+                "supports": {
+                    "data": [
+                        {
+                            "type": "supports",
+                            "id": "11"
+                        },
+                        {
+                            "type": "supports",
+                            "id": "20"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "8"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "8"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/8"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "9",
+            "attributes": {
+                "version": "1.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 1
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "4"
+                    }
+                },
+                "supports": {
+                    "data": [
+                        {
+                            "type": "supports",
+                            "id": "2"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "9"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "9"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/9"
+            }
+        },
+        {
+            "type": "versions",
+            "id": "10",
+            "attributes": {
+                "version": "35.0",
+                "release_day": null,
+                "retirement_day": null,
+                "status": "unknown",
+                "release_notes_uri": null,
+                "note": null,
+                "order": 2
+            },
+            "relationships": {
+                "browser": {
+                    "data": {
+                        "type": "browsers",
+                        "id": "4"
+                    }
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_versions",
+                        "id": "10"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "10"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/versions/10"
+            }
+        }
+    ],
+    "meta": {
+        "count": 47
+    }
+}

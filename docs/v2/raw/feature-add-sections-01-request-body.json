@@ -1,0 +1,23 @@
+{
+    "data": {
+        "type": "specifications",
+        "attributes": {
+            "slug": "html_whatwg",
+            "mdn_key": "HTML WHATWG",
+            "name": {
+                "en": "WHATWG HTML Living Standard"
+            },
+            "uri": {
+                "en": "https://html.spec.whatwg.org/multipage/"
+            }
+        },
+        "relationships": {
+            "maturity": {
+                "data": {
+                    "type": "maturities",
+                    "id": "6"
+                }
+            }
+        }
+    }
+}

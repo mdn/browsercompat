@@ -1,0 +1,534 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/users/1/changesets",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "changesets",
+            "id": "1",
+            "attributes": {
+                "created": "2016-01-08T22:35:47.583042Z",
+                "modified": "2016-01-08T22:36:05.470143Z",
+                "closed": true,
+                "target_resource_type": null,
+                "target_resource_id": null
+            },
+            "relationships": {
+                "user": {
+                    "data": {
+                        "type": "users",
+                        "id": "1"
+                    }
+                },
+                "historical_browsers": {
+                    "data": [
+                        {
+                            "type": "historical_browsers",
+                            "id": "15"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "14"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "13"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "12"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "11"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "10"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "9"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "8"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "7"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "6"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "5"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "4"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "3"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "2"
+                        },
+                        {
+                            "type": "historical_browsers",
+                            "id": "1"
+                        }
+                    ]
+                },
+                "historical_features": {
+                    "data": [
+                        {
+                            "type": "historical_features",
+                            "id": "13"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "12"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "11"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "10"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "9"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "8"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "7"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "6"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "5"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "4"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "3"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "2"
+                        },
+                        {
+                            "type": "historical_features",
+                            "id": "1"
+                        }
+                    ]
+                },
+                "historical_maturities": {
+                    "data": [
+                        {
+                            "type": "historical_maturities",
+                            "id": "9"
+                        },
+                        {
+                            "type": "historical_maturities",
+                            "id": "8"
+                        },
+                        {
+                            "type": "historical_maturities",
+                            "id": "7"
+                        },
+                        {
+                            "type": "historical_maturities",
+                            "id": "6"
+                        },
+                        {
+                            "type": "historical_maturities",
+                            "id": "5"
+                        },
+                        {
+                            "type": "historical_maturities",
+                            "id": "4"
+                        },
+                        {
+                            "type": "historical_maturities",
+                            "id": "3"
+                        },
+                        {
+                            "type": "historical_maturities",
+                            "id": "2"
+                        },
+                        {
+                            "type": "historical_maturities",
+                            "id": "1"
+                        }
+                    ]
+                },
+                "historical_sections": {
+                    "data": [
+                        {
+                            "type": "historical_sections",
+                            "id": "4"
+                        },
+                        {
+                            "type": "historical_sections",
+                            "id": "3"
+                        },
+                        {
+                            "type": "historical_sections",
+                            "id": "2"
+                        },
+                        {
+                            "type": "historical_sections",
+                            "id": "1"
+                        }
+                    ]
+                },
+                "historical_specifications": {
+                    "data": [
+                        {
+                            "type": "historical_specifications",
+                            "id": "4"
+                        },
+                        {
+                            "type": "historical_specifications",
+                            "id": "3"
+                        },
+                        {
+                            "type": "historical_specifications",
+                            "id": "2"
+                        },
+                        {
+                            "type": "historical_specifications",
+                            "id": "1"
+                        }
+                    ]
+                },
+                "historical_supports": {
+                    "data": [
+                        {
+                            "type": "historical_supports",
+                            "id": "26"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "25"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "24"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "23"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "22"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "21"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "20"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "19"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "18"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "17"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "16"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "15"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "14"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "13"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "12"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "11"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "10"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "9"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "8"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "7"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "6"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "5"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "4"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "3"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "2"
+                        },
+                        {
+                            "type": "historical_supports",
+                            "id": "1"
+                        }
+                    ]
+                },
+                "historical_versions": {
+                    "data": [
+                        {
+                            "type": "historical_versions",
+                            "id": "47"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "46"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "45"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "44"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "43"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "42"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "41"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "40"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "39"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "38"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "37"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "36"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "35"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "34"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "33"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "32"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "31"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "30"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "29"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "28"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "27"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "26"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "25"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "24"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "23"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "22"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "21"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "20"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "19"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "18"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "17"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "16"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "15"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "14"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "13"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "12"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "11"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "10"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "9"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "8"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "7"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "6"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "5"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "4"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "3"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "2"
+                        },
+                        {
+                            "type": "historical_versions",
+                            "id": "1"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/changesets/1"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

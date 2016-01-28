@@ -51,7 +51,7 @@ standards of this project:
 What to work on
 ---------------
 There is a `tracking bug`_ for this project, and a `specific bug`_ for the data
-store, the primary purpose of this project.  The dependant bugs represent
+store, the primary purpose of this project.  The dependent bugs represent
 areas of work, and are not exhaustive.  If you want to contribute at this phase
 in development, take a look at the bugs and linked documents, to familiarize
 yourself with the project, and then get in touch with the team on IRC (#mdndev

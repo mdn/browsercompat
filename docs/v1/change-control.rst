@@ -41,7 +41,7 @@ A sample response is:
     :language: json
 
 
-*Note:* `bug 1216786`_ *proposes this method for retrieving the authenticated user*:
+*Note:* `bug 1159354`_ *proposes this method for retrieving the authenticated user*:
 
 .. code-block:: http
 
@@ -118,5 +118,5 @@ A sample response is:
 .. _historical_supports: history.html#historical-supports
 .. _historical_versions: history.html#historical-versions
 
-.. _`bug 1216786`: https://bugzilla.mozilla.org/show_bug.cgi?id=1216786
+.. _`bug 1159354`: https://bugzilla.mozilla.org/show_bug.cgi?id=1159354
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601

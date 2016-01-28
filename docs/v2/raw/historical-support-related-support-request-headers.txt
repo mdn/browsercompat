@@ -1,0 +1,3 @@
+GET /api/v2/historical_supports/28/support HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json

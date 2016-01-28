@@ -1,0 +1,26 @@
+{
+    "data": {
+        "id": "5",
+        "type": "features"
+    },
+    "included": [
+        {
+            "type": "features",
+            "id": "_New Subfeature",
+            "attributes": {
+                "slug": "web-css-float_new-subfeature",
+                "name": {
+                    "en": "New Subfeature"
+                }
+            },
+            "relationships": {
+                "parent": {
+                    "data": {
+                        "type": "features",
+                        "id": "5"
+                    }
+                }
+            }
+        }
+    ]
+}

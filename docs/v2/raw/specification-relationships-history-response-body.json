@@ -1,0 +1,12 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/specifications/2/relationships/history",
+        "related": "https://browsercompat.org/api/v2/specifications/2/history"
+    },
+    "data": [
+        {
+            "type": "historical_specifications",
+            "id": "2"
+        }
+    ]
+}

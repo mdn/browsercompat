@@ -1,0 +1,10 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/maturities/2/relationships/history_current",
+        "related": "https://browsercompat.org/api/v2/maturities/2/history_current"
+    },
+    "data": {
+        "type": "historical_maturities",
+        "id": "2"
+    }
+}

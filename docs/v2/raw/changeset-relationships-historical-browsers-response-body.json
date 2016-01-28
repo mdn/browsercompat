@@ -1,0 +1,12 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/changesets/2/relationships/historical_browsers",
+        "related": "https://browsercompat.org/api/v2/changesets/2/historical_browsers"
+    },
+    "data": [
+        {
+            "type": "historical_browsers",
+            "id": "16"
+        }
+    ]
+}

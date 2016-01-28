@@ -1,0 +1,56 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/maturities?filter[slug]=WD",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "maturities",
+            "id": "2",
+            "attributes": {
+                "slug": "WD",
+                "name": {
+                    "en": "Working Draft",
+                    "de": "Arbeitsentwurf",
+                    "ja": "草案",
+                    "ru": "Рабочий черновик"
+                }
+            },
+            "relationships": {
+                "specifications": {
+                    "data": [
+                        {
+                            "type": "specifications",
+                            "id": "3"
+                        },
+                        {
+                            "type": "specifications",
+                            "id": "4"
+                        }
+                    ]
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_maturities",
+                        "id": "2"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_maturities",
+                            "id": "2"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/maturities/2"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

@@ -78,7 +78,7 @@ tools/run_integration_tests.sh. Usage::
       actual requests and responses.
     * ``generate``: Run all requests against an API.  Throw away some headers,
       such as ``Allow`` and ``Server``.  Modify other headers, such as
-      ``Cookies``, to make them consistant from run to run.  Standardize some
+      ``Cookies``, to make them consistent from run to run.  Standardize some
       response data, such as creation and modification times.  Store the
       cleaned-up requests and responses in the docs folder, for documentation
       and integration testing.
