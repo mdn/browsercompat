@@ -60,7 +60,7 @@ SECRET_KEY - Overrides SECRET_KEY
 SECURE_PROXY_SSL_HEADER - 'HTTP_X_FORWARDED_PROTOCOL,https' to enable
 SERVER_EMAIL - Email "From" address for error messages to admins
 STATIC_ROOT - Overrides STATIC_ROOT
-
+PAGE_SIZE - Items per page, default 10
 """
 from os import path
 import sys
@@ -324,7 +324,7 @@ REST_FRAMEWORK = {
     ],
     'VIEW_NAME_FUNCTION': 'webplatformcompat.utils.get_view_name',
     'DEFAULT_PAGINATION_CLASS': 'webplatformcompat.pagination.Pagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': config('PAGE_SIZE', default=10, cast=int),
     'DEFAULT_VERSIONING_CLASS': (
         'rest_framework.versioning.NamespaceVersioning'),
 }
