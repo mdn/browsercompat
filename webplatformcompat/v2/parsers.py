@@ -33,10 +33,9 @@ class JsonApiV10Parser(JSONParser):
             resource = self.dict_class(((as_relationship, rel_linkage),))
         elif 'data' in data:
             main_type, resource = self.convert_resource_object(
-                'data', data['data'], fields_extra)
+                'data', data['data'], fields_extra, id_required=False)
         else:
-            main_type, resource = self.convert_resource_object(
-                'data', {}, fields_extra)
+            resource = self.dict_class()
 
         # Add extra data to _view_extra
         view_extra = self.dict_class()
@@ -46,7 +45,7 @@ class JsonApiV10Parser(JSONParser):
             for seq, item in enumerate(data['included']):
                 prefix = 'included.%d' % seq
                 item_type, converted = self.convert_resource_object(
-                    prefix, item, fields_extra)
+                    prefix, item, fields_extra, id_required=True)
                 view_extra.setdefault(item_type, []).append(converted)
         if view_extra:
             resource['_view_extra'] = view_extra
@@ -104,14 +103,14 @@ class JsonApiV10Parser(JSONParser):
             else:
                 seq_prefix = prefix
             item_id = self.convert_resource_identifier(
-                seq_prefix, item, expected_type)
+                seq_prefix, item, expected_type, id_required=True)
             item_ids.append(item_id)
         if many:
             return item_ids
         else:
             return item_ids[0]
 
-    def convert_resource_object(self, prefix, data, fields_extra):
+    def convert_resource_object(self, prefix, data, fields_extra, id_required):
         """Convert a resource object.
 
         Partially implements the spec at:
@@ -145,14 +144,13 @@ class JsonApiV10Parser(JSONParser):
         assert not isinstance(data, list), 'Arrays are not handled.'
 
         resource = self.dict_class()
-        if 'id' in data:
-            assert 'resource' in fields_extra['id'], (
-                'The id field must define the resource.')
-            resource_type = fields_extra['id']['resource']
-            resource['id'] = self.convert_resource_identifier(
-                prefix, data, resource_type)
-        else:
-            resource_type = None
+        assert 'resource' in fields_extra['id'], (
+            'The id field must define the resource.')
+        resource_type = fields_extra['id']['resource']
+        resource_id = self.convert_resource_identifier(
+            prefix, data, resource_type, id_required)
+        if resource_id is not None:
+            resource['id'] = resource_id
 
         attributes = data.get('attributes', {})
         for name, value in attributes.items():
@@ -189,7 +187,8 @@ class JsonApiV10Parser(JSONParser):
                 rel_prefix, relationship['data'], rel_type)
         return resource_type, resource
 
-    def convert_resource_identifier(self, prefix, data, expected_type=None):
+    def convert_resource_identifier(
+            self, prefix, data, expected_type=None, id_required=True):
         """Convert a single resource identifier object.
 
         Partially implements the spec at:
@@ -204,7 +203,10 @@ class JsonApiV10Parser(JSONParser):
         try:
             resource_id = data['id']
         except KeyError:
-            raise ParseError('%s.id is required.' % prefix)
+            if id_required:
+                raise ParseError('%s.id is required.' % prefix)
+            else:
+                resource_id = None
 
         try:
             resource_type = data['type']

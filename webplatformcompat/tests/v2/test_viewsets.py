@@ -395,6 +395,8 @@ class TestBrowserViewset(APITestCase):
             Browser, slug='browser', name={'en': 'Old Name'})
         data = dumps({
             'data': {
+                'id': str(browser.pk),
+                'type': 'browsers',
                 'attributes': {
                     'name': {
                         'en': 'New Name'
@@ -773,6 +775,8 @@ class TestFeatureViewSet(APITestCase):
         url = self.full_api_reverse('feature-detail', pk=feature.pk)
         data = dumps({
             'data': {
+                'id': str(feature.pk),
+                'type': 'features',
                 'relationships': {
                     'parent': {
                         'data': None
@@ -844,6 +848,8 @@ class TestFeatureViewSet(APITestCase):
         ]
         data = dumps({
             'data': {
+                'id': str(feature.pk),
+                'type': 'features',
                 'relationships': {
                     'children': {
                         'data': new_children,
