@@ -31,9 +31,13 @@ BROKER_URL - Broker URL string for Celery
 CELERY_ALWAYS_EAGER - 1 to run all tasks synchronosly. Defaults to 1 if
     BROKER_URL is undefined, or 0 if defined
 CELERY_RESULT_BACKEND - Backend URL string for Celery
+CSRF_COOKIE_HTTPONLY - Prevent in-page JS from accessing CSRF token
+CSRF_COOKIE_SECURE - Only send CSRF cookies on HTTPS connections
 DATABASE_URL - See https://github.com/kennethreitz/dj-database-url
 DEFAULT_FROM_EMAIL - "From" email for emails to users
 DJANGO_DEBUG - 1 to enable, 0 to disable, default disabled
+DRF_INSTANCE_CACHE_POPULATE_COLD - 1 to recursively populate a cold cache on
+    updates, 0 to be eventually consistent, default enabled
 EMAIL_BACKEND - The backend for email services
 EMAIL_FILE_PATH - File path when FileSystemStorage is used
 EMAIL_HOST - SMTP server, default localhost
@@ -47,20 +51,26 @@ EXTRA_INSTALLED_APPS - comma-separated list of apps to add to INSTALLED_APPS
 FXA_OAUTH_ENDPOINT - Override for Firefox Account OAuth2 endpoint
 FXA_PROFILE_ENDPOINT - Override for Firefox Account profile endpoint
 MDN_ALLOWED_URL_PREFIXES - comma-separated list of URL prefixes allowed by
-  the scraper
+    the scraper
 MDN_SHOW_REPARSE - 1 to show Reparse button, defaults to DEBUG
 MEMCACHE_SERVERS - semicolon-separated list of memcache servers
 MEMCACHE_USERNAME - username for memcache servers
 MEMCACHE_PASSWORD - password for memcache servers
-REDIS_URL - Redis URL string to use Redis for caching
-USE_DRF_INSTANCE_CACHE - 1 to enable, 0 to disable, default enabled
-DRF_INSTANCE_CACHE_POPULATE_COLD - 1 to recursively populate a cold cache on
-  updates, 0 to be eventually consistent, default enabled
-SECRET_KEY - Overrides SECRET_KEY
-SECURE_PROXY_SSL_HEADER - 'HTTP_X_FORWARDED_PROTOCOL,https' to enable
-SERVER_EMAIL - Email "From" address for error messages to admins
-STATIC_ROOT - Overrides STATIC_ROOT
 PAGE_SIZE - Items per page, default 10
+REDIS_URL - Redis URL string to use Redis for caching
+SECRET_KEY - Overrides SECRET_KEY
+SECURE_BROWSER_XSS_FILTER - Enable browser-based XSS protection
+SECURE_CONTENT_TYPE_NOSNIFF - Add nosniff header to disallow browser guessing
+SECURE_HSTS_INCLUDE_SUBDOMAINS - Strict Transport Security for subdomains
+SECURE_HSTS_SECONDS - Number of seconds for Strict Transport Security header,
+    0 to disable (default)
+SECURE_PROXY_SSL_HEADER - 'HTTP_X_FORWARDED_PROTOCOL,https' to enable
+SECURE_SSL_REDIRECT - 301 Redirect http:// to https://
+SERVER_EMAIL - Email "From" address for error messages to admins
+SESSION_COOKIE_SECURE - Only send session cookies on HTTPS connections
+STATIC_ROOT - Overrides STATIC_ROOT
+USE_DRF_INSTANCE_CACHE - 1 to enable, 0 to disable, default enabled
+X_FRAME_OPTIONS - Set X-Frame-Options value
 """
 from os import path
 import sys
@@ -92,9 +102,30 @@ SECRET_KEY = config(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
+# Security settings
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=cast_list)
 SECURE_PROXY_SSL_HEADER = config(
     'SECURE_PROXY_SSL_HEADER', default='', cast=cast_list) or None
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = config(
+    'SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False, cast=bool)
+SECURE_CONTENT_TYPE_NOSNIFF = config(
+    'SECURE_CONTENT_TYPE_NOSNIFF', default=False, cast=bool)
+SECURE_BROWSER_XSS_FILTER = config(
+    'SECURE_BROWSER_XSS_FILTER', default=False, cast=bool)
+SECURE_SSL_REDIRECT = config(
+    'SECURE_SSL_REDIRECT', default=False, cast=bool)
+SECURE_SSL_HOST = config(
+    'SECURE_SSL_HOST', default='', cast=cast_list) or None
+SECURE_REDIRECT_EXCEMPT = config(
+    'SECURE_REDIRECT_EXCEMPT', default='', cast=cast_list)
+SESSION_COOKIE_SECURE = config(
+    'SESSION_COOKIE_SECURE', default=False, cast=bool)
+CSRF_COOKIE_HTTPONLY = config(
+    'CSRF_COOKIE_HTTPONLY', default=False, cast=bool)
+CSRF_COOKIE_SECURE = config(
+    'CSRF_COOKIE_SECURE', default=False, cast=bool)
+X_FRAME_OPTIONS = config('X_FRAME_OPTIONS', default='SAMEORIGIN')
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -131,6 +162,7 @@ INSTALLED_APPS.extend(
     config('EXTRA_INSTALLED_APPS', default='', cast=cast_list))
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
