@@ -19,8 +19,9 @@ django-extensions==1.6.1
 # History of changes to models
 django-simple-history==1.7.0
 
-# Configure database from env
+# Configure from env
 dj-database-url==0.3.0
+python-decouple==3.0
 
 # Better test runner (included in settings)
 nose==1.3.7
