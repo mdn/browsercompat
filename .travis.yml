@@ -13,7 +13,9 @@ env:
         - TOXENV=coverage
         - TOXENV=integration
 
-install: pip install tox
+install:
+    - pip install --upgrade pip wheel
+    - pip install tox
 before_script: psql -c 'create database travis_ci_test;' -U postgres
 script: tox
 notifications:

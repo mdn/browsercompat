@@ -5,26 +5,32 @@
 # Django
 Django==1.8.8 \
     --hash=sha256:05816963cbbadd131bcee8fb5069d8695796e25d081ec24eff62bc1fc8ed891a \
+    --hash=sha256:8255242fa0d9e0bf331259a6bdb81364933acbe8863291661558ffdb2fc9ed70 \
     # rq.filter: >=1.8, <1.9
 
 # Django REST Framework
 djangorestframework==3.3.2 \
-    --hash=sha256:5634b1ff56581bf0fe4075e86227fc9693c1ca031c7213c9ae942c445c24817b
+    --hash=sha256:5634b1ff56581bf0fe4075e86227fc9693c1ca031c7213c9ae942c445c24817b \
+    --hash=sha256:4962418a57804f8323282728a4f9b9496e78caec1adda352170697752eff01bf
 Markdown==2.6.5 \
-    --hash=sha256:8d94cf6273606f76753fcb1324623792b3738c7612c2b180c85cc5e88642e560
+    --hash=sha256:8d94cf6273606f76753fcb1324623792b3738c7612c2b180c85cc5e88642e560 \
+    --hash=sha256:a59fdbcec28f79ad9842ea7f74cde5a02e14a3025836e0bc66c4fc48596ce2ca
 django-filter==0.12.0 \
     --hash=sha256:8b6459e58dbf6f67384707be6724a0a88db6709764bc2eb9de265a52dc441ccb
 
-# Django extensions
+# Django extensions (special fields, management commands)
 django-extensions==1.6.1 \
+    --hash=sha256:4799534f35eba1c07cb6f9859aa5bb719886769f5d35d2a38e7490ce90c0ce69 \
     --hash=sha256:f98f991d2b039033ac5faa638c0d1afb2720abf4d9d781573c3592d6899480a1
 
 # History of changes to models
 django-simple-history==1.7.0 \
+    --hash=sha256:dc08bac3a732c7c98a24286ef518a88711ae880cb27b7493b3c3179b51035863 \
     --hash=sha256:4abadef5c4680147aa5e88b5eba0d0ed7250c8feea79120344486b97184de4ac
 
 # Configure from env
 dj-database-url==0.3.0 \
+    --hash=sha256:f2e273ed34acbb560962d5cf12917936d8df02297df09bd3089b8546d4584138 \
     --hash=sha256:ca01768fdecde134301f3170743226f60edff5c3935f12437378ebd911506353
 python-decouple==3.0 \
     --hash=sha256:99834c9ff7ce5c5b2f4a18bc0880753e54ea3aaabc3cfb16961a92d5046665df
@@ -37,18 +43,31 @@ django-nose==1.4.3 \
 
 # Test Mocking, included in Python 3.3
 mock==1.3.0 \
-    --hash=sha256:3f573a18be94de886d1191f27c168427ef693e8dcfcecf95b170577b2eb69cbb
+    --hash=sha256:3f573a18be94de886d1191f27c168427ef693e8dcfcecf95b170577b2eb69cbb \
+    --hash=sha256:1e247dbecc6ce057299eb7ee019ad68314bb93152e81d9a6110d35f4d5eca0f6
 
 # Connect to PostgreSQL
 psycopg2==2.6.1 \
+    --hash=sha256:6d196184d1e8b140bc5af1d5eeda8aeed26a241317d8860992e83e8acefa6177 \
+    --hash=sha256:09cb52215db4a8c68a765f2da33fafbd049e7611cb70708ff8c5f7a3c89ce364 \
+    --hash=sha256:fe8446b2f680a99ac114af2c90f8b69e56052ff4d2359c510a8dc61d252ac325 \
+    --hash=sha256:0d9f8043c3d2262a7ad2d8cf8dfd2630b12207e69b829b6f4092e47556a3f572 \
+    --hash=sha256:7ccbe6665535bc0cc13c83dab71b424bde0999f5f0a69b29b557ecc41cd0f8dc \
+    --hash=sha256:d9468943b49c798d3fada2e76dd59832eb786e0b0196a108de7ed3aae3ca16c1 \
+    --hash=sha256:5515581466f1a7aa74f7b435311bdbd686b2f2dda4f0c7c95f802c444b05eda9 \
+    --hash=sha256:0cf35f41d1c87b01ce0b3cb0b88d64285a2c9bf95c1f5299ae9dcaa6fdd8c66c \
+    --hash=sha256:267814317483571e637a32d15d71ef6c8e3b05a2ecba97b2b0d71fa7ea9eb1f5 \
+    --hash=sha256:2c1d3c0e4c929f1401879cb5ce9a043afce85255f9439bd7cebaf025149c5a20 \
     --hash=sha256:6acf9abbbe757ef75dc2ecd9d91ba749547941abaffbe69ff2086a9e37d4904c
 
 # Async task management
 celery==3.1.19 \
-    --hash=sha256:434b4e62308428b0e83fbcd1cebb8853beb230237b1b23484063fcf1ff610b6e
+    --hash=sha256:434b4e62308428b0e83fbcd1cebb8853beb230237b1b23484063fcf1ff610b6e \
+    --hash=sha256:bd6a21290c822ecf78947a7dbc8b2270d88a5fa08a7a2bfcd908bb3d5ed66b71
 
 # Modified Preorder Tree Traversal
 django-mptt==0.8.0 \
+    --hash=sha256:98687f1a25687f53e38f32884f6d589c95e421400ec75f68f3262a75b9b1b6e4 \
     --hash=sha256:4cd88980f3d66ec021f9cdafcaa92d9f831b5f397679ac40302159d69eaef17a
 
 # Sorted ManyToManyField
@@ -57,6 +76,7 @@ django-sortedm2m==1.1.1 \
 
 # Cached instances for Django REST Framework
 drf-cached-instances==0.3.3 \
+    --hash=sha256:e34ad8be712f6a72f0011956a8a4cfb1a096839f9ef5e1db74f7a10896304e88 \
     --hash=sha256:c924c8d2ee4b9b62df3919180cb3b4b969dd547a07179bd3e96637973c3fc677
 
 # CORS headers in middleware

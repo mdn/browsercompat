@@ -5,7 +5,8 @@
 
 # WSGI runner, used in Heroku
 gunicorn==19.4.5 \
-    --hash=sha256:c57f1b005a4b90933303c8deed9bedeb509331aa6a0a990023a5796e52bd8988
+    --hash=sha256:c57f1b005a4b90933303c8deed9bedeb509331aa6a0a990023a5796e52bd8988 \
+    --hash=sha256:53b58044764ad79d732af18c580b1a54b724adf4d290ec19c4ca78ab22a1ee0d
 
 # Serve static files
 dj-static==0.0.6 \
