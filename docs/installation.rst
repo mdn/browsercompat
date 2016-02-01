@@ -24,7 +24,7 @@ instructions, see the `Installation page on the wiki`_.
 4. `Clone project locally`_.
 5. `Create a virtualenv`_.
 6. Install dependencies with
-   ``pip install -r requirements.txt -r requirements-dev.txt``.
+   ``pip install -r requirements/development.txt``.
 7. Customize the configuration with environment variables.
    See ``wpcsite/settings.py`` and ``env.dist`` for advice and available
    settings.

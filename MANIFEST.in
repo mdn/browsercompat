@@ -1,6 +1,6 @@
 include LICENSE CONTRIBUTING.rst HISTORY.rst README.rst
 include Makefile manage.py
-include requirements.txt requirements-dev.txt
+include requirements.txt
 include Procfile app.json
 include env.dist
 
@@ -16,6 +16,7 @@ recursive-include tools *.py *.sh
 recursive-include mdn *.py
 recursive-include mdn/jinja2 *.html
 recursive-include mdn/static *.css
+recursive-include requirements *.txt
 recursive-include webplatformcompat/migrations *.py
 recursive-include webplatformcompat/static *.css *.map *.eot *.svg *.ttf *.woff *.js .keep
 recursive-include webplatformcompat/jinja2 *.html
