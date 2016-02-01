@@ -1,0 +1,10 @@
+# Shared requirements
+# In the application, these are direct requirements
+# When building documentation, these are indirect requirements
+
+# Better templates
+MarkupSafe==0.23
+Jinja2==2.8
+
+# Timezone info
+pytz==2015.7

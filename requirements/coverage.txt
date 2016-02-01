@@ -1,0 +1,6 @@
+# Requirements for test coverage
+
+coverage==4.0.3
+docopt==0.6.2
+PyYAML==3.11
+coveralls==1.1
