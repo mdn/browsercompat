@@ -7,19 +7,25 @@
 -c constraints.txt
 
 # Multi-environment testing
-tox==2.3.1
+tox==2.3.1 \
+    --hash=sha256:1823c93ca378092c10bbde428213d3f5066b30adb09e5c001087a83e3e0a402a
 
 # MANIFEST.in checker
-check-manifest==0.30
+check-manifest==0.30 \
+    --hash=sha256:c931551369d4a1246c09bf7f102a56c338304f3543ae4cf4815dcead584cb13b
 
 # Package QA
-pyroma==1.8.3
+pyroma==1.8.3 \
+    --hash=sha256:c40a844c277e4f7ae0078d223b7ce57ec2836de8b2e092350fecac985b863a59
 
 # For ./manage.py runserver_plus
-Werkzeug==0.11.3
+Werkzeug==0.11.3 \
+    --hash=sha256:69491b5305157c3c6e0f04a701984d6ae77fd729fc1c9acd25077f1df385326b
 
 # Better shell, debugger
-ipdb==0.8.1
+ipdb==0.8.1 \
+    --hash=sha256:1763d1564113f5eb89df77879a8d3213273c4d7ff93dcb37a3070cdf0c34fd7c
 
 # Request/Response Debugging
-django-debug-toolbar==1.4
+django-debug-toolbar==1.4 \
+    --hash=sha256:852a37b80df9597048591ebc87d0ce85a4edceaef015dc5360ad89cc5960c27b

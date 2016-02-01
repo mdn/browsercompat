@@ -2,7 +2,11 @@
 
 -c constraints.txt
 
-flake8==2.5.1
-pep257==0.7.0
-flake8-docstrings==0.2.4
-flake8-quotes==0.1.1
+flake8==2.5.1 \
+    --hash=sha256:34f13d083fb9e5b1728acc3dd10886b40fa254efe03b97ed01ced58926c38dbd
+pep257==0.7.0 \
+    --hash=sha256:d26cd2a4f572e0592f6967277136f581f924a4fe2aa38dcb7d4e532232689e80
+flake8-docstrings==0.2.4 \
+    --hash=sha256:1857aa046ffadb51577c42e97aedf9763a353ab2a1cc288ed4a7dd0b94373f2f
+flake8-quotes==0.1.1 \
+    --hash=sha256:efcbedae4b0a5fb721596572774c85fbea09e6bc9fe2d3b05d52adbd7ea883e7

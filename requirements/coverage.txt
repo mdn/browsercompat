@@ -2,5 +2,10 @@
 
 -c constraints.txt
 
-coverage==4.0.3
-coveralls==1.1
+# Test coverage
+coverage==4.0.3 \
+    --hash=sha256:94c1e66610807a7917d967ed6415b9d5fde7487ab2a07bb5e054567865ef6ef0 \
+    --hash=sha256:99043494b28d6460035dd9410269cdb437ee460edc7f96f07ab45c57ba95e651 \
+    --hash=sha256:85b1275b6d7a61ccc8024a4e9a4c9e896394776edce1a5d075ec116f91925462
+coveralls==1.1 \
+    --hash=sha256:ff403f4ddf6937327ef267735ac987a0f8fdd083d0f26f0002549ef68451e886
