@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 """Parser for JSON API RC1."""
 
-from collections import OrderedDict
-
 from rest_framework.exceptions import ParseError
-from rest_framework.parsers import JSONParser
+
+from ..parsers import JSONParser
 
 
 class JsonApiRC1Parser(JSONParser):
     media_type = 'application/vnd.api+json'
-    dict_class = OrderedDict
 
     def parse(self, stream, media_type=None, parser_context=None):
         """Parse JSON API representation into DRF native format."""
