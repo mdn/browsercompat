@@ -1,12 +1,12 @@
 # Requirements for production / Heroku
 
 -r application.txt
+-c constraints.txt
 
 # WSGI runner, used in Heroku
 gunicorn==19.4.5
 
 # Serve static files
-static3==0.6.1
 dj-static==0.0.6
 
 # Fast Memcache connections, and tell Heroku to install C dependencies
@@ -15,7 +15,6 @@ django-pylibmc==0.6.1
 django-pylibmc-sasl==0.2.4
 
 # Redis for caching, celery backend
-redis==2.10.5
 django-redis==4.3.0
 
 # New Relic, monitoring agent

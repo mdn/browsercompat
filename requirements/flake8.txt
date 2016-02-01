@@ -1,8 +1,7 @@
 # Requirements for PEP8, PEP257 and static analysis
 
-mccabe==0.3.1
-pep8==1.7.0
-pyflakes==1.0.0
+-c constraints.txt
+
 flake8==2.5.1
 pep257==0.7.0
 flake8-docstrings==0.2.4

@@ -4,11 +4,9 @@
 -r documentation.txt
 -r flake8.txt
 -r coverage.txt
+-c constraints.txt
 
 # Multi-environment testing
-py==1.4.31
-pluggy==0.3.1
-virtualenv==14.0.0
 tox==2.3.1
 
 # MANIFEST.in checker
@@ -21,10 +19,7 @@ pyroma==1.8.3
 Werkzeug==0.11.3
 
 # Better shell, debugger
-gnureadline==6.3.3
-ipython==4.0.3
 ipdb==0.8.1
 
-# Debugging
-sqlparse==0.1.18
+# Request/Response Debugging
 django-debug-toolbar==1.4

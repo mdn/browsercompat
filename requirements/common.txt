@@ -1,9 +1,8 @@
-# Shared requirements
-# In the application, these are direct requirements
-# When building documentation, these are indirect requirements
+# Shared requirements, used by application and documentation
+
+-c constraints.txt
 
 # Better templates
-MarkupSafe==0.23
 Jinja2==2.8
 
 # Timezone info

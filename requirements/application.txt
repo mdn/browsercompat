@@ -1,5 +1,6 @@
 # Requirements for the application
 -r common.txt
+-c constraints.txt
 
 # Django
 Django==1.8.8  # rq.filter: >=1.8, <1.9
@@ -10,7 +11,6 @@ Markdown==2.6.5
 django-filter==0.12.0
 
 # Django extensions
-six==1.10.0
 django-extensions==1.6.1
 
 # History of changes to models
@@ -21,7 +21,6 @@ dj-database-url==0.3.0
 python-decouple==3.0
 
 # Better test runner (included in settings)
-nose==1.3.7
 nose-ignore-docstring==0.2
 django-nose==1.4.3
 
@@ -31,11 +30,7 @@ mock==1.3.0
 # Connect to PostgreSQL
 psycopg2==2.6.1
 
-# Celery - async task management
-billiard==3.3.0.22
-amqp==1.4.9
-anyjson==0.3.3
-kombu==3.0.33
+# Async task management
 celery==3.1.19
 
 # Modified Preorder Tree Traversal
@@ -58,11 +53,6 @@ https://github.com/ottoyiu/django-cors-headers/archive/1e7bf86.zip#egg=django-co
 https://github.com/erikrose/parsimonious/archive/20863d86a.zip#egg=parsimonious
 
 # Social loging support (Firefox Accounts)
-# python-openid >= 2.2.5  # Python 2.x - unused by app
-# python3-openid >= 3.0.1 # Python 3.x - unused by app
-requests==2.9.1
-oauthlib==1.0.3
-requests-oauthlib==0.6.0
 django-allauth==0.24.1
 
 # Unicode-aware CSVs
