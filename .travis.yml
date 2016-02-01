@@ -1,6 +1,7 @@
 # Config file for automatic testing at travis-ci.org
 sudo: false
 language: python
+python: "3.4"
 env:
     global:
         - DATABASE_URL="postgres://postgres@localhost:5432/travis_ci_test"
