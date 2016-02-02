@@ -1,18 +1,21 @@
 # Config file for automatic testing at travis-ci.org
 sudo: false
 language: python
+python: "3.5"
 env:
     global:
         - DATABASE_URL="postgres://postgres@localhost:5432/travis_ci_test"
     matrix:
         - TOXENV=py27
-        - TOXENV=py34
+        - TOXENV=py35
         - TOXENV=docs
         - TOXENV=flake8
         - TOXENV=coverage
         - TOXENV=integration
 
-install: pip install tox
+install:
+    - pip install --upgrade pip wheel
+    - pip install tox
 before_script: psql -c 'create database travis_ci_test;' -U postgres
 script: tox
 notifications:

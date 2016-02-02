@@ -7,7 +7,7 @@ For detailed local installation instructions, including OS-specific
 instructions, see the `Installation page on the wiki`_.
 
 1. Install system packages and libraries.  The required packages are
-   Python_ (2.7, 3.4, or both),
+   Python_ (2.7, 3.5, or both),
    pip_ (latest), and
    virtualenv_ (latest).
    To match production and for a smooth installation of Python packages,
@@ -24,7 +24,7 @@ instructions, see the `Installation page on the wiki`_.
 4. `Clone project locally`_.
 5. `Create a virtualenv`_.
 6. Install dependencies with
-   ``pip install -r requirements.txt -r requirements-dev.txt``.
+   ``pip install -r requirements/development.txt``.
 7. Customize the configuration with environment variables.
    See ``wpcsite/settings.py`` and ``env.dist`` for advice and available
    settings.

@@ -1,0 +1,29 @@
+# Requirements for production / Heroku
+
+-r application.txt
+-c constraints.txt
+
+# WSGI runner, used in Heroku
+gunicorn==19.4.5 \
+    --hash=sha256:c57f1b005a4b90933303c8deed9bedeb509331aa6a0a990023a5796e52bd8988 \
+    --hash=sha256:53b58044764ad79d732af18c580b1a54b724adf4d290ec19c4ca78ab22a1ee0d
+
+# Serve static files
+dj-static==0.0.6 \
+    --hash=sha256:032ec1c532617922e6e3e956d504a6fb1acce4fc1c7c94612d0fda21828ce8ef
+
+# Fast Memcache connections, and tell Heroku to install C dependencies
+pylibmc==1.5.0 \
+    --hash=sha256:16255595616a6d78cd786a55cc6431da5b7accf46512df854712a0cdbb3acfaa
+django-pylibmc==0.6.1 \
+    --hash=sha256:9cffdee703aaf9ebc029d9dbdee8abdd0723564b95e4b2ac59e4a668b8e58f93
+django-pylibmc-sasl==0.2.4 \
+    --hash=sha256:68515c7b8913ff1b73a80048f52f412df31674372d361ea4a7d17765933ba6d5
+
+# Redis for caching, celery backend
+django-redis==4.3.0 \
+    --hash=sha256:958485cb5e281d292e12ac6602c78bf19a8e9ff76527a50a6496d5665c89a004
+
+# New Relic, monitoring agent
+newrelic==2.60.0.46 \
+    --hash=sha256:17d598fccca0845c0337e5276d40d65f951afea6adf9bd9172cff3a87f2ef294

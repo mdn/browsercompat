@@ -4,7 +4,7 @@ from __future__ import unicode_literals, print_function
 from collections import OrderedDict
 from difflib import ndiff
 from io import open
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 import json
 import logging
 import os

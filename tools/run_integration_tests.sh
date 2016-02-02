@@ -62,9 +62,10 @@ gen_rand_string () {
     local length=$1
     if [ -z $length ]; then length=10; fi
     python -c "\
+from __future__ import print_function;\
 import string, random;\
 chars = string.ascii_uppercase + string.ascii_lowercase + string.digits;\
-print ''.join(random.SystemRandom().choice(chars) for _ in range($length));\
+print(''.join(random.SystemRandom().choice(chars) for _ in range($length)));\
 "
 }
 

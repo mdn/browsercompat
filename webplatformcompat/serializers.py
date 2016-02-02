@@ -596,19 +596,25 @@ class ArchiveMixin(object):
         """Modify fields when loading or preparing an archive."""
         fields = super(ArchiveMixin, self).get_fields()
         fields_extra = getattr(self.Meta, 'fields_extra', {})
+        to_delete = []
+        append_id = []
         for field_name, field in fields.items():
             field_extra = fields_extra.get(field_name, {})
             archive = field_extra.get('archive')
             link = field_extra.get('link')
             if archive == 'omit':
                 # Does not appear in archived representation
-                del fields[field_name]
+                to_delete.append(field_name)
             elif link in ('from_one', 'from_many'):
                 # Defer loading until HistoricalObjectSerializer.get_archive
-                del fields[field_name]
+                to_delete.append(field_name)
             elif link == 'to_one':
                 # Use the name_id field
-                field.source = field_name + '_id'
+                append_id.append(field_name)
+        for field_name in to_delete:
+            del fields[field_name]
+        for field_name in append_id:
+            fields[field_name].source = field_name + '_id'
         return fields
 
 
