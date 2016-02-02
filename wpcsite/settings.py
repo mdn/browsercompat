@@ -70,6 +70,7 @@ SERVER_EMAIL - Email "From" address for error messages to admins
 SESSION_COOKIE_SECURE - Only send session cookies on HTTPS connections
 STATIC_ROOT - Overrides STATIC_ROOT
 USE_DRF_INSTANCE_CACHE - 1 to enable, 0 to disable, default enabled
+USE_CACHE - 1 to enable, 0 to disable, default enabled
 X_FRAME_OPTIONS - Set X-Frame-Options value
 """
 from os import path
@@ -270,8 +271,9 @@ _memcachier_servers = config(
     'MEMCACHIER_SERVERS', default='').replace(',', ';')
 _memcache_servers = config('MEMCACHE_SERVERS', default=_memcachier_servers)
 _redis_url = config('REDIS_URL', default='')
+_use_cache = config('USE_CACHE', default=True, cast=bool) and not TESTING
 
-if _memcache_servers and not TESTING:
+if _memcache_servers and _use_cache:
     _memcachier_username = config('MEMCACHIER_USERNAME', default='')
     _memcachier_password = config('MEMCACHIER_PASSWORD', default='')
     _memcache_username = config(
@@ -302,7 +304,7 @@ if _memcache_servers and not TESTING:
             },
         },
     }
-elif _redis_url and not TESTING:
+elif _redis_url and _use_cache:
     # Use redis
     CACHES = {
         'default': {
