@@ -150,6 +150,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_nose',
     'mptt',
+    'oauth2_provider',
     'simple_history',
     'rest_framework',
     'sortedm2m',
