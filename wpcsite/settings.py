@@ -129,6 +129,7 @@ CSRF_COOKIE_SECURE = config(
 X_FRAME_OPTIONS = config('X_FRAME_OPTIONS', default='SAMEORIGIN')
 
 AUTHENTICATION_BACKENDS = (
+    'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
@@ -166,6 +167,7 @@ INSTALLED_APPS.extend(
 MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -348,6 +350,10 @@ MDN_SHOW_REPARSE = config('MDN_SHOW_REPARSE', default=DEBUG, cast=bool)
 
 # Django REST Framework
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'webplatformcompat.renderers.BrowsableAPIRenderer',
