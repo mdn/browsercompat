@@ -1,0 +1,26 @@
+{% extends "account/profile.html" %}
+
+{% block head_subtitle %} - {{ _("OAuth2 Tokens") }}{% endblock %}
+{% block body_title %}{{ _("OAuth2 Tokens") }}{% endblock %}
+{% block content %}
+{% if authorized_tokens %}
+<p>{{ _("These are the OAuth2 applications that you've authorized.") }}</p>
+<ul>
+  {% for authorized_token in authorized_tokens %}
+  <li>{{ _("%(app_name)s (<a href=\"%(revoke_url)s\">revoke</a>)") | safe | format(
+            app_name=authorized_token.application,
+            revoke_url=url('oauth2_provider:authorized-token-delete', authorized_token.pk)|e
+         )}}
+      <dl>
+      {% for scope_name, scope_description in authorized_token.scopes.items() %}
+        <dt>{{scope_name}}</dt>
+        <dd>{{scope_description}}</dd>
+      {% endfor %}
+      </dl>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>{{ _("You haven't authorized any OAuth2 applications yet.") }}</p>
+{% endif %}
+{% endblock %}

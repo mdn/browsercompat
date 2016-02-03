@@ -28,6 +28,12 @@
       <li role="presentation" {%- if request.path.startswith('/accounts/email/') %} class="active" {% endif %}>
         <a href="{{url("account_email")}}">Email</a>
       </li>
+      <li role="presentation" {%- if request.path.startswith('/oauth2/authorized_tokens/') %} class="active" {% endif %}>
+        <a href="{{url("oauth2_provider:authorized-token-list")}}">Tokens</a>
+      </li>
+      <li role="presentation" {%- if request.path.startswith('/oauth2/applications/') %} class="active" {% endif %}>
+        <a href="{{url("oauth2_provider:list")}}">Apps</a>
+      </li>
       <li role="presentation" {%- if request.path.startswith(url('account_logout')) %} class="active" {% endif %}>
         <a href="{{url("account_logout")}}">Sign Out</a>
       </li>
