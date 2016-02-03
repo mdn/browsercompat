@@ -1,9 +1,9 @@
 """Main URL configuration for website."""
-from oauth2_provider import urls as oauth2_provider_urls
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
 from bcauth.urls import bcauth_urlpatterns
+from bcauth.oauth2p import urls as oauth2_provider_urls
 from webplatformcompat.urls import webplatformcompat_urlpatterns
 
 urlpatterns = patterns(
