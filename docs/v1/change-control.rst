@@ -46,7 +46,7 @@ A sample response is:
 .. code-block:: http
 
     GET /api/v1/users/me HTTP/1.1
-    Host: browsersupports.org
+    Host: browsercompat.org
     Accept: application/vnd.api+json
 
 Changesets
