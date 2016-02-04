@@ -154,12 +154,14 @@ if [ $WITH_CELERY -eq 0 ]; then
     unset CELERY_RESULT_BACKEND
     unset BROKER_URL
     export CELERY_ALWAYS_EAGER=1
+    export USE_CACHE=0
 else
     REDIS_DB=7
     export REDIS_URL="redis://localhost/$REDIS_DB"
     export CELERY_RESULT_BACKEND=$REDIS_URL
     export BROKER_URL=$REDIS_URL
     export CELERY_ALWAYS_EAGER=0
+    export USE_CACHE=1
     echo "Flushing Redis DB $REDIS_DB"
     redis-cli -n $REDIS_DB flushdb
 fi

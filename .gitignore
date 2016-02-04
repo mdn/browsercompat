@@ -54,3 +54,7 @@ data/
 
 # SQLite databases
 *.sqlite3
+
+# Local environment overrides
+.env
+settings.ini
