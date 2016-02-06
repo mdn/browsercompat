@@ -22,7 +22,7 @@
           {% for error in field.errors %}
             <span class="help-inline">{{ error }}</span>
           {% endfor %}
-          {% if field.help_text %}<span id="{{ field.id_for_label + 'HelpBlock'}}" class='help-block'>{{ field.help_text }}</span>{% endif %}
+          {% if field.help_text %}<span id="{{ field.id_for_label + 'HelpBlock' }}" class="help-block">{{ field.help_text }}</span>{% endif %}
         </div>
     </div>
   {% endfor %}

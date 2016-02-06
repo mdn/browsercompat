@@ -11,7 +11,7 @@
       {%- endfor %}
     </ul>
     <a class="btn btn-success" href="{{ url("oauth2_provider:register") }}">{{_("New Application")}}</a>
-    {% else %}
+  {% else %}
     <p>{{ _("No applications defined. Do you want one? <a href=\"%(register_url)s\">Register your application</a>.")|safe|format(register_url=url("oauth2_provider:register")) }}</p>
   {% endif %}
 {% endblock content %}

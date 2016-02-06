@@ -13,9 +13,9 @@
     {{ csrf_input }}
 
     {% for field in form %}
-        {% if field.is_hidden %}
-            {{ field }}
-        {% endif %}
+      {% if field.is_hidden %}
+        {{ field }}
+      {% endif %}
     {% endfor %}
 
     <p>{{ _("The application requires the following permissions:") }}</p>
