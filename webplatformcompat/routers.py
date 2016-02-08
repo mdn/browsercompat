@@ -95,10 +95,11 @@ class GroupedRouter(DefaultRouter):
 
                 # Add endpoints that include the format as an extension
                 fmt_name = name
-                fmt_regex_suffix = r'\.(?P<format>(api|json))/?$'
+                fmt_suffixes = '|'.join(
+                    getattr(viewset, 'format_suffixes', ('api', 'json')))
+                fmt_regex_suffix = (
+                    r'\.(?P<format>({}))/?$'.format(fmt_suffixes))
                 fmt_base_pattern = regex.rstrip('$')
-                if name == 'viewfeatures-detail':
-                    fmt_regex_suffix = r'\.(?P<format>(api|json|html))/?$'
                 fmt_regex = fmt_base_pattern + fmt_regex_suffix
                 fmt_view = viewset.as_view(mapping, **route.initkwargs)
                 urls.append(url(fmt_regex, fmt_view, name=fmt_name))

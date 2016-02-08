@@ -188,6 +188,7 @@ class HistoricalVersionBaseViewSet(ReadOnlyModelViewSet):
 
 class ViewFeaturesBaseViewSet(ReadUpdateModelViewSet):
     queryset = Feature.objects.order_by('id')
+    format_suffixes = ('api', 'json', 'html')
 
     def get_serializer_class(self):
         """Return the serializer to use based on action and query."""
