@@ -68,6 +68,12 @@ class RelatedActionMixin(object):
         renderer_context = self.add_related_context(renderer_context)
         return renderer_context
 
+    def get_parser_context(self, http_request):
+        parser_context = super(
+            RelatedActionMixin, self).get_parser_context(http_request)
+        parser_context = self.add_related_context(parser_context)
+        return parser_context
+
     def filter_queryset(self, queryset):
         """Apply filters from the query string and the view."""
         filter_params = self.get_filter_params()

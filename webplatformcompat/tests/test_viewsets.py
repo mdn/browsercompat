@@ -83,4 +83,3 @@ class TestViewFeatureBaseViewset(APITestCase):
         url = self.api_reverse('viewfeatures-detail', pk='666') + '.html'
         response = self.client.get(url)
         self.assertEqual(404, response.status_code)
-        self.assertEqual('404 Not Found', response.content.decode('utf8'))

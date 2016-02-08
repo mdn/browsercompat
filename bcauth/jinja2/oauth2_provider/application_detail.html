@@ -1,0 +1,26 @@
+{% extends "account/profile.html" %}
+{% block head_subtitle %} - {{ _("OAuth2 Client Application") }} - {{ _("Details") }}{% endblock %}
+{% block body_title %}{{ _("OAuth2 Client Application") }} - {{ _("Details") }}{% endblock %}
+
+{% block content %}
+  <p>{{ _("Here are the details of your OAuth2 Client Application:") }}</p>
+  <dl>
+    <dt>{{ _("Application Name")}}</dt>
+    <dd>{{ application.name }}</dd>
+    <dt>{{ _("Client ID") }}</dt>
+    <dd><code>{{ application.client_id }}</code></dd>
+    <dt>{{ _("Client Secret") }}</dt>
+    <dd><code>{{ application.client_secret }}</code></dd>
+    <dt>{{ _("Client Type") }}</dt>
+    <dd>{{ application.client_type }}</dd>
+    <dt>{{ _("Authorization Grant Type") }}</dt>
+    <dd>{{ application.authorization_grant_type }}</dd>
+    <dt>{{ _("Redirect URIs") }}</dt>
+    <dd><p>{{ application.redirect_uris }}</p></dd>
+  </dl>
+  <div class="btn-toolbar">
+    <a class="btn" href="{{ url("oauth2_provider:list") }}">{{ _("Go Back") }}</a>
+    <a class="btn btn-primary" href="{{ url("oauth2_provider:update", application.id) }}">{{ _("Edit") }}</a>
+    <a class="btn btn-danger" href="{{ url("oauth2_provider:delete", application.id) }}">{{ _("Delete") }}</a>
+  </div>
+{% endblock content %}

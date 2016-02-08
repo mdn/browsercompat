@@ -1,0 +1,17 @@
+{% extends "account/profile.html" %}
+{% block head_subtitle %} - {{ _("OAuth2 Client Applications") }}{% endblock %}
+{% block body_title %}{{ _("OAuth2 Client Applications") }}{% endblock %}
+
+{% block content %}
+  <p>{{ _("OAuth2 client applications are used for programatically updating API data.") }}</p>
+  {% if applications %}
+    <ul>
+      {% for application in applications -%}
+      <li><a href="{{ application.get_absolute_url() }}">{{ application.name }}</a></li>
+      {%- endfor %}
+    </ul>
+    <a class="btn btn-success" href="{{ url("oauth2_provider:register") }}">{{_("New Application")}}</a>
+  {% else %}
+    <p>{{ _("No applications defined. Do you want one? <a href=\"%(register_url)s\">Register your application</a>.")|safe|format(register_url=url("oauth2_provider:register")) }}</p>
+  {% endif %}
+{% endblock content %}

@@ -1,0 +1,39 @@
+{% extends "account/profile.html" %}
+
+{% block head_subtitle %} - {{ _("Authorize Application") }}{% endblock %}
+{% block body_title %}{{ _("Authorize Application") }}{% endblock %}
+
+{% block content %}
+{% if error %}
+  <h3>{{ _("Error: %(error)s") | format(error=error.error) }}</h3>
+  <p>{{ error.description }}</p>
+{% else %}
+  <form id="authorizationForm" method="post">
+    <h3>{{ _("Authorize %(app_name)s?") | format(app_name=application.name) }}</h3>
+    {{ csrf_input }}
+
+    {% for field in form %}
+      {% if field.is_hidden %}
+        {{ field }}
+      {% endif %}
+    {% endfor %}
+
+    <p>{{ _("The application requires the following permissions:") }}</p>
+    <ul>
+      {% for scope in scopes_descriptions -%}
+      <li>{{ scope }}</li>
+      {%- endfor %}
+    </ul>
+
+    {{ form.errors }}
+    {{ form.non_field_errors() }}
+
+    <div class="control-group">
+      <div class="controls">
+        <input type="submit" class="btn btn-large" value="{{_("Cancel")}}" />
+        <input type="submit" class="btn btn-large btn-primary" name="allow" value="{{ _("Authorize") }}" />
+      </div>
+    </div>
+  </form>
+{% endif %}
+{% endblock content %}

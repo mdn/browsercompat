@@ -161,7 +161,7 @@ example that adds a new subfeature without support:
 .. code-block:: http
 
     PUT /api/v1/view_features/html-element-address HTTP/1.1
-    Host: browsersupports.org
+    Host: browsercompat.org
     Content-Type: application/vnd.api+json
     Authorization: Bearer mF_9.B5f-4.1JqM
 

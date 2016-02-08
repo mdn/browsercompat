@@ -1,0 +1,18 @@
+{% extends "account/profile.html" %}
+
+{% block head_subtitle %} - {{ _("OAuth2 Client Application") }} - {{ _("Delete") }}{% endblock %}
+{% block body_title %}{{ _("OAuth2 Client Application") }} - {{ _("Delete") }}{% endblock %}
+
+{% block content %}
+    <h3>{{ _("Are you sure to delete the application %(app_name)s?") | format(app_name=application.name) }}</h3>
+    <form method="post" action="{{ url('oauth2_provider:delete', application.pk) }}">
+        {{ csrf_input }}
+
+        <div class="control-group">
+            <div class="controls">
+                <a class="btn btn-large" href="{{ url("oauth2_provider:list") }}">{{ _("Cancel") }}</a>
+                <input type="submit" class="btn btn-large btn-danger" name="allow" value="{{ _("Delete") }}"/>
+            </div>
+        </div>
+    </form>
+{% endblock content %}

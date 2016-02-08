@@ -98,3 +98,7 @@ django-allauth==0.24.1 \
 # Unicode-aware CSVs
 unicodecsv==0.14.1 \
     --hash=sha256:018c08037d48649a0412063ff4eda26eaa81eff1546dbffa51fa5293276ff7fc
+
+# OAuth2 provider for clients
+django-oauth-toolkit==0.10.0 \
+    --hash=sha256:22dcf08674a0b7d7fa7e8abd97d9df9884c1222de3f148473d60d2d7e2ed399a
