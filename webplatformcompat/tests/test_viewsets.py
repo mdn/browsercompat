@@ -14,8 +14,27 @@ from webplatformcompat.models import Feature
 from .base import APITestCase
 
 
+class TestUserBaseViewset(APITestCase):
+    """Test users resource viewset."""
+
+    __test__ = False  # Don't test against an unversioned API
+
+    def setUp(self):
+        self.me_url = self.api_reverse('user-me')
+
+    def test_me_anonymous(self):
+        response = self.client.get(self.me_url)
+        self.assertIn(response.status_code, (401, 403))
+
+    def test_me_logged_in(self):
+        self.login_user()
+        response = self.client.get(self.me_url)
+        expected_url = self.api_reverse('user-detail', pk=self.user.pk)
+        self.assertRedirects(response, expected_url)
+
+
 class TestViewFeatureBaseViewset(APITestCase):
-    __test__ = False  # Don't test again an unversioned API
+    __test__ = False  # Don't test against an unversioned API
 
     def setUp(self):
         self.queryset = Feature.objects.all()

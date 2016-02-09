@@ -12,8 +12,8 @@ from webplatformcompat.models import (
     Browser, Feature, Maturity, Section, Specification, Support, Version)
 
 from webplatformcompat.v1.viewsets import ViewFeaturesViewSet
-from .base import APITestCase
-from ..test_viewsets import TestViewFeatureBaseViewset
+from .base import APITestCase, NamespaceMixin
+from ..test_viewsets import TestUserBaseViewset, TestViewFeatureBaseViewset
 
 
 class TestBrowserViewset(APITestCase):
@@ -441,9 +441,12 @@ class TestHistoricaBrowserViewset(APITestCase):
         self.assertDataEqual(expected_json, actual_json)
 
 
-class TestViewFeatureViewset(TestViewFeatureBaseViewset):
-    namespace = 'v1'
-    __test__ = True
+class TestUserViewset(NamespaceMixin, TestUserBaseViewset):
+    """Test users/me UserViewSet."""
+
+
+class TestViewFeatureViewset(NamespaceMixin, TestViewFeatureBaseViewset):
+    """Test helper functions on ViewFeaturesViewSet."""
 
     def setUp(self):
         super(TestViewFeatureViewset, self).setUp()

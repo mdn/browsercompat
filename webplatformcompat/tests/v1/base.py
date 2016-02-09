@@ -4,13 +4,16 @@ from ..base import TestCase as BaseTestCase
 from ..base import APITestCase as BaseAPITestCase
 
 
-class TestCase(BaseTestCase):
+class NamespaceMixin(object):
+    """Designate the namespace for tests."""
+
+    namespace = 'v1'
+    __test__ = True  # Run these tests if disabled in base class
+
+
+class TestCase(BaseTestCase, NamespaceMixin):
     """Useful methods for testing."""
 
-    namespace = 'v1'
 
-
-class APITestCase(BaseAPITestCase):
+class APITestCase(BaseAPITestCase, NamespaceMixin):
     """Useful methods for testing API endpoints."""
-
-    namespace = 'v1'

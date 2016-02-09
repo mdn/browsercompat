@@ -313,6 +313,7 @@ class UserViewSet(ReadOnlyMixin, UserBaseViewSet):
     related_routes = (
         RelatedListRoute('changesets', 'ChangesetViewSet', 'user_id'),
     )
+    namespace = 'v2'
 
 
 #
