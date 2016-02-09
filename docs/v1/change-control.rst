@@ -41,13 +41,24 @@ A sample response is:
     :language: json
 
 
-*Note:* `bug 1159354`_ *proposes this method for retrieving the authenticated user*:
+You can also request the authenticated user's resource:
 
-.. code-block:: http
+.. literalinclude:: /v1/raw/user-me-authenticated-request-headers.txt
+    :language: http
 
-    GET /api/v1/users/me HTTP/1.1
-    Host: browsercompat.org
-    Accept: application/vnd.api+json
+The response is a redirect to the user's resource:
+
+.. literalinclude:: /v1/raw/user-me-authenticated-response-headers.txt
+    :language: http
+
+If the request is made anonymously, then the response is an error:
+
+.. literalinclude:: /v1/raw/user-me-anon-response-headers.txt
+    :language: http
+
+.. literalinclude:: /v1/raw/user-me-anon-response-body.json
+    :language: json
+
 
 Changesets
 ----------
@@ -118,5 +129,4 @@ A sample response is:
 .. _historical_supports: history.html#historical-supports
 .. _historical_versions: history.html#historical-versions
 
-.. _`bug 1159354`: https://bugzilla.mozilla.org/show_bug.cgi?id=1159354
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601

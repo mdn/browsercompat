@@ -1,0 +1,3 @@
+HTTP/1.1 302 FOUND
+Content-Type: text/html; charset=utf-8
+Location: https://browsercompat.org/api/v1/users/1

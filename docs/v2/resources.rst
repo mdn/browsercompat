@@ -312,13 +312,23 @@ Here's an example **user**:
 .. literalinclude:: /v2/raw/user-by-id-response-body.json
     :language: json
 
-*Note:* `bug 1159354`_ *proposes this method for retrieving the authenticated user*:
+You can also request the authenticated user's resource:
 
-.. code-block:: http
+.. literalinclude:: /v2/raw/user-me-authenticated-request-headers.txt
+    :language: http
 
-    GET /api/v2/users/me HTTP/1.1
-    Host: browsercompat.org
-    Accept: application/vnd.api+json
+The response is a redirect to the user's resource:
+
+.. literalinclude:: /v2/raw/user-me-authenticated-response-headers.txt
+    :language: http
+
+If the request is made anonymously, then the response is an error:
+
+.. literalinclude:: /v2/raw/user-me-anon-response-headers.txt
+    :language: http
+
+.. literalinclude:: /v2/raw/user-me-anon-response-body.json
+    :language: json
 
 
 Changesets
@@ -543,7 +553,6 @@ Here is a sample **historical_maturity**:
 
 .. _`bug 1078699`: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699
 .. _`bug 1078699`: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699
-.. _`bug 1159354`: https://bugzilla.mozilla.org/show_bug.cgi?id=1159354
 .. _`bug 1216786`: https://bugzilla.mozilla.org/show_bug.cgi?id=1216786
 .. _`bug 1240785`: https://bugzilla.mozilla.org/show_bug.cgi?id=1240785
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic

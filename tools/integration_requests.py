@@ -351,7 +351,8 @@ class CaseRunner(object):
             raw_value = response.headers[header]
             value = self.parse_header(header, raw_value, 'response')
             if value:
-                parsed['response']['headers'][header.title()] = value
+                fixed_header = header.title().replace('Www', 'WWW')
+                parsed['response']['headers'][fixed_header] = value
 
         # Process response body
         body = response.text
@@ -393,15 +394,17 @@ class CaseRunner(object):
                 return value
             elif header.lower() not in (
                     'accept-encoding', 'connection', 'user-agent', 'referer'):
-                print('Unexpected request header %s: %s', header, value)
+                print('Unexpected request header %s: %s' % (header, value))
                 return value
         else:
-            if header.lower() == 'content-type':
+            if header.lower() in ('content-type', 'www-authenticate'):
                 return value
+            elif header.lower() == 'location':
+                return value.replace(api, self.doc_base_url)
             elif header.lower() not in (
                     'allow', 'date', 'server', 'vary', 'x-frame-options',
                     'content-length'):
-                print('Unexpected response header %s: %s', header, value)
+                print('Unexpected response header %s: %s' % (header, value))
                 return value
 
 
