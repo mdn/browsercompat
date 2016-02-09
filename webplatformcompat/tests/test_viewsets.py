@@ -59,15 +59,20 @@ class TestViewFeatureBaseViewset(APITestCase):
 
     def test_get_by_slug(self):
         feature = self.create(Feature, slug='feature')
-        ret = self.view.get_object_or_404(self.queryset, pk=feature.slug)
-        self.assertEqual(ret.pk, feature.pk)
-        with self.assertNumQueries(0):
-            self.assertIsNone(ret.parent_id)
+        url = self.api_reverse('viewfeatures-by-slug', slug=feature.slug)
+        real_url = self.api_reverse('viewfeatures-detail', pk=feature.pk)
+        request = APIRequestFactory().get(url)
+        ret = self.view.alternate_lookup(request, feature.slug)
+        self.assertEqual(ret.status_code, 302)
+        self.assertEqual(ret.url, real_url)
 
     def test_get_by_slug_not_found(self):
-        self.assertFalse(self.queryset.filter(slug='feature').exists())
+        slug = 'feature'
+        url = self.api_reverse('viewfeatures-by-slug', slug=slug)
+        self.assertFalse(self.queryset.filter(slug=slug).exists())
+        request = APIRequestFactory().get(url)
         self.assertRaises(
-            Http404, self.view.get_object_or_404, self.queryset, pk='feature')
+            Http404, self.view.alternate_lookup, request, slug)
 
     def test_feature_found_html(self):
         parent = self.create(Feature, slug='parent')
@@ -78,8 +83,19 @@ class TestViewFeatureBaseViewset(APITestCase):
         response = self.client.get(url)
         self.assertContains(response, '<h2>Browser compatibility</h2>')
 
+    def test_feature_found_by_slug_html(self):
+        parent = self.create(Feature, slug='parent')
+        feature = self.create(Feature, slug='feature', parent=parent)
+        self.create(Feature, slug='child', parent=feature)
+        url = self.api_reverse(
+            'viewfeatures-by-slug', slug=feature.slug, format='html')
+        real_url = self.api_reverse(
+            'viewfeatures-detail', pk=feature.pk, format='html')
+        response = self.client.get(url)
+        self.assertRedirects(response, real_url)
+
     def test_feature_not_found_html(self):
         self.assertFalse(Feature.objects.filter(id=666).exists())
-        url = self.api_reverse('viewfeatures-detail', pk='666') + '.html'
+        url = self.api_reverse('viewfeatures-by-slug', slug='666') + '.html'
         response = self.client.get(url)
         self.assertEqual(404, response.status_code)
