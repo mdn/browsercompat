@@ -55,8 +55,16 @@ EOF
 # and we don't use X server at all.
 apt-get autoremove -y -q
 
-# Put the database bits in DATABASE_URL
-echo "export DATABASE_URL=\"postgres://vagrant:vagrant@localhost/bc\"" >> /home/vagrant/.bashrc
+# Create a .env
+cat > /home/vagrant/src/.env <<EOF
+DJANGO_DEBUG=1
+EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend"
+SECRET_KEY="seatec astronomy"
+DATABASE_URL="postgres://vagrant:vagrant@localhost/bc"
+# MEMCACHE_SERVERS='localhost:11211'
+# MEMCACHE_USERNAME=''
+# MEMCACHE_PASSWORD=''
+EOF
 
 # Automatically activate the virtual environment in .bashrc
 echo ". $VENV/bin/activate" >> /home/vagrant/.bashrc
