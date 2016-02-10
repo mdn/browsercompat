@@ -102,3 +102,10 @@ unicodecsv==0.14.1 \
 # OAuth2 provider for clients
 django-oauth-toolkit==0.10.0 \
     --hash=sha256:22dcf08674a0b7d7fa7e8abd97d9df9884c1222de3f148473d60d2d7e2ed399a
+
+
+# Templates and localization
+django-jinja==2.1.2 \
+     --hash=sha256:fc2b6a65201b27711e800eb2e1262ff42a32f027bd2267e34121f1bd2bd6b933
+puente==0.4.1 \
+     --hash=sha256:bc5ee85521127577d23430832e2f827686efdb7ce95b232f54fbeb5b9166397c

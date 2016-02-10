@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 from django.test import override_settings
 from jinja2 import Markup
 
-from webplatformcompat.helpers import (
+from webplatformcompat.templatetags.helpers import (
     is_debug, pick_translation, trans_span, trans_str)
 
 from .base import TestCase

@@ -5,6 +5,7 @@ from allauth.socialaccount import providers
 from allauth.socialaccount.templatetags.socialaccount import \
     get_social_accounts, get_providers
 
+from django_jinja import library
 from jinja2 import contextfunction
 
 
@@ -21,6 +22,7 @@ def providers_media_js(context):
     return ret
 
 
+@library.global_function
 def provider_login_url(
         request, provider_id, process, scope=None, auth_params=None,
         next=None):
@@ -48,12 +50,6 @@ def provider_login_url(
     return provider.get_login_url(request, **query)
 
 
-env = {
-    'globals': {
-        'get_providers': get_providers,
-        'get_social_accounts': get_social_accounts,
-        'provider_login_url': provider_login_url,
-        'providers_media_js': providers_media_js,
-        'user_display': user_display,
-    }
-}
+library.global_function(get_providers)
+library.global_function(get_social_accounts)
+library.global_function(user_display)

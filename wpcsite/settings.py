@@ -149,12 +149,14 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'corsheaders',
     'django_extensions',
+    'django_jinja',
     'django_nose',
     'mptt',
     'oauth2_provider',
     'simple_history',
     'rest_framework',
     'sortedm2m',
+    'puente',
 
     'bcauth',
     'bcauth.socialaccount.providers.fxa',
@@ -226,12 +228,34 @@ USE_L10N = True
 USE_TZ = True
 
 # Templates
+_CONTEXT_PROCESSORS = [
+    'django.contrib.auth.context_processors.auth',
+    'django.template.context_processors.debug',
+    'django.template.context_processors.i18n',
+    'django.template.context_processors.media',
+    'django.template.context_processors.static',
+    'django.template.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+]
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'BACKEND': 'django_jinja.backend.Jinja2',
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
-            'environment': 'wpcsite.jinja2.environment',
+            # Use jinja2/ for jinja templates
+            'app_dirname': 'jinja2',
+            # Don't figure out which template loader to use based on file
+            # extension
+            'match_extension': '',
+            'newstyle_gettext': True,
+            'trim_blocks': True,
+            'context_processors': _CONTEXT_PROCESSORS,
+            'extensions': [
+                'jinja2.ext.autoescape',
+                'puente.ext.i18n',
+                'wpcsite.jinja2.WPCExtension',
+            ],
         },
     },
     {
@@ -242,18 +266,30 @@ TEMPLATES = [
         ),
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
-            ]
+            'context_processors': _CONTEXT_PROCESSORS,
         }
     },
 ]
+
+# L10n extraction configuration
+PUENTE = {
+    'BASE_DIR': BASE_DIR,
+    'DOMAIN_METHODS': {
+        'django': [
+            ('**/migrations/**', 'ignore'),
+
+            ('bcauth/**.py', 'python'),
+            ('bcauth/**/jinja2/**.html', 'jinja2'),
+
+            ('mdn/**.py', 'python'),
+            ('mdn/**/jinja2/**.html', 'jinja2'),
+
+            ('webplatformcompat/**.py', 'python'),
+            ('webplatformcompat/**/jinja2/**.html', 'jinja2'),
+        ]
+    },
+    'PROJECT': 'Mozilla Browsercompat',
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/

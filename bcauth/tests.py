@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 import mock
 
 from webplatformcompat.tests.base import TestCase
-from .helpers import providers_media_js, provider_login_url
+from .templatetags.helpers import providers_media_js, provider_login_url
 
 
 class TestViews(TestCase):
@@ -46,7 +46,7 @@ class TestViews(TestCase):
 class TestProvidersMediaJS(TestCase):
     def setUp(self):
         self.patcher = mock.patch(
-            'bcauth.helpers.providers.registry.get_list')
+            'bcauth.templatetags.helpers.providers.registry.get_list')
         self.mocked_get_list = self.patcher.start()
         self.context = {'request': 'fake request'}
 
@@ -71,7 +71,7 @@ class TestProvidersMediaJS(TestCase):
 class TestProviderLoginUrl(TestCase):
     def setUp(self):
         self.patcher = mock.patch(
-            'bcauth.helpers.providers.registry.by_id')
+            'bcauth.templatetags.helpers.providers.registry.by_id')
         self.mocked_by_id = self.patcher.start()
         self.context = {'request': 'fake request'}
         self.provider = mock.Mock(spec_set=['get_login_url'])

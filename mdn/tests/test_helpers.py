@@ -9,7 +9,7 @@ from django.core.paginator import Paginator
 from django.test import override_settings
 from django.utils.six.moves.urllib_parse import urlparse, parse_qsl
 
-from mdn.helpers import (
+from mdn.templatetags.helpers import (
     add_filter_to_current_url, drop_filter_from_current_url, page_list,
     pagination_control, can_reparse_mdn_import)
 from webplatformcompat.tests.base import TestCase as BaseTestCase

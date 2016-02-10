@@ -4,11 +4,13 @@ This file is loaded by jingo and must be named helpers.py
 """
 from django.conf import settings
 from django.utils.six.moves.urllib_parse import urlencode
+from django_jinja import library
 from jinja2 import contextfunction, Markup
 
-from .views import can_create, can_refresh
+from ..views import can_create, can_refresh
 
 
+@library.global_function
 @contextfunction
 def add_filter_to_current_url(context, name, value):
     """Add a filter to the current URL."""
@@ -25,6 +27,7 @@ def add_filter_to_current_url(context, name, value):
     return context['request'].path + '?' + urlencode(query_parts)
 
 
+@library.global_function
 @contextfunction
 def drop_filter_from_current_url(context, name):
     """Drop a filter from the current URL."""
@@ -65,6 +68,7 @@ def page_list(page_obj):
     return pages
 
 
+@library.global_function
 @contextfunction
 def pagination_control(context, page_obj):
     """Add a bootstrap-style pagination control.
@@ -144,34 +148,25 @@ def pagination_control(context, page_obj):
 """.format(previous_nav=previous_nav, page_nav=page_nav, next_nav=next_nav))
 
 
+@library.global_function
 @contextfunction
 def can_create_mdn_import(context, user):
     return can_create(user)
 
 
+@library.global_function
 @contextfunction
 def can_refresh_mdn_import(context, user):
     return can_refresh(user)
 
 
+@library.global_function
 @contextfunction
 def can_reparse_mdn_import(context, user):
     return settings.MDN_SHOW_REPARSE and can_create(user)
 
 
+@library.global_function
 @contextfunction
 def can_commit_mdn_import(context, user):
     return can_create(user)
-
-
-env = {
-    'globals': {
-        'add_filter_to_current_url': add_filter_to_current_url,
-        'drop_filter_from_current_url': drop_filter_from_current_url,
-        'pagination_control': pagination_control,
-        'can_commit_mdn_import': can_commit_mdn_import,
-        'can_create_mdn_import': can_create_mdn_import,
-        'can_refresh_mdn_import': can_refresh_mdn_import,
-        'can_reparse_mdn_import': can_reparse_mdn_import,
-    },
-}
