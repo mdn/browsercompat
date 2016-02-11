@@ -52,6 +52,8 @@ def post_save_update_cache(sender, instance, created, raw, **kwargs):
     if raw:
         return
     name = sender.__name__
+    if name == 'User' and created:
+        return
     delay_cache = getattr(instance, '_delay_cache', False)
     if not delay_cache:
         from .tasks import update_cache_for_instance
@@ -64,4 +66,3 @@ def add_user_to_change_resource_group(
     if created and not raw:
         from django.contrib.auth.models import Group
         instance.groups.add(Group.objects.get(name='change-resource'))
-        post_save_update_cache(sender, instance, created, raw, **kwargs)
