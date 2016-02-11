@@ -12,7 +12,7 @@ from .base import TestCase
 class TestDeleteSignal(TestCase):
     def setUp(self):
         patcher = mock.patch(
-            'webplatformcompat.tasks.update_cache_for_instance')
+            'webplatformcompat.signals.update_cache_for_instance')
         self.login_user()
         self.mocked_update_cache = patcher.start()
         self.addCleanup(patcher.stop)
@@ -34,7 +34,7 @@ class TestDeleteSignal(TestCase):
 class TestM2MChangedSignal(TestCase):
     def setUp(self):
         patcher = mock.patch(
-            'webplatformcompat.tasks.update_cache_for_instance')
+            'webplatformcompat.signals.update_cache_for_instance')
         self.login_user()
         self.mocked_update_cache = patcher.start()
         self.addCleanup(patcher.stop)
@@ -80,7 +80,7 @@ class TestM2MChangedSignal(TestCase):
 class TestSaveSignal(unittest.TestCase):
     def setUp(self):
         self.patcher = mock.patch(
-            'webplatformcompat.tasks.update_cache_for_instance')
+            'webplatformcompat.signals.update_cache_for_instance')
         self.mocked_update_cache = self.patcher.start()
         self.browser = Browser(id=666)
 

@@ -3,14 +3,16 @@
 
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import Group
+
 from .models import Feature, Section
+from .tasks import update_cache_for_instance
 
 
 def add_user_to_change_resource_group(
         signal, sender, instance, created, raw, **kwargs):
     """Add change-resource permission to new users."""
     if created and not raw:
-        from django.contrib.auth.models import Group
         instance.groups.add(Group.objects.get(name='change-resource'))
 
 
@@ -39,7 +41,6 @@ def feature_sections_changed_update_order(
             features = []
         sections = [instance]
 
-    from .tasks import update_cache_for_instance
     for feature in features:
         update_cache_for_instance('Feature', feature.pk, feature)
     for section in sections:
@@ -51,7 +52,6 @@ def post_delete_update_cache(sender, instance, **kwargs):
     name = sender.__name__
     delay_cache = getattr(instance, '_delay_cache', False)
     if not delay_cache:
-        from .tasks import update_cache_for_instance
         update_cache_for_instance(name, instance.pk, instance)
 
 
@@ -64,5 +64,4 @@ def post_save_update_cache(sender, instance, created, raw, **kwargs):
         return
     delay_cache = getattr(instance, '_delay_cache', False)
     if not delay_cache:
-        from .tasks import update_cache_for_instance
         update_cache_for_instance(name, instance.pk, instance)

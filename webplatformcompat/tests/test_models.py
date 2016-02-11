@@ -22,7 +22,7 @@ class TestManager(TestCase):
         self.mocked_get_history_changeset = self.patcher1.start()
         self.mocked_get_history_changeset.return_value = changeset
         self.patcher2 = mock.patch(
-            'webplatformcompat.tasks.update_cache_for_instance')
+            'webplatformcompat.signals.update_cache_for_instance')
         self.mocked_update_cache = self.patcher2.start()
 
     def tearDown(self):

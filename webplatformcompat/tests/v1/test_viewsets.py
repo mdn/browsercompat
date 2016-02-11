@@ -169,7 +169,7 @@ class TestBrowserViewset(APITestCase):
         }
         self.assertDataEqual(response.data, expected_data)
 
-    @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
+    @mock.patch('webplatformcompat.signals.update_cache_for_instance')
     def test_put_as_json_api(self, mock_update):
         """If content is application/vnd.api+json, put is partial."""
         browser = self.create(
@@ -199,7 +199,7 @@ class TestBrowserViewset(APITestCase):
         self.assertDataEqual(response.data, expected_data)
         mock_update.assert_called_once_with('Browser', browser.pk, browser)
 
-    @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
+    @mock.patch('webplatformcompat.signals.update_cache_for_instance')
     def test_put_in_changeset(self, mock_update):
         browser = self.create(
             Browser, slug='browser', name={'en': 'Old Name'})
@@ -239,7 +239,7 @@ class TestBrowserViewset(APITestCase):
         }
         self.assertDataEqual(response.data, expected_data)
 
-    @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
+    @mock.patch('webplatformcompat.signals.update_cache_for_instance')
     def test_delete(self, mock_update):
         self.login_user(groups=['change-resource', 'delete-resource'])
         browser = self.create(Browser, slug='firesux', name={'en': 'Firesux'})
@@ -262,7 +262,7 @@ class TestBrowserViewset(APITestCase):
         }
         self.assertDataEqual(response.data, expected_data)
 
-    @mock.patch('webplatformcompat.tasks.update_cache_for_instance')
+    @mock.patch('webplatformcompat.signals.update_cache_for_instance')
     def test_delete_in_changeset(self, mock_update):
         self.login_user(groups=['change-resource', 'delete-resource'])
         browser = self.create(
