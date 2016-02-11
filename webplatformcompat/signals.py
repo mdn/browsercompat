@@ -55,6 +55,13 @@ def post_delete_update_cache(sender, instance, **kwargs):
         update_cache_for_instance(name, instance.pk, instance)
 
 
+def post_save_changeset(sender, instance, created, raw, **kwargs):
+    """Invalidate the user cache after a changeset is created."""
+    if raw or not created:
+        return
+    update_cache_for_instance('User', instance.user.pk, instance.user)
+
+
 def post_save_update_cache(sender, instance, created, raw, **kwargs):
     """Invalidate the cache when an instance is created or updated."""
     if raw:

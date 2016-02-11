@@ -19,7 +19,12 @@
             },
             "relationships": {
                 "changesets": {
-                    "data": []
+                    "data": [
+                        {
+                            "type": "changesets",
+                            "id": "1"
+                        }
+                    ]
                 }
             },
             "links": {

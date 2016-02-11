@@ -197,7 +197,11 @@ class TestBrowserViewset(APITestCase):
             'versions': [],
         }
         self.assertDataEqual(response.data, expected_data)
-        mock_update.assert_called_once_with('Browser', browser.pk, browser)
+        mock_update.assert_has_calls([
+            mock.call('User', self.user.pk, mock.ANY),
+            mock.call('Browser', browser.pk, mock.ANY),
+        ])
+        self.assertEqual(mock_update.call_count, 2)
 
     @mock.patch('webplatformcompat.signals.update_cache_for_instance')
     def test_put_in_changeset(self, mock_update):
@@ -248,7 +252,11 @@ class TestBrowserViewset(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code, response.content)
         self.assertFalse(Browser.objects.filter(pk=browser.pk).exists())
-        mock_update.assert_called_once_with('Browser', browser.pk, mock.ANY)
+        mock_update.assert_has_calls([
+            mock.call('User', self.user.pk, mock.ANY),
+            mock.call('Browser', browser.pk, mock.ANY),
+        ])
+        self.assertEqual(mock_update.call_count, 2)
 
     def test_delete_not_allowed(self):
         self.login_user()

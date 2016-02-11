@@ -20,7 +20,12 @@
                     "self": "https://browsercompat.org/api/v2/users/1/relationships/changesets",
                     "related": "https://browsercompat.org/api/v2/users/1/changesets"
                 },
-                "data": []
+                "data": [
+                    {
+                        "type": "changesets",
+                        "id": "1"
+                    }
+                ]
             }
         }
     }
