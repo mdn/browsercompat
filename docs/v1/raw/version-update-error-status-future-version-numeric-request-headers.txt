@@ -1,7 +1,6 @@
 PUT /api/v1/versions/21 HTTP/1.1
 Host: browsercompat.org
 Accept: application/vnd.api+json
+Authorization: Bearer xxQLNiTUFjRL5En8nBWzSDc5tLWkV2
 Content-Length: 54
 Content-Type: application/vnd.api+json
-Cookie: csrftoken=p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn; sessionid=wurexa2wq416ftlvd5plesngwa28183h
-X-Csrftoken: p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn

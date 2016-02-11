@@ -37,11 +37,13 @@ class CaseRunner(object):
     }
     doc_csrf = 'p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn'
     doc_session = 'wurexa2wq416ftlvd5plesngwa28183h'
+    doc_token = 'xxQLNiTUFjRL5En8nBWzSDc5tLWkV2'
     modification_methods = ('PUT', 'PATCH', 'DELETE', 'POST')
 
     def __init__(
             self, cases=None, api=None, raw_dir=None, mode=None,
-            username=None, password=None, stop=False, apiversion=None):
+            username=None, password=None, stop=False, apiversion=None,
+            token=None):
         self.cases = cases or default_cases_file
         self.api = api or default_api
         self.apiversion = apiversion or default_api_version
@@ -56,6 +58,7 @@ class CaseRunner(object):
         self.csrftoken = None
         self.sessionid = None
         self.stop = stop
+        self.token = token
 
     def uri(self, endpoint):
         return '%s/api/%s/%s' % (self.api, self.apiversion, endpoint)
@@ -63,8 +66,28 @@ class CaseRunner(object):
     @property
     def user_session(self):
         if not self._user_session:
-            assert (self.username and self.password), (
-                'Must set a username and password')
+            self._user_session = self.generate_user_session()
+        return self._user_session
+
+    @property
+    def has_user_session(self):
+        if self._user_session:
+            return True
+        else:
+            self._user_session = self.generate_user_session(False)
+            return bool(self._user_session)
+
+    def generate_user_session(self, must_authenticate=True):
+        session = None
+        if self.token:
+            # Test that OAuth2 token is valid
+            session = requests.Session()
+            session.headers.update({'Authorization': 'Bearer %s' % token})
+            full_uri = self.uri('users/me')
+            headers = {'Accept': 'application/vnd.api+json'}
+            response = session.get(full_uri, headers=headers)
+            response.raise_for_status()
+        elif self.username and self.password:
             session = requests.Session()
             next_path = '/api/%s/browsers' % self.apiversion
 
@@ -91,7 +114,9 @@ class CaseRunner(object):
                 self.sessionid = session.cookies.get('sessionid')
             else:
                 raise Exception('Problem logging in.', response)
-        return self._user_session
+        elif must_authenticate:
+            raise Exception('Must set a token or username/password')
+        return session
 
     def run(self, casenames=None, include_mod=None):
         """Run all documentation cases against the API."""
@@ -102,6 +127,8 @@ class CaseRunner(object):
             if casenames and case['name'] not in casenames:
                 continue
             if case['method'] in self.modification_methods and not include_mod:
+                continue
+            if case.get('user', False) and not self.has_user_session:
                 continue
             if case.get('skip'):
                 skipped += 1
@@ -390,6 +417,10 @@ class CaseRunner(object):
                 if self.sessionid:
                     value = value.replace(self.sessionid, self.doc_session)
                 return '; '.join(sorted(value.split('; ')))
+            elif header.lower() == 'authorization':
+                if self.token:
+                    value = value.replace(self.token, self.doc_token)
+                return value
             elif header.lower() in ('content-type', 'content-length'):
                 return value
             elif header.lower() not in (
@@ -428,7 +459,7 @@ if __name__ == '__main__':
 
     parser = ToolParser(
         description='Make raw requests to API',
-        include=['api', 'user', 'password'], logger=logger)
+        include=['api', 'user', 'password', 'token'], logger=logger)
     parser.add_argument(
         'casenames', metavar='case name', nargs='*',
         help='Case names to run, defaults to all cases')
@@ -456,6 +487,7 @@ if __name__ == '__main__':
     apiversion = args.apiversion
     mode = args.mode
     logger.info('Making API requests against %s for %s', api, mode)
+    token = args.token
     if mode == 'display':
         include_mod = args.include_mod
     else:
@@ -471,7 +503,7 @@ if __name__ == '__main__':
     runner = CaseRunner(
         cases=cases, api=api, raw_dir=args.raw, mode=mode,
         username=args.user, password=password, stop=args.stop,
-        apiversion=apiversion)
+        apiversion=apiversion, token=token)
     success, failure, skipped = runner.run(args.casenames, include_mod)
 
     if skipped:

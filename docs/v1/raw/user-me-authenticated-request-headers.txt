@@ -1,4 +1,4 @@
 GET /api/v1/users/me HTTP/1.1
 Host: browsercompat.org
 Accept: application/vnd.api+json
-Cookie: csrftoken=p7FqFyNp6hZS0FJYKyQxVmLrZILldjqn; sessionid=wurexa2wq416ftlvd5plesngwa28183h
+Authorization: Bearer xxQLNiTUFjRL5En8nBWzSDc5tLWkV2
