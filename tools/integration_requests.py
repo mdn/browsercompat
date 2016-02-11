@@ -175,9 +175,9 @@ class CaseRunner(object):
         out = self.format_response_for_display(response, case)
         header = 'Test Case %d: %s' % (casenum, case['name'])
         print()
-        print(header.encode('utf8'))
+        self.uprint(header)
         print('*' * len(header))
-        print(out.encode('utf8'))
+        self.uprint(out)
         return []
 
     def generate(self, casenum, case, response):
@@ -406,6 +406,19 @@ class CaseRunner(object):
                     'content-length'):
                 print('Unexpected response header %s: %s' % (header, value))
                 return value
+
+    _utf8_safe = None
+
+    def uprint(self, *objects, sep=' ', end='\n'):
+        """Print in unicode or UTF-8 encoded, based on stdout encoding."""
+        if self._utf8_safe is None:
+            from sys import stdout
+            self._utf8_safe = (stdout.encoding.lower() == 'utf-8')
+        if self._utf8_safe:
+            encoded = objects
+        else:
+            encoded = [str(obj).encode('utf8') for obj in objects]
+        print(*encoded, sep=sep, end=end)
 
 
 if __name__ == '__main__':
