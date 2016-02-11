@@ -9,28 +9,25 @@ from webplatformcompat.signals import post_save_update_cache
 from .base import TestCase
 
 
-class TestSaveSignal(unittest.TestCase):
+class TestDeleteSignal(TestCase):
     def setUp(self):
-        self.patcher = mock.patch(
+        patcher = mock.patch(
             'webplatformcompat.tasks.update_cache_for_instance')
-        self.mocked_update_cache = self.patcher.start()
-        self.browser = Browser(id=666)
+        self.login_user()
+        self.mocked_update_cache = patcher.start()
+        self.addCleanup(patcher.stop)
+        self.maturity = self.create(Maturity, slug='foo')
+        self.mocked_update_cache.reset_mock()
 
-    def tearDown(self):
-        self.patcher.stop()
-
-    def test_raw(self):
-        post_save_update_cache(Browser, self.browser, created=True, raw=True)
-        self.mocked_update_cache.assert_not_called()
-
-    def test_create(self):
-        post_save_update_cache(Browser, self.browser, created=True, raw=False)
+    def test_delete(self):
+        pk = self.maturity.pk
+        self.maturity.delete()
         self.mocked_update_cache.assert_called_once_with(
-            'Browser', 666, self.browser)
+            'Maturity', pk, self.maturity)
 
-    def test_create_delayed(self):
-        self.browser._delay_cache = True
-        post_save_update_cache(Browser, self.browser, created=True, raw=False)
+    def test_delete_delayed(self):
+        self.maturity._delay_cache = True
+        self.maturity.delete()
         self.mocked_update_cache.assert_not_called()
 
 
@@ -80,23 +77,26 @@ class TestM2MChangedSignal(TestCase):
             'Section', self.section.pk, self.section)
 
 
-class TestDeleteSignal(TestCase):
+class TestSaveSignal(unittest.TestCase):
     def setUp(self):
-        patcher = mock.patch(
+        self.patcher = mock.patch(
             'webplatformcompat.tasks.update_cache_for_instance')
-        self.login_user()
-        self.mocked_update_cache = patcher.start()
-        self.addCleanup(patcher.stop)
-        self.maturity = self.create(Maturity, slug='foo')
-        self.mocked_update_cache.reset_mock()
+        self.mocked_update_cache = self.patcher.start()
+        self.browser = Browser(id=666)
 
-    def test_delete(self):
-        pk = self.maturity.pk
-        self.maturity.delete()
+    def tearDown(self):
+        self.patcher.stop()
+
+    def test_raw(self):
+        post_save_update_cache(Browser, self.browser, created=True, raw=True)
+        self.mocked_update_cache.assert_not_called()
+
+    def test_create(self):
+        post_save_update_cache(Browser, self.browser, created=True, raw=False)
         self.mocked_update_cache.assert_called_once_with(
-            'Maturity', pk, self.maturity)
+            'Browser', 666, self.browser)
 
-    def test_delete_delayed(self):
-        self.maturity._delay_cache = True
-        self.maturity.delete()
+    def test_create_delayed(self):
+        self.browser._delay_cache = True
+        post_save_update_cache(Browser, self.browser, created=True, raw=False)
         self.mocked_update_cache.assert_not_called()
