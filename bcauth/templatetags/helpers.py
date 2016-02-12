@@ -9,6 +9,7 @@ from django_jinja import library
 from jinja2 import contextfunction
 
 
+@library.global_function
 @contextfunction
 def providers_media_js(context):
     """Get a list of socialaccount providers.

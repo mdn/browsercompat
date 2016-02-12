@@ -286,9 +286,12 @@ PUENTE = {
 
             ('webplatformcompat/**.py', 'python'),
             ('webplatformcompat/**/jinja2/**.html', 'jinja2'),
+
+            # FIXME: This doesn't pull in strings from libraries including
+            # email templates in django-allauth.
         ]
     },
-    'PROJECT': 'Mozilla Browsercompat',
+    'PROJECT': 'BrowserCompat',
 }
 
 # Static files (CSS, JavaScript, Images)
