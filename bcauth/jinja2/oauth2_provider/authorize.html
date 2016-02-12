@@ -5,11 +5,11 @@
 
 {% block content %}
 {% if error %}
-  <h3>{{ _("Error: %(error)s") | format(error=error.error) }}</h3>
+  <h3>{{ _("Error: %(error)s", error=error.error) }}</h3>
   <p>{{ error.description }}</p>
 {% else %}
   <form id="authorizationForm" method="post">
-    <h3>{{ _("Authorize %(app_name)s?") | format(app_name=application.name) }}</h3>
+    <h3>{{ _("Authorize %(app_name)s?", app_name=application.name) }}</h3>
     {% csrf_token %}
 
     {% for field in form %}

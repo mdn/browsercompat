@@ -5,7 +5,7 @@
 {% block content %}
 <form action="" method="post">
   {% csrf_token %}
-  <p>{{ _("Are you sure you want to delete the token for \"%(app_name)s\"?") | format(
+  <p>{{ _("Are you sure you want to delete the token for \"%(app_name)s\"?",
             app_name=accesstoken.application) }}</p>
   <input type="submit" value="{{ _("Delete") }}" />
 </form>

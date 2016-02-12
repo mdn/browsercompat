@@ -7,9 +7,9 @@
 <p>{{ _("These are the OAuth2 applications that you've authorized.") }}</p>
 <ul>
   {% for authorized_token in authorized_tokens %}
-  <li>{{ _("%(app_name)s (<a href=\"%(revoke_url)s\">revoke</a>)") | safe | format(
+  <li>{{ _("%(app_name)s (<a href=\"%(revoke_url)s\">revoke</a>)",
             app_name=authorized_token.application,
-            revoke_url=url('oauth2_provider:authorized-token-delete', authorized_token.pk)|e
+            revoke_url=url('oauth2_provider:authorized-token-delete', authorized_token.pk)
          )}}
       <dl>
       {% for scope_name, scope_description in authorized_token.scopes.items() %}
