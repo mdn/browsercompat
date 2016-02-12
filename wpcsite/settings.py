@@ -252,6 +252,7 @@ TEMPLATES = [
             'trim_blocks': True,
             'context_processors': _CONTEXT_PROCESSORS,
             'extensions': [
+                'django_jinja.builtins.extensions.CsrfExtension',
                 'jinja2.ext.autoescape',
                 'puente.ext.i18n',
                 'wpcsite.jinja2.WPCExtension',

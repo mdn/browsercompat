@@ -10,7 +10,7 @@
 {% else %}
   <form id="authorizationForm" method="post">
     <h3>{{ _("Authorize %(app_name)s?") | format(app_name=application.name) }}</h3>
-    {{ csrf_input }}
+    {% csrf_token %}
 
     {% for field in form %}
       {% if field.is_hidden %}

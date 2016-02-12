@@ -1,4 +1,4 @@
-{{ csrf_input }}
+{% csrf_token %}
 {{ form.non_field_errors() }}
 {% for field in form %}
     <div class="control-group">
