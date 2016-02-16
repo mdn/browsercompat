@@ -8,7 +8,8 @@ from django.core.exceptions import ValidationError
 
 from webplatformcompat.history import Changeset
 from webplatformcompat.models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 from .base import TestCase
 
 
@@ -100,6 +101,14 @@ class TestMaturity(unittest.TestCase):
     def test_str(self):
         maturity = Maturity(slug='Draft')
         self.assertEqual('Draft', str(maturity))
+
+
+class TestReference(unittest.TestCase):
+    def test_str(self):
+        feature = Feature(id=100)
+        section = Section(id=200)
+        reference = Reference(feature=feature, section=section)
+        self.assertEqual(str(reference), 'feature 100 refers to section 200')
 
 
 class TestSection(unittest.TestCase):
