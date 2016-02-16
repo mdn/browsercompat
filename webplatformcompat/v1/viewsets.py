@@ -125,3 +125,4 @@ class ViewFeaturesViewSet(ViewFeaturesBaseViewSet):
     filter_backends = (UnorderedDjangoFilterBackend,)
     filter_fields = ('slug',)
     template_name = 'webplatformcompat/feature-basic-v1.html'
+    namespace = 'v1'

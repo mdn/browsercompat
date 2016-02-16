@@ -396,3 +396,4 @@ class ViewFeaturesViewSet(ViewFeaturesBaseViewSet):
         JsonApiV10Renderer, BrowsableAPIRenderer,
         JsonApiV10TemplateHTMLRenderer)
     template_name = 'webplatformcompat/feature-basic-v2.html'
+    namespace = 'v2'

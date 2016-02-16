@@ -2,6 +2,8 @@
 """API endpoints for CRUD operations."""
 
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 from django.utils.functional import cached_property
 from django.http import Http404
 from rest_framework.mixins import UpdateModelMixin
@@ -73,18 +75,28 @@ class FieldsExtraMixin(object):
         return serializer_cls.get_fields_extra()
 
 
+class GroupRouterMixin(object):
+    """Extra parameters used by the GroupedRouter."""
+
+    lookup_value_regex = r'\d+'
+    alt_lookup_field = None
+    alt_lookup_value_regex = None
+
+
 class ModelViewSet(
-        PartialPutMixin, CachedViewMixin, FieldsExtraMixin, BaseModelViewSet):
+        PartialPutMixin, CachedViewMixin, FieldsExtraMixin, GroupRouterMixin,
+        BaseModelViewSet):
     """Base class for ViewSets supporting CRUD operations on models."""
 
 
-class ReadOnlyModelViewSet(FieldsExtraMixin, BaseROModelViewSet):
+class ReadOnlyModelViewSet(
+        FieldsExtraMixin, GroupRouterMixin, BaseROModelViewSet):
     """Base class for ViewSets supporting read operations on models."""
 
 
 class ReadUpdateModelViewSet(
         PartialPutMixin, CachedViewMixin, FieldsExtraMixin, UpdateModelMixin,
-        BaseROModelViewSet):
+        GroupRouterMixin, BaseROModelViewSet):
     """Base class for ViewSets supporting read and update operations."""
 
     pass
@@ -188,6 +200,9 @@ class HistoricalVersionBaseViewSet(ReadOnlyModelViewSet):
 
 class ViewFeaturesBaseViewSet(ReadUpdateModelViewSet):
     queryset = Feature.objects.order_by('id')
+    format_suffixes = ('api', 'json', 'html')
+    alt_lookup_field = 'slug'
+    alt_lookup_value_regex = r'[-a-zA-Z0-9_]+'
 
     def get_serializer_class(self):
         """Return the serializer to use based on action and query."""
@@ -245,19 +260,13 @@ class ViewFeaturesBaseViewSet(ReadUpdateModelViewSet):
         falsy = ('0', 'false', 'no')
         return bool(child_pages.lower() not in falsy)
 
-    def get_object_or_404(self, queryset, *filter_args, **filter_kwargs):
-        """The feature can be accessed by primary key or by feature slug."""
-        pk_or_slug = filter_kwargs['pk']
+    def alternate_lookup(self, request, slug, **extra_kwargs):
+        """Lookup features by slug."""
         try:
-            pk = int(pk_or_slug)
-        except ValueError:
-            try:
-                # parent_id is needed by the MPTT model loader,
-                # including it saves a query later.
-                pk = Feature.objects.only('pk', 'parent_id').get(
-                    slug=pk_or_slug).pk
-            except queryset.model.DoesNotExist:
-                raise Http404(
-                    'No %s matches the given query.' % queryset.model)
-        return super(ViewFeaturesBaseViewSet, self).get_object_or_404(
-            queryset, pk=pk)
+            pk = Feature.objects.only('pk').get(slug=slug).pk
+        except Feature.DoesNotExist:
+            raise Http404('No feature has the requested slug.')
+        kwargs = {'pk': pk}
+        kwargs.update(extra_kwargs)
+        url = reverse('%s:viewfeatures-detail' % self.namespace, kwargs=kwargs)
+        return redirect(url)
