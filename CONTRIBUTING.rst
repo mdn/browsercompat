@@ -86,3 +86,22 @@ GitHub workflow
 10. Issue pull request (Click Pull Request button)
 
 .. _`Get your environment setup`: installation.html
+
+Getting translations
+--------------------
+
+Translated strings are stored in ``.po`` files in the ``locales/`` directory.
+
+FIXME: When we set up Pontoon, add instructions here for acquiring translations.
+
+Extracting strings
+------------------
+
+After making changes to strings that need to be translated, you need to
+re-extract the strings and merge them into the translations files::
+
+    $ ./manage.py extract
+    $ ./manage.py merge
+
+FIXME: When we set up Pontoon, add instructions here for committing all the
+changes to the repository that holds the translations.

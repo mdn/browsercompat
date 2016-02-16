@@ -8,10 +8,10 @@
 <form method="post" action="{% block app_form_action_url %}{{ url('oauth2_provider:update', application.id) }}{% endblock app_form_action_url %}">
   <h3>
       {%- block app_form_title -%}
-      {{ _("Edit Application %(app_name)s")|format(app_name=application.name) }}
+      {{ _("Edit Application %(app_name)s", app_name=application.name) }}
       {%- endblock app_form_title -%}
   </h3>
-  {{ csrf_input }}
+  {% csrf_token %}
 
   {% for field in form %}
     <div class="form-group {% if field.errors %}has-error{% endif %}">

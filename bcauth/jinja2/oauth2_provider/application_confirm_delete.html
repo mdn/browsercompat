@@ -4,9 +4,9 @@
 {% block body_title %}{{ _("OAuth2 Client Application") }} - {{ _("Delete") }}{% endblock %}
 
 {% block content %}
-    <h3>{{ _("Are you sure to delete the application %(app_name)s?") | format(app_name=application.name) }}</h3>
+    <h3>{{ _("Are you sure to delete the application %(app_name)s?", app_name=application.name) }}</h3>
     <form method="post" action="{{ url('oauth2_provider:delete', application.pk) }}">
-        {{ csrf_input }}
+        {% csrf_token %}
 
         <div class="control-group">
             <div class="controls">

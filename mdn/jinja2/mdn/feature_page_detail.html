@@ -122,7 +122,7 @@
 <div>
 {% if can_refresh_mdn_import(request.user) %}
 <form action="{{ url('feature_page_reset', pk=object.pk) }}" method="post">
-{{ csrf_input }}
+{% csrf_token %}
 <input id="submit-reset" class="btn btn-primary" type="submit" value="Reset">
 <label for="submit-reset">Download MDN page and reparse</label>
 </form>
@@ -130,7 +130,7 @@
 {% endif %}
 {% if can_reparse_mdn_import(request.user) %}
 <form id="form-reparse" action="{{ url('feature_page_reparse', pk=object.pk) }}" method="post">
-{{ csrf_input }}
+{% csrf_token %}
 <input id="submit-reparse" class="btn btn-primary" type="submit" value="Reparse">
 <label for="submit-reparse">Re-parse the cached MDN page</label>
 </form>
@@ -139,7 +139,7 @@
 {% if can_commit_mdn_import(request.user) and object.errors == 0 and object.critical == 0 %}
 <form id="form-commit" method="put"
  action="{{ url('v1:viewfeatures-detail', pk=object.feature_id) }}">
-{{ csrf_input }}
+{% csrf_token %}
 <input id="submit-commit" class="btn btn-primary" type="submit" value="Commit">
 <label for="submit-commit" id="submit-commit-label">Commit data to the API</label>
 </form>

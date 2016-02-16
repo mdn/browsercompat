@@ -58,3 +58,6 @@ data/
 # Local environment overrides
 .env
 settings.ini
+
+# l10n
+locale/

@@ -12,7 +12,7 @@
 
 
 <form method="post" action="{{ url('socialaccount_connections') }}">
-{{ csrf_input }}
+{% csrf_token %}
 
 <fieldset>
 {% if form.non_field_errors() %}
