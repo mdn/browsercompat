@@ -46,21 +46,6 @@ Import specification data from MDN's SpecName_ and Spec2_.  Usage::
 * ``-v`` `(optional)`: Print debug information
 * ``-q`` `(optional)`: Only print warnings
 
-load_webcompat_data.py
-----------------------
-Initialize with compatibility data from the WebPlatform_ project. Usage::
-
-    $ tools/load_webcompat_data.py [--api <API>] [--user <USER>]
-                                   [-vq] [--all-data]
-
-* ``--api <API>`` `(optional)`: Set the base URL of the API
-  (default: ``http://localhost:8000``)
-* ``--user <USER>`` `(optional)`: Set the username to use on the API
-  (default: prompt for username)
-* ``-v`` `(optional)`: Print debug information
-* ``-q`` `(optional)`: Only print warnings
-* ``--all-data`` `(optional)`: Import all data, rather than a subset
-
 make_doc_requests.py
 --------------------
 Make documentation/integration requests against an API. Used by

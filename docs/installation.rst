@@ -123,7 +123,6 @@ There are several ways to get data into your API:
 
 1. Load data from the github export
 2. Load data from another browsercompat server
-3. Load sample data from the `WebPlatform project`_ and MDN_
 
 Load from GitHub
 ****************
@@ -144,23 +143,6 @@ can grab the data for your own server.
 2. Run the API (``./manage.py runserver``)
 3. Import the data (``tools/upload_data.py``)
 
-Load Sample Data
-****************
-The `WebPlatform project`_ imported data from MDN_, and stored the formatted
-compatibility data in a `github project`_.  There is a lot of data that was
-not imported, so it's not a good data source for re-displaying on MDN.
-However, combining this data with specification data from MDN will create
-a good data set for testing the API at scale.
-
-To load sample data:
-
-1. Run the API (``./manage.py runserver``)
-2. Load a subset of the WebPlatform data (``tools/load_webcompat_data.py``) or full
-   set of data (``tools/load_webcompat.py --all-data``)
-3. Load specification data (``tools/load_spec_data.py``)
-
-
-.. _`WebPlatform project`: http://www.webplatform.org
 .. _MDN: https://developer.mozilla.org/en-US/
 .. _`github project`: https://github.com/webplatform/compatibility-data
 .. _browsercompat.herokuapp.com: https://browsercompat.herokuapp.com
