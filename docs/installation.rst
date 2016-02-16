@@ -121,14 +121,25 @@ Load Data
 ---------
 There are several ways to get data into your API:
 
-1. Load data from the github export
-2. Load data from another browsercompat server
+1. Load data from documentation fixtures
+2. Load data from the github export
+3. Load data from another browsercompat server
+
+Load from documentation fixtures
+********************************
+The integration tests and documentation use a subset of real compatibility
+data. This subset isn't enough for a local compatibility server, but should be
+adequate for development work on the API software, and takes less than a minute
+to load:
+
+1. Run the API (``./manage.py runserver``)
+2. Import the data (``tools/upload_data.py --data docs/v1/resources``)
 
 Load from GitHub
 ****************
 The data on browsercompat.herokuapp.com_ is archived in the
-`browsercompat-data`_ github repo, and this is the fastest way to get data
-into your empty API:
+`browsercompat-data`_ github repo, and this is the fastest way to get complete
+data into your empty API:
 
 1. Clone the github repo (``git clone https://github.com/mdn/browsercompat-data.git``)
 2. Run the API (``./manage.py runserver``)
