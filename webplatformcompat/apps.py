@@ -16,7 +16,7 @@ class WebPlatformCompatConfig(AppConfig):
         from django.contrib.auth.models import User
         from webplatformcompat.history import Changeset
         from webplatformcompat.models import (
-            Browser, Feature, Maturity, Section, Specification,
+            Browser, Feature, Maturity, Reference, Section, Specification,
             Support, Version)
         from webplatformcompat.signals import (
             add_user_to_change_resource_group,
@@ -39,8 +39,8 @@ class WebPlatformCompatConfig(AppConfig):
 
         # Invalidate instance cache on model changes
         for model in (
-                Browser, Feature, Maturity, Section, Specification,
-                Support, Version, User):
+                Browser, Feature, Maturity, Reference, Section,
+                Specification, Support, Version, User):
             name = model.__name__
             post_delete.connect(
                 post_delete_update_cache,

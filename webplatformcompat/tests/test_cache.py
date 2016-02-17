@@ -10,7 +10,8 @@ from django.test.utils import override_settings
 from webplatformcompat.cache import Cache
 from webplatformcompat.history import Changeset
 from webplatformcompat.models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 
 from .base import TestCase
 
@@ -99,6 +100,11 @@ class TestCache(TestCase):
                 'model': 'historicalmaturity',
                 'pks': []
             },
+            'historical_references:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalreference',
+                'pks': []
+            },
             'historical_sections:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'historicalsection',
@@ -127,7 +133,7 @@ class TestCache(TestCase):
 
     def test_changeset_v1_loader(self):
         changeset = self.create(Changeset, user=self.user)
-        with self.assertNumQueries(8):
+        with self.assertNumQueries(9):
             obj = self.cache.changeset_v1_loader(changeset.pk)
         with self.assertNumQueries(0):
             serialized = self.cache.changeset_v1_serializer(obj)
@@ -155,6 +161,11 @@ class TestCache(TestCase):
             'obsolete': False,
             'name': {'en': 'A Name'},
             'descendant_count': 0,
+            'references:PKList': {
+                'app': 'webplatformcompat',
+                'model': 'reference',
+                'pks': [],
+            },
             'supports:PKList': {
                 'app': 'webplatformcompat',
                 'model': 'support',
@@ -237,7 +248,7 @@ class TestCache(TestCase):
 
     def test_feature_v1_loader(self):
         feature = self.create(Feature)
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(5):
             obj = self.cache.feature_v1_loader(feature.pk)
         with self.assertNumQueries(0):
             serialized = self.cache.feature_v1_serializer(obj)
@@ -302,6 +313,84 @@ class TestCache(TestCase):
         maturity = self.create(Maturity)
         self.assertEqual([], self.cache.maturity_v1_invalidator(maturity))
 
+    def setup_reference(self):
+        """Setup a Reference instance with related models."""
+        maturity = self.create(
+            Maturity, slug='REC', name={'en': 'Recommendation'})
+        spec = self.create(
+            Specification, slug='mathml2', mdn_key='MathML2',
+            maturity=maturity,
+            name='{"en": "MathML 2.0"}',
+            uri='{"en": "http://www.w3.org/TR/MathML2/"}')
+        section = self.create(
+            Section, specification=spec,
+            number={'en': '3.2.4'},
+            name={'en': 'Number (mn)'},
+            subpath={'en': 'chapter3.html#presm.mn'})
+        feature = self.create(
+            Feature, slug='the_feature')
+        reference = self.create(
+            Reference, section=section, feature=feature,
+            note={'en': 'This note'})
+        return reference
+
+    def test_reference_v1_serializer(self):
+        """Test serialization of Reference instance."""
+        reference = self.setup_reference()
+        out = self.cache.reference_v1_serializer(reference)
+        expected = {
+            'id': reference.id,
+            'note': {'en': 'This note'},
+            'section:PK': {
+                'app': u'webplatformcompat',
+                'model': 'section',
+                'pk': reference.section.pk,
+            },
+            'feature:PK': {
+                'app': u'webplatformcompat',
+                'model': 'feature',
+                'pk': reference.feature.pk,
+            },
+            'history:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'historicalreference',
+                'pks': [reference.history.all()[0].pk],
+            },
+            'history_current:PK': {
+                'app': u'webplatformcompat',
+                'model': 'historicalreference',
+                'pk': reference.history.all()[0].pk,
+            },
+        }
+        self.assertEqual(out, expected)
+
+    def test_reference_v1_serializer_empty(self):
+        """Test serialization of missing Reference."""
+        self.assertEqual(None, self.cache.reference_v1_serializer(None))
+
+    def test_reference_v1_loader(self):
+        """Test efficent loading of Reference from database."""
+        reference = self.setup_reference()
+        with self.assertNumQueries(2):
+            obj = self.cache.reference_v1_loader(reference.pk)
+        with self.assertNumQueries(0):
+            serialized = self.cache.reference_v1_serializer(obj)
+        self.assertTrue(serialized)
+
+    def test_reference_v1_loader_not_exist(self):
+        """Test loading a non-existant Reference returns None."""
+        self.assertFalse(Reference.objects.filter(pk=666).exists())
+        self.assertIsNone(self.cache.reference_v1_loader(666))
+
+    def test_reference_v1_invalidator(self):
+        reference = self.setup_reference()
+        self.assertEqual(
+            self.cache.reference_v1_invalidator(reference),
+            [
+                ('Section', reference.section.pk, False),
+                ('Feature', reference.feature.pk, False),
+            ])
+
     def test_section_v1_serializer(self):
         maturity = self.create(
             Maturity, slug='REC', name={'en': 'Recommendation'})
@@ -330,6 +419,11 @@ class TestCache(TestCase):
             'features:PKList': {
                 'app': u'webplatformcompat',
                 'model': 'feature',
+                'pks': [],
+            },
+            'references:PKList': {
+                'app': u'webplatformcompat',
+                'model': 'reference',
                 'pks': [],
             },
             'history:PKList': {
@@ -361,7 +455,7 @@ class TestCache(TestCase):
         section = self.create(
             Section, specification=spec,
             name={'en': ''}, note={'en': 'Non standard'})
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(4):
             obj = self.cache.section_v1_loader(section.pk)
         with self.assertNumQueries(0):
             serialized = self.cache.section_v1_serializer(obj)
