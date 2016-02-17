@@ -17,7 +17,8 @@ from .drf_fields import (
     PrimaryKeyRelatedField, TranslatedTextField)
 from .history import Changeset
 from .models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 from .validators import VersionAndStatusValidator
 
 
@@ -225,6 +226,8 @@ class FeatureSerializer(HistoricalModelSerializer):
         return value
 
     class Meta:
+        # TODO bug 1216786: Add references
+        # TODO bug 1216786: Remove sections
         model = Feature
         fields = (
             'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
@@ -299,10 +302,46 @@ class MaturitySerializer(HistoricalModelSerializer):
         }
 
 
+class ReferenceSerializer(HistoricalModelSerializer):
+    """Reference (Feature to Section) Serializer."""
+
+    class Meta:
+        model = Reference
+        fields = (
+            'id', 'note', 'feature', 'section', 'history_current', 'history')
+        fields_extra = {
+            'id': {
+                'link': 'self',
+                'resource': 'references',
+            },
+            'feature': {
+                'link': 'to_one',
+                'resource': 'features',
+            },
+            'section': {
+                'link': 'to_one',
+                'resource': 'sections',
+            },
+            'history_current': {
+                'archive': 'history_id',
+                'link': 'from_one',
+                'resource': 'historical_references',
+                'writable': 'update_only',
+            },
+            'history': {
+                'archive': 'omit',
+                'link': 'from_many',
+                'resource': 'historical_references',
+            },
+        }
+
+
 class SectionSerializer(HistoricalModelSerializer):
     """Specification Section Serializer."""
 
     class Meta:
+        # TODO bug 1216786: Add references
+        # TODO bug 1216786: Remove note, features
         model = Section
         fields = (
             'id', 'number', 'name', 'subpath', 'note', 'specification',
@@ -487,6 +526,7 @@ class ChangesetSerializer(FieldsExtraMixin, ModelSerializer):
     target_resource_id = OptionalIntegerField(required=False)
 
     class Meta:
+        # TODO bug 1216786: Add historical_references
         model = Changeset
         fields = (
             'id', 'created', 'modified', 'closed', 'target_resource_type',
@@ -753,6 +793,21 @@ class HistoricalMaturitySerializer(HistoricalObjectSerializer):
             'history_resource_singular': 'historical_maturity',
             'object_resource': 'maturities',
             'singular': 'maturity',
+        }
+
+
+class HistoricalReferenceSerializer(HistoricalObjectSerializer):
+
+    class ArchivedObject(ArchiveMixin, ReferenceSerializer):
+        pass
+
+    class Meta(HistoricalObjectSerializer.Meta):
+        model = Reference.history.model
+        archive_extra = {
+            'history_resource': 'historical_references',
+            'history_resource_singular': 'historical_reference',
+            'object_resource': 'references',
+            'singular': 'reference',
         }
 
 

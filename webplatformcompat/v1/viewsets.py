@@ -7,9 +7,10 @@ from ..renderers import BrowsableAPIRenderer
 from ..viewsets import (
     BrowserBaseViewSet, ChangesetBaseViewSet, FeatureBaseViewSet,
     HistoricalBrowserBaseViewSet, HistoricalFeatureBaseViewSet,
-    HistoricalMaturityBaseViewSet, HistoricalSectionBaseViewSet,
-    HistoricalSpecificationBaseViewSet, HistoricalSupportBaseViewSet,
-    HistoricalVersionBaseViewSet, MaturityBaseViewSet, SectionBaseViewSet,
+    HistoricalMaturityBaseViewSet, HistoricalReferenceBaseViewSet,
+    HistoricalSectionBaseViewSet, HistoricalSpecificationBaseViewSet,
+    HistoricalSupportBaseViewSet, HistoricalVersionBaseViewSet,
+    MaturityBaseViewSet, ReferenceBaseViewSet, SectionBaseViewSet,
     SpecificationBaseViewSet, SupportBaseViewSet, UserBaseViewSet,
     VersionBaseViewSet, ViewFeaturesBaseViewSet)
 from .filters import UnorderedDjangoFilterBackend
@@ -50,6 +51,10 @@ class FeatureViewSet(WritableMixin, FeatureBaseViewSet):
 
 class MaturityViewSet(WritableMixin, MaturityBaseViewSet):
     filter_fields = ('slug',)
+
+
+class ReferenceViewSet(WritableMixin, ReferenceBaseViewSet):
+    pass
 
 
 class SectionViewSet(WritableMixin, SectionBaseViewSet):
@@ -95,6 +100,11 @@ class HistoricalFeatureViewSet(ReadOnlyMixin, HistoricalFeatureBaseViewSet):
 
 class HistoricalMaturityViewSet(ReadOnlyMixin, HistoricalMaturityBaseViewSet):
     filter_fields = ('id', 'slug')
+
+
+class HistoricalReferenceViewSet(
+        ReadOnlyMixin, HistoricalReferenceBaseViewSet):
+    filter_fields = ('id',)
 
 
 class HistoricalSectionViewSet(ReadOnlyMixin, HistoricalSectionBaseViewSet):

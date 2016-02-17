@@ -18,16 +18,17 @@ from .cache import Cache
 from .history import Changeset
 from .mixins import PartialPutMixin
 from .models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 from .serializers import (
     BrowserSerializer, FeatureSerializer, MaturitySerializer,
-    SectionSerializer, SpecificationSerializer, SupportSerializer,
-    VersionSerializer,
+    ReferenceSerializer, SectionSerializer, SpecificationSerializer,
+    SupportSerializer, VersionSerializer,
     ChangesetSerializer, UserSerializer,
     HistoricalBrowserSerializer, HistoricalFeatureSerializer,
-    HistoricalMaturitySerializer, HistoricalSectionSerializer,
-    HistoricalSpecificationSerializer, HistoricalSupportSerializer,
-    HistoricalVersionSerializer)
+    HistoricalMaturitySerializer, HistoricalReferenceSerializer,
+    HistoricalSectionSerializer, HistoricalSpecificationSerializer,
+    HistoricalSupportSerializer, HistoricalVersionSerializer)
 from .view_serializers import (
     ViewFeatureListSerializer, ViewFeatureSerializer,
     ViewFeatureRowChildrenSerializer)
@@ -123,6 +124,11 @@ class MaturityBaseViewSet(ModelViewSet):
     serializer_class = MaturitySerializer
 
 
+class ReferenceBaseViewSet(ModelViewSet):
+    queryset = Reference.objects.order_by('id')
+    serializer_class = ReferenceSerializer
+
+
 class SectionBaseViewSet(ModelViewSet):
     queryset = Section.objects.order_by('id')
     serializer_class = SectionSerializer
@@ -185,6 +191,11 @@ class HistoricalFeatureBaseViewSet(ReadOnlyModelViewSet):
 class HistoricalMaturityBaseViewSet(ReadOnlyModelViewSet):
     queryset = Maturity.history.model.objects.order_by('id')
     serializer_class = HistoricalMaturitySerializer
+
+
+class HistoricalReferenceBaseViewSet(ReadOnlyModelViewSet):
+    queryset = Reference.history.model.objects.order_by('id')
+    serializer_class = HistoricalReferenceSerializer
 
 
 class HistoricalSectionBaseViewSet(ReadOnlyModelViewSet):

@@ -15,9 +15,10 @@ from ..renderers import BrowsableAPIRenderer
 from ..viewsets import (
     BrowserBaseViewSet, ChangesetBaseViewSet, FeatureBaseViewSet,
     HistoricalBrowserBaseViewSet, HistoricalFeatureBaseViewSet,
-    HistoricalMaturityBaseViewSet, HistoricalSectionBaseViewSet,
-    HistoricalSpecificationBaseViewSet, HistoricalSupportBaseViewSet,
-    HistoricalVersionBaseViewSet, MaturityBaseViewSet, SectionBaseViewSet,
+    HistoricalMaturityBaseViewSet, HistoricalReferenceBaseViewSet,
+    HistoricalSectionBaseViewSet, HistoricalSpecificationBaseViewSet,
+    HistoricalSupportBaseViewSet, HistoricalVersionBaseViewSet,
+    MaturityBaseViewSet, ReferenceBaseViewSet, SectionBaseViewSet,
     SpecificationBaseViewSet, SupportBaseViewSet, UserBaseViewSet,
     VersionBaseViewSet, ViewFeaturesBaseViewSet)
 from .parsers import JsonApiV10Parser
@@ -227,6 +228,18 @@ class MaturityViewSet(WritableMixin, MaturityBaseViewSet):
     )
 
 
+class ReferenceViewSet(WritableMixin, ReferenceBaseViewSet):
+    detail_url_pattern = 'reference-detail'
+    related_routes = (
+        RelatedItemRoute('feature', 'FeatureViewSet', 'feature_id'),
+        RelatedItemRoute('section', 'SectionViewSet', 'section_id'),
+        RelatedItemRoute(
+            'history_current', 'HistoricalReferenceViewSet',
+            'current_history_id'),
+        RelatedListRoute('history', 'HistoricalReferenceViewSet', 'id'),
+    )
+
+
 class SectionViewSet(WritableMixin, SectionBaseViewSet):
     detail_url_pattern = 'section-detail'
     related_routes = (
@@ -348,6 +361,15 @@ class HistoricalMaturityViewSet(
     related_routes = (
         changeset_route,
         RelatedItemRoute('maturity', 'MaturityViewSet', 'id'),
+    )
+
+
+class HistoricalReferenceViewSet(
+        ReadOnlyMixin, HistoricalReferenceBaseViewSet):
+    detail_url_pattern = 'historicalreference-detail'
+    related_routes = (
+        changeset_route,
+        RelatedItemRoute('reference', 'ReferenceViewSet', 'id'),
     )
 
 

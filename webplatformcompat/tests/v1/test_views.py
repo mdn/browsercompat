@@ -18,6 +18,7 @@ class TestViews(TestCase):
                 'browsers': self.full_api_reverse('browser-list'),
                 'features': self.full_api_reverse('feature-list'),
                 'maturities': self.full_api_reverse('maturity-list'),
+                'references': self.full_api_reverse('reference-list'),
                 'specifications': self.full_api_reverse('specification-list'),
                 'sections': self.full_api_reverse('section-list'),
                 'supports': self.full_api_reverse('support-list'),
@@ -34,6 +35,8 @@ class TestViews(TestCase):
                     'historicalfeature-list'),
                 'historical_maturities': self.full_api_reverse(
                     'historicalmaturity-list'),
+                'historical_references': self.full_api_reverse(
+                    'historicalreference-list'),
                 'historical_sections': self.full_api_reverse(
                     'historicalsection-list'),
                 'historical_specifications': self.full_api_reverse(
