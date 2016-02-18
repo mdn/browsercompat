@@ -7,7 +7,7 @@ For detailed local installation instructions, including OS-specific
 instructions, see the `Installation page on the wiki`_.
 
 1. Install system packages and libraries.  The required packages are
-   Python_ (2.7, 3.5, or both),
+   Python_ (2.7, 3.4, and/or 3.5),
    pip_ (latest), and
    virtualenv_ (latest).
    To match production and for a smooth installation of Python packages,
