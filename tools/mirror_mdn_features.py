@@ -168,7 +168,7 @@ class MirrorMDNFeatures(Tool):
                 return self.crawl_mdn(path, parent_path, attempt + 1)
             else:
                 raise
-        if mdn_json:
+        if mdn_json and 'url' in mdn_json:
             path = mdn_json['url']
             title = mdn_json['title']
             slug = mdn_json['slug']
@@ -181,9 +181,11 @@ class MirrorMDNFeatures(Tool):
                 else:
                     data.extend(self.crawl_mdn(subslug, parent_path=path))
             return data
+        elif mdn_json:
+            self.logger.warning('Bad JSON %s', mdn_json)
         else:
             self.logger.warning('No data at %s', path)
-            return []
+        return []
 
     def known_features(self, collection):
         """Load URIs from collection's features."""
