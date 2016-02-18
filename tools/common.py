@@ -47,11 +47,12 @@ class ToolParser(argparse.ArgumentParser):
             password - Add --password option
             data - Add --data option
             nocache - Add --no-cache option (default with cache)
+            token - Add --token option
         """
         super(ToolParser, self).__init__(*args, **kwargs)
 
         self.include_set = set(include or [])
-        valid = set(['api', 'user', 'password', 'data', 'nocache'])
+        valid = set(['api', 'user', 'password', 'data', 'nocache', 'token'])
         if self.include_set - valid:
             raise ValueError(
                 'Unknown include items: {}'.format(self.include_set - valid))
@@ -93,6 +94,11 @@ class ToolParser(argparse.ArgumentParser):
                 '--no-cache', action='store_false', default=True,
                 dest='use_cache',
                 help='Ignore cache and redownload files')
+
+        if 'token' in self.include_set:
+            self.add_argument(
+                '--token',
+                help='Use this OAuth2 token for API access.')
 
     def parse_args(self, *args, **kwargs):
         args = super(ToolParser, self).parse_args(*args, **kwargs)

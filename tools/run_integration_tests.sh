@@ -81,13 +81,50 @@ username='$username';
 email='$email';\
 password='$password';\
 is_superuser=('$is_superuser' == '1');\
-user = User(username=username, email=email, is_superuser=is_superuser, is_staff=is_superuser);\
+user = User(username=username, email=email, is_superuser=is_superuser, \
+  is_staff=is_superuser);\
 user.set_password(password);\
 user.save();\
 change_group = Group.objects.get(name='change-resource');\
 delete_group = Group.objects.get(name='delete-resource');\
 user.groups.add(change_group);\
 user.groups.add(delete_group);\
+" | python manage.py shell --plain
+}
+
+# Create an OAuth2 public implicit app and related token
+create_oauth2_app_and_token () {
+    local username=$1
+    local app_name=$2
+    local client_id=$3
+    local client_secret=$4
+    local token=$5
+    local redirect_uris='http://localhost:8000/about/'
+    local client_type='public'
+    local authorization_grant_type='implicit'
+    echo "\
+from django.contrib.auth.models import User;\
+from oauth2_provider.models import AccessToken, Application;\
+from datetime import datetime, timedelta;\
+username='$username';
+app_name='$app_name';\
+client_id='$client_id';\
+client_secret='$client_secret';\
+redirect_uris='$redirect_uris';\
+client_type='$client_type';\
+authorization_grant_type='$authorization_grant_type';\
+token='$token';\
+user = User.objects.get(username=username);\
+assert user, 'User not found';\
+expire_time=datetime.now() + timedelta(seconds=300);\
+scope='read write';\
+app = Application.objects.create(\
+  user=user, client_id=client_id, client_secret=client_secret, \
+  redirect_uris=redirect_uris, client_type=client_type, \
+  authorization_grant_type=authorization_grant_type, \
+  name=app_name, skip_authorization=True);\
+access_token = AccessToken.objects.create(\
+  user=user, token=token, application=app, expires=expire_time, scope=scope);\
 " | python manage.py shell --plain
 }
 
@@ -137,6 +174,10 @@ DOC_API_URL="${DOC_API_SCHEME}://${DOC_API_HOSTNAME}"
 DOC_USER_NAME=user
 DOC_USER_PASSWORD=$(gen_rand_string 10)
 DOC_USER_EMAIL="user@example.com"
+DOC_APP_NAME="TestApp $(gen_rand_string 7)"
+DOC_CLIENT_ID=$(gen_rand_string 10)
+DOC_CLIENT_SECRET=$(gen_rand_string 20)
+DOC_TOKEN=$(gen_rand_string 30)
 
 #
 # Setup the documentation database, server
@@ -180,6 +221,10 @@ python manage.py migrate --verbosity=$VERBOSITY
 
 # Add the documentation user
 create_user $DOC_USER_NAME $DOC_USER_EMAIL $DOC_USER_PASSWORD 0
+
+# Generate an OAuth2 token
+create_oauth2_app_and_token $DOC_USER_NAME $DOC_APP_NAME $DOC_CLIENT_ID \
+    $DOC_CLIENT_SECRET $DOC_TOKEN
 
 # Startup documentation server
 python manage.py runserver $DOC_API_HOSTNAME --noreload --verbosity=$VERBOSITY &
@@ -225,7 +270,6 @@ tools/integration_requests.py\
     --api=$DOC_API_URL \
     --apiversion=$API_VERSION \
     --mode=$DOC_MODE \
-    --user=$DOC_USER_NAME \
-    --password=$DOC_USER_PASSWORD \
+    --token=$DOC_TOKEN \
     --raw="docs/$API_VERSION/raw" \
     --cases="docs/$API_VERSION/doc_cases.json"
