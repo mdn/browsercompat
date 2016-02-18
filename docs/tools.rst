@@ -117,11 +117,6 @@ issues in the response. Usage::
 * ``-q``: Show less output
 * ``-v``: Show more output
 
-sample_mdn.py
--------------
-Load random pages from MDN in your browser.  Usage::
-
-    $ tools/sample_mdn.py
 
 upload_data.py
 --------------
