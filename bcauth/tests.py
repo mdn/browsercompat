@@ -48,10 +48,8 @@ class TestProvidersMediaJS(TestCase):
         self.patcher = mock.patch(
             'bcauth.templatetags.helpers.providers.registry.get_list')
         self.mocked_get_list = self.patcher.start()
+        self.addCleanup(self.patcher.stop)
         self.context = {'request': 'fake request'}
-
-    def tearDown(self):
-        self.mocked_get_list.stop()
 
     def test_empty(self):
         self.mocked_get_list.return_value = []
@@ -73,6 +71,7 @@ class TestProviderLoginUrl(TestCase):
         self.patcher = mock.patch(
             'bcauth.templatetags.helpers.providers.registry.by_id')
         self.mocked_by_id = self.patcher.start()
+        self.addCleanup(self.patcher.stop)
         self.context = {'request': 'fake request'}
         self.provider = mock.Mock(spec_set=['get_login_url'])
         self.fake_url = 'http://example.com/AUTH'
@@ -83,9 +82,6 @@ class TestProviderLoginUrl(TestCase):
         self.request.POST = {}
         self.request.GET = {}
         self.request.get_full_path.side_effect = Exception('Not Called')
-
-    def tearDown(self):
-        self.mocked_by_id.stop()
 
     def test_basic(self):
         actual = provider_login_url(self.request, 'provider', 'process')
