@@ -78,6 +78,7 @@ class ChangesetViewSet(WritableMixin, ChangesetBaseViewSet):
 
 class UserViewSet(ReadOnlyMixin, UserBaseViewSet):
     filter_fields = ('username',)
+    namespace = 'v1'
 
 
 #

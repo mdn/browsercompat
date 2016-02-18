@@ -13,7 +13,7 @@ from webplatformcompat.models import (
 
 from webplatformcompat.v2.viewsets import ViewFeaturesViewSet
 from .base import APITestCase, NamespaceMixin
-from ..test_viewsets import TestViewFeatureBaseViewset
+from ..test_viewsets import TestUserBaseViewset, TestViewFeatureBaseViewset
 
 
 class TestBrowserViewset(APITestCase):
@@ -972,6 +972,10 @@ class TestHistoricaBrowserViewset(APITestCase):
             'historicalbrowser-relationships-browser', pk=self.history.pk)
         response = self.client.get(url, HTTP_ACCEPT='application/vnd.api+json')
         self.assertEqual(200, response.status_code, response.data)
+
+
+class TestUserViewset(NamespaceMixin, TestUserBaseViewset):
+    """Test users/me UserViewSet."""
 
 
 class TestViewFeatureViewset(NamespaceMixin, TestViewFeatureBaseViewset):

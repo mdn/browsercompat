@@ -6,6 +6,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.utils.functional import cached_property
 from django.http import Http404
+from rest_framework.decorators import list_route
+from rest_framework.exceptions import NotAuthenticated
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.viewsets import ModelViewSet as BaseModelViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet as BaseROModelViewSet
@@ -153,6 +155,17 @@ class ChangesetBaseViewSet(ModelViewSet):
 class UserBaseViewSet(CachedViewMixin, ReadOnlyModelViewSet):
     queryset = User.objects.order_by('id')
     serializer_class = UserSerializer
+
+    @list_route()
+    def me(self, request, **extra_kwargs):
+        """Redirect to the authenticated user's resource."""
+        if request.user.is_anonymous():
+            raise NotAuthenticated()
+        else:
+            kwargs = {'pk': request.user.pk}
+            kwargs.update(extra_kwargs)
+            url = reverse('%s:user-detail' % self.namespace, kwargs=kwargs)
+            return redirect(url)
 
 
 #

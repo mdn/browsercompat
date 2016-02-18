@@ -14,6 +14,24 @@
             "created": "2016-01-08T22:22:03.989333Z"
         }
     }, {
+        "name": "user-me-anon",
+        "method": "GET",
+        "endpoint": "users/me",
+        "user": false,
+        "status": 401,
+        "standardize": {
+            "created": "2016-02-09T10:08:13.685000Z"
+        }
+    }, {
+        "name": "user-me-authenticated",
+        "method": "GET",
+        "endpoint": "users/me",
+        "user": true,
+        "status": 302,
+        "standardize": {
+            "created": "2016-02-09T10:10:30.633000Z"
+        }
+    }, {
         "name": "user-related-changesets",
         "method": "GET",
         "endpoint": "users/1/changesets",
