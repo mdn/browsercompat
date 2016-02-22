@@ -299,7 +299,9 @@ class Feature(Resource):
         'obsolete', 'name')
     _writeable_link_fields = {
         'parent': ('features', False),
+        # TODO bug 1216786: remove sections
         'sections': ('sections', Resource.SORTED_M2M),
+        'references': ('references', Resource.SORTED),
         'children': ('features', Resource.SORTED),
     }
     _readonly_link_fields = {
@@ -308,6 +310,21 @@ class Feature(Resource):
         'history_current': ('historical_features', False),
     }
     _id_data = ('slug',)
+
+
+class Reference(Resource):
+    _resource_type = 'references'
+    _writeable_property_fields = ('note',)
+    _writeable_link_fields = {
+        'feature': ('features', False),
+        'section': ('sections', False),
+    }
+    _readonly_link_fields = {
+        'history': ('historical_references', True),
+        'history_current': ('historical_references', False),
+    }
+    _id_data = (
+        'feature.slug', 'section.specification.mdn_key', 'section.subpath_en')
 
 
 class Support(Resource):
@@ -343,12 +360,15 @@ class Specification(Resource):
 
 class Section(Resource):
     _resource_type = 'sections'
+    # TODO bug 1216786: remove note
     _writeable_property_fields = ('number', 'name', 'subpath', 'note')
     _writeable_link_fields = {
         'specification': ('specifications', False),
     }
+    # TODO bug 1216786: remove features
     _readonly_link_fields = {
         'features': ('features', True),
+        'references': ('references', True),
         'history': ('historical_sections', True),
         'history_current': ('historical_sections', False),
     }
@@ -379,6 +399,7 @@ class Collection(object):
         'browsers': Browser,
         'versions': Version,
         'features': Feature,
+        'references': Reference,
         'supports': Support,
         'sections': Section,
         'specifications': Specification,
