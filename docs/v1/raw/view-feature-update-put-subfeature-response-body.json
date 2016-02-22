@@ -20,15 +20,15 @@
                 "6",
                 "19"
             ],
-            "sections": [
+            "references": [
                 "1",
                 "2",
                 "3"
             ],
             "supports": [],
-            "history_current": "25",
+            "history_current": "23",
             "history": [
-                "25",
+                "23",
                 "5"
             ]
         }
@@ -42,9 +42,9 @@
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.children}"
         },
-        "features.sections": {
-            "type": "sections",
-            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        "features.references": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{features.references}"
         },
         "features.supports": {
             "type": "supports",
@@ -125,6 +125,22 @@
         "sections.history": {
             "type": "historical_sections",
             "href": "https://browsercompat.org/api/v1/historical_sections/{sections.history}"
+        },
+        "references.feature": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{references.feature}"
+        },
+        "references.section": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{references.section}"
+        },
+        "references.history_current": {
+            "type": "historical_references",
+            "href": "https://browsercompat.org/api/v1/historical_references/{references.history_current}"
+        },
+        "references.history": {
+            "type": "historical_references",
+            "href": "https://browsercompat.org/api/v1/historical_references/{references.history}"
         }
     },
     "linked": {
@@ -838,9 +854,6 @@
                 "subpath": {
                     "en": "#float"
                 },
-                "note": {
-                    "en": "Initial definition."
-                },
                 "links": {
                     "specification": "1",
                     "history_current": "1",
@@ -859,9 +872,6 @@
                 },
                 "subpath": {
                     "en": "visuren.html#float-position"
-                },
-                "note": {
-                    "en": "No change."
                 },
                 "links": {
                     "specification": "2",
@@ -882,11 +892,52 @@
                 "subpath": {
                     "en": "#the-float-property"
                 },
+                "links": {
+                    "specification": "3",
+                    "history_current": "3",
+                    "history": [
+                        "3"
+                    ]
+                }
+            }
+        ],
+        "references": [
+            {
+                "id": "1",
+                "note": {
+                    "en": "Initial definition."
+                },
+                "links": {
+                    "feature": "5",
+                    "section": "1",
+                    "history_current": "1",
+                    "history": [
+                        "1"
+                    ]
+                }
+            },
+            {
+                "id": "2",
+                "note": {
+                    "en": "No change."
+                },
+                "links": {
+                    "feature": "5",
+                    "section": "2",
+                    "history_current": "2",
+                    "history": [
+                        "2"
+                    ]
+                }
+            },
+            {
+                "id": "3",
                 "note": {
                     "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
                 },
                 "links": {
-                    "specification": "3",
+                    "feature": "5",
+                    "section": "3",
                     "history_current": "3",
                     "history": [
                         "3"
@@ -910,7 +961,7 @@
                 "links": {
                     "parent": "5",
                     "children": [],
-                    "sections": [],
+                    "references": [],
                     "supports": [
                         "1",
                         "2",
@@ -945,11 +996,11 @@
                 "links": {
                     "parent": "5",
                     "children": [],
-                    "sections": [],
+                    "references": [],
                     "supports": [],
-                    "history_current": "26",
+                    "history_current": "24",
                     "history": [
-                        "26"
+                        "24"
                     ]
                 }
             }

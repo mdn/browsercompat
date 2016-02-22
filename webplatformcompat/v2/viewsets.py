@@ -206,7 +206,7 @@ class BrowserViewSet(WritableMixin, BrowserBaseViewSet):
 class FeatureViewSet(WritableMixin, FeatureBaseViewSet):
     detail_url_pattern = 'feature-detail'
     related_routes = (
-        RelatedListRoute('sections', 'SectionViewSet', 'features'),
+        RelatedListRoute('references', 'ReferenceViewSet', 'feature'),
         RelatedListRoute('supports', 'SupportViewSet', 'feature'),
         RelatedItemRoute('parent', 'FeatureViewSet', 'parent_id'),
         RelatedListRoute('children', 'FeatureViewSet', 'parent_id'),
@@ -246,6 +246,7 @@ class SectionViewSet(WritableMixin, SectionBaseViewSet):
         RelatedItemRoute(
             'specification', 'SpecificationViewSet', 'specification_id'),
         RelatedListRoute('features', 'FeatureViewSet', 'sections'),
+        RelatedListRoute('references', 'ReferenceViewSet', 'section'),
         RelatedItemRoute(
             'history_current', 'HistoricalSectionViewSet',
             'current_history_id'),

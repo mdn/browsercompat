@@ -1,0 +1,50 @@
+{
+    "features": {
+        "id": "18",
+        "slug": "web-html-element-audio",
+        "mdn_uri": {
+            "en": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"
+        },
+        "experimental": false,
+        "standardized": true,
+        "stable": true,
+        "obsolete": false,
+        "name": "audio",
+        "links": {
+            "parent": "17",
+            "children": [],
+            "references": [],
+            "supports": [],
+            "history_current": "20",
+            "history": [
+                "20"
+            ]
+        }
+    },
+    "links": {
+        "features.parent": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.parent}"
+        },
+        "features.children": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.references": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{features.references}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
+        },
+        "features.history_current": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history_current}"
+        },
+        "features.history": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history}"
+        }
+    }
+}

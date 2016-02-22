@@ -1,0 +1,56 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/references"
+    },
+    "data": {
+        "type": "references",
+        "id": "5",
+        "attributes": {
+            "note": null
+        },
+        "relationships": {
+            "feature": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/relationships/feature",
+                    "related": "https://browsercompat.org/api/v2/references/feature"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "18"
+                }
+            },
+            "section": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/relationships/section",
+                    "related": "https://browsercompat.org/api/v2/references/section"
+                },
+                "data": {
+                    "type": "sections",
+                    "id": "6"
+                }
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/references/history_current"
+                },
+                "data": {
+                    "type": "historical_references",
+                    "id": "5"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/references/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_references",
+                        "id": "5"
+                    }
+                ]
+            }
+        }
+    }
+}

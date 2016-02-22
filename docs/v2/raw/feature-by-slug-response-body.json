@@ -41,10 +41,10 @@
                         }
                     ]
                 },
-                "sections": {
+                "references": {
                     "data": [
                         {
-                            "type": "sections",
+                            "type": "references",
                             "id": "4"
                         }
                     ]

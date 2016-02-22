@@ -1,0 +1,61 @@
+{
+    "references": [
+        {
+            "id": "1",
+            "note": {
+                "en": "Initial definition."
+            },
+            "links": {
+                "feature": "5",
+                "section": "1"
+            }
+        },
+        {
+            "id": "2",
+            "note": {
+                "en": "No change."
+            },
+            "links": {
+                "feature": "5",
+                "section": "2"
+            }
+        },
+        {
+            "id": "3",
+            "note": {
+                "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+            },
+            "links": {
+                "feature": "5",
+                "section": "3"
+            }
+        },
+        {
+            "id": "4",
+            "note": null,
+            "links": {
+                "feature": "10",
+                "section": "4"
+            }
+        }
+    ],
+    "links": {
+        "references.feature": {
+            "type": "features",
+            "href": "http://127.0.0.1:8081/api/v1/features/{references.feature}"
+        },
+        "references.section": {
+            "type": "sections",
+            "href": "http://127.0.0.1:8081/api/v1/sections/{references.section}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "references": {
+                "previous": null,
+                "next": null,
+                "count": 4
+            }
+        }
+    }
+}

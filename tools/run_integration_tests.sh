@@ -263,7 +263,7 @@ tools/upload_data.py \
 # uncomment this command to refresh resources
 # tools/download_data.py \
 #     --api=$DOC_API_URL \
-#     --data=docs/$API_VERSION/resources/
+#     --data=docs/v1/resources/
 
 # Make the documentation requests
 tools/integration_requests.py\

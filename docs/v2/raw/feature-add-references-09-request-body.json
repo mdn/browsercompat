@@ -1,0 +1,19 @@
+{
+    "data": {
+        "type": "references",
+        "relationships": {
+            "feature": {
+                "data": {
+                    "type": "features",
+                    "id": "18"
+                }
+            },
+            "section": {
+                "data": {
+                    "type": "sections",
+                    "id": "5"
+                }
+            }
+        }
+    }
+}

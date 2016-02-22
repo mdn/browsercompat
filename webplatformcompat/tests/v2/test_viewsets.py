@@ -700,14 +700,14 @@ class TestFeatureViewSet(APITestCase):
                                 'feature-supports', pk=parent.pk),
                         },
                     },
-                    'sections': {
+                    'references': {
                         'data': [],
                         'links': {
                             'self': self.full_api_reverse(
-                                'feature-relationships-sections',
+                                'feature-relationships-references',
                                 pk=parent.pk),
                             'related': self.full_api_reverse(
-                                'feature-sections', pk=parent.pk),
+                                'feature-references', pk=parent.pk),
                         },
                     },
                     'history_current': {

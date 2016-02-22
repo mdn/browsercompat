@@ -382,6 +382,7 @@ class CaseRunner(object):
                 parsed['response']['headers'][fixed_header] = value
 
         # Process response body
+        response.encoding = 'utf-8'
         body = response.text
         if self.standardize:
             body = body.replace(api, self.doc_base_url)

@@ -225,7 +225,7 @@ class TestHistoricalFeatureSerializer(TestCase):
         representation = serializer.to_representation(history)
         self.assertEqual(representation['object_id'], feature.pk)
         links = representation['archived_representation']['links']
-        self.assertEqual(links['sections'], [])
+        self.assertEqual(links['references'], [])
         self.assertEqual(links['parent'], None)
 
     def test_to_representation_with_parent(self):

@@ -226,14 +226,17 @@ class FeatureSerializer(HistoricalModelSerializer):
         return value
 
     class Meta:
-        # TODO bug 1216786: Add references
-        # TODO bug 1216786: Remove sections
         model = Feature
         fields = (
             'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
             'stable', 'obsolete', 'name', 'parent', 'children',
-            'sections', 'supports', 'history_current', 'history')
+            'references', 'supports', 'history_current', 'history')
         read_only_fields = ('supports',)
+        extra_kwargs = {
+            'references': {
+                'default': []
+            }
+        }
         fields_extra = {
             'id': {
                 'link': 'self',
@@ -248,7 +251,7 @@ class FeatureSerializer(HistoricalModelSerializer):
                 'resource': 'features',
                 'writable': 'update_only'
             },
-            'sections': {
+            'references': {
                 'link': 'from_many',
             },
             'supports': {
@@ -340,12 +343,11 @@ class SectionSerializer(HistoricalModelSerializer):
     """Specification Section Serializer."""
 
     class Meta:
-        # TODO bug 1216786: Add references
-        # TODO bug 1216786: Remove note, features
         model = Section
         fields = (
-            'id', 'number', 'name', 'subpath', 'note', 'specification',
-            'features', 'history_current', 'history')
+            'id', 'number', 'name', 'subpath', 'references', 'specification',
+            'history_current', 'history')
+        read_only_fields = ('references',)
         extra_kwargs = {
             'features': {
                 'default': []
@@ -356,13 +358,13 @@ class SectionSerializer(HistoricalModelSerializer):
                 'link': 'self',
                 'resource': 'sections',
             },
+            'references': {
+                'archive': 'omit',
+                'link': 'from_many',
+            },
             'specification': {
                 'link': 'to_one',
                 'resource': 'specifications',
-            },
-            'features': {
-                'archive': 'omit',
-                'link': 'from_many',
             },
             'history_current': {
                 'archive': 'history_id',
@@ -530,15 +532,15 @@ class ChangesetSerializer(FieldsExtraMixin, ModelSerializer):
         model = Changeset
         fields = (
             'id', 'created', 'modified', 'closed', 'target_resource_type',
-            'target_resource_id', 'user',
-            'historical_browsers', 'historical_features',
-            'historical_maturities', 'historical_sections',
+            'target_resource_id', 'user', 'historical_browsers',
+            'historical_features', 'historical_maturities',
+            'historical_references', 'historical_sections',
             'historical_specifications', 'historical_supports',
             'historical_versions')
         read_only_fields = (
-            'id', 'created', 'modified',
-            'historical_browsers', 'historical_features',
-            'historical_maturities', 'historical_sections',
+            'id', 'created', 'modified', 'historical_browsers',
+            'historical_features', 'historical_maturities',
+            'historical_references', 'historical_sections',
             'historical_specifications', 'historical_supports',
             'historical_versions')
         extra_kwargs = {
@@ -569,6 +571,9 @@ class ChangesetSerializer(FieldsExtraMixin, ModelSerializer):
                 'link': 'from_many',
             },
             'historical_maturities': {
+                'link': 'from_many',
+            },
+            'historical_references': {
                 'link': 'from_many',
             },
             'historical_specifications': {

@@ -14,10 +14,16 @@
             },
             "subpath": {
                 "en": "#ruby-display"
-            },
-            "note": null
+            }
         },
         "relationships": {
+            "references": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/8/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/sections/8/references"
+                },
+                "data": []
+            },
             "specification": {
                 "links": {
                     "self": "https://browsercompat.org/api/v2/sections/8/relationships/specification",
@@ -27,18 +33,6 @@
                     "type": "specifications",
                     "id": "4"
                 }
-            },
-            "features": {
-                "links": {
-                    "self": "https://browsercompat.org/api/v2/sections/8/relationships/features",
-                    "related": "https://browsercompat.org/api/v2/sections/8/features"
-                },
-                "data": [
-                    {
-                        "type": "features",
-                        "id": "13"
-                    }
-                ]
             },
             "history_current": {
                 "links": {

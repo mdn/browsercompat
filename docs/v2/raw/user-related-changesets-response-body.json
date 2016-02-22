@@ -182,6 +182,26 @@
                         }
                     ]
                 },
+                "historical_references": {
+                    "data": [
+                        {
+                            "type": "historical_references",
+                            "id": "4"
+                        },
+                        {
+                            "type": "historical_references",
+                            "id": "3"
+                        },
+                        {
+                            "type": "historical_references",
+                            "id": "2"
+                        },
+                        {
+                            "type": "historical_references",
+                            "id": "1"
+                        }
+                    ]
+                },
                 "historical_sections": {
                     "data": [
                         {

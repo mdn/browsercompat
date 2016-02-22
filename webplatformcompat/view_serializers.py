@@ -17,11 +17,12 @@ from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 from tools.resources import Collection, CollectionChangeset
 from .cache import Cache
 from .models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 from .serializers import (
     BrowserSerializer, FieldMapMixin, FeatureSerializer, MaturitySerializer,
-    SectionSerializer, SpecificationSerializer, SupportSerializer,
-    VersionSerializer, FieldsExtraMixin)
+    ReferenceSerializer, SectionSerializer, SpecificationSerializer,
+    SupportSerializer, VersionSerializer, FieldsExtraMixin)
 
 
 #
@@ -45,9 +46,9 @@ class ViewMaturitySerializer(MaturitySerializer):
 
 class ViewSectionSerializer(SectionSerializer):
     class Meta(SectionSerializer.Meta):
-        # Omit features
+        # Omit resources
         fields = (
-            'id', 'number', 'name', 'subpath', 'note', 'specification',
+            'id', 'number', 'name', 'subpath', 'specification',
             'history_current', 'history')
 
 
@@ -74,6 +75,7 @@ view_cls_by_name = {
     'features': (Feature, FeatureSerializer),
     'supports': (Support, SupportSerializer),
     'maturities': (Maturity, ViewMaturitySerializer),
+    'references': (ReferenceSerializer, ReferenceSerializer),
     'specifications': (Specification, ViewSpecificationSerializer),
     'sections': (Section, ViewSectionSerializer),
     'browsers': (Browser, ViewBrowserSerializer),
@@ -426,6 +428,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
     browsers = ViewBrowserSerializer(source='all_browsers', many=True)
     features = FeatureSerializer(source='child_features', many=True)
     maturities = ViewMaturitySerializer(source='all_maturities', many=True)
+    references = ReferenceSerializer(source='all_references', many=True)
     sections = ViewSectionSerializer(source='all_sections', many=True)
     specifications = ViewSpecificationSerializer(source='all_specs', many=True)
     supports = SupportSerializer(source='all_supports', many=True)
@@ -448,16 +451,23 @@ class ViewFeatureExtraSerializer(ModelSerializer):
             obj.child_features = list(child_queryset.all())
 
         # Load the remaining related instances
-        section_pks = set(obj.sections.values_list('id', flat=True))
+        reference_pks = set(obj.references.values_list('id', flat=True))
         support_pks = set(obj.supports.values_list('id', flat=True))
         for feature in obj.child_features:
-            section_pks.update(feature.sections.values_list('id', flat=True))
+            reference_pks.update(
+                feature.references.values_list('id', flat=True))
             support_pks.update(feature.supports.values_list('id', flat=True))
 
-        obj.all_sections = list(CachedQueryset(
-            Cache(), Section.objects.all(), sorted(section_pks)))
+        obj.all_references = list(CachedQueryset(
+            Cache(), Reference.objects.all(), sorted(reference_pks)))
         obj.all_supports = list(CachedQueryset(
             Cache(), Support.objects.all(), sorted(support_pks)))
+
+        section_pks = set()
+        for reference in obj.all_references:
+            section_pks.add(reference.section.pk)
+        obj.all_sections = list(CachedQueryset(
+            Cache(), Section.objects.all(), sorted(section_pks)))
 
         specification_pks = set()
         for section in obj.all_sections:
@@ -565,11 +575,13 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         for maturity in obj.all_maturities:
             add_langs(maturity.name)
 
+        for reference in obj.all_references:
+            add_langs(reference.note)
+
         for section in obj.all_sections:
             add_langs(section.number)
             add_langs(section.name)
             add_langs(section.subpath)
-            add_langs(section.note)
 
         for spec in obj.all_specs:
             add_langs(spec.name)
@@ -792,7 +804,7 @@ class ViewFeatureExtraSerializer(ModelSerializer):
         model = Feature
         fields = (
             'browsers', 'versions', 'supports', 'maturities',
-            'specifications', 'sections', 'features', 'meta')
+            'specifications', 'sections', 'references', 'features', 'meta')
 
 
 class ViewFeatureSerializer(FeatureSerializer):
@@ -806,7 +818,7 @@ class ViewFeatureSerializer(FeatureSerializer):
     def to_internal_value(self, data):
         self._in_extra = {}
         if '_view_extra' in data:
-            for link_name in ('sections', 'supports', 'children'):
+            for link_name in ('references', 'supports', 'children'):
                 if link_name in data:
                     self._in_extra[link_name] = data.pop(link_name)
         return super(ViewFeatureSerializer, self).to_internal_value(data)

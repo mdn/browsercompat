@@ -17,7 +17,7 @@
             "links": {
                 "parent": "10",
                 "children": [],
-                "sections": [],
+                "references": [],
                 "supports": [
                     "11",
                     "12",
@@ -51,7 +51,7 @@
             "links": {
                 "parent": "10",
                 "children": [],
-                "sections": [],
+                "references": [],
                 "supports": [
                     "20",
                     "21",
@@ -77,9 +77,9 @@
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.children}"
         },
-        "features.sections": {
-            "type": "sections",
-            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        "features.references": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{features.references}"
         },
         "features.supports": {
             "type": "supports",

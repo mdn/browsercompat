@@ -12,12 +12,12 @@
                 "en": "Web"
             },
             "links": {
-                "sections": [],
-                "supports": [],
                 "parent": null,
                 "children": [
                     "2"
-                ]
+                ],
+                "references": [],
+                "supports": []
             }
         },
         {
@@ -32,8 +32,6 @@
                 "en": "CSS"
             },
             "links": {
-                "sections": [],
-                "supports": [],
                 "parent": "1",
                 "children": [
                     "3",
@@ -44,7 +42,9 @@
                     "9",
                     "10",
                     "13"
-                ]
+                ],
+                "references": [],
+                "supports": []
             }
         },
         {
@@ -59,10 +59,10 @@
             "obsolete": false,
             "name": "flex-shrink",
             "links": {
-                "sections": [],
-                "supports": [],
                 "parent": "2",
-                "children": []
+                "children": [],
+                "references": [],
+                "supports": []
             }
         },
         {
@@ -77,10 +77,10 @@
             "obsolete": false,
             "name": "flex-wrap",
             "links": {
-                "sections": [],
-                "supports": [],
                 "parent": "2",
-                "children": []
+                "children": [],
+                "references": [],
+                "supports": []
             }
         },
         {
@@ -99,16 +99,16 @@
             "obsolete": false,
             "name": "float",
             "links": {
-                "sections": [
+                "parent": "2",
+                "children": [
+                    "6"
+                ],
+                "references": [
                     "1",
                     "2",
                     "3"
                 ],
-                "supports": [],
-                "parent": "2",
-                "children": [
-                    "6"
-                ]
+                "supports": []
             }
         },
         {
@@ -124,7 +124,9 @@
                 "ja": "\u57fa\u672c\u30b5\u30dd\u30fc\u30c8"
             },
             "links": {
-                "sections": [],
+                "parent": "5",
+                "children": [],
+                "references": [],
                 "supports": [
                     "1",
                     "2",
@@ -136,9 +138,7 @@
                     "8",
                     "9",
                     "10"
-                ],
-                "parent": "5",
-                "children": []
+                ]
             }
         },
         {
@@ -153,10 +153,10 @@
             "obsolete": false,
             "name": "font",
             "links": {
-                "sections": [],
-                "supports": [],
                 "parent": "2",
-                "children": []
+                "children": [],
+                "references": [],
+                "supports": []
             }
         },
         {
@@ -171,10 +171,10 @@
             "obsolete": false,
             "name": "font-family",
             "links": {
-                "sections": [],
-                "supports": [],
                 "parent": "2",
-                "children": []
+                "children": [],
+                "references": [],
+                "supports": []
             }
         },
         {
@@ -189,10 +189,10 @@
             "obsolete": false,
             "name": "font-feature-settings",
             "links": {
-                "sections": [],
-                "supports": [],
                 "parent": "2",
-                "children": []
+                "children": [],
+                "references": [],
+                "supports": []
             }
         },
         {
@@ -210,15 +210,15 @@
             "obsolete": false,
             "name": "transform-origin",
             "links": {
-                "sections": [
-                    "4"
-                ],
-                "supports": [],
                 "parent": "2",
                 "children": [
                     "11",
                     "12"
-                ]
+                ],
+                "references": [
+                    "4"
+                ],
+                "supports": []
             }
         },
         {
@@ -236,7 +236,9 @@
                 "ja": "\u57fa\u672c\u30b5\u30dd\u30fc\u30c8"
             },
             "links": {
-                "sections": [],
+                "parent": "10",
+                "children": [],
+                "references": [],
                 "supports": [
                     "11",
                     "12",
@@ -247,9 +249,7 @@
                     "17",
                     "18",
                     "19"
-                ],
-                "parent": "10",
-                "children": []
+                ]
             }
         },
         {
@@ -266,7 +266,9 @@
                 "ja": "3-\u5024\u69cb\u6587"
             },
             "links": {
-                "sections": [],
+                "parent": "10",
+                "children": [],
+                "references": [],
                 "supports": [
                     "20",
                     "21",
@@ -275,9 +277,7 @@
                     "24",
                     "25",
                     "26"
-                ],
-                "parent": "10",
-                "children": []
+                ]
             }
         },
         {
@@ -292,22 +292,14 @@
             "obsolete": false,
             "name": "transform-style",
             "links": {
-                "sections": [],
-                "supports": [],
                 "parent": "2",
-                "children": []
+                "children": [],
+                "references": [],
+                "supports": []
             }
         }
     ],
     "links": {
-        "features.sections": {
-            "type": "sections",
-            "href": "http://127.0.0.1:8081/api/v1/sections/{features.sections}"
-        },
-        "features.supports": {
-            "type": "supports",
-            "href": "http://127.0.0.1:8081/api/v1/supports/{features.supports}"
-        },
         "features.parent": {
             "type": "features",
             "href": "http://127.0.0.1:8081/api/v1/features/{features.parent}"
@@ -315,6 +307,14 @@
         "features.children": {
             "type": "features",
             "href": "http://127.0.0.1:8081/api/v1/features/{features.children}"
+        },
+        "features.references": {
+            "type": "references",
+            "href": "http://127.0.0.1:8081/api/v1/references/{features.references}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "http://127.0.0.1:8081/api/v1/supports/{features.supports}"
         }
     },
     "meta": {

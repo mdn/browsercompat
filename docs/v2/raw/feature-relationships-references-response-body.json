@@ -1,0 +1,12 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features/10/relationships/references",
+        "related": "https://browsercompat.org/api/v2/features/10/references"
+    },
+    "data": [
+        {
+            "type": "references",
+            "id": "4"
+        }
+    ]
+}

@@ -11,14 +11,11 @@
             "subpath": {
                 "en": "#float"
             },
-            "note": {
-                "en": "Initial definition."
-            },
             "links": {
-                "specification": "1",
-                "features": [
-                    "5"
-                ]
+                "references": [
+                    "1"
+                ],
+                "specification": "1"
             }
         },
         {
@@ -32,14 +29,11 @@
             "subpath": {
                 "en": "visuren.html#float-position"
             },
-            "note": {
-                "en": "No change."
-            },
             "links": {
-                "specification": "2",
-                "features": [
-                    "5"
-                ]
+                "references": [
+                    "2"
+                ],
+                "specification": "2"
             }
         },
         {
@@ -53,14 +47,11 @@
             "subpath": {
                 "en": "#the-float-property"
             },
-            "note": {
-                "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
-            },
             "links": {
-                "specification": "3",
-                "features": [
-                    "5"
-                ]
+                "references": [
+                    "3"
+                ],
+                "specification": "3"
             }
         },
         {
@@ -74,23 +65,22 @@
             "subpath": {
                 "en": "#transform-origin-property"
             },
-            "note": null,
             "links": {
-                "specification": "4",
-                "features": [
-                    "10"
-                ]
+                "references": [
+                    "4"
+                ],
+                "specification": "4"
             }
         }
     ],
     "links": {
+        "sections.references": {
+            "type": "references",
+            "href": "http://127.0.0.1:8081/api/v1/references/{sections.references}"
+        },
         "sections.specification": {
             "type": "specifications",
             "href": "http://127.0.0.1:8081/api/v1/specifications/{sections.specification}"
-        },
-        "sections.features": {
-            "type": "features",
-            "href": "http://127.0.0.1:8081/api/v1/features/{sections.features}"
         }
     },
     "meta": {

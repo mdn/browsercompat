@@ -39,10 +39,10 @@
                     }
                 ]
             },
-            "sections": {
+            "references": {
                 "links": {
-                    "self": "https://browsercompat.org/api/v2/features/17/relationships/sections",
-                    "related": "https://browsercompat.org/api/v2/features/17/sections"
+                    "self": "https://browsercompat.org/api/v2/features/17/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/features/17/references"
                 },
                 "data": []
             },

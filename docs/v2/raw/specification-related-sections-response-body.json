@@ -17,25 +17,22 @@
                 },
                 "subpath": {
                     "en": "visuren.html#float-position"
-                },
-                "note": {
-                    "en": "No change."
                 }
             },
             "relationships": {
+                "references": {
+                    "data": [
+                        {
+                            "type": "references",
+                            "id": "2"
+                        }
+                    ]
+                },
                 "specification": {
                     "data": {
                         "type": "specifications",
                         "id": "2"
                     }
-                },
-                "features": {
-                    "data": [
-                        {
-                            "type": "features",
-                            "id": "5"
-                        }
-                    ]
                 },
                 "history_current": {
                     "data": {

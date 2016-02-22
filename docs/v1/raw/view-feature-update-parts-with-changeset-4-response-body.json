@@ -11,6 +11,7 @@
             "historical_browsers": [],
             "historical_features": [],
             "historical_maturities": [],
+            "historical_references": [],
             "historical_sections": [],
             "historical_specifications": [],
             "historical_supports": [
@@ -37,6 +38,10 @@
         "changesets.historical_maturities": {
             "type": "historical_maturities",
             "href": "https://browsercompat.org/api/v1/historical_maturities/{changesets.historical_maturities}"
+        },
+        "changesets.historical_references": {
+            "type": "historical_references",
+            "href": "https://browsercompat.org/api/v1/historical_references/{changesets.historical_references}"
         },
         "changesets.historical_sections": {
             "type": "historical_sections",

@@ -1,0 +1,61 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/sections"
+    },
+    "data": {
+        "type": "sections",
+        "id": "5",
+        "attributes": {
+            "number": {
+                "en": "4.8.11"
+            },
+            "name": {
+                "en": "The audio element"
+            },
+            "subpath": {
+                "en": "embedded-content.html#the-audio-element"
+            }
+        },
+        "relationships": {
+            "references": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/sections/references"
+                },
+                "data": []
+            },
+            "specification": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/specification",
+                    "related": "https://browsercompat.org/api/v2/sections/specification"
+                },
+                "data": {
+                    "type": "specifications",
+                    "id": "5"
+                }
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/sections/history_current"
+                },
+                "data": {
+                    "type": "historical_sections",
+                    "id": "5"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/sections/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_sections",
+                        "id": "5"
+                    }
+                ]
+            }
+        }
+    }
+}

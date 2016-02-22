@@ -67,10 +67,10 @@
                     }
                 ]
             },
-            "sections": {
+            "references": {
                 "links": {
-                    "self": "https://browsercompat.org/api/v2/features/2/relationships/sections",
-                    "related": "https://browsercompat.org/api/v2/features/2/sections"
+                    "self": "https://browsercompat.org/api/v2/features/2/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/features/2/references"
                 },
                 "data": []
             },
@@ -88,7 +88,7 @@
                 },
                 "data": {
                     "type": "historical_features",
-                    "id": "24"
+                    "id": "22"
                 }
             },
             "history": {
@@ -99,7 +99,7 @@
                 "data": [
                     {
                         "type": "historical_features",
-                        "id": "24"
+                        "id": "22"
                     },
                     {
                         "type": "historical_features",

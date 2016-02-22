@@ -1,0 +1,20 @@
+{
+    "data": {
+        "type": "features",
+        "id": "18",
+        "relationships": {
+            "references": {
+                "data": [
+                    {
+                        "type": "references",
+                        "id": "6"
+                    },
+                    {
+                        "type": "references",
+                        "id": "5"
+                    }
+                ]
+            }
+        }
+    }
+}

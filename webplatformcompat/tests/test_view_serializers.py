@@ -10,7 +10,8 @@ from rest_framework.versioning import NamespaceVersioning
 from webplatformcompat.cache import Cache
 from webplatformcompat.history import Changeset, HistoricalRecords
 from webplatformcompat.models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 from webplatformcompat.view_serializers import (
     ViewFeatureSerializer, ViewFeatureExtraSerializer,
     ViewFeatureListSerializer)
@@ -56,6 +57,8 @@ class TestBaseViewFeatureViewSet(TestCase):
             Specification, maturity=maturity, slug='spec',
             name={'en': 'Specification'})
         section = self.create(Section, specification=specification)
+        reference = self.create(
+            Reference, feature=feature, section=section)
         feature.sections = [section]
         self.changeset.closed = True
         self.changeset.save()
@@ -68,6 +71,7 @@ class TestBaseViewFeatureViewSet(TestCase):
             'maturity': maturity,
             'specification': specification,
             'section': section,
+            'reference': reference,
         }
 
     def test_minimal(self):
@@ -75,6 +79,7 @@ class TestBaseViewFeatureViewSet(TestCase):
         resources = self.setup_minimal()
         browser = resources['browser']
         feature = resources['feature']
+        reference = resources['reference']
         section = resources['section']
         support = resources['support']
         maturity = resources['maturity']
@@ -92,7 +97,7 @@ class TestBaseViewFeatureViewSet(TestCase):
             'stable': True,
             'obsolete': False,
             'name': None,
-            'sections': [section.pk],
+            'references': [reference.pk],
             'supports': [support.pk],
             'parent': None,
             'children': [],
@@ -115,12 +120,19 @@ class TestBaseViewFeatureViewSet(TestCase):
                     'history_current': self.history_pk(maturity),
                     'history': self.history_pks(maturity),
                 }],
+                'references': [{
+                    'id': reference.id,
+                    'note': None,
+                    'feature': feature.id,
+                    'section': section.id,
+                    'history_current': self.history_pk(reference),
+                    'history': self.history_pks(reference),
+                }],
                 'sections': [{
                     'id': section.id,
                     'number': None,
                     'name': None,
                     'subpath': None,
-                    'note': None,
                     'specification': specification.id,
                     'history_current': self.history_pk(section),
                     'history': self.history_pks(section),
@@ -191,7 +203,7 @@ class TestBaseViewFeatureViewSet(TestCase):
                 }
             }
         }
-        self.assertEqual(representation, expected_representation)
+        self.assertDataEqual(representation, expected_representation)
 
     def test_canonical_removed(self):
         """zxx (non-linguistic, canonical) does not appear in languages."""
@@ -626,7 +638,7 @@ class TestBaseViewFeatureUpdates(TestCase):
                     'obsolete': False,
                     'name': {'en': 'subfeature'},
                     'parent': self.feature.id,
-                    'sections': [],
+                    'references': [],
                     'children': [],
                 }],
             },
@@ -711,23 +723,27 @@ class TestBaseViewFeatureUpdates(TestCase):
         }
         self.assertUpdateFailed(data, expected_errors)
 
-    def test_add_section(self):
+    def test_add_reference(self):
         data = {
-            'sections': ['_section'],
+            'references': ['_reference'],
             '_view_extra': {
+                'references': [{
+                    'id': '_reference',
+                    'feature': self.feature.id,
+                    'section': '_section',
+                }],
                 'sections': [{
                     'id': '_section',
                     'name': {'en': 'Section'},
                     'specification': self.spec.id,
-                    'features': [self.feature.id],
                 }],
                 'specifications': [self.spec_data],
                 'maturities': [self.maturity_data],
             }
         }
         new_feature = self.assertUpdateSuccess(data)
-        section = Section.objects.get()
-        self.assertEqual([new_feature], list(section.features.all()))
+        reference = Reference.objects.get()
+        self.assertEqual(new_feature, reference.feature)
 
     def test_add_support_to_target(self):
         data = {

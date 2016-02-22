@@ -2,5 +2,5 @@ POST /api/v2/sections HTTP/1.1
 Host: browsercompat.org
 Accept: application/vnd.api+json
 Authorization: Bearer xxQLNiTUFjRL5En8nBWzSDc5tLWkV2
-Content-Length: 758
+Content-Length: 524
 Content-Type: application/vnd.api+json

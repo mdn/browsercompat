@@ -1,0 +1,6 @@
+PATCH /api/v2/features/18 HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json
+Authorization: Bearer xxQLNiTUFjRL5En8nBWzSDc5tLWkV2
+Content-Length: 443
+Content-Type: application/vnd.api+json

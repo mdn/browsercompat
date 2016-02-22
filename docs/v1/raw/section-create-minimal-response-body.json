@@ -6,10 +6,9 @@
             "en": "'font-family'"
         },
         "subpath": null,
-        "note": null,
         "links": {
+            "references": [],
             "specification": "1",
-            "features": [],
             "history_current": "5",
             "history": [
                 "5"
@@ -17,13 +16,13 @@
         }
     },
     "links": {
+        "sections.references": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{sections.references}"
+        },
         "sections.specification": {
             "type": "specifications",
             "href": "https://browsercompat.org/api/v1/specifications/{sections.specification}"
-        },
-        "sections.features": {
-            "type": "features",
-            "href": "https://browsercompat.org/api/v1/features/{sections.features}"
         },
         "sections.history_current": {
             "type": "historical_sections",
