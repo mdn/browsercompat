@@ -17,6 +17,7 @@ available at https://browsercompat.herokuapp.com/api/v2, include:
 * **specifications** - A document specifying a web technology
 * **maturities** - The state of a specification in the standardization process
 * **sections** - A section of a specification
+* **references** - The link from a section to a feature
 * **changesets** - A collection of one or more data changes
 * **users** - API users
 * **historical_browsers** - A change to a browser resource

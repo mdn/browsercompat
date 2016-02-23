@@ -228,8 +228,6 @@ Here is a sample **specification**:
 Sections
 --------
 
-*Note:* `bug 1216786`_ *is proposing splitting Sections into Sections and References.*
-
 A **section** refers to a specific area of a specification_ document.
 
 The **section** representation includes:
@@ -240,11 +238,10 @@ The **section** representation includes:
     - **name** *(localized)* - Section name
     - **subpath** *(localized, optional)* - A subpage (possibly with an
       #anchor) to get to the subsection in the doc.  Can be empty string.
-    - **note** *(localized, optional)* - Notes for this section
 * **relationships**
     - **specification** *(one)* - The specification_.  Can be changed by
       the user.
-    - **features** *(many)* - The associated features_.  In ID order,
+    - **references** *(many)* - The associated references_.  In ID order,
       changes are ignored.
     - **history_current** *(one)* - Current
       historical_sections_.  Can be changed to a valid
@@ -255,6 +252,30 @@ The **section** representation includes:
 Here is a sample **section**:
 
 .. literalinclude:: /v2/raw/section-by-id-response-body.json
+    :language: json
+
+References
+----------
+
+A **reference** ties a specification section_ to a feature_.
+
+The **reference** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **note** *(localized, optional)* - Notes for this reference
+* **links**
+    - **feature** *(one)* - The feature. Can be changed by the user.
+    - **section** *(one)* - The section. Can be changed by the user.
+    - **history_current** *(one)* - Current
+      historical_references_.  Can be changed to a valid
+      **history** to revert to that version.
+    - **history** *(many)* - Associated historical_references_
+      in time order (most recent first).  Changes are ignored.
+
+Here is a sample **reference**:
+
+.. literalinclude:: /v2/raw/reference-by-id-response-body.json
     :language: json
 
 Maturities
@@ -511,6 +532,28 @@ Here is a sample **historical_section**:
 .. literalinclude:: /v2/raw/historical-sections-by-id-response-body.json
     :language: json
 
+Historical References
+---------------------
+
+A **historical_references** resource represents the state of a reference_ at a point
+in time, and who is responsible for that representation.
+The representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **date** *(server selected)* - The time of this change in `ISO 8601`_
+    - **event** *(server selected)* - The type of event, one of ``"created"``,
+      ``"changed"``, or ``"deleted"``
+    - **archive_data** - The **references** representation at this point in time
+* **relationships**
+    - **changeset** *(one)* - Associated changeset_, can not be changed.
+    - **reference** *(one)* - Associated reference_, can not be changed
+
+Here is a sample **historical_reference**:
+
+.. literalinclude:: /v2/raw/historical-references-by-id-response-body.json
+    :language: json
+
 Historical Maturities
 ---------------------
 
@@ -539,12 +582,14 @@ Here is a sample **historical_maturity**:
 .. _specification: Specifications_
 .. _section: Sections_
 .. _support: Supports_
+.. _reference: References_
 .. _maturity: Maturities_
 .. _version: Versions_
 .. _user: Users_
 .. _changeset: Changesets_
 .. _historical_browsers: `Historical Browsers`_
 .. _historical_features: `Historical Features`_
+.. _historical_references: `Historical References`_
 .. _historical_supports: `Historical Supports`_
 .. _historical_specifications: `Historical Specifications`_
 .. _historical_sections: `Historical Sections`_

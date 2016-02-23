@@ -159,10 +159,10 @@ to the feature_.  This will facilitate displaying a history of
 the compatibility tables, for the purpose of reviewing changes and reverting
 vandalism.
 
-Updating View with PUT
-~~~~~~~~~~~~~~~~~~~~~~
+Updating View with PATCH
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-``view_features`` supports PUT for bulk updates of support data.  Here is a simple
+``view_features`` supports PATCH for bulk updates of support data.  Here is a simple
 example that adds a new subfeature without support:
 
 .. literalinclude:: /v2/raw/view-feature-update-put-subfeature-request-headers.txt
@@ -189,18 +189,19 @@ some quirks:
 
 * New items should be identified with an ID starting with an underscore
   (``_``).  Relations to new items should use the underscored IDs.
-* Only feature_, support_, and section_ resources can be added or updated.
-  Features must be the target feature or a descendant, and supports and
-  sections are restricted to those features.
+* Only feature_, reference_, section_, and support_ resources can be added or
+  updated.  Features must be the target feature or a descendant, and other
+  resources must be restricted to those features or a valid new feature..
 * Deletions are not supported.
 * Other resources (browsers_, versions_, etc) can not be added or changed.
   This includes adding links to new resources.
 
-Once the MDN import is complete, this PUT interface will be deprecated in
-favor of direct POST and PUT to the standard resource API.
+Once the MDN import is complete, this PATCH interface will be deprecated in
+favor of direct POST and PATCH to the standard resource API.
 
 .. _browsers: resources.html#browsers
 .. _feature: resources.html#features
+.. _reference: resources.html#references
 .. _section: resources.html#sections
 .. _support: resources.html#supports
 .. _version: resources.html#versions
