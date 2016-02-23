@@ -195,16 +195,24 @@ class FeatureSerializer(HistoricalModelSerializer):
         many=True, queryset=Feature.objects.all(), required=False)
 
     def update(self, instance, validated_data):
+        """Handle updating of sorted related items."""
+        references = validated_data.pop('references', None)
         children = validated_data.pop('children', None)
         if children:
             current_order = list(instance.get_children())
             if current_order == children:
                 children = None
+
         instance = super(FeatureSerializer, self).update(
             instance, validated_data)
 
         if children:
             instance.set_children_order(children)
+        if references:
+            current_ref_order = instance.get_reference_order()
+            new_ref_order = [ref.pk for ref in references]
+            if current_ref_order != new_ref_order:
+                instance.set_reference_order(new_ref_order)
         return instance
 
     def validate_children(self, value):
