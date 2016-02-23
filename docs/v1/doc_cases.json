@@ -703,6 +703,20 @@
             "date": "2015-04-20T18:57:10.394547Z"
         }
     }, {
+        "name": "historical-reference-by-id",
+        "method": "GET",
+        "endpoint": "historical_references/3",
+        "standardize": {
+            "date": "2016-02-23T10:39:44.239000Z"
+        }
+    }, {
+        "name": "historical-reference-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_references?id=3",
+        "standardize": {
+            "date": "2016-02-23T10:39:59.340000Z"
+        }
+    }, {
         "name": "view-features-list",
         "method": "GET",
         "endpoint": "view_features"
@@ -1122,5 +1136,35 @@
         "name": "browser-detail-options",
         "method": "OPTIONS",
         "endpoint": "browsers/7"
+    }, {
+        "name": "reference-by-id",
+        "method": "GET",
+        "endpoint": "references/3"
+    }, {
+        "name": "reference-update",
+        "method": "PUT",
+        "endpoint": "references/6",
+        "data": {
+            "references": {
+                "note": {
+                    "en": "This is a note."
+                }
+            }
+        }
+    }, {
+        "name": "reference-revert",
+        "method": "PUT",
+        "endpoint": "references/6",
+        "data": {
+            "references": {
+                "links": {
+                    "history_current": "6"
+                }
+            }
+        }
+    }, {
+        "name": "reference-delete",
+        "method": "DELETE",
+        "endpoint": "references/6"
     }
 ]

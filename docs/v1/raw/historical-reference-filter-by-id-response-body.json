@@ -1,0 +1,43 @@
+{
+    "historical_references": [
+        {
+            "id": "3",
+            "date": "2016-02-23T10:39:59.340000Z",
+            "event": "created",
+            "references": {
+                "id": "3",
+                "note": {
+                    "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+                },
+                "links": {
+                    "feature": "5",
+                    "section": "3",
+                    "history_current": "3"
+                }
+            },
+            "links": {
+                "changeset": "1",
+                "reference": "3"
+            }
+        }
+    ],
+    "links": {
+        "historical_references.changeset": {
+            "type": "changesets",
+            "href": "https://browsercompat.org/api/v1/changesets/{historical_references.changeset}"
+        },
+        "historical_references.reference": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{historical_references.reference}"
+        }
+    },
+    "meta": {
+        "pagination": {
+            "historical_references": {
+                "previous": null,
+                "next": null,
+                "count": 1
+            }
+        }
+    }
+}

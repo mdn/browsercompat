@@ -1,0 +1,34 @@
+{
+    "references": {
+        "id": "3",
+        "note": {
+            "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+        },
+        "links": {
+            "feature": "5",
+            "section": "3",
+            "history_current": "3",
+            "history": [
+                "3"
+            ]
+        }
+    },
+    "links": {
+        "references.feature": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{references.feature}"
+        },
+        "references.section": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{references.section}"
+        },
+        "references.history_current": {
+            "type": "historical_references",
+            "href": "https://browsercompat.org/api/v1/historical_references/{references.history_current}"
+        },
+        "references.history": {
+            "type": "historical_references",
+            "href": "https://browsercompat.org/api/v1/historical_references/{references.history}"
+        }
+    }
+}

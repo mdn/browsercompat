@@ -1,0 +1,65 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/historical_references/5"
+    },
+    "data": {
+        "type": "historical_references",
+        "id": "5",
+        "attributes": {
+            "date": "2016-02-23T10:41:02.217000Z",
+            "event": "created",
+            "archive_data": {
+                "type": "references",
+                "id": "5",
+                "attributes": {
+                    "note": null
+                },
+                "relationships": {
+                    "feature": {
+                        "data": {
+                            "type": "features",
+                            "id": "18"
+                        }
+                    },
+                    "section": {
+                        "data": {
+                            "type": "sections",
+                            "id": "6"
+                        }
+                    },
+                    "history_current": {
+                        "data": {
+                            "type": "historical_references",
+                            "id": "5"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/5"
+                }
+            }
+        },
+        "relationships": {
+            "changeset": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_references/5/relationships/changeset",
+                    "related": "https://browsercompat.org/api/v2/historical_references/5/changeset"
+                },
+                "data": {
+                    "type": "changesets",
+                    "id": "29"
+                }
+            },
+            "reference": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/historical_references/5/relationships/reference",
+                    "related": "https://browsercompat.org/api/v2/historical_references/5/reference"
+                },
+                "data": {
+                    "type": "references",
+                    "id": "5"
+                }
+            }
+        }
+    }
+}

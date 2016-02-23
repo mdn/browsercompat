@@ -1,0 +1,6 @@
+PUT /api/v1/references/6 HTTP/1.1
+Host: browsercompat.org
+Accept: application/vnd.api+json
+Authorization: Bearer xxQLNiTUFjRL5En8nBWzSDc5tLWkV2
+Content-Length: 93
+Content-Type: application/vnd.api+json
