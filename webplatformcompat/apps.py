@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Application configuration."""
 from django.apps import AppConfig
-from django.db.models.signals import post_delete, post_save, m2m_changed
+from django.db.models.signals import post_delete, post_save
 
 
 class WebPlatformCompatConfig(AppConfig):
@@ -20,7 +20,6 @@ class WebPlatformCompatConfig(AppConfig):
             Support, Version)
         from webplatformcompat.signals import (
             add_user_to_change_resource_group,
-            feature_sections_changed_update_order,
             post_delete_update_cache,
             post_save_changeset,
             post_save_update_cache)
@@ -30,12 +29,6 @@ class WebPlatformCompatConfig(AppConfig):
             add_user_to_change_resource_group,
             sender=User,
             dispatch_uid='add_user_to_change_resource_group')
-
-        # Invalidate instance cache when features-to-sections changes
-        m2m_changed.connect(
-            feature_sections_changed_update_order,
-            sender=Feature.sections.through,
-            dispatch_uid='m2m_changed_feature_section')
 
         # Invalidate instance cache on model changes
         for model in (
