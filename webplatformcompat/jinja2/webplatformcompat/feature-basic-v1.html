@@ -1,6 +1,6 @@
 <section class="webplatformcompat-feature" lang="{{lang}}" data-type="{{data['type']}}" data-id="{{data['id']}}">
 <h2>Specifications</h2>
-{% if data['links']['sections'] %}
+{% if data['links']['references'] %}
 <table class="specifications-table">
   <thead>
     <tr>
@@ -10,8 +10,9 @@
     </tr>
   </thead>
   <tbody>
-  {%- for section_id in data['links']['sections'] %}
-    {%- set section = collection['sections'][section_id] %}
+  {%- for reference_id in data['links']['references'] %}
+    {%- set reference = collection['references'][reference_id] %}
+    {%- set section = collection['sections'][reference['links']['section']] %}
     {%- set spec = collection['specifications'][section['links']['specification']] %}
     {%- set maturity = collection['maturities'][spec['links']['maturity']] %}
     {%- set mat_class = "maturity-" ~ maturity.slug %}

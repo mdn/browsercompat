@@ -1,6 +1,6 @@
 <section class="webplatformcompat-feature" lang="{{lang}}" data-type="{{data['type']}}" data-id="{{data['id']}}">
 <h2>Specifications</h2>
-{% if data['relationships']['sections'] %}
+{% if data['relationships']['references'] %}
 <table class="specifications-table">
   <thead>
     <tr>
@@ -10,13 +10,13 @@
     </tr>
   </thead>
   <tbody>
-  {%- for section_relationship in data['relationships']['sections']['data'] %}
-    {%- set section_id = section_relationship['id'] %}
-    {%- set section = collection['sections'][section_id] %}
+  {%- for reference_relationship in data['relationships']['references']['data'] %}
+    {%- set reference_id = reference_relationship['id'] %}
+    {%- set reference = collection['references'][reference_id] %}
+    {%- set section = collection['sections'][reference['relationships']['section']['data']['id']] %}
     {%- set spec = collection['specifications'][section['relationships']['specification']['data']['id']] %}
     {%- set maturity = collection['maturities'][spec['relationships']['maturity']['data']['id']] %}
     {%- set mat_class = "maturity-" ~ maturity.attributes.slug %}
-
     <tr>
       <td>
         <a href="{{trans_str(spec.attributes.uri) ~ trans_str(section.attributes.subpath)}}">
