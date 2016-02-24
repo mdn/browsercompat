@@ -106,11 +106,47 @@ DS.JsonApiNamespacedSerializer = DS.JsonApiSerializer.extend({
 });
 
 /* Adapter - JsonApiAdapter with modifictions */
+/*jslint nomen: true */
+/* Allow DS._routes, ._super in buildURL */
 Browse.ApplicationAdapter = DS.JsonApiAdapter.extend({
     namespace: 'api/v1',
-    defaultSerializer: 'DS/jsonApiNamespaced'
-});
+    defaultSerializer: 'DS/jsonApiNamespaced',
+    buildURL: function (typeName, id) {
+        // Same as JsonApiAdapter.buildURL, except strips trailing slash from
+        // list view, jslint is happier.
+        var route, url, host, prefix, param, list_param;
+        route = DS._routes[typeName];
+        if (!!route) {
+            url = [];
+            host = Ember.get(this, 'host');
+            prefix = this.urlPrefix();
+            /*jslint regexp: true */
+            param = /\{(.*?)\}/g;
+            list_param = /\/\{(.*?)\}/g;
+            /*jslint regexp: false */
 
+            if (id) {
+                if (param.test(route)) {
+                    url.push(route.replace(param, id));
+                } else {
+                    url.push(route, id);
+                }
+            } else {
+                url.push(route.replace(list_param, ''));
+            }
+
+            if (prefix) { url.unshift(prefix); }
+
+            url = url.join('/');
+            if (!host && url) { url = '/' + url; }
+
+            return url;
+        }
+        /* _super is convention of Ember */
+        return this._super(typeName, id);
+    },
+});
+/*jslint nomen: false */
 
 /* Routes */
 Browse.PaginatedRouteMixin = Ember.Mixin.create({
