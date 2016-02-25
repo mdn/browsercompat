@@ -171,11 +171,6 @@ class TestCache(TestCase):
                 'model': 'support',
                 'pks': [],
             },
-            'sections:PKList': {
-                'app': 'webplatformcompat',
-                'model': 'section',
-                'pks': [],
-            },
             'parent:PK': {
                 'app': 'webplatformcompat',
                 'model': 'feature',
@@ -248,7 +243,7 @@ class TestCache(TestCase):
 
     def test_feature_v1_loader(self):
         feature = self.create(Feature)
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(4):
             obj = self.cache.feature_v1_loader(feature.pk)
         with self.assertNumQueries(0):
             serialized = self.cache.feature_v1_serializer(obj)
@@ -410,16 +405,10 @@ class TestCache(TestCase):
             'number': {'en': '3.2.4'},
             'name': {'en': 'Number (mn)'},
             'subpath': {'en': 'chapter3.html#presm.mn'},
-            'note': {},
             'specification:PK': {
                 'app': u'webplatformcompat',
                 'model': 'specification',
                 'pk': spec.pk,
-            },
-            'features:PKList': {
-                'app': u'webplatformcompat',
-                'model': 'feature',
-                'pks': [],
             },
             'references:PKList': {
                 'app': u'webplatformcompat',
@@ -453,9 +442,8 @@ class TestCache(TestCase):
                 'https://dvcs.w3.org/hg/push/raw-file/default/index.html')}
         )
         section = self.create(
-            Section, specification=spec,
-            name={'en': ''}, note={'en': 'Non standard'})
-        with self.assertNumQueries(4):
+            Section, specification=spec, name={'en': ''})
+        with self.assertNumQueries(3):
             obj = self.cache.section_v1_loader(section.pk)
         with self.assertNumQueries(0):
             serialized = self.cache.section_v1_serializer(obj)

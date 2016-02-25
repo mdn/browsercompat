@@ -158,8 +158,6 @@ class Cache(BaseCache):
                 'PKList', 'references', model=Reference,
                 pks=obj._reference_pks),
             self.field_to_json(
-                'PKList', 'sections', model=Section, pks=obj._section_pks),
-            self.field_to_json(
                 'PKList', 'supports', model=Support, pks=obj._support_pks),
             self.field_to_json(
                 'PK', 'parent', model=Feature, pk=obj.parent_id),
@@ -204,8 +202,6 @@ class Cache(BaseCache):
         if not hasattr(obj, '_support_pks'):
             obj._support_pks = sorted(
                 obj.supports.values_list('pk', flat=True))
-        if not hasattr(obj, '_section_pks'):
-            obj._section_pks = list(obj.sections.values_list('pk', flat=True))
         if not hasattr(obj, '_descendant_pks'):
             if obj.descendant_count <= settings.PAGINATE_VIEW_FEATURE:
                 obj._descendant_pks = obj.descendant_pks
@@ -319,12 +315,9 @@ class Cache(BaseCache):
             ('number', obj.number),
             ('name', obj.name),
             ('subpath', obj.subpath),
-            ('note', obj.note),
             self.field_to_json(
                 'PK', 'specification', model=Specification,
                 pk=obj.specification_id),
-            self.field_to_json(
-                'PKList', 'features', model=Feature, pks=obj._feature_pks),
             self.field_to_json(
                 'PKList', 'references', model=Reference,
                 pks=obj._reference_pks),
@@ -348,13 +341,9 @@ class Cache(BaseCache):
 
     def section_v1_add_related_pks(self, obj):
         """Add related primary keys to a Section instance."""
-        # TODO bug 1216786: remove dropped fields note, features
         if not hasattr(obj, '_history_pks'):
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
-        if not hasattr(obj, '_feature_pks'):
-            obj._feature_pks = sorted(
-                obj.features.values_list('pk', flat=True))
         if not hasattr(obj, '_reference_pks'):
             obj._reference_pks = sorted(
                 obj.references.values_list('pk', flat=True))
