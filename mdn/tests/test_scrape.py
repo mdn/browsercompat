@@ -596,6 +596,33 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         expected['linked']['references'] = [reference_content]
         self.assertDataEqual(expected, out)
 
+    def test_load_specification_row_empty_resources(self):
+        scraped_data = self.empty_scrape()
+        scraped_spec = {
+            'section.note': '',
+            'section.subpath': '',
+            'section.name': '',
+            'specification.mdn_key': 'CSS3 UI',
+            'section.id': None,
+            'specification.id': None}
+        scraped_data['specs'].append(scraped_spec)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        spec_content, mat_content = view.new_specification(scraped_spec)
+        section_content = view.new_section(scraped_spec, spec_content['id'])
+        # TODO: bug 1251252 - Empty string should mean omittied name, subpath
+        section_content['name']['en'] = ''
+        section_content['subpath']['en'] = ''
+        reference_content = view.load_or_new_reference(section_content['id'])
+        reference_content['note'] = None
+        expected = self.empty_view(scraped_data)
+        expected['features']['links']['references'] = [reference_content['id']]
+        expected['linked']['maturities'] = [mat_content]
+        expected['linked']['specifications'] = [spec_content]
+        expected['linked']['sections'] = [section_content]
+        expected['linked']['references'] = [reference_content]
+        self.assertDataEqual(expected, out)
+
     def test_load_specification_row_existing_resources(self):
         reference = self.get_instance(
             'Reference', ('web-css-background-size', 'background-size'))

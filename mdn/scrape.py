@@ -381,6 +381,7 @@ class ScrapedViewFeature(object):
         # Load Specification Section
         if spec_row['section.id']:
             section_content = self.load_section(spec_row['section.id'])
+            # TODO: bug 1251252 - empty name, subpath is None
             section_content['name']['en'] = spec_row['section.name']
             section_content['subpath']['en'] = spec_row['section.subpath']
         else:
@@ -389,7 +390,10 @@ class ScrapedViewFeature(object):
 
         # Load Reference
         reference_content = self.load_or_new_reference(section_content['id'])
-        reference_content['note']['en'] = spec_row['section.note']
+        if spec_row['section.note']:
+            reference_content['note']['en'] = spec_row['section.note']
+        else:
+            reference_content['note'] = None
         self.add_resource('references', reference_content)
 
     def load_compat_table(self, table):
