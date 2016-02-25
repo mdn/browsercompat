@@ -217,7 +217,7 @@ fi
 
 # Create an empty database
 rm -f $DATABASE_NAME
-python manage.py migrate --verbosity=$VERBOSITY
+python manage.py migrate --verbosity=$VERBOSITY --noinput
 
 # Add the documentation user
 create_user $DOC_USER_NAME $DOC_USER_EMAIL $DOC_USER_PASSWORD 0
