@@ -10,7 +10,8 @@ from webplatformcompat.view_serializers import (
     ViewFeatureListSerializer, ViewFeatureRowChildrenSerializer,
     ViewFeatureSerializer)
 from webplatformcompat.models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 
 from .base import APITestCase
 
@@ -33,11 +34,12 @@ class TestCascadeDeleteGeneric(APITestCase):
             Specification, slug='Spec', maturity=self.maturity)
         self.section = self.create(
             Section, specification=self.specification)
-        self.section.features.add(self.child)
+        self.reference = self.create(
+            Reference, section=self.section, feature=self.child)
 
     def assert_counts_after_delete(
             self, url, browsers=1, versions=1, supports=1, maturities=1,
-            specifications=1, sections=1, features=2):
+            specifications=1, sections=1, features=2, references=1):
         response = self.client.delete(url)
         self.assertEqual(204, response.status_code)
         self.assertEqual(browsers, Browser.objects.count())
@@ -47,6 +49,7 @@ class TestCascadeDeleteGeneric(APITestCase):
         self.assertEqual(specifications, Specification.objects.count())
         self.assertEqual(sections, Section.objects.count())
         self.assertEqual(features, Feature.objects.count())
+        self.assertEqual(references, Reference.objects.count())
 
     def test_delete_browser(self):
         url = self.api_reverse('browser-detail', pk=self.browser.pk)
@@ -64,20 +67,26 @@ class TestCascadeDeleteGeneric(APITestCase):
     def test_delete_maturity(self):
         url = self.api_reverse('maturity-detail', pk=self.maturity.pk)
         self.assert_counts_after_delete(
-            url, maturities=0, specifications=0, sections=0)
+            url, maturities=0, specifications=0, sections=0, references=0)
 
     def test_delete_specification(self):
         url = self.api_reverse(
             'specification-detail', pk=self.specification.pk)
-        self.assert_counts_after_delete(url, specifications=0, sections=0)
+        self.assert_counts_after_delete(
+            url, specifications=0, sections=0, references=0)
 
     def test_delete_section(self):
         url = self.api_reverse('section-detail', pk=self.section.pk)
-        self.assert_counts_after_delete(url, sections=0)
+        self.assert_counts_after_delete(url, sections=0, references=0)
 
     def test_delete_feature(self):
         url = self.api_reverse('feature-detail', pk=self.parent.pk)
-        self.assert_counts_after_delete(url, features=0, supports=0)
+        self.assert_counts_after_delete(
+            url, features=0, supports=0, references=0)
+
+    def test_delete_reference(self):
+        url = self.api_reverse('reference-detail', pk=self.reference.pk)
+        self.assert_counts_after_delete(url, references=0)
 
 
 class TestUserBaseViewset(APITestCase):
