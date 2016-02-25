@@ -49,6 +49,13 @@
                 },
                 "data": []
             },
+            "historical_references": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/27/relationships/historical_references",
+                    "related": "https://browsercompat.org/api/v2/changesets/27/historical_references"
+                },
+                "data": []
+            },
             "historical_sections": {
                 "links": {
                     "self": "https://browsercompat.org/api/v2/changesets/27/relationships/historical_sections",

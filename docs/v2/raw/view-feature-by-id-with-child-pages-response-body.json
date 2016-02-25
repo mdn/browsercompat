@@ -55,11 +55,11 @@
                     },
                     {
                         "type": "features",
-                        "id": "13"
+                        "id": "9"
                     },
                     {
                         "type": "features",
-                        "id": "9"
+                        "id": "13"
                     },
                     {
                         "type": "features",
@@ -67,10 +67,10 @@
                     }
                 ]
             },
-            "sections": {
+            "references": {
                 "links": {
-                    "self": "https://browsercompat.org/api/v2/view_features/2/relationships/sections",
-                    "related": "https://browsercompat.org/api/v2/view_features/2/sections"
+                    "self": "https://browsercompat.org/api/v2/view_features/2/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/view_features/2/references"
                 },
                 "data": []
             },
@@ -88,7 +88,7 @@
                 },
                 "data": {
                     "type": "historical_features",
-                    "id": "25"
+                    "id": "23"
                 }
             },
             "history": {
@@ -99,11 +99,11 @@
                 "data": [
                     {
                         "type": "historical_features",
-                        "id": "25"
+                        "id": "23"
                     },
                     {
                         "type": "historical_features",
-                        "id": "24"
+                        "id": "22"
                     },
                     {
                         "type": "historical_features",
@@ -2910,9 +2910,6 @@
                 },
                 "subpath": {
                     "en": "#float"
-                },
-                "note": {
-                    "en": "Initial definition."
                 }
             },
             "relationships": {
@@ -2953,9 +2950,6 @@
                 },
                 "subpath": {
                     "en": "visuren.html#float-position"
-                },
-                "note": {
-                    "en": "No change."
                 }
             },
             "relationships": {
@@ -2996,9 +2990,6 @@
                 },
                 "subpath": {
                     "en": "#the-float-property"
-                },
-                "note": {
-                    "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
                 }
             },
             "relationships": {
@@ -3039,8 +3030,7 @@
                 },
                 "subpath": {
                     "en": "#transform-origin-property"
-                },
-                "note": null
+                }
             },
             "relationships": {
                 "specification": {
@@ -3069,60 +3059,161 @@
             }
         },
         {
-            "type": "sections",
-            "id": "8",
+            "type": "references",
+            "id": "1",
             "attributes": {
-                "number": {
-                    "en": "2.1"
-                },
-                "name": {
-                    "en": "Ruby-specific 'display' Values"
-                },
-                "subpath": {
-                    "en": "#ruby-display"
-                },
-                "note": null
+                "note": {
+                    "en": "Initial definition."
+                }
             },
             "relationships": {
-                "specification": {
+                "feature": {
                     "data": {
-                        "type": "specifications",
-                        "id": "4"
+                        "type": "features",
+                        "id": "5"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "1"
                     }
                 },
                 "history_current": {
                     "data": {
-                        "type": "historical_sections",
-                        "id": "12"
+                        "type": "historical_references",
+                        "id": "1"
                     }
                 },
                 "history": {
                     "data": [
                         {
-                            "type": "historical_sections",
-                            "id": "12"
-                        },
-                        {
-                            "type": "historical_sections",
-                            "id": "11"
-                        },
-                        {
-                            "type": "historical_sections",
-                            "id": "10"
-                        },
-                        {
-                            "type": "historical_sections",
-                            "id": "9"
-                        },
-                        {
-                            "type": "historical_sections",
-                            "id": "8"
+                            "type": "historical_references",
+                            "id": "1"
                         }
                     ]
                 }
             },
             "links": {
-                "self": "https://browsercompat.org/api/v2/sections/8"
+                "self": "https://browsercompat.org/api/v2/references/1"
+            }
+        },
+        {
+            "type": "references",
+            "id": "2",
+            "attributes": {
+                "note": {
+                    "en": "No change."
+                }
+            },
+            "relationships": {
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "5"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "2"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_references",
+                        "id": "2"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_references",
+                            "id": "2"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/references/2"
+            }
+        },
+        {
+            "type": "references",
+            "id": "3",
+            "attributes": {
+                "note": {
+                    "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+                }
+            },
+            "relationships": {
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "5"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "3"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_references",
+                        "id": "3"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_references",
+                            "id": "3"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/references/3"
+            }
+        },
+        {
+            "type": "references",
+            "id": "4",
+            "attributes": {
+                "note": null
+            },
+            "relationships": {
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "10"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "4"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_references",
+                        "id": "4"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_references",
+                            "id": "4"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/references/4"
             }
         },
         {
@@ -3149,7 +3240,7 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
+                "references": {
                     "data": []
                 },
                 "supports": {
@@ -3198,7 +3289,7 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
+                "references": {
                     "data": []
                 },
                 "supports": {
@@ -3256,18 +3347,18 @@
                         }
                     ]
                 },
-                "sections": {
+                "references": {
                     "data": [
                         {
-                            "type": "sections",
+                            "type": "references",
                             "id": "1"
                         },
                         {
-                            "type": "sections",
+                            "type": "references",
                             "id": "2"
                         },
                         {
-                            "type": "sections",
+                            "type": "references",
                             "id": "3"
                         }
                     ]
@@ -3319,7 +3410,7 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
+                "references": {
                     "data": []
                 },
                 "supports": {
@@ -3413,7 +3504,7 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
+                "references": {
                     "data": []
                 },
                 "supports": {
@@ -3462,7 +3553,7 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
+                "references": {
                     "data": []
                 },
                 "supports": {
@@ -3489,60 +3580,6 @@
         },
         {
             "type": "features",
-            "id": "13",
-            "attributes": {
-                "slug": "web-css-transform-style",
-                "mdn_uri": {
-                    "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style"
-                },
-                "experimental": false,
-                "standardized": true,
-                "stable": true,
-                "obsolete": false,
-                "name": "transform-style"
-            },
-            "relationships": {
-                "parent": {
-                    "data": {
-                        "type": "features",
-                        "id": "2"
-                    }
-                },
-                "children": {
-                    "data": []
-                },
-                "sections": {
-                    "data": [
-                        {
-                            "type": "sections",
-                            "id": "8"
-                        }
-                    ]
-                },
-                "supports": {
-                    "data": []
-                },
-                "history_current": {
-                    "data": {
-                        "type": "historical_features",
-                        "id": "13"
-                    }
-                },
-                "history": {
-                    "data": [
-                        {
-                            "type": "historical_features",
-                            "id": "13"
-                        }
-                    ]
-                }
-            },
-            "links": {
-                "self": "https://browsercompat.org/api/v2/features/13"
-            }
-        },
-        {
-            "type": "features",
             "id": "9",
             "attributes": {
                 "slug": "web-css-font-feature-settings",
@@ -3565,7 +3602,7 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
+                "references": {
                     "data": []
                 },
                 "supports": {
@@ -3588,6 +3625,55 @@
             },
             "links": {
                 "self": "https://browsercompat.org/api/v2/features/9"
+            }
+        },
+        {
+            "type": "features",
+            "id": "13",
+            "attributes": {
+                "slug": "web-css-transform-style",
+                "mdn_uri": {
+                    "en": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style"
+                },
+                "experimental": false,
+                "standardized": true,
+                "stable": true,
+                "obsolete": false,
+                "name": "transform-style"
+            },
+            "relationships": {
+                "parent": {
+                    "data": {
+                        "type": "features",
+                        "id": "2"
+                    }
+                },
+                "children": {
+                    "data": []
+                },
+                "references": {
+                    "data": []
+                },
+                "supports": {
+                    "data": []
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_features",
+                        "id": "13"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_features",
+                            "id": "13"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/features/13"
             }
         },
         {
@@ -3626,10 +3712,10 @@
                         }
                     ]
                 },
-                "sections": {
+                "references": {
                     "data": [
                         {
-                            "type": "sections",
+                            "type": "references",
                             "id": "4"
                         }
                     ]
@@ -3683,7 +3769,7 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
+                "references": {
                     "data": []
                 },
                 "supports": {
@@ -3771,13 +3857,8 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
-                    "data": [
-                        {
-                            "type": "sections",
-                            "id": "8"
-                        }
-                    ]
+                "references": {
+                    "data": []
                 },
                 "supports": {
                     "data": [
@@ -3814,14 +3895,14 @@
                 "history_current": {
                     "data": {
                         "type": "historical_features",
-                        "id": "26"
+                        "id": "24"
                     }
                 },
                 "history": {
                     "data": [
                         {
                             "type": "historical_features",
-                            "id": "26"
+                            "id": "24"
                         },
                         {
                             "type": "historical_features",
@@ -3880,8 +3961,8 @@
                 },
                 "7": {},
                 "8": {},
-                "13": {},
                 "9": {},
+                "13": {},
                 "10": {},
                 "11": {
                     "4": [

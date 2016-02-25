@@ -4,7 +4,7 @@
     },
     "data": {
         "type": "changesets",
-        "id": "56",
+        "id": "55",
         "attributes": {
             "created": "2016-01-14T08:16:02.171000Z",
             "modified": "2016-01-14T08:16:06.763000Z",
@@ -41,6 +41,13 @@
                 "links": {
                     "self": "https://browsercompat.org/api/v2/changesets/relationships/historical_maturities",
                     "related": "https://browsercompat.org/api/v2/changesets/historical_maturities"
+                },
+                "data": []
+            },
+            "historical_references": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/changesets/relationships/historical_references",
+                    "related": "https://browsercompat.org/api/v2/changesets/historical_references"
                 },
                 "data": []
             },

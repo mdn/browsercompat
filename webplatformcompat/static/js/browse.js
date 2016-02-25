@@ -37,6 +37,8 @@ Browse.Router.map(function () {
     this.resource('specification', {path: '/specifications/:specification_id'});
     this.resource('sections');
     this.resource('section', {path: '/sections/:section_id'});
+    this.resource('references');
+    this.resource('reference', {path: '/references/:reference_id'});
     this.resource('maturities');
     this.resource('maturity', {path: '/maturities/:maturity_id'});
     this.resource('users');
@@ -106,11 +108,47 @@ DS.JsonApiNamespacedSerializer = DS.JsonApiSerializer.extend({
 });
 
 /* Adapter - JsonApiAdapter with modifictions */
+/*jslint nomen: true */
+/* Allow DS._routes, ._super in buildURL */
 Browse.ApplicationAdapter = DS.JsonApiAdapter.extend({
     namespace: 'api/v1',
-    defaultSerializer: 'DS/jsonApiNamespaced'
-});
+    defaultSerializer: 'DS/jsonApiNamespaced',
+    buildURL: function (typeName, id) {
+        // Same as JsonApiAdapter.buildURL, except strips trailing slash from
+        // list view, jslint is happier.
+        var route, url, host, prefix, param, list_param;
+        route = DS._routes[typeName];
+        if (!!route) {
+            url = [];
+            host = Ember.get(this, 'host');
+            prefix = this.urlPrefix();
+            /*jslint regexp: true */
+            param = /\{(.*?)\}/g;
+            list_param = /\/\{(.*?)\}/g;
+            /*jslint regexp: false */
 
+            if (id) {
+                if (param.test(route)) {
+                    url.push(route.replace(param, id));
+                } else {
+                    url.push(route, id);
+                }
+            } else {
+                url.push(route.replace(list_param, ''));
+            }
+
+            if (prefix) { url.unshift(prefix); }
+
+            url = url.join('/');
+            if (!host && url) { url = '/' + url; }
+
+            return url;
+        }
+        /* _super is convention of Ember */
+        return this._super(typeName, id);
+    },
+});
+/*jslint nomen: false */
 
 /* Routes */
 Browse.PaginatedRouteMixin = Ember.Mixin.create({
@@ -165,6 +203,12 @@ Browse.SectionsRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
     }
 });
 
+Browse.ReferencesRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
+    model: function () {
+        return this.store.find('reference');
+    }
+});
+
 Browse.UsersRoute = Ember.Route.extend(Browse.PaginatedRouteMixin, {
     model: function () {
         return this.store.find('user');
@@ -198,7 +242,7 @@ Browse.Feature = DS.Model.extend({
     parent: DS.belongsTo('feature', {inverse: 'children', async: true}),
     children: DS.hasMany('feature', {inverse: 'parent', async: true}),
     supports: DS.hasMany('support', {async: true}),
-    sections: DS.hasMany('section', {async: true}),
+    references: DS.hasMany('reference', {async: true}),
 });
 
 Browse.Version = DS.Model.extend({
@@ -246,9 +290,14 @@ Browse.Section = DS.Model.extend({
     number: attr('string'),
     name: attr(),
     subpath: attr(),
-    note: attr(),
     specification: DS.belongsTo('specification', {async: true}),
-    features: DS.hasMany('feature', {async: true}),
+    references: DS.hasMany('reference', {async: true}),
+});
+
+Browse.Reference = DS.Model.extend({
+    note: attr(),
+    feature: DS.belongsTo('feature', {async: true}),
+    section: DS.belongsTo('section', {async: true}),
 });
 
 Browse.User = DS.Model.extend({
@@ -368,6 +417,9 @@ Browse.Properties = {
             if (en.indexOf('https://') === 0 || en.indexOf('http://') === 0) {
                 return '<a href="' + en + '">' + en + '</a>';
             }
+            if (en === '') {
+                return '<em>none</em>';
+            }
             return en;
         });
     },
@@ -451,6 +503,7 @@ Browse.BrowsersController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.VersionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.FeaturesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SupportsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
+Browse.ReferencesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SpecificationsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.SectionsController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
 Browse.MaturitiesController = Ember.ArrayController.extend(Browse.LoadMoreMixin);
@@ -550,6 +603,8 @@ Browse.FeatureController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     supportCountText: Browse.Properties.IdCounterText('supportCount', 'Version'),
     childCount: Browse.Properties.IdCounter('children'),
     childCountText: Browse.Properties.IdCounterText('childCount', 'Child', 'Children'),
+    referenceCount: Browse.Properties.IdCounter('references'),
+    referenceCountText: Browse.Properties.IdCounterText('referenceCount', 'Reference'),
     viewUrl: Ember.computed('id', function () {
         var id = this.get('id');
         return "/view_feature/" + id;
@@ -632,9 +687,6 @@ Browse.SectionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
     nameDefaultHTML: Browse.Properties.TranslationDefaultHTML('name'),
     nameArray: Browse.Properties.TranslationArray('name'),
     nameListHTML: Browse.Properties.TranslationListHTML('nameArray'),
-    noteDefaultHTML: Browse.Properties.TranslationDefaultHTML('note'),
-    noteArray: Browse.Properties.TranslationArray('note'),
-    noteListHTML: Browse.Properties.TranslationListHTML('noteArray'),
     subpathDefaultHTML: Ember.computed('subpath', 'specification.uri', function () {
         var subpath = this.get('subpath'),
             specUri = this.get('specification.uri'),
@@ -673,8 +725,14 @@ Browse.SectionController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
         ul += '</ul>';
         return ul;
     }),
-    featureCount: Browse.Properties.IdCounter('features'),
-    featureCountText: Browse.Properties.IdCounterText('featureCount', 'Feature'),
+    referenceCount: Browse.Properties.IdCounter('references'),
+    referenceCountText: Browse.Properties.IdCounterText('referenceCount', 'Reference'),
+});
+
+Browse.ReferenceController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {
+    noteDefaultHTML: Browse.Properties.TranslationDefaultHTML('note'),
+    noteArray: Browse.Properties.TranslationArray('note'),
+    noteListHTML: Browse.Properties.TranslationListHTML('noteArray'),
 });
 
 Browse.MaturityController = Ember.ObjectController.extend(Browse.LoadMoreMixin, {

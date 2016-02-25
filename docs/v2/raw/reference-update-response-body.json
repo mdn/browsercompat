@@ -1,0 +1,62 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/references/6"
+    },
+    "data": {
+        "type": "references",
+        "id": "6",
+        "attributes": {
+            "note": {
+                "en": "This is a note."
+            }
+        },
+        "relationships": {
+            "feature": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/6/relationships/feature",
+                    "related": "https://browsercompat.org/api/v2/references/6/feature"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "18"
+                }
+            },
+            "section": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/6/relationships/section",
+                    "related": "https://browsercompat.org/api/v2/references/6/section"
+                },
+                "data": {
+                    "type": "sections",
+                    "id": "5"
+                }
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/6/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/references/6/history_current"
+                },
+                "data": {
+                    "type": "historical_references",
+                    "id": "7"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/6/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/references/6/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_references",
+                        "id": "7"
+                    },
+                    {
+                        "type": "historical_references",
+                        "id": "6"
+                    }
+                ]
+            }
+        }
+    }
+}

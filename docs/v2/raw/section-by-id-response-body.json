@@ -14,12 +14,21 @@
             },
             "subpath": {
                 "en": "#the-float-property"
-            },
-            "note": {
-                "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
             }
         },
         "relationships": {
+            "references": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/3/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/sections/3/references"
+                },
+                "data": [
+                    {
+                        "type": "references",
+                        "id": "3"
+                    }
+                ]
+            },
             "specification": {
                 "links": {
                     "self": "https://browsercompat.org/api/v2/sections/3/relationships/specification",
@@ -29,18 +38,6 @@
                     "type": "specifications",
                     "id": "3"
                 }
-            },
-            "features": {
-                "links": {
-                    "self": "https://browsercompat.org/api/v2/sections/3/relationships/features",
-                    "related": "https://browsercompat.org/api/v2/sections/3/features"
-                },
-                "data": [
-                    {
-                        "type": "features",
-                        "id": "5"
-                    }
-                ]
             },
             "history_current": {
                 "links": {

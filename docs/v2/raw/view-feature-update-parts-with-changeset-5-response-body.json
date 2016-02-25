@@ -43,22 +43,22 @@
                     }
                 ]
             },
-            "sections": {
+            "references": {
                 "links": {
-                    "self": "https://browsercompat.org/api/v2/view_features/5/relationships/sections",
-                    "related": "https://browsercompat.org/api/v2/view_features/5/sections"
+                    "self": "https://browsercompat.org/api/v2/view_features/5/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/view_features/5/references"
                 },
                 "data": [
                     {
-                        "type": "sections",
+                        "type": "references",
                         "id": "1"
                     },
                     {
-                        "type": "sections",
+                        "type": "references",
                         "id": "2"
                     },
                     {
-                        "type": "sections",
+                        "type": "references",
                         "id": "3"
                     }
                 ]
@@ -1650,9 +1650,6 @@
                 },
                 "subpath": {
                     "en": "#float"
-                },
-                "note": {
-                    "en": "Initial definition."
                 }
             },
             "relationships": {
@@ -1693,9 +1690,6 @@
                 },
                 "subpath": {
                     "en": "visuren.html#float-position"
-                },
-                "note": {
-                    "en": "No change."
                 }
             },
             "relationships": {
@@ -1736,9 +1730,6 @@
                 },
                 "subpath": {
                     "en": "#the-float-property"
-                },
-                "note": {
-                    "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
                 }
             },
             "relationships": {
@@ -1768,6 +1759,126 @@
             }
         },
         {
+            "type": "references",
+            "id": "1",
+            "attributes": {
+                "note": {
+                    "en": "Initial definition."
+                }
+            },
+            "relationships": {
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "5"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "1"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_references",
+                        "id": "1"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_references",
+                            "id": "1"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/references/1"
+            }
+        },
+        {
+            "type": "references",
+            "id": "2",
+            "attributes": {
+                "note": {
+                    "en": "No change."
+                }
+            },
+            "relationships": {
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "5"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "2"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_references",
+                        "id": "2"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_references",
+                            "id": "2"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/references/2"
+            }
+        },
+        {
+            "type": "references",
+            "id": "3",
+            "attributes": {
+                "note": {
+                    "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+                }
+            },
+            "relationships": {
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "5"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "3"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_references",
+                        "id": "3"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_references",
+                            "id": "3"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/references/3"
+            }
+        },
+        {
             "type": "features",
             "id": "6",
             "attributes": {
@@ -1792,7 +1903,7 @@
                 "children": {
                     "data": []
                 },
-                "sections": {
+                "references": {
                     "data": []
                 },
                 "supports": {

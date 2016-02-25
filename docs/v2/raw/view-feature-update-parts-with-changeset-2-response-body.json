@@ -1,6 +1,6 @@
 {
     "links": {
-        "self": "https://browsercompat.org/api/v2/versions?changeset=56"
+        "self": "https://browsercompat.org/api/v2/versions?changeset=55"
     },
     "data": {
         "type": "versions",

@@ -5,6 +5,7 @@ This script is designed to work with an empty or populated database, but
 it only runs reliably on an empty database.
 """
 from collections import OrderedDict
+from os.path import exists
 import codecs
 import json
 
@@ -24,7 +25,7 @@ class UploadData(Tool):
         local_collection = Collection()
         resources = [
             'browsers', 'versions', 'features', 'supports', 'specifications',
-            'maturities', 'sections']
+            'maturities', 'sections', 'references']
 
         self.logger.info('Reading existing data from API')
         for resource in resources:
@@ -34,6 +35,8 @@ class UploadData(Tool):
         self.logger.info('Reading upload data from disk')
         for resource in resources:
             filepath = self.data_file('{}.json'.format(resource))
+            if not exists(filepath):
+                continue
             with codecs.open(filepath, 'r', 'utf8') as f:
                 data = json.load(f, object_pairs_hook=OrderedDict)
             resource_class = local_collection.resource_by_type[resource]

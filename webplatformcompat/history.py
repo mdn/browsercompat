@@ -42,8 +42,8 @@ class Changeset(models.Model):
     """Changeset combining historical records."""
 
     TARGET_RESOURCES = [
-        'browsers', 'features', 'maturities', 'sections', 'specifications',
-        'supports', 'versions',
+        'browsers', 'features', 'maturities', 'references', 'sections',
+        'specifications', 'supports', 'versions',
     ]
 
     created = models.DateTimeField(auto_now_add=True)

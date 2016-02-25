@@ -290,7 +290,7 @@ class FeaturePageTestCase(TestCase):
                 'links': {
                     'children': [],
                     'parent': str(self.feature.parent.id),
-                    'sections': [],
+                    'references': [],
                     'supports': []},
                 'mdn_uri': {
                     'en': ('https://developer.mozilla.org/en-US/docs/'
@@ -307,6 +307,7 @@ class FeaturePageTestCase(TestCase):
                 'browsers': [],
                 'features': [],
                 'maturities': [],
+                'references': [],
                 'sections': [],
                 'specifications': [],
                 'supports': [],
@@ -374,8 +375,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         section_content = view.load_section(section.id)
         expected = {
-            'id': str(section.id),
-            'name': section.name, 'note': {},
+            'id': str(section.id), 'name': section.name,
             'number': None, 'subpath': section.subpath,
             'links': {'specification': str(section.specification.id)}}
         self.assertDataEqual(expected, section_content)
@@ -391,8 +391,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         view = ScrapedViewFeature(self.page, self.empty_scrape())
         section_content = view.new_section(spec_row, '_CSS3_UI')
         expected = {
-            'id': '__CSS3_UI_#section',
-            'name': {'en': 'section'}, 'note': {'en': 'section note'},
+            'id': '__CSS3_UI_#section', 'name': {'en': 'section'},
             'number': None, 'subpath': {'en': '#section'},
             'links': {'specification': '_CSS3_UI'}}
         self.assertDataEqual(expected, section_content)
@@ -476,7 +475,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
             'stable': True, 'standardized': True, 'experimental': False,
             'links': {
                 'children': [], 'parent': str(self.feature.id),
-                'sections': [], 'supports': []}}
+                'references': [], 'supports': []}}
         self.assertDataEqual(expected, feature_content)
 
     def test_load_feature_canonical_name(self):
@@ -491,7 +490,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
             'stable': True, 'standardized': True, 'experimental': False,
             'links': {
                 'children': [], 'parent': str(self.feature.id),
-                'sections': [], 'supports': []}}
+                'references': [], 'supports': []}}
         self.assertDataEqual(expected, feature_content)
 
     def test_new_feature(self):
@@ -509,7 +508,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
             'standardized': True, 'experimental': False,
             'links': {
                 'children': [], 'parent': str(self.feature.id),
-                'sections': [], 'supports': []}}
+                'references': [], 'supports': []}}
         self.assertDataEqual(expected, feature_content)
 
     def test_new_feature_canonical(self):
@@ -525,7 +524,7 @@ class TestScrapedViewFeature(FeaturePageTestCase):
             'standardized': True, 'experimental': False,
             'links': {
                 'children': [], 'parent': str(self.feature.id),
-                'sections': [], 'supports': []}}
+                'references': [], 'supports': []}}
         self.assertDataEqual(expected, feature_content)
 
     def test_load_support(self):
@@ -585,15 +584,49 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         out = view.generate_data()
         spec_content, mat_content = view.new_specification(scraped_spec)
         section_content = view.new_section(scraped_spec, spec_content['id'])
+        section_content['name']['en'] = 'section'
+        section_content['subpath']['en'] = '#section'
+        reference_content = view.load_or_new_reference(section_content['id'])
+        reference_content['note']['en'] = 'section note'
         expected = self.empty_view(scraped_data)
-        expected['features']['links']['sections'] = [section_content['id']]
+        expected['features']['links']['references'] = [reference_content['id']]
         expected['linked']['maturities'] = [mat_content]
         expected['linked']['specifications'] = [spec_content]
         expected['linked']['sections'] = [section_content]
+        expected['linked']['references'] = [reference_content]
+        self.assertDataEqual(expected, out)
+
+    def test_load_specification_row_empty_resources(self):
+        scraped_data = self.empty_scrape()
+        scraped_spec = {
+            'section.note': '',
+            'section.subpath': '',
+            'section.name': '',
+            'specification.mdn_key': 'CSS3 UI',
+            'section.id': None,
+            'specification.id': None}
+        scraped_data['specs'].append(scraped_spec)
+        view = ScrapedViewFeature(self.page, scraped_data)
+        out = view.generate_data()
+        spec_content, mat_content = view.new_specification(scraped_spec)
+        section_content = view.new_section(scraped_spec, spec_content['id'])
+        # TODO: bug 1251252 - Empty string should mean omittied name, subpath
+        section_content['name']['en'] = ''
+        section_content['subpath']['en'] = ''
+        reference_content = view.load_or_new_reference(section_content['id'])
+        reference_content['note'] = None
+        expected = self.empty_view(scraped_data)
+        expected['features']['links']['references'] = [reference_content['id']]
+        expected['linked']['maturities'] = [mat_content]
+        expected['linked']['specifications'] = [spec_content]
+        expected['linked']['sections'] = [section_content]
+        expected['linked']['references'] = [reference_content]
         self.assertDataEqual(expected, out)
 
     def test_load_specification_row_existing_resources(self):
-        section = self.get_instance('Section', 'background-size')
+        reference = self.get_instance(
+            'Reference', ('web-css-background-size', 'background-size'))
+        section = reference.section
         spec = section.specification
         scraped_spec = {
             'section.note': 'new note',
@@ -609,11 +642,13 @@ class TestScrapedViewFeature(FeaturePageTestCase):
         expected = self.empty_view(scraped_data)
         spec_content, mat_content = view.load_specification(spec.id)
         section_content = view.load_section(section.id)
-        section_content['note'] = {'en': 'new note'}
-        expected['features']['links']['sections'] = [str(section.id)]
+        reference_content = view.load_or_new_reference(section.id)
+        reference_content['note'] = {'en': 'new note'}
+        expected['features']['links']['references'] = [reference_content['id']]
         expected['linked']['maturities'] = [mat_content]
         expected['linked']['specifications'] = [spec_content]
         expected['linked']['sections'] = [section_content]
+        expected['linked']['references'] = [reference_content]
         self.assertDataEqual(expected, out)
 
     def test_load_compat_table_new_resources(self):

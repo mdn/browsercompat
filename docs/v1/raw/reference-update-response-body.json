@@ -1,0 +1,35 @@
+{
+    "references": {
+        "id": "6",
+        "note": {
+            "en": "This is a note."
+        },
+        "links": {
+            "feature": "18",
+            "section": "6",
+            "history_current": "8",
+            "history": [
+                "8",
+                "6"
+            ]
+        }
+    },
+    "links": {
+        "references.feature": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{references.feature}"
+        },
+        "references.section": {
+            "type": "sections",
+            "href": "https://browsercompat.org/api/v1/sections/{references.section}"
+        },
+        "references.history_current": {
+            "type": "historical_references",
+            "href": "https://browsercompat.org/api/v1/historical_references/{references.history_current}"
+        },
+        "references.history": {
+            "type": "historical_references",
+            "href": "https://browsercompat.org/api/v1/historical_references/{references.history}"
+        }
+    }
+}

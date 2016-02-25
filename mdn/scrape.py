@@ -6,7 +6,7 @@ from itertools import chain
 from django.utils.six import text_type
 from parsimonious import IncompleteParseError
 from webplatformcompat.models import (
-    Browser, Feature, Section, Specification, Support, Version)
+    Browser, Feature, Reference, Section, Specification, Support, Version)
 
 from .compatibility import CompatSectionExtractor
 from .data import Data
@@ -325,7 +325,7 @@ class ScrapedViewFeature(object):
         self.resources = OrderedDict()
         for resource_type in (
                 'specifications', 'maturities', 'sections', 'browsers',
-                'versions', 'features', 'supports'):
+                'versions', 'features', 'supports', 'references'):
             self.resources[resource_type] = OrderedDict()
         self.tabs = []
         self.compat_table_supports = OrderedDict(
@@ -350,8 +350,9 @@ class ScrapedViewFeature(object):
         fp_data['features']['links']['children'] = list(
             f_id for f_id in self.compat_table_supports.keys()
             if f_id != main_id)
-        fp_data['features']['links']['sections'] = list(
-            self.resources['sections'].keys())
+        fp_data['features']['links']['references'] = list(
+            reference['id'] for reference in fp_data['linked']['references']
+            if reference['links']['feature'] == main_id)
         fp_data['features']['links']['supports'] = sorted(
             support['id'] for support in fp_data['linked']['supports']
             if support['links']['feature'] == main_id)
@@ -380,12 +381,20 @@ class ScrapedViewFeature(object):
         # Load Specification Section
         if spec_row['section.id']:
             section_content = self.load_section(spec_row['section.id'])
+            # TODO: bug 1251252 - empty name, subpath is None
             section_content['name']['en'] = spec_row['section.name']
             section_content['subpath']['en'] = spec_row['section.subpath']
-            section_content['note']['en'] = spec_row['section.note']
         else:
             section_content = self.new_section(spec_row, spec_content['id'])
         self.add_resource('sections', section_content)
+
+        # Load Reference
+        reference_content = self.load_or_new_reference(section_content['id'])
+        if spec_row['section.note']:
+            reference_content['note']['en'] = spec_row['section.note']
+        else:
+            reference_content['note'] = None
+        self.add_resource('references', reference_content)
 
     def load_compat_table(self, table):
         """Load a compat table."""
@@ -515,7 +524,6 @@ class ScrapedViewFeature(object):
             ('number', section.number or None),
             ('name', section.name),
             ('subpath', section.subpath),
-            ('note', section.note),
             ('links', OrderedDict((
                 ('specification', text_type(section.specification_id)),)))))
         return section_content
@@ -529,12 +537,10 @@ class ScrapedViewFeature(object):
             ('number', None),
             ('name', OrderedDict()),
             ('subpath', OrderedDict()),
-            ('note', OrderedDict()),
             ('links', OrderedDict((
                 ('specification', text_type(spec_id)),)))))
         section_content['name']['en'] = spec_row['section.name']
         section_content['subpath']['en'] = spec_row['section.subpath']
-        section_content['note']['en'] = spec_row['section.note']
         return section_content
 
     def load_browser(self, browser_id):
@@ -561,9 +567,9 @@ class ScrapedViewFeature(object):
     def load_feature(self, feature_id):
         """Serialize an existing feature."""
         feature = Feature.objects.get(id=feature_id)
-        section_ids = [
-            text_type(s_id) for s_id in
-            feature.sections.values_list('pk', flat=True)]
+        reference_ids = [
+            text_type(r_id) for r_id in
+            feature.references.values_list('pk', flat=True)]
         support_ids = [
             text_type(s_id) for s_id in
             sorted(feature.supports.values_list('pk', flat=True))]
@@ -583,7 +589,7 @@ class ScrapedViewFeature(object):
             ('obsolete', feature.obsolete),
             ('name', feature.name),
             ('links', OrderedDict((
-                ('sections', section_ids),
+                ('references', reference_ids),
                 ('supports', support_ids),
                 ('parent', parent_id),
                 ('children', children_ids))))))
@@ -607,7 +613,7 @@ class ScrapedViewFeature(object):
             ('obsolete', feature_entry.get('obsolete', False)),
             ('name', fname),
             ('links', OrderedDict((
-                ('sections', []),
+                ('references', []),
                 ('supports', []),
                 ('parent', text_type(self.feature.id)),
                 ('children', []))))))
@@ -689,3 +695,23 @@ class ScrapedViewFeature(object):
         if support_entry.get('footnote'):
             support_content['note'] = {'en': support_entry['footnote']}
         return support_content
+
+    def load_or_new_reference(self, section_id):
+        try:
+            reference = Reference.objects.get(
+                feature_id=self.feature.id, section_id=section_id)
+        except (Reference.DoesNotExist, ValueError):
+            reference_content = OrderedDict((
+                ('id', '_%s_%s' % (self.feature.id, section_id)),
+                ('note', OrderedDict()),
+                ('links', OrderedDict((
+                    ('feature', text_type(self.feature.id)),
+                    ('section', text_type(section_id)))))))
+        else:
+            reference_content = OrderedDict((
+                ('id', text_type(reference.id)),
+                ('note', reference.note),
+                ('links', OrderedDict((
+                    ('feature', text_type(reference.feature_id)),
+                    ('section', text_type(reference.section_id)))))))
+        return reference_content

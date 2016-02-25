@@ -10,14 +10,11 @@
         "subpath": {
             "en": "#the-float-property"
         },
-        "note": {
-            "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
-        },
         "links": {
-            "specification": "3",
-            "features": [
-                "5"
+            "references": [
+                "3"
             ],
+            "specification": "3",
             "history_current": "3",
             "history": [
                 "3"
@@ -25,13 +22,13 @@
         }
     },
     "links": {
+        "sections.references": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{sections.references}"
+        },
         "sections.specification": {
             "type": "specifications",
             "href": "https://browsercompat.org/api/v1/specifications/{sections.specification}"
-        },
-        "sections.features": {
-            "type": "features",
-            "href": "https://browsercompat.org/api/v1/features/{sections.features}"
         },
         "sections.history_current": {
             "type": "historical_sections",

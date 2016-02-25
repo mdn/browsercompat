@@ -1,0 +1,50 @@
+{
+    "features": {
+        "id": "17",
+        "slug": "web-html-element",
+        "mdn_uri": null,
+        "experimental": false,
+        "standardized": true,
+        "stable": true,
+        "obsolete": false,
+        "name": {
+            "en": "Element"
+        },
+        "links": {
+            "parent": "16",
+            "children": [],
+            "references": [],
+            "supports": [],
+            "history_current": "19",
+            "history": [
+                "19"
+            ]
+        }
+    },
+    "links": {
+        "features.parent": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.parent}"
+        },
+        "features.children": {
+            "type": "features",
+            "href": "https://browsercompat.org/api/v1/features/{features.children}"
+        },
+        "features.references": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{features.references}"
+        },
+        "features.supports": {
+            "type": "supports",
+            "href": "https://browsercompat.org/api/v1/supports/{features.supports}"
+        },
+        "features.history_current": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history_current}"
+        },
+        "features.history": {
+            "type": "historical_features",
+            "href": "https://browsercompat.org/api/v1/historical_features/{features.history}"
+        }
+    }
+}

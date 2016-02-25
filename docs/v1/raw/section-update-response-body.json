@@ -10,12 +10,9 @@
         "subpath": {
             "en": "#ruby-display"
         },
-        "note": null,
         "links": {
+            "references": [],
             "specification": "4",
-            "features": [
-                "13"
-            ],
             "history_current": "7",
             "history": [
                 "7",
@@ -24,13 +21,13 @@
         }
     },
     "links": {
+        "sections.references": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{sections.references}"
+        },
         "sections.specification": {
             "type": "specifications",
             "href": "https://browsercompat.org/api/v1/specifications/{sections.specification}"
-        },
-        "sections.features": {
-            "type": "features",
-            "href": "https://browsercompat.org/api/v1/features/{sections.features}"
         },
         "sections.history_current": {
             "type": "historical_sections",

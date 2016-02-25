@@ -23,7 +23,7 @@ class DownloadData(Tool):
         counts = {}
         resources = [
             'browsers', 'versions', 'features', 'supports', 'specifications',
-            'maturities', 'sections']
+            'maturities', 'sections', 'references']
         for resource in resources:
             # Get data from API
             data = self.client.get_resource_collection(resource)

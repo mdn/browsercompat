@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.models import Group
 
-from .models import Feature, Section
 from .tasks import update_cache_for_instance
 
 
@@ -14,37 +13,6 @@ def add_user_to_change_resource_group(
     """Add change-resource permission to new users."""
     if created and not raw:
         instance.groups.add(Group.objects.get(name='change-resource'))
-
-
-def feature_sections_changed_update_order(
-        sender, instance, action, reverse, model, pk_set, **kwargs):
-    """Maintain feature.section_order."""
-    if action not in ('post_add', 'post_remove', 'post_clear'):
-        # post_clear is not handled, because clear is called in
-        # django.db.models.fields.related.ReverseManyRelatedObjects.__set__
-        # before setting the new order
-        return
-    if getattr(instance, '_delay_cache', False):
-        return
-
-    if model == Section:
-        assert type(instance) == Feature
-        features = [instance]
-        if pk_set:
-            sections = list(Section.objects.filter(pk__in=pk_set))
-        else:
-            sections = []
-    else:
-        if pk_set:
-            features = list(Feature.objects.filter(pk__in=pk_set))
-        else:
-            features = []
-        sections = [instance]
-
-    for feature in features:
-        update_cache_for_instance('Feature', feature.pk, feature)
-    for section in sections:
-        update_cache_for_instance('Section', section.pk, section)
 
 
 def post_delete_update_cache(sender, instance, **kwargs):

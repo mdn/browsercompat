@@ -4,7 +4,7 @@
 from django.contrib.auth import get_user_model
 
 from webplatformcompat.models import (
-    Browser, Feature, Maturity, Section, Specification, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Version)
 from webplatformcompat.serializers import (
     BrowserSerializer, FeatureSerializer, HistoricalFeatureSerializer,
     HistoricalMaturitySerializer, SpecificationSerializer, UserSerializer)
@@ -87,13 +87,16 @@ class TestFeatureSerializer(TestCase):
     """Test FeatureSerializer."""
 
     def setUp(self):
-        self.parent = self.create(Feature, slug='parent')
-        self.feature = self.create(Feature, slug='feature', parent=self.parent)
-        self.child1 = self.create(Feature, slug='child1', parent=self.feature)
-        self.child2 = self.create(Feature, slug='child2', parent=self.feature)
+        self.feature = self.create(Feature, slug='feature')
+
+    def add_children(self):
+        child1 = self.create(Feature, slug='child1', parent=self.feature)
+        child2 = self.create(Feature, slug='child2', parent=self.feature)
+        return child1, child2
 
     def test_set_children_change_order(self):
-        set_order = [self.child2.pk, self.child1.pk]
+        child1, child2 = self.add_children()
+        set_order = [child2.pk, child1.pk]
         data = {'children': set_order}
         serializer = FeatureSerializer(self.feature, data=data, partial=True)
         self.assertTrue(serializer.is_valid())
@@ -103,7 +106,8 @@ class TestFeatureSerializer(TestCase):
         self.assertEqual(actual_children, set_order)
 
     def test_set_children_same_order(self):
-        set_order = [self.child1.pk, self.child2.pk]
+        child1, child2 = self.add_children()
+        set_order = [child1.pk, child2.pk]
         data = {'children': set_order}
         serializer = FeatureSerializer(self.feature, data=data, partial=True)
         self.assertTrue(serializer.is_valid())
@@ -113,7 +117,8 @@ class TestFeatureSerializer(TestCase):
         self.assertEqual(actual_children, set_order)
 
     def test_set_children_omit_child_fails(self):
-        data = {'children': [self.child1.pk]}
+        child1, child2 = self.add_children()
+        data = {'children': [child1.pk]}
         serializer = FeatureSerializer(self.feature, data=data, partial=True)
         self.assertFalse(serializer.is_valid())
         expected = {
@@ -121,12 +126,63 @@ class TestFeatureSerializer(TestCase):
         self.assertEqual(serializer.errors, expected)
 
     def test_set_children_add_element_fails(self):
+        child1, child2 = self.add_children()
         new_child = self.create(Feature, slug='nkotb')
-        data = {'children': [self.child1.pk, self.child2.pk, new_child.pk]}
+        data = {'children': [child1.pk, child2.pk, new_child.pk]}
         serializer = FeatureSerializer(self.feature, data=data, partial=True)
         self.assertFalse(serializer.is_valid())
         expected = {'children': ['Set child.parent to add a child feature.']}
         self.assertEqual(serializer.errors, expected)
+
+    def add_references(self):
+        mat1 = self.create(
+            Maturity, slug='WD', name={'en': 'Working Draft'})
+        spec1 = self.create(
+            Specification, maturity=mat1, slug='css3-animations',
+            mdn_key='CSS3 Animations',
+            name={'en': 'CSS Animations'},
+            uri={'en': 'http://dev.w3.org/csswg/css-animations/'})
+        section1 = self.create(
+            Section, specification=spec1,
+            name={'en': "The 'animation-direction' property"},
+            subpath={'en': '#animation-direction'})
+        ref1 = self.create(
+            Reference, feature=self.feature, section=section1)
+        mat2 = self.create(
+            Maturity, slug='REC', name={'en': 'Recommendation'})
+        spec2 = self.create(
+            Specification, maturity=mat2, slug='css3-static',
+            mdn_key='CSS3 Static',
+            name={'en': 'CSS3 Static Features'},
+            uri={'en': 'http://dev.w3.org/csswg/css-static/'})
+        section2 = self.create(
+            Section, specification=spec2,
+            name={'en': "The 'do-not-move' property"},
+            subpath={'en': '#do-not-move'})
+        ref2 = self.create(
+            Reference, feature=self.feature, section=section2,
+            note={'en': 'This is a dumb test section.'})
+        return ref1, ref2
+
+    def test_set_references_change_order(self):
+        ref1, ref2 = self.add_references()
+        set_order = [ref2.pk, ref1.pk]
+        data = {'references': set_order}
+        serializer = FeatureSerializer(self.feature, data=data, partial=True)
+        self.assertTrue(serializer.is_valid())
+        new_feature = serializer.save()
+        new_order = list(new_feature.references.values_list('pk', flat=True))
+        self.assertEqual(new_order, set_order)
+
+    def test_versions_same_order(self):
+        ref1, ref2 = self.add_references()
+        set_order = [ref1.pk, ref2.pk]
+        data = {'references': set_order}
+        serializer = FeatureSerializer(self.feature, data=data, partial=True)
+        self.assertTrue(serializer.is_valid())
+        new_feature = serializer.save()
+        new_order = list(new_feature.references.values_list('pk', flat=True))
+        self.assertEqual(new_order, set_order)
 
 
 class TestSpecificationSerializer(TestCase):
@@ -225,7 +281,7 @@ class TestHistoricalFeatureSerializer(TestCase):
         representation = serializer.to_representation(history)
         self.assertEqual(representation['object_id'], feature.pk)
         links = representation['archived_representation']['links']
-        self.assertEqual(links['sections'], [])
+        self.assertEqual(links['references'], [])
         self.assertEqual(links['parent'], None)
 
     def test_to_representation_with_parent(self):

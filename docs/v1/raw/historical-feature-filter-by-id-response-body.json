@@ -20,7 +20,7 @@
                 "links": {
                     "parent": "10",
                     "children": [],
-                    "sections": [],
+                    "references": [],
                     "history_current": "12"
                 }
             },
@@ -49,7 +49,7 @@
                 "links": {
                     "parent": "10",
                     "children": [],
-                    "sections": [],
+                    "references": [],
                     "history_current": "16"
                 }
             },

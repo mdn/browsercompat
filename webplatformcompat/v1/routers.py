@@ -3,13 +3,13 @@
 
 from ..routers import GroupedRouter
 from .viewsets import (
-    BrowserViewSet, FeatureViewSet, MaturityViewSet, SectionViewSet,
-    SpecificationViewSet, SupportViewSet, VersionViewSet,
+    BrowserViewSet, FeatureViewSet, MaturityViewSet, ReferenceViewSet,
+    SectionViewSet, SpecificationViewSet, SupportViewSet, VersionViewSet,
     HistoricalBrowserViewSet, HistoricalFeatureViewSet,
-    HistoricalMaturityViewSet, HistoricalSectionViewSet,
-    HistoricalSpecificationViewSet, HistoricalSupportViewSet,
-    HistoricalVersionViewSet,
-    ChangesetViewSet, UserViewSet, ViewFeaturesViewSet)
+    HistoricalMaturityViewSet, HistoricalReferenceViewSet,
+    HistoricalSectionViewSet, HistoricalSpecificationViewSet,
+    HistoricalSupportViewSet, HistoricalVersionViewSet, ChangesetViewSet,
+    UserViewSet, ViewFeaturesViewSet)
 
 
 router = GroupedRouter(trailing_slash=False, version='v1')
@@ -21,6 +21,7 @@ router.register(r'supports', SupportViewSet, group='resources')
 router.register(r'specifications', SpecificationViewSet, group='resources')
 router.register(r'maturities', MaturityViewSet, group='resources')
 router.register(r'sections', SectionViewSet, group='resources')
+router.register(r'references', ReferenceViewSet, group='resources')
 
 router.register(r'changesets', ChangesetViewSet, group='change_control')
 router.register(r'users', UserViewSet, group='change_control')
@@ -40,6 +41,8 @@ router.register(
     r'historical_maturities', HistoricalMaturityViewSet, group='history')
 router.register(
     r'historical_sections', HistoricalSectionViewSet, group='history')
+router.register(
+    r'historical_references', HistoricalReferenceViewSet, group='history')
 
 router.register(
     r'view_features', ViewFeaturesViewSet, base_name='viewfeatures',

@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from rest_framework.serializers import (
     CurrentUserDefault, DateTimeField, IntegerField,
     ModelSerializer, SerializerMethodField, ValidationError)
-from sortedm2m.fields import SortedManyToManyField
 
 from . import fields
 from .drf_fields import (
@@ -17,7 +16,8 @@ from .drf_fields import (
     PrimaryKeyRelatedField, TranslatedTextField)
 from .history import Changeset
 from .models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 from .validators import VersionAndStatusValidator
 
 
@@ -61,7 +61,6 @@ class FieldMapMixin(object):
     serializer_field_mapping = ModelSerializer.serializer_field_mapping
     serializer_field_mapping[fields.TranslatedField] = TranslatedTextField
     serializer_field_mapping[CharField] = OptionalCharField
-    serializer_field_mapping[SortedManyToManyField] = PrimaryKeyRelatedField
     serializer_related_field = PrimaryKeyRelatedField
 
     def build_standard_field(self, field_name, model_field):
@@ -194,16 +193,24 @@ class FeatureSerializer(HistoricalModelSerializer):
         many=True, queryset=Feature.objects.all(), required=False)
 
     def update(self, instance, validated_data):
+        """Handle updating of sorted related items."""
+        references = validated_data.pop('references', None)
         children = validated_data.pop('children', None)
         if children:
             current_order = list(instance.get_children())
             if current_order == children:
                 children = None
+
         instance = super(FeatureSerializer, self).update(
             instance, validated_data)
 
         if children:
             instance.set_children_order(children)
+        if references:
+            current_ref_order = instance.get_reference_order()
+            new_ref_order = [ref.pk for ref in references]
+            if current_ref_order != new_ref_order:
+                instance.set_reference_order(new_ref_order)
         return instance
 
     def validate_children(self, value):
@@ -229,8 +236,13 @@ class FeatureSerializer(HistoricalModelSerializer):
         fields = (
             'id', 'slug', 'mdn_uri', 'experimental', 'standardized',
             'stable', 'obsolete', 'name', 'parent', 'children',
-            'sections', 'supports', 'history_current', 'history')
+            'references', 'supports', 'history_current', 'history')
         read_only_fields = ('supports',)
+        extra_kwargs = {
+            'references': {
+                'default': []
+            }
+        }
         fields_extra = {
             'id': {
                 'link': 'self',
@@ -245,7 +257,7 @@ class FeatureSerializer(HistoricalModelSerializer):
                 'resource': 'features',
                 'writable': 'update_only'
             },
-            'sections': {
+            'references': {
                 'link': 'from_many',
             },
             'supports': {
@@ -299,14 +311,49 @@ class MaturitySerializer(HistoricalModelSerializer):
         }
 
 
+class ReferenceSerializer(HistoricalModelSerializer):
+    """Reference (Feature to Section) Serializer."""
+
+    class Meta:
+        model = Reference
+        fields = (
+            'id', 'note', 'feature', 'section', 'history_current', 'history')
+        fields_extra = {
+            'id': {
+                'link': 'self',
+                'resource': 'references',
+            },
+            'feature': {
+                'link': 'to_one',
+                'resource': 'features',
+            },
+            'section': {
+                'link': 'to_one',
+                'resource': 'sections',
+            },
+            'history_current': {
+                'archive': 'history_id',
+                'link': 'from_one',
+                'resource': 'historical_references',
+                'writable': 'update_only',
+            },
+            'history': {
+                'archive': 'omit',
+                'link': 'from_many',
+                'resource': 'historical_references',
+            },
+        }
+
+
 class SectionSerializer(HistoricalModelSerializer):
     """Specification Section Serializer."""
 
     class Meta:
         model = Section
         fields = (
-            'id', 'number', 'name', 'subpath', 'note', 'specification',
-            'features', 'history_current', 'history')
+            'id', 'number', 'name', 'subpath', 'references', 'specification',
+            'history_current', 'history')
+        read_only_fields = ('references',)
         extra_kwargs = {
             'features': {
                 'default': []
@@ -317,13 +364,13 @@ class SectionSerializer(HistoricalModelSerializer):
                 'link': 'self',
                 'resource': 'sections',
             },
+            'references': {
+                'archive': 'omit',
+                'link': 'from_many',
+            },
             'specification': {
                 'link': 'to_one',
                 'resource': 'specifications',
-            },
-            'features': {
-                'archive': 'omit',
-                'link': 'from_many',
             },
             'history_current': {
                 'archive': 'history_id',
@@ -487,18 +534,19 @@ class ChangesetSerializer(FieldsExtraMixin, ModelSerializer):
     target_resource_id = OptionalIntegerField(required=False)
 
     class Meta:
+        # TODO bug 1216786: Add historical_references
         model = Changeset
         fields = (
             'id', 'created', 'modified', 'closed', 'target_resource_type',
-            'target_resource_id', 'user',
-            'historical_browsers', 'historical_features',
-            'historical_maturities', 'historical_sections',
+            'target_resource_id', 'user', 'historical_browsers',
+            'historical_features', 'historical_maturities',
+            'historical_references', 'historical_sections',
             'historical_specifications', 'historical_supports',
             'historical_versions')
         read_only_fields = (
-            'id', 'created', 'modified',
-            'historical_browsers', 'historical_features',
-            'historical_maturities', 'historical_sections',
+            'id', 'created', 'modified', 'historical_browsers',
+            'historical_features', 'historical_maturities',
+            'historical_references', 'historical_sections',
             'historical_specifications', 'historical_supports',
             'historical_versions')
         extra_kwargs = {
@@ -529,6 +577,9 @@ class ChangesetSerializer(FieldsExtraMixin, ModelSerializer):
                 'link': 'from_many',
             },
             'historical_maturities': {
+                'link': 'from_many',
+            },
+            'historical_references': {
                 'link': 'from_many',
             },
             'historical_specifications': {
@@ -753,6 +804,21 @@ class HistoricalMaturitySerializer(HistoricalObjectSerializer):
             'history_resource_singular': 'historical_maturity',
             'object_resource': 'maturities',
             'singular': 'maturity',
+        }
+
+
+class HistoricalReferenceSerializer(HistoricalObjectSerializer):
+
+    class ArchivedObject(ArchiveMixin, ReferenceSerializer):
+        pass
+
+    class Meta(HistoricalObjectSerializer.Meta):
+        model = Reference.history.model
+        archive_extra = {
+            'history_resource': 'historical_references',
+            'history_resource_singular': 'historical_reference',
+            'object_resource': 'references',
+            'singular': 'reference',
         }
 
 

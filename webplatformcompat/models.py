@@ -12,7 +12,6 @@ from django.utils.functional import cached_property
 from django_extensions.db.fields.json import JSONField
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
-from sortedm2m.fields import SortedManyToManyField
 
 from .fields import TranslatedField
 from .history import register, HistoricalRecords
@@ -106,8 +105,6 @@ class Feature(HistoryMixin, MPTTModel):
     parent = TreeForeignKey(
         'self', help_text='Feature set that contains this feature',
         null=True, blank=True, related_name='children')
-    sections = SortedManyToManyField(
-        'Section', related_name='features', blank=True)
     objects = CachingTreeManager()
     # history = HistoricalFeatureRecords()  # Registered below
 
@@ -211,6 +208,27 @@ class Maturity(HistoryMixin, models.Model):
 
 
 @python_2_unicode_compatible
+class Reference(HistoryMixin, models.Model):
+    """The reference of a feature to a section of a specification."""
+
+    feature = models.ForeignKey('Feature', related_name='references')
+    section = models.ForeignKey('Section', related_name='references')
+    note = TranslatedField(
+        help_text='Notes for this section',
+        blank=True)
+    objects = CachingManager()
+    history = HistoricalRecords()
+
+    class Meta:
+        order_with_respect_to = 'feature'
+        unique_together = (('feature', 'section'),)
+
+    def __str__(self):
+        return 'feature {} refers to section {}'.format(
+            self.feature_id, self.section_id)
+
+
+@python_2_unicode_compatible
 class Section(HistoryMixin, models.Model):
     """A section of a specification document."""
 
@@ -224,9 +242,6 @@ class Section(HistoryMixin, models.Model):
         help_text=(
             'A subpage (possible with an #anchor) to get to the subsection'
             ' in the specification.'),
-        blank=True)
-    note = TranslatedField(
-        help_text='Notes for this section',
         blank=True)
     objects = CachingManager()
     history = HistoricalRecords()
@@ -376,13 +391,13 @@ class HistoricalBrowserRecords(HistoricalRecords):
 
 class HistoricalFeatureRecords(HistoricalRecords):
     additional_fields = {
-        'sections': JSONField(default=[]),
+        'references': JSONField(null=True, default=[]),
         'children': JSONField(default=[])
     }
 
-    def get_sections_value(self, instance, mtype):
+    def get_references_value(self, instance, mtype):
         return list(
-            instance.sections.values_list('pk', flat=True))
+            instance.references.values_list('pk', flat=True))
 
     def get_children_value(self, instance, mtype):
         return list(

@@ -1,0 +1,58 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/references/3"
+    },
+    "data": {
+        "type": "references",
+        "id": "3",
+        "attributes": {
+            "note": {
+                "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
+            }
+        },
+        "relationships": {
+            "feature": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/3/relationships/feature",
+                    "related": "https://browsercompat.org/api/v2/references/3/feature"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "5"
+                }
+            },
+            "section": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/3/relationships/section",
+                    "related": "https://browsercompat.org/api/v2/references/3/section"
+                },
+                "data": {
+                    "type": "sections",
+                    "id": "3"
+                }
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/3/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/references/3/history_current"
+                },
+                "data": {
+                    "type": "historical_references",
+                    "id": "3"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/references/3/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/references/3/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_references",
+                        "id": "3"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features/10/references",
+        "next": null,
+        "prev": null
+    },
+    "data": [
+        {
+            "type": "references",
+            "id": "4",
+            "attributes": {
+                "note": null
+            },
+            "relationships": {
+                "feature": {
+                    "data": {
+                        "type": "features",
+                        "id": "10"
+                    }
+                },
+                "section": {
+                    "data": {
+                        "type": "sections",
+                        "id": "4"
+                    }
+                },
+                "history_current": {
+                    "data": {
+                        "type": "historical_references",
+                        "id": "4"
+                    }
+                },
+                "history": {
+                    "data": [
+                        {
+                            "type": "historical_references",
+                            "id": "4"
+                        }
+                    ]
+                }
+            },
+            "links": {
+                "self": "https://browsercompat.org/api/v2/references/4"
+            }
+        }
+    ],
+    "meta": {
+        "count": 1
+    }
+}

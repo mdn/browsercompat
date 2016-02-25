@@ -1,0 +1,75 @@
+{
+    "links": {
+        "self": "https://browsercompat.org/api/v2/features"
+    },
+    "data": {
+        "type": "features",
+        "id": "18",
+        "attributes": {
+            "slug": "web-html-element-audio",
+            "mdn_uri": {
+                "en": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio"
+            },
+            "experimental": false,
+            "standardized": true,
+            "stable": true,
+            "obsolete": false,
+            "name": "audio"
+        },
+        "relationships": {
+            "parent": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/parent",
+                    "related": "https://browsercompat.org/api/v2/features/parent"
+                },
+                "data": {
+                    "type": "features",
+                    "id": "17"
+                }
+            },
+            "children": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/children",
+                    "related": "https://browsercompat.org/api/v2/features/children"
+                },
+                "data": []
+            },
+            "references": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/features/references"
+                },
+                "data": []
+            },
+            "supports": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/supports",
+                    "related": "https://browsercompat.org/api/v2/features/supports"
+                },
+                "data": []
+            },
+            "history_current": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/history_current",
+                    "related": "https://browsercompat.org/api/v2/features/history_current"
+                },
+                "data": {
+                    "type": "historical_features",
+                    "id": "20"
+                }
+            },
+            "history": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/features/relationships/history",
+                    "related": "https://browsercompat.org/api/v2/features/history"
+                },
+                "data": [
+                    {
+                        "type": "historical_features",
+                        "id": "20"
+                    }
+                ]
+            }
+        }
+    }
+}

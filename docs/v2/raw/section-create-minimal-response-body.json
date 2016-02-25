@@ -10,10 +10,16 @@
             "name": {
                 "en": "'font-family'"
             },
-            "subpath": null,
-            "note": null
+            "subpath": null
         },
         "relationships": {
+            "references": {
+                "links": {
+                    "self": "https://browsercompat.org/api/v2/sections/relationships/references",
+                    "related": "https://browsercompat.org/api/v2/sections/references"
+                },
+                "data": []
+            },
             "specification": {
                 "links": {
                     "self": "https://browsercompat.org/api/v2/sections/relationships/specification",
@@ -23,13 +29,6 @@
                     "type": "specifications",
                     "id": "1"
                 }
-            },
-            "features": {
-                "links": {
-                    "self": "https://browsercompat.org/api/v2/sections/relationships/features",
-                    "related": "https://browsercompat.org/api/v2/sections/features"
-                },
-                "data": []
             },
             "history_current": {
                 "links": {

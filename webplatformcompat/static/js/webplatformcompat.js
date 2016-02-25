@@ -69,9 +69,9 @@ window.WPC = {
         return '';
     },
     generate_specification_table: function (resources, lang) {
-        var table, thead, tbody, tr, th, td, a, sCnt, sIdx, sectionId,
-            section, spec, maturity, matClass, small, span;
-        if (resources.data.links.sections) {
+        var table, thead, tbody, tr, th, td, a, rCnt, rIdx, resourceId,
+            section, spec, maturity, matClass, small, span, reference;
+        if (resources.data.links.references) {
             // Create the table
             table = document.createElement('table');
             table.setAttribute('class', 'wpc-specifications-table table');
@@ -93,10 +93,11 @@ window.WPC = {
 
             // Create the table body
             tbody = document.createElement('tbody');
-            sCnt = resources.data.links.sections.length;
-            for (sIdx = 0; sIdx < sCnt; sIdx += 1) {
-                sectionId = resources.data.links.sections[sIdx];
-                section = resources.sections[sectionId];
+            rCnt = resources.data.links.references.length;
+            for (rIdx = 0; rIdx < rCnt; rIdx += 1) {
+                resourceId = resources.data.links.references[rIdx];
+                reference = resources.references[resourceId];
+                section = resources.sections[reference.links.section];
                 spec = resources.specifications[section.links.specification];
                 maturity = resources.maturities[spec.links.maturity];
                 matClass = "maturity-" + maturity.slug;

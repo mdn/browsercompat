@@ -14,12 +14,12 @@
             "name": {
                 "en": "Three-value syntax",
                 "es": "Sintaxis con tres valores",
-                "ja": "3-ĺ¤ć§ć"
+                "ja": "3-値構文"
             },
             "links": {
                 "parent": "10",
                 "children": [],
-                "sections": [],
+                "references": [],
                 "history_current": "12"
             }
         },

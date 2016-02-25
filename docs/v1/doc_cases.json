@@ -703,6 +703,20 @@
             "date": "2015-04-20T18:57:10.394547Z"
         }
     }, {
+        "name": "historical-reference-by-id",
+        "method": "GET",
+        "endpoint": "historical_references/3",
+        "standardize": {
+            "date": "2016-02-23T10:39:44.239000Z"
+        }
+    }, {
+        "name": "historical-reference-filter-by-id",
+        "method": "GET",
+        "endpoint": "historical_references?id=3",
+        "standardize": {
+            "date": "2016-02-23T10:39:59.340000Z"
+        }
+    }, {
         "name": "view-features-list",
         "method": "GET",
         "endpoint": "view_features"
@@ -771,7 +785,7 @@
         "method": "GET",
         "endpoint": "view_features/5"
     }, {
-        "name": "feature-add-sections-01",
+        "name": "feature-add-references-01",
         "method": "POST",
         "endpoint": "specifications",
         "data": {
@@ -790,7 +804,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-02",
+        "name": "feature-add-references-02",
         "method": "POST",
         "endpoint": "specifications",
         "data": {
@@ -809,7 +823,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-03",
+        "name": "feature-add-references-03",
         "method": "POST",
         "endpoint": "sections",
         "data": {
@@ -829,7 +843,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-04",
+        "name": "feature-add-references-04",
         "method": "POST",
         "endpoint": "sections",
         "data": {
@@ -849,7 +863,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-05",
+        "name": "feature-add-references-05",
         "method": "POST",
         "endpoint": "features",
         "data": {
@@ -864,7 +878,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-06",
+        "name": "feature-add-references-06",
         "method": "POST",
         "endpoint": "features",
         "data": {
@@ -879,7 +893,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-07",
+        "name": "feature-add-references-07",
         "method": "POST",
         "endpoint": "features",
         "data": {
@@ -895,35 +909,37 @@
             }
         }
     }, {
-        "name": "feature-add-sections-08",
-        "method": "PUT",
-        "endpoint": "features/18",
+        "name": "feature-add-references-08",
+        "method": "POST",
+        "endpoint": "references",
         "data": {
-            "features": {
+            "references": {
                 "links": {
-                    "sections": ["7"]
+                    "feature": "18",
+                    "section": "7"
                 }
             }
         }
     }, {
-        "name": "feature-add-sections-09",
-        "method": "PUT",
-        "endpoint": "features/18",
+        "name": "feature-add-references-09",
+        "method": "POST",
+        "endpoint": "references",
         "data": {
-            "features": {
+            "references": {
                 "links": {
-                    "sections": ["7", "6"]
+                    "feature": "18",
+                    "section": "6"
                 }
             }
         }
     }, {
-        "name": "feature-add-sections-10",
+        "name": "feature-add-references-10",
         "method": "PUT",
         "endpoint": "features/18",
         "data": {
             "features": {
                 "links": {
-                    "sections": ["6", "7"]
+                    "references": ["6", "5"]
                 }
             }
         }
@@ -1120,5 +1136,35 @@
         "name": "browser-detail-options",
         "method": "OPTIONS",
         "endpoint": "browsers/7"
+    }, {
+        "name": "reference-by-id",
+        "method": "GET",
+        "endpoint": "references/3"
+    }, {
+        "name": "reference-update",
+        "method": "PUT",
+        "endpoint": "references/6",
+        "data": {
+            "references": {
+                "note": {
+                    "en": "This is a note."
+                }
+            }
+        }
+    }, {
+        "name": "reference-revert",
+        "method": "PUT",
+        "endpoint": "references/6",
+        "data": {
+            "references": {
+                "links": {
+                    "history_current": "6"
+                }
+            }
+        }
+    }, {
+        "name": "reference-delete",
+        "method": "DELETE",
+        "endpoint": "references/6"
     }
 ]

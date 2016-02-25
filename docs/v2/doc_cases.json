@@ -626,13 +626,13 @@
         "method": "GET",
         "endpoint": "features/10/relationships/children"
     }, {
-        "name": "feature-related-sections",
+        "name": "feature-related-references",
         "method": "GET",
-        "endpoint": "features/10/sections"
+        "endpoint": "features/10/references"
     }, {
-        "name": "feature-relationships-sections",
+        "name": "feature-relationships-references",
         "method": "GET",
-        "endpoint": "features/10/relationships/sections"
+        "endpoint": "features/10/relationships/references"
     }, {
         "name": "feature-related-supports",
         "method": "GET",
@@ -721,7 +721,7 @@
         "method": "DELETE",
         "endpoint": "features/15"
     }, {
-        "name": "feature-add-sections-01",
+        "name": "feature-add-references-01",
         "method": "POST",
         "endpoint": "specifications",
         "data": {
@@ -747,7 +747,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-02",
+        "name": "feature-add-references-02",
         "method": "POST",
         "endpoint": "specifications",
         "data": {
@@ -773,7 +773,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-03",
+        "name": "feature-add-references-03",
         "method": "POST",
         "endpoint": "sections",
         "data": {
@@ -800,7 +800,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-04",
+        "name": "feature-add-references-04",
         "method": "POST",
         "endpoint": "sections",
         "data": {
@@ -827,7 +827,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-05",
+        "name": "feature-add-references-05",
         "method": "POST",
         "endpoint": "features",
         "data": {
@@ -849,7 +849,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-06",
+        "name": "feature-add-references-06",
         "method": "POST",
         "endpoint": "features",
         "data": {
@@ -871,7 +871,7 @@
             }
         }
     }, {
-        "name": "feature-add-sections-07",
+        "name": "feature-add-references-07",
         "method": "POST",
         "endpoint": "features",
         "data": {
@@ -894,7 +894,49 @@
             }
         }
     }, {
-        "name": "feature-add-sections-08",
+        "name": "feature-add-references-08",
+        "method": "POST",
+        "endpoint": "references",
+        "data": {
+            "data": {
+                "type": "references",
+                "relationships": {
+                    "feature": {
+                        "data": {
+                            "type": "features", "id": "18"
+                        }
+                    },
+                    "section": {
+                        "data": {
+                            "type": "sections", "id": "6"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-references-09",
+        "method": "POST",
+        "endpoint": "references",
+        "data": {
+            "data": {
+                "type": "references",
+                "relationships": {
+                    "feature": {
+                        "data": {
+                            "type": "features", "id": "18"
+                        }
+                    },
+                    "section": {
+                        "data": {
+                            "type": "sections", "id": "5"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "feature-add-references-10",
         "method": "PATCH",
         "endpoint": "features/18",
         "data": {
@@ -902,37 +944,10 @@
                 "type": "features",
                 "id": "18",
                 "relationships": {
-                    "sections": {
+                    "references": {
                         "data": [
-                            {"type": "sections", "id": "6"}
-                        ]
-                    }
-                }
-            }
-        }
-    }, {
-        "name": "feature-add-sections-09",
-        "method": "PATCH",
-        "endpoint": "features/18/relationships/sections",
-        "data": {
-            "data": [
-                {"type": "sections", "id": "6"},
-                {"type": "sections", "id": "5"}
-            ]
-        }
-    }, {
-        "name": "feature-add-sections-10",
-        "method": "PATCH",
-        "endpoint": "features/18",
-        "data": {
-            "data": {
-                "type": "features",
-                "id": "10",
-                "relationships": {
-                    "sections": {
-                        "data": [
-                            {"type": "sections", "id": "5"},
-                            {"type": "sections", "id": "6"}
+                            {"type": "references", "id": "6"},
+                            {"type": "references", "id": "5"}
                         ]
                     }
                 }
@@ -1314,13 +1329,13 @@
         "method": "GET",
         "endpoint": "sections/3/relationships/specification"
     }, {
-        "name": "section-related-features",
+        "name": "section-related-references",
         "method": "GET",
-        "endpoint": "sections/3/features"
+        "endpoint": "sections/3/references"
     }, {
-        "name": "section-relationships-features",
+        "name": "section-relationships-references",
         "method": "GET",
-        "endpoint": "sections/3/relationships/features"
+        "endpoint": "sections/3/relationships/references"
     }, {
         "name": "section-related-history-current",
         "method": "GET",
@@ -1380,19 +1395,13 @@
                     },
                     "subpath": {
                         "en": "#ruby-display"
-                    },
-                    "note": null
+                    }
                 },
                 "relationships": {
                     "specification": {
                         "data": {
                             "type": "specifications", "id": "5"
                         }
-                    },
-                    "features": {
-                        "data": [
-                            {"type": "features", "id": "13"}
-                        ]
                     }
                 }
             }
@@ -1422,16 +1431,6 @@
             "data": {
                 "type": "specifications", "id": "4"
             }
-        }
-    }, {
-        "name": "section-relationships-features-update",
-        "method": "PATCH",
-        "endpoint": "sections/8/relationships/features",
-        "data": {
-            "data": [
-                {"type": "features", "id": "12"},
-                {"type": "features", "id": "13"}
-            ]
         }
     }, {
         "name": "section-revert",
@@ -1722,6 +1721,33 @@
         "method": "GET",
         "endpoint": "historical_maturities/10/relationships/maturity"
     }, {
+        "name": "historical-references-by-id",
+        "method": "GET",
+        "endpoint": "historical_references/5",
+        "standardize": {
+            "date": "2016-02-23T10:41:02.217000Z"
+        }
+    }, {
+        "name": "historical-references-related-changeset",
+        "method": "GET",
+        "endpoint": "historical_references/5/changeset",
+        "standardize": {
+            "created": "2016-02-23T10:41:11.273000Z",
+            "modified": "2016-02-23T10:41:16.193000Z"
+        }
+    }, {
+        "name": "historical-references-relationships-changeset",
+        "method": "GET",
+        "endpoint": "historical_references/5/relationships/changeset"
+    }, {
+        "name": "historical-references-related-reference",
+        "method": "GET",
+        "endpoint": "historical_references/5/reference"
+    }, {
+        "name": "historical-references-relationships-reference",
+        "method": "GET",
+        "endpoint": "historical_references/5/relationships/reference"
+    }, {
         "name": "historical-sections-by-id",
         "method": "GET",
         "endpoint": "historical_sections/8",
@@ -1861,7 +1887,7 @@
     }, {
         "name": "view-feature-update-parts-with-changeset-2",
         "method": "POST",
-        "endpoint": "versions?changeset=56",
+        "endpoint": "versions?changeset=55",
         "data": {
             "data": {
                 "type": "versions",
@@ -1881,7 +1907,7 @@
     }, {
         "name": "view-feature-update-parts-with-changeset-3",
         "method": "POST",
-        "endpoint": "supports?changeset=56",
+        "endpoint": "supports?changeset=55",
         "data": {
             "data": {
                 "type": "supports",
@@ -1902,10 +1928,10 @@
     }, {
         "name": "view-feature-update-parts-with-changeset-4",
         "method": "PATCH",
-        "endpoint": "changesets/56",
+        "endpoint": "changesets/55",
         "data": {
             "data": {
-                "id": "56",
+                "id": "55",
                 "type": "changesets",
                 "attributes": {
                     "closed": true
@@ -1947,5 +1973,45 @@
                 }
             }]
         }
+    }, {
+        "name": "reference-by-id",
+        "method": "GET",
+        "endpoint": "references/3"
+    }, {
+        "name": "reference-update",
+        "method": "PATCH",
+        "endpoint": "references/6",
+        "data": {
+            "data": {
+                "type": "references",
+                "id": "6",
+                "attributes": {
+                    "note": {
+                        "en": "This is a note."
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "reference-revert",
+        "method": "PUT",
+        "endpoint": "references/6",
+        "data": {
+            "data": {
+                "type": "references",
+                "id": "6",
+                "relationships": {
+                    "history_current": {
+                        "data": {
+                            "type": "historical_references", "id": "6"
+                        }
+                    }
+                }
+            }
+        }
+    }, {
+        "name": "reference-delete",
+        "method": "DELETE",
+        "endpoint": "references/6"
     }
 ]

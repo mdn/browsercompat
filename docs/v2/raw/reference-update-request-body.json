@@ -1,0 +1,11 @@
+{
+    "data": {
+        "type": "references",
+        "id": "6",
+        "attributes": {
+            "note": {
+                "en": "This is a note."
+            }
+        }
+    }
+}

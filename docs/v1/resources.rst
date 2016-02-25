@@ -352,7 +352,7 @@ The **features** representation includes:
       ``"CSS Properties"`` are non-canonical names that should be translated.
 
 * **links**
-    - **sections** *(many)* - Associated sections_.  Order can be changed by
+    - **references** *(many)* - Associated references_.  Order can be changed by
       the user.
     - **supports** *(many)* - Associated supports_, Order is in ID order,
       changes are ignored.
@@ -487,8 +487,6 @@ A sample response is:
 Sections
 --------
 
-*Note:* `bug 1216786`_ *is proposing splitting Sections into Sections and References.*
-
 A **section** refers to a specific area of a specification_ document.
 
 The **section** representation includes:
@@ -499,11 +497,10 @@ The **section** representation includes:
     - **name** *(localized)* - Section name
     - **subpath** *(localized, optional)* - A subpage (possibly with an
       #anchor) to get to the subsection in the doc.  Can be empty string.
-    - **note** *(localized, optional)* - Notes for this section
 * **links**
     - **specification** *(one)* - The specification_.  Can be changed by
       the user.
-    - **features** *(many)* - The associated features_.  In ID order,
+    - **references** *(many)* - The associated references.  In ID order,
       changes are ignored.
     - **history_current** *(one)* - Current
       historical_sections_.  Can be changed to a valid
@@ -522,6 +519,38 @@ A sample response is:
     :language: http
 
 .. literalinclude:: /v1/raw/section-by-id-response-body.json
+    :language: json
+
+References
+----------
+
+A **reference** ties a specification section_ to a feature_.
+
+The **reference** representation includes:
+
+* **attributes**
+    - **id** *(server selected)* - Database ID
+    - **note** *(localized, optional)* - Notes for this reference
+* **links**
+    - **feature** *(one)* - The feature. Can be changed by the user.
+    - **section** *(one)* - The section. Can be changed by the user.
+    - **history_current** *(one)* - Current
+      historical_references_.  Can be changed to a valid
+      **history** to revert to that version.
+    - **history** *(many)* - Associated historical_references_
+      in time order (most recent first).  Changes are ignored.
+
+To get a single **reference**:
+
+.. literalinclude:: /v1/raw/reference-by-id-request-headers.txt
+    :language: http
+
+A sample response is:
+
+.. literalinclude:: /v1/raw/reference-by-id-response-headers.txt
+    :language: http
+
+.. literalinclude:: /v1/raw/reference-by-id-response-body.json
     :language: json
 
 Maturities
@@ -560,6 +589,7 @@ A sample response is:
 
 .. _feature: Features_
 .. _specification: Specifications_
+.. _section: Sections_
 .. _maturity: `Maturities`_
 .. _version: `Versions`_
 
@@ -567,13 +597,13 @@ A sample response is:
 
 .. _historical_browsers: history.html#historical-browsers
 .. _historical_features: history.html#historical-features
+.. _historical_references: history.html#historical-references
 .. _historical_supports: history.html#historical-supports
 .. _historical_specifications: history.html#historical-specifications
 .. _historical_sections: history.html#historical-sections
 .. _historical_maturities: history.html#historical-maturities
 
 .. _`bug 1078699`: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699
-.. _`bug 1216786`: https://bugzilla.mozilla.org/show_bug.cgi?id=1216786
 .. _`bug 1230306`: https://bugzilla.mozilla.org/show_bug.cgi?id=1230306
 .. _non-linguistic: http://www.w3.org/International/questions/qa-no-language#nonlinguistic
 .. _`ISO 8601`: http://en.wikipedia.org/wiki/ISO_8601

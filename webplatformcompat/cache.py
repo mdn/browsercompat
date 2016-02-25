@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 from drf_cached_instances.cache import BaseCache
 from .history import Changeset
 from .models import (
-    Browser, Feature, Maturity, Section, Specification, Support, Version)
+    Browser, Feature, Maturity, Reference, Section, Specification, Support,
+    Version)
 
 
 class Cache(BaseCache):
@@ -79,6 +80,10 @@ class Cache(BaseCache):
                 model=Maturity.history.model,
                 pks=obj._historical_maturities_pks),
             self.field_to_json(
+                'PKList', 'historical_references',
+                model=Reference.history.model,
+                pks=obj._historical_references_pks),
+            self.field_to_json(
                 'PKList', 'historical_sections', model=Section.history.model,
                 pks=obj._historical_sections_pks),
             self.field_to_json(
@@ -128,6 +133,9 @@ class Cache(BaseCache):
         if not hasattr(obj, '_historical_sections_pks'):
             obj._historical_sections_pks = list(
                 obj.historical_sections.values_list('history_id', flat=True))
+        if not hasattr(obj, '_historical_references_pks'):
+            obj._historical_references_pks = list(
+                obj.historical_references.values_list('history_id', flat=True))
 
     def changeset_v1_invalidator(self, obj):
         return []
@@ -147,7 +155,8 @@ class Cache(BaseCache):
             ('name', obj.name),
             ('descendant_count', obj.descendant_count),
             self.field_to_json(
-                'PKList', 'sections', model=Section, pks=obj._section_pks),
+                'PKList', 'references', model=Reference,
+                pks=obj._reference_pks),
             self.field_to_json(
                 'PKList', 'supports', model=Support, pks=obj._support_pks),
             self.field_to_json(
@@ -187,11 +196,12 @@ class Cache(BaseCache):
         if not hasattr(obj, '_children_pks'):
             obj._children_pks = [
                 child_pk for child_pk, _ in obj._child_pks_and_is_page]
+        if not hasattr(obj, '_reference_pks'):
+            obj._reference_pks = sorted(
+                obj.references.values_list('pk', flat=True))
         if not hasattr(obj, '_support_pks'):
             obj._support_pks = sorted(
                 obj.supports.values_list('pk', flat=True))
-        if not hasattr(obj, '_section_pks'):
-            obj._section_pks = list(obj.sections.values_list('pk', flat=True))
         if not hasattr(obj, '_descendant_pks'):
             if obj.descendant_count <= settings.PAGINATE_VIEW_FEATURE:
                 obj._descendant_pks = obj.descendant_pks
@@ -251,7 +261,52 @@ class Cache(BaseCache):
     def maturity_v1_invalidator(self, obj):
         return []
 
+    def reference_v1_serializer(self, obj):
+        """Serialize Reference instance to plain dictionary."""
+        if not obj:
+            return None
+        self.reference_v1_add_related_pks(obj)
+        return dict((
+            ('id', obj.pk),
+            ('note', obj.note),
+            self.field_to_json(
+                'PK', 'section', model=Section, pk=obj.section_id),
+            self.field_to_json(
+                'PK', 'feature', model=Feature, pk=obj.feature_id),
+            self.field_to_json(
+                'PKList', 'history', model=obj.history.model,
+                pks=obj._history_pks),
+            self.field_to_json(
+                'PK', 'history_current', model=obj.history.model,
+                pk=obj._history_pks[0]),
+        ))
+
+    def reference_v1_loader(self, pk):
+        """Load a Reference instance by primary key."""
+        try:
+            obj = Reference.objects.get(pk=pk)
+        except Reference.DoesNotExist:
+            return None
+        else:
+            self.reference_v1_add_related_pks(obj)
+            return obj
+
+    def reference_v1_add_related_pks(self, obj):
+        """Cache related objects on a Reference instance."""
+        if not hasattr(obj, '_history_pks'):
+            obj._history_pks = list(
+                obj.history.all().values_list('history_id', flat=True))
+
+    def reference_v1_invalidator(self, obj):
+        """Identify instance caches related to this Reference instance."""
+        return [
+            ('Section', obj.section_id, False),
+            ('Feature', obj.feature_id, False),
+        ]
+
     def section_v1_serializer(self, obj):
+        """Serialize Section instance to plain dictionary."""
+        # TODO bug 1216786: remove dropped fields note, features
         if not obj:
             return None
         self.section_v1_add_related_pks(obj)
@@ -260,12 +315,12 @@ class Cache(BaseCache):
             ('number', obj.number),
             ('name', obj.name),
             ('subpath', obj.subpath),
-            ('note', obj.note),
             self.field_to_json(
                 'PK', 'specification', model=Specification,
                 pk=obj.specification_id),
             self.field_to_json(
-                'PKList', 'features', model=Feature, pks=obj._feature_pks),
+                'PKList', 'references', model=Reference,
+                pks=obj._reference_pks),
             self.field_to_json(
                 'PKList', 'history', model=obj.history.model,
                 pks=obj._history_pks),
@@ -289,9 +344,9 @@ class Cache(BaseCache):
         if not hasattr(obj, '_history_pks'):
             obj._history_pks = list(
                 obj.history.all().values_list('history_id', flat=True))
-        if not hasattr(obj, '_feature_pks'):
-            obj._feature_pks = sorted(
-                obj.features.values_list('pk', flat=True))
+        if not hasattr(obj, '_reference_pks'):
+            obj._reference_pks = sorted(
+                obj.references.values_list('pk', flat=True))
 
     def section_v1_invalidator(self, obj):
         return [('Specification', obj.specification_id, False)]

@@ -201,7 +201,7 @@ class FeaturePage(models.Model):
             ('obsolete', self.feature.obsolete),
             ('name', self.feature.name),
             ('links', OrderedDict((
-                ('sections', []),
+                ('references', []),
                 ('supports', []),
                 ('parent', str(self.feature.parent_id)),
                 ('children', []),
@@ -237,6 +237,7 @@ class FeaturePage(models.Model):
                 ('specifications', []),
                 ('sections', []),
                 ('features', []),
+                ('references', []),
             ))),
             ('meta', OrderedDict((
                 ('compat_table', OrderedDict((

@@ -23,9 +23,6 @@
                         },
                         "subpath": {
                             "en": "#the-float-property"
-                        },
-                        "note": {
-                            "en": "Lots of new values, not all clearly defined yet. Any differences in behavior unrelated to new features are expected to be unintentional; please report."
                         }
                     },
                     "relationships": {

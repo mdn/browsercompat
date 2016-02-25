@@ -53,6 +53,7 @@
     'supports',
     'specifications',
     'sections',
+    'references',
     'maturities',
     'users',
     'changesets',
@@ -129,6 +130,8 @@
         'related': [
             {'name': 'supports',
                 'title': '{{supportCountText}} with Support Info'},
+            {'name': 'references',
+                'title': '{{referenceCountText}}'},
         ],
         'detail_hack_nav': (
             '<p class="lead"><strong><a {{bind-attr href=viewUrl}}>'
@@ -215,17 +218,28 @@
                 'detail': 'nameListHTML', 'link': 'section'},
             {'name': 'Subpath', 'property': 'subpathDefaultHTML',
                 'detail': 'subpathListHTML'},
-            {'name': 'Note', 'property': 'noteDefaultHTML',
-                'detail': 'noteListHTML'},
             {'name': 'Specification',
                 'property': 'nameDefaultHTML',
                 'with': 'specification', 'link': 'specification'},
-            {'name': 'Features', 'property': 'featureCountText',
-                'omit': ['section']},
+            {'name': 'References', 'property': 'referenceCountText'},
         ],
         'related': [
-            {'name': 'features',
-                'title': '{{featureCountText}} for this Section'},
+            {'name': 'references',
+                'title': '{{referenceCountText}} for this Section'},
+        ]},
+    'references': {
+        'detail_title': 'Reference "{{{nameDefaultHTML}}}"',
+        'data': [
+            {'name': 'Id', 'property': 'id'},
+            {'name': 'Feature', 'property': 'nameDefaultHTML',
+                'with': 'feature', 'link': 'feature',
+                'omit': ['feature']},
+            {'name': 'Section',
+                'property': 'nameDefaultHTML',
+                'with': 'section', 'link': 'section',
+                'omit': ['section']},
+            {'name': 'Note', 'property': 'noteDefaultHTML',
+                'detail': 'noteListHTML'},
         ]},
     'maturities': {
         'singular': 'maturity',
@@ -307,6 +321,7 @@
         <thead>
             <tr>
                 {% for item in model['data'] -%}
+                <!-- {{item['name']}} {{item.get('omit', '(no omit)')}} {{view}} -->
                 {% if view not in item.get('omit', []) -%}
                 <th>{% if item['name'] == 'Id' %}#{% else %}{{item['name']}}{% endif %}</th>
                 {% endif -%}

@@ -1,0 +1,14 @@
+{
+    "data": {
+        "type": "references",
+        "id": "6",
+        "relationships": {
+            "history_current": {
+                "data": {
+                    "type": "historical_references",
+                    "id": "6"
+                }
+            }
+        }
+    }
+}

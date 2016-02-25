@@ -22,11 +22,11 @@
                 "13",
                 "10"
             ],
-            "sections": [],
+            "references": [],
             "supports": [],
-            "history_current": "24",
+            "history_current": "22",
             "history": [
-                "24",
+                "22",
                 "2"
             ]
         }
@@ -40,9 +40,9 @@
             "type": "features",
             "href": "https://browsercompat.org/api/v1/features/{features.children}"
         },
-        "features.sections": {
-            "type": "sections",
-            "href": "https://browsercompat.org/api/v1/sections/{features.sections}"
+        "features.references": {
+            "type": "references",
+            "href": "https://browsercompat.org/api/v1/references/{features.references}"
         },
         "features.supports": {
             "type": "supports",

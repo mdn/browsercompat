@@ -9,8 +9,8 @@ import mock
 
 from tools.client import Client
 from tools.resources import (
-    Browser, Collection, CollectionChangeset, Feature, Maturity, Section,
-    Specification, Support, Version, Link, LinkList)
+    Browser, Collection, CollectionChangeset, Feature, Maturity, Reference,
+    Section, Specification, Support, Version, Link, LinkList)
 
 
 class TestCase(BaseTestCase):
@@ -362,14 +362,12 @@ class TestSection(TestCase):
     def test_get_data_id_with_number(self):
         maturity = Maturity(id='2')
         spec = Specification(id='22', maturity='2', mdn_key='SPEC')
-        feature = Feature(id='222')
         section = Section(
-            id='_sec', specification='22', features=['222'],
+            id='_sec', specification='22',
             number={'en': '1.2.3'}, subpath={'en': '#123'})
         collection = Collection()
         collection.add(maturity)
         collection.add(spec)
-        collection.add(feature)
         collection.add(section)
         self.assertEqual(('sections', 'SPEC', '#123'), section.get_data_id())
 
@@ -389,12 +387,10 @@ class TestSection(TestCase):
     def test_get_data_id_without_subpath(self):
         maturity = Maturity(id='2')
         spec = Specification(id='22', maturity='2', mdn_key='SPEC')
-        feature = Feature(id='222')
-        section = Section(id='_sec', specification='22', features=['222'])
+        section = Section(id='_sec', specification='22')
         collection = Collection()
         collection.add(maturity)
         collection.add(spec)
-        collection.add(feature)
         collection.add(section)
         self.assertEqual(('sections', 'SPEC', ''), section.get_data_id())
 
@@ -415,13 +411,11 @@ class TestSection(TestCase):
     def test_get_data_id_with_empty_subpath(self):
         maturity = Maturity(id='2')
         spec = Specification(id='22', maturity='2', mdn_key='SPEC')
-        feature = Feature(id='222')
         section = Section(
-            id='_sec', specification='22', features=['222'], subpath={})
+            id='_sec', specification='22', subpath={})
         collection = Collection()
         collection.add(maturity)
         collection.add(spec)
-        collection.add(feature)
         collection.add(section)
         self.assertEqual(('sections', 'SPEC', ''), section.get_data_id())
 
@@ -903,15 +897,40 @@ New:
         self.assertEqual(expected, cc.changes)
 
     def test_new_section_with_dependencies(self):
+        section = Section(id='section', specification='spec')
+        spec = Specification(
+            id='spec', mdn_key='SPEC', slug='spec', maturity='maturity')
+        maturity = Maturity(id='maturity', slug='mat')
+        self.new_col.add(section)
+        self.new_col.add(spec)
+        self.new_col.add(maturity)
+        cc = CollectionChangeset(self.orig_col, self.new_col)
+        expected_order = OrderedDict([
+            (('maturities', 'mat'), maturity),
+            (('specifications', 'SPEC'), spec),
+            (('sections', 'SPEC', ''), section),
+        ])
+        expected = {
+            'new': expected_order,
+            'same': OrderedDict(),
+            'changed': OrderedDict(),
+            'deleted': OrderedDict(),
+        }
+        self.assertEqual(expected_order.keys(), cc.changes['new'].keys())
+        self.assertEqual(expected, cc.changes)
+
+    def test_new_reference_with_dependencies(self):
         feature = Feature(
             id='feature', slug='feature', name={'en': 'Feature'},
             sections=['section'])
-        section = Section(
-            id='section', features=['feature'], specification='spec')
+        reference = Reference(
+            id='reference', feature='feature', section='section')
+        section = Section(id='section', specification='spec')
         spec = Specification(
             id='spec', mdn_key='SPEC', slug='spec', maturity='maturity')
         maturity = Maturity(id='maturity', slug='mat')
         self.new_col.add(feature)
+        self.new_col.add(reference)
         self.new_col.add(section)
         self.new_col.add(spec)
         self.new_col.add(maturity)
@@ -921,6 +940,7 @@ New:
             (('specifications', 'SPEC'), spec),
             (('sections', 'SPEC', ''), section),
             (('features', 'feature'), feature),
+            (('references', 'feature', 'SPEC', ''), reference),
         ])
         expected = {
             'new': expected_order,
