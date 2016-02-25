@@ -417,6 +417,9 @@ Browse.Properties = {
             if (en.indexOf('https://') === 0 || en.indexOf('http://') === 0) {
                 return '<a href="' + en + '">' + en + '</a>';
             }
+            if (en === '') {
+                return '<em>none</em>';
+            }
             return en;
         });
     },
