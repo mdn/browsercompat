@@ -391,7 +391,7 @@ class HistoricalBrowserRecords(HistoricalRecords):
 
 class HistoricalFeatureRecords(HistoricalRecords):
     additional_fields = {
-        'references': JSONField(null=True, default=[]),
+        'references': JSONField(default=[]),
         'children': JSONField(default=[])
     }
 

@@ -71,6 +71,7 @@ django-mptt==0.8.0 \
     --hash=sha256:4cd88980f3d66ec021f9cdafcaa92d9f831b5f397679ac40302159d69eaef17a
 
 # Sorted ManyToManyField
+# No longer used, but present in webplatformcompat/migrations/0001_initial.py
 django-sortedm2m==1.1.1 \
     --hash=sha256:d38d201da8593c94c8706f9ef30e3203bf0d352d6264abbb7babfbb112f86cb4
 
