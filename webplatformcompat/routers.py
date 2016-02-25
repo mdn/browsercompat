@@ -92,8 +92,10 @@ class GroupedRouter(DefaultRouter):
 
                 # Add redirects to remove slashes
                 no_slash_pattern = regex.replace('$', '/$')
+                pattern_name = '%s:%s' % (self.version, name)
                 view = RedirectView.as_view(
-                    pattern_name=name, permanent=False, query_string=True)
+                    pattern_name=pattern_name, permanent=True,
+                    query_string=True)
                 urls.append(url(no_slash_pattern, view))
 
                 # Add endpoints that include the format as an extension
