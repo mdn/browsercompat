@@ -12,7 +12,6 @@ from django.utils.functional import cached_property
 from django_extensions.db.fields.json import JSONField
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
-from sortedm2m.fields import SortedManyToManyField
 
 from .fields import TranslatedField
 from .history import register, HistoricalRecords
@@ -106,9 +105,6 @@ class Feature(HistoryMixin, MPTTModel):
     parent = TreeForeignKey(
         'self', help_text='Feature set that contains this feature',
         null=True, blank=True, related_name='children')
-    # TODO bug 1216786: drop this field
-    sections = SortedManyToManyField(
-        'Section', related_name='features', blank=True)
     objects = CachingTreeManager()
     # history = HistoricalFeatureRecords()  # Registered below
 
@@ -247,10 +243,6 @@ class Section(HistoryMixin, models.Model):
             'A subpage (possible with an #anchor) to get to the subsection'
             ' in the specification.'),
         blank=True)
-    # TODO bug 1216786: - drop this field
-    note = TranslatedField(
-        help_text='Notes for this section',
-        null=True, blank=True)
     objects = CachingManager()
     history = HistoricalRecords()
 
@@ -398,20 +390,14 @@ class HistoricalBrowserRecords(HistoricalRecords):
 
 
 class HistoricalFeatureRecords(HistoricalRecords):
-    # TODO bug 1216786: drop sections field
     additional_fields = {
         'references': JSONField(null=True, default=[]),
-        'sections': JSONField(null=True, default=[]),
         'children': JSONField(default=[])
     }
 
     def get_references_value(self, instance, mtype):
         return list(
             instance.references.values_list('pk', flat=True))
-
-    def get_sections_value(self, instance, mtype):
-        return list(
-            instance.sections.values_list('pk', flat=True))
 
     def get_children_value(self, instance, mtype):
         return list(

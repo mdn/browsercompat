@@ -155,7 +155,6 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'simple_history',
     'rest_framework',
-    'sortedm2m',
     'puente',
 
     'bcauth',

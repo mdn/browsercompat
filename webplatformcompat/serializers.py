@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from rest_framework.serializers import (
     CurrentUserDefault, DateTimeField, IntegerField,
     ModelSerializer, SerializerMethodField, ValidationError)
-from sortedm2m.fields import SortedManyToManyField
 
 from . import fields
 from .drf_fields import (
@@ -62,7 +61,6 @@ class FieldMapMixin(object):
     serializer_field_mapping = ModelSerializer.serializer_field_mapping
     serializer_field_mapping[fields.TranslatedField] = TranslatedTextField
     serializer_field_mapping[CharField] = OptionalCharField
-    serializer_field_mapping[SortedManyToManyField] = PrimaryKeyRelatedField
     serializer_related_field = PrimaryKeyRelatedField
 
     def build_standard_field(self, field_name, model_field):
