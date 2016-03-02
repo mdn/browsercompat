@@ -44,5 +44,6 @@ def handler(exc, context):
     Otherwise, use the default Django REST Framework handler.
     """
     response = base_handler(exc, context)
-    response.exc = exc
+    if response is not None:
+        response.exc = exc
     return response
