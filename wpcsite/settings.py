@@ -407,6 +407,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': config('PAGE_SIZE', default=10, cast=int),
     'DEFAULT_VERSIONING_CLASS': (
         'rest_framework.versioning.NamespaceVersioning'),
+    'EXCEPTION_HANDLER': 'webplatformcompat.exceptions.handler',
 }
 
 # Django nose

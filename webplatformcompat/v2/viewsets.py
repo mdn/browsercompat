@@ -11,6 +11,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
 
+from ..exceptions import InvalidQueryParam
 from ..renderers import BrowsableAPIRenderer
 from ..viewsets import (
     BrowserBaseViewSet, ChangesetBaseViewSet, FeatureBaseViewSet,
@@ -52,8 +53,10 @@ class RelatedActionMixin(object):
 
     # View parameter set by related_list
     related_filter = None
-
     filter_re = re.compile('^filter\[(?P<name>[^]]*)\]$')
+
+    # Other parameters
+    reserved_param_re = re.compile('^[a-z]*$')
 
     def add_related_context(self, context):
         """Add related data to a context dictionary."""
@@ -117,11 +120,25 @@ class RelatedActionMixin(object):
                     # Treat blank link values as None
                     value = None
                 filters[name] = value
+            else:
+                self.verify_parameter(key)
 
         # Apply the implicit filter for related views
         filters.update(getattr(self, 'related_filter') or {})
 
         return filters
+
+    def verify_parameter(self, key):
+        """Raise an error for invalid query parameters."""
+        if key in ('page', 'page_size'):
+            # Pagination is handled in .pagination.Pagination class
+            # TOOD: bug 1243128, use page[number] and page[size]
+            pass
+        elif key == 'changeset':
+            # TODO: bug 1243221, change to JSON API v1.0 valid keyword
+            pass
+        elif self.reserved_param_re.match(key):
+            raise InvalidQueryParam(key)
 
     def related_item(self, request, pk):
         """Return a related item, or signal that there is no related item."""

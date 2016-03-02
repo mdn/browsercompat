@@ -516,6 +516,46 @@ class TestBrowserViewset(APITestCase):
         expected_keys = {'actions', 'description', 'name', 'parses', 'renders'}
         self.assertEqual(set(response.data.keys()), expected_keys)
 
+    def test_query_reserved_namespace_is_error(self):
+        """Test that an unknown, lowercase query parameter is an error."""
+        url = self.api_reverse('browser-list')
+        response = self.client.get(url, {'foo': 'bar'})
+        self.assertEqual(400, response.status_code, response.content)
+        expected = {
+            'errors': [{
+                'status': '400',
+                'detail': 'Query parameter "foo" is invalid.',
+                'source': {'parameter': 'foo'}
+            }]
+        }
+        self.assertEqual(expected, loads(response.content.decode('utf8')))
+
+    def test_unreserved_query_is_ignored(self):
+        """Test that unknown but unreserved query strings are ignored."""
+        url = self.api_reverse('browser-list')
+        params = {
+            'camelCase': 'ignored',
+            'hyphen-split': 'ignored',
+            'low_line': 'ignored',
+        }
+        response = self.client.get(url, params)
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual(0, response.data['count'])
+
+    def test_page_params_is_ok(self):
+        """
+        Test that pagination params are OK.
+
+        bug 1243128 will change these to page[number] and page[size].
+        """
+        for number in range(5):
+            self.create(Browser, slug='slug%d' % number)
+        url = self.api_reverse('browser-list')
+        pagination = {'page': 2, 'page_size': 2}
+        response = self.client.get(url, pagination)
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual(5, response.data['count'])
+
 
 class TestFeatureViewSet(APITestCase):
     """Test FeatureViewSet."""
