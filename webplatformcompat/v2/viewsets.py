@@ -141,6 +141,9 @@ class RelatedActionMixin(object):
         elif key == 'fields' or key.startswith('fields['):
             # TODO: bug 1252973, implement sparse fieldsets
             raise NotImplementedQueryParam(key)
+        elif key == 'sort':
+            # TODO: bug 1243195, implement sorting
+            raise NotImplementedQueryParam(key)
         elif key == 'changeset':
             # TODO: bug 1243221, change to JSON API v1.0 valid keyword
             pass

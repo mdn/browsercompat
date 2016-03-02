@@ -587,6 +587,14 @@ class TestBrowserViewset(APITestCase):
         self.assert_param_not_implemented('fields', 'name')
         self.assert_param_not_implemented('fields[browsers]', 'slug,name')
 
+    def test_param_sort_unimplemented(self):
+        """
+        Confirm JSON API v1.0 parameter 'sort' is unimplemented.
+
+        TODO: bug 1252973, use param 'fields' for sparse fieldsets.
+        """
+        self.assert_param_not_implemented('sort', 'name')
+
 
 class TestFeatureViewSet(APITestCase):
     """Test FeatureViewSet."""
