@@ -61,7 +61,7 @@ class Client(object):
         if method in change_methods and self.csrftoken:
             headers['X-CSRFToken'] = self.csrftoken
         if method in change_methods and self.changeset:
-            params['changeset'] = self.changeset
+            params['use_changeset'] = self.changeset
         if method in create_methods:
             expected_statuses = [201]
         elif method in delete_methods:

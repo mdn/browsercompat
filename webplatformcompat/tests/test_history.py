@@ -26,7 +26,7 @@ class TestBaseMiddleware(APITestCase):
         """Return the test URL."""
         return (
             self.api_reverse('browser-list') +
-            '?changeset=%s' % changeset.id)
+            '?use_changeset=%s' % changeset.id)
 
     def test_post_with_changeset(self):
         self.login_user()

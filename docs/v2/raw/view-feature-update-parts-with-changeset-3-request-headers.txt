@@ -1,4 +1,4 @@
-POST /api/v2/supports?changeset=55 HTTP/1.1
+POST /api/v2/supports?use_changeset=55 HTTP/1.1
 Host: browsercompat.org
 Accept: application/vnd.api+json
 Authorization: Bearer xxQLNiTUFjRL5En8nBWzSDc5tLWkV2

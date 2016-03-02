@@ -144,9 +144,6 @@ class RelatedActionMixin(object):
         elif key == 'sort':
             # TODO: bug 1243195, implement sorting
             raise NotImplementedQueryParam(key)
-        elif key == 'changeset':
-            # TODO: bug 1243221, change to JSON API v1.0 valid keyword
-            pass
         elif self.reserved_param_re.match(key):
             raise InvalidQueryParam(key)
 

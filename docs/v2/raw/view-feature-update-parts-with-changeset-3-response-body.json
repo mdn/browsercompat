@@ -1,6 +1,6 @@
 {
     "links": {
-        "self": "https://browsercompat.org/api/v2/supports?changeset=55"
+        "self": "https://browsercompat.org/api/v2/supports?use_changeset=55"
     },
     "data": {
         "type": "supports",

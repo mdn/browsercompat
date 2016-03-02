@@ -439,7 +439,7 @@ class TestBrowserViewset(APITestCase):
             }
         })
         url = self.api_reverse('browser-detail', pk=browser.pk)
-        url += '?changeset=%s' % changeset.pk
+        url += '?use_changeset=%s' % changeset.pk
         mock_update.reset_mock()
         mock_update.side_effect = Exception('not called')
         response = self.client.put(
@@ -500,7 +500,7 @@ class TestBrowserViewset(APITestCase):
             Browser, slug='internet_exploder',
             name={'en': 'Internet Exploder'})
         url = self.api_reverse('browser-detail', pk=browser.pk)
-        url += '?changeset=%d' % self.changeset.id
+        url += '?use_changeset=%d' % self.changeset.id
         mock_update.reset_mock()
         mock_update.side_effect = Exception('not called')
         response = self.client.delete(url)

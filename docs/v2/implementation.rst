@@ -185,7 +185,7 @@ resources:
 .. literalinclude:: /v2/raw/browser-create-in-changeset-3-request-body.json
     :language: json
 
-The response included relationships to the items created in the changeset:
+The response includes relationships to the items created in the changeset:
 
 .. literalinclude:: /v2/raw/browser-create-in-changeset-3-response-headers.txt
     :language: http
