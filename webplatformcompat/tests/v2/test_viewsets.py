@@ -578,6 +578,15 @@ class TestBrowserViewset(APITestCase):
         """
         self.assert_param_not_implemented('include', 'versions')
 
+    def test_param_fields_unimplemented(self):
+        """
+        Confirm JSON API v1.0 parameter 'fields' is unimplemented.
+
+        TODO: bug 1252973, use param 'fields' for sparse fieldsets.
+        """
+        self.assert_param_not_implemented('fields', 'name')
+        self.assert_param_not_implemented('fields[browsers]', 'slug,name')
+
 
 class TestFeatureViewSet(APITestCase):
     """Test FeatureViewSet."""
