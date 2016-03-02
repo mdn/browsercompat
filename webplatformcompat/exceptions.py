@@ -25,6 +25,17 @@ class InvalidQueryParam(APIException):
         self.detail = self.detail_fmt % {'query_param': query_param}
 
 
+class NotImplementedQueryParam(InvalidQueryParam):
+    """Request contained an query parameter that is not implemented.
+
+    JSON API v1.0 requires a 400 when the service doesn't support a documented
+    query parameter, such as 'include':
+    http://jsonapi.org/format/1.0/#fetching-includes
+    """
+
+    detail_fmt = _('Query parameter "%(query_param)s" is not implemented.')
+
+
 def handler(exc, context):
     """
     Return the response that should be used for any given exception.

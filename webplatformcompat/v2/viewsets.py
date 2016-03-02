@@ -11,7 +11,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
 
-from ..exceptions import InvalidQueryParam
+from ..exceptions import InvalidQueryParam, NotImplementedQueryParam
 from ..renderers import BrowsableAPIRenderer
 from ..viewsets import (
     BrowserBaseViewSet, ChangesetBaseViewSet, FeatureBaseViewSet,
@@ -54,6 +54,7 @@ class RelatedActionMixin(object):
     # View parameter set by related_list
     related_filter = None
     filter_re = re.compile('^filter\[(?P<name>[^]]*)\]$')
+    reserved_param_re = re.compile('^[a-z]*$')
 
     # Other parameters
     reserved_param_re = re.compile('^[a-z]*$')
@@ -134,6 +135,9 @@ class RelatedActionMixin(object):
             # Pagination is handled in .pagination.Pagination class
             # TOOD: bug 1243128, use page[number] and page[size]
             pass
+        elif key == 'include':
+            # TODO: bug 1243190, implement included resources
+            raise NotImplementedQueryParam(key)
         elif key == 'changeset':
             # TODO: bug 1243221, change to JSON API v1.0 valid keyword
             pass

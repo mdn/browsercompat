@@ -556,6 +556,28 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.content)
         self.assertEqual(5, response.data['count'])
 
+    def assert_param_not_implemented(self, key, value):
+        """Assert that a valid but optional parameter is not implemented."""
+        url = self.api_reverse('browser-list')
+        response = self.client.get(url, {key: value})
+        self.assertEqual(400, response.status_code, response.content)
+        expected = {
+            'errors': [{
+                'status': '400',
+                'detail': 'Query parameter "%s" is not implemented.' % key,
+                'source': {'parameter': key}
+            }]
+        }
+        self.assertEqual(expected, loads(response.content.decode('utf8')))
+
+    def test_param_include_not_implemented(self):
+        """
+        Confirm parameter include is unimplemented.
+
+        TODO: bug 1243190, use param 'include' for included resources.
+        """
+        self.assert_param_not_implemented('include', 'versions')
+
 
 class TestFeatureViewSet(APITestCase):
     """Test FeatureViewSet."""
