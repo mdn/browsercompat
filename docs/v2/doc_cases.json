@@ -141,7 +141,7 @@
     }, {
         "name": "browser-create-in-changeset-2",
         "method": "POST",
-        "endpoint": "browsers?changeset=4",
+        "endpoint": "browsers?use_changeset=4",
         "data": {
             "data": {
                 "type": "browsers",
@@ -1887,7 +1887,7 @@
     }, {
         "name": "view-feature-update-parts-with-changeset-2",
         "method": "POST",
-        "endpoint": "versions?changeset=55",
+        "endpoint": "versions?use_changeset=55",
         "data": {
             "data": {
                 "type": "versions",
@@ -1907,7 +1907,7 @@
     }, {
         "name": "view-feature-update-parts-with-changeset-3",
         "method": "POST",
-        "endpoint": "supports?changeset=55",
+        "endpoint": "supports?use_changeset=55",
         "data": {
             "data": {
                 "type": "supports",

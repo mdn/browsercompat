@@ -90,7 +90,7 @@
     }, {
         "name": "browser-create-in-changeset-2",
         "method": "POST",
-        "endpoint": "browsers?changeset=4",
+        "endpoint": "browsers?use_changeset=4",
         "data": {
             "browsers": {
                 "slug": "nintendo-ds",
@@ -745,7 +745,7 @@
     }, {
         "name": "view-feature-update-parts-with-changeset-2",
         "method": "POST",
-        "endpoint": "versions?changeset=36",
+        "endpoint": "versions?use_changeset=36",
         "data": {
             "versions": {
                 "version": "2.0",
@@ -758,7 +758,7 @@
     }, {
         "name": "view-feature-update-parts-with-changeset-3",
         "method": "POST",
-        "endpoint": "supports?changeset=36",
+        "endpoint": "supports?use_changeset=36",
         "data": {
             "supports": {
                 "links": {

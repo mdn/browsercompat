@@ -34,6 +34,7 @@ class JsonApiV10Renderer(JSONRenderer):
         resource_uri = self.request.build_absolute_uri(override_path)
         fields_extra = renderer_context.get('fields_extra')
         status_code = response and response.status_code
+        exception = response and getattr(response, 'exc', None)
         is_err = is_client_error(status_code) or is_server_error(status_code)
         as_relationship = renderer_context.get('as_relationship')
 
@@ -45,7 +46,8 @@ class JsonApiV10Renderer(JSONRenderer):
             converted = self.convert_paginated(
                 data, fields_extra, request_uri=self.request_uri)
         elif is_err:
-            converted = self.convert_error(data, fields_extra, status_code)
+            converted = self.convert_error(
+                data, exception, fields_extra, status_code)
         elif self.request.method == 'OPTIONS':
             converted = {'meta': data}
         elif as_relationship:
@@ -246,18 +248,23 @@ class JsonApiV10Renderer(JSONRenderer):
         archive_data = self.convert_object(data, archive_extra)
         return archive_data
 
-    def convert_error(self, data, fields_extra, status_code):
+    def convert_error(self, data, exception, fields_extra, status_code):
         error_list = []
         errors = []
         for name, value in data.items():
             field_extra = fields_extra.get(name, {})
             is_link = bool(field_extra.get('link'))
             group = 'relationships' if is_link else 'attributes'
+            parameter = getattr(exception, 'parameter', None)
             if name == 'detail':
                 fmt_error = self.dict_class((
                     ('detail', value),
                     ('status', str(status_code)),
                 ))
+                if parameter is not None:
+                    fmt_error['source'] = self.dict_class((
+                        ('parameter', parameter),
+                    ))
                 errors.append(fmt_error)
             elif name == '_view_extra':
                 for rname, error_dict in value.items():

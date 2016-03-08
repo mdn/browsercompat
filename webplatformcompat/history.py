@@ -160,7 +160,7 @@ class HistoryChangesetMiddleware(BaseHistoryRequestMiddleware):
         # Default is to update cached objects as they are modified
         request.delay_cache = False
 
-        changeset_id = request.GET.get('changeset')
+        changeset_id = request.GET.get('use_changeset')
         if changeset_id:
             changeset = Changeset.objects.get(id=changeset_id)
             if changeset.user != request.user:

@@ -1,11 +1,20 @@
 # -*- coding: utf-8 -*-
 """Tests for simple history overrides in v1 API."""
 
-from ..test_history import TestMiddleware
+from ..test_history import TestBaseMiddleware
+from .base import NamespaceMixin
 
 
-class TestMiddlewareInV1(TestMiddleware):
+class TestMiddleware(NamespaceMixin, TestBaseMiddleware):
     """Test the Middleware using v1 API endpoints."""
 
-    __test__ = True  # Run these tests
-    namespace = 'v1'  # Use the v1 API endpoints
+    def api_data(self):
+        """Return JSON data for creating a new browser."""
+        return {
+            'browsers': {
+                'slug': 'firefox',
+                'name': {
+                    'en': 'Firefox'
+                }
+            }
+        }

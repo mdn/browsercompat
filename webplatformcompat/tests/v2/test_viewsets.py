@@ -439,7 +439,7 @@ class TestBrowserViewset(APITestCase):
             }
         })
         url = self.api_reverse('browser-detail', pk=browser.pk)
-        url += '?changeset=%s' % changeset.pk
+        url += '?use_changeset=%s' % changeset.pk
         mock_update.reset_mock()
         mock_update.side_effect = Exception('not called')
         response = self.client.put(
@@ -500,7 +500,7 @@ class TestBrowserViewset(APITestCase):
             Browser, slug='internet_exploder',
             name={'en': 'Internet Exploder'})
         url = self.api_reverse('browser-detail', pk=browser.pk)
-        url += '?changeset=%d' % self.changeset.id
+        url += '?use_changeset=%d' % self.changeset.id
         mock_update.reset_mock()
         mock_update.side_effect = Exception('not called')
         response = self.client.delete(url)
@@ -515,6 +515,85 @@ class TestBrowserViewset(APITestCase):
         self.assertEqual(200, response.status_code, response.content)
         expected_keys = {'actions', 'description', 'name', 'parses', 'renders'}
         self.assertEqual(set(response.data.keys()), expected_keys)
+
+    def test_query_reserved_namespace_is_error(self):
+        """Test that an unknown, lowercase query parameter is an error."""
+        url = self.api_reverse('browser-list')
+        response = self.client.get(url, {'foo': 'bar'})
+        self.assertEqual(400, response.status_code, response.content)
+        expected = {
+            'errors': [{
+                'status': '400',
+                'detail': 'Query parameter "foo" is invalid.',
+                'source': {'parameter': 'foo'}
+            }]
+        }
+        self.assertEqual(expected, loads(response.content.decode('utf8')))
+
+    def test_unreserved_query_is_ignored(self):
+        """Test that unknown but unreserved query strings are ignored."""
+        url = self.api_reverse('browser-list')
+        params = {
+            'camelCase': 'ignored',
+            'hyphen-split': 'ignored',
+            'low_line': 'ignored',
+        }
+        response = self.client.get(url, params)
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual(0, response.data['count'])
+
+    def test_page_params_is_ok(self):
+        """
+        Test that pagination params are OK.
+
+        bug 1243128 will change these to page[number] and page[size].
+        """
+        for number in range(5):
+            self.create(Browser, slug='slug%d' % number)
+        url = self.api_reverse('browser-list')
+        pagination = {'page': 2, 'page_size': 2}
+        response = self.client.get(url, pagination)
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual(5, response.data['count'])
+
+    def assert_param_not_implemented(self, key, value):
+        """Assert that a valid but optional parameter is not implemented."""
+        url = self.api_reverse('browser-list')
+        response = self.client.get(url, {key: value})
+        self.assertEqual(400, response.status_code, response.content)
+        expected = {
+            'errors': [{
+                'status': '400',
+                'detail': 'Query parameter "%s" is not implemented.' % key,
+                'source': {'parameter': key}
+            }]
+        }
+        self.assertEqual(expected, loads(response.content.decode('utf8')))
+
+    def test_param_include_not_implemented(self):
+        """
+        Confirm parameter include is unimplemented.
+
+        TODO: bug 1243190, use param 'include' for included resources.
+        """
+        self.assert_param_not_implemented('include', 'versions')
+
+    def test_param_fields_unimplemented(self):
+        """
+        Confirm JSON API v1.0 parameter 'fields' is unimplemented.
+
+        TODO: bug 1252973, use param 'fields' for sparse fieldsets.
+        """
+        self.assert_param_not_implemented('fields', 'name')
+        self.assert_param_not_implemented('fields[browsers]', 'slug,name')
+
+    def test_param_sort_unimplemented(self):
+        """
+        Confirm JSON API v1.0 parameter 'sort' is unimplemented.
+
+        TODO: bug 1252973, use param 'fields' for sparse fieldsets.
+        """
+        self.assert_param_not_implemented('sort', 'name')
 
 
 class TestFeatureViewSet(APITestCase):
