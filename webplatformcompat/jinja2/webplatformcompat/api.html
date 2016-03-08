@@ -1,0 +1,28 @@
+{% extends "webplatformcompat/base.html" %}
+{% block title %}Information page about Browser Compatibility API{% endblock %}
+
+{% block head_title %}Information regarding Browser Compatibility API future{% endblock %}
+{% block body_title %}Information regarding Browser Compatibility API future{% endblock %}
+
+{% block content %}
+<p>
+    The <strong>browsercompat</strong> API in his version 1 is going to be unsupported
+	and removed in favor of version 2.
+</p>
+
+<p>
+	The API in version 1 is currently based on JSON API RC1.0 which is now 2 years old and has evolved to a
+	full JSON API v1.0 which is served by our API version 2.
+</p>
+<p>
+    Links to both APIs:
+</p>
+<ul>
+    <li>
+    <a href="v2">Browser Compatibility API version 2</a>
+    	- [RECOMMENDED] The maintained and supported API.</li>
+    <li>
+    <a href="v1">Browser Compatibility API version 1</a>
+        - [DEPRECATED] The API version 1 which is going away in the future.</li>
+</ul>
+{% endblock %}
