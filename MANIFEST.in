@@ -3,6 +3,7 @@ include Makefile manage.py
 include requirements.txt
 include Procfile app.json
 include env.dist
+include runtime.txt
 
 recursive-include bcauth *.py
 recursive-include bcauth/static *.css *.png
