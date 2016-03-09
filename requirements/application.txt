@@ -3,9 +3,9 @@
 -c constraints.txt
 
 # Django
-Django==1.8.8 \
-    --hash=sha256:05816963cbbadd131bcee8fb5069d8695796e25d081ec24eff62bc1fc8ed891a \
-    --hash=sha256:8255242fa0d9e0bf331259a6bdb81364933acbe8863291661558ffdb2fc9ed70 \
+Django==1.8.11 \
+    --hash=sha256:54be9d6eab6cc0e2da558c12aea6cff7d5a0124c8a470e1ff61134ba9ed37f20 \
+    --hash=sha256:ec148be73548da090dd76c2e8c57c98e8b1e84f2cb87500b9be5420187a435fb \
     # rq.filter: >=1.8, <1.9
 
 # Django REST Framework
@@ -24,14 +24,13 @@ django-extensions==1.6.1 \
     --hash=sha256:f98f991d2b039033ac5faa638c0d1afb2720abf4d9d781573c3592d6899480a1
 
 # History of changes to models
-django-simple-history==1.7.0 \
-    --hash=sha256:dc08bac3a732c7c98a24286ef518a88711ae880cb27b7493b3c3179b51035863 \
-    --hash=sha256:4abadef5c4680147aa5e88b5eba0d0ed7250c8feea79120344486b97184de4ac
+django-simple-history==1.8.0 \
+    --hash=sha256:bc1dd9e0573918d2d79f5a66b61c5f3b4ceb7b19d091f805a6a5863cfd8c2d2b \
+    --hash=sha256:e21ee27d8bfd95da62dac76d736e24fc99f61a97c039b8926a6e3a24c81c7218
 
 # Configure from env
-dj-database-url==0.3.0 \
-    --hash=sha256:f2e273ed34acbb560962d5cf12917936d8df02297df09bd3089b8546d4584138 \
-    --hash=sha256:ca01768fdecde134301f3170743226f60edff5c3935f12437378ebd911506353
+dj-database-url==0.4.0 \
+    --hash=sha256:858312abb7b330ea875733a65806a36ad04d7b8451c6ce8835118a2fa10d6870
 python-decouple==3.0 \
     --hash=sha256:99834c9ff7ce5c5b2f4a18bc0880753e54ea3aaabc3cfb16961a92d5046665df
 
@@ -61,14 +60,14 @@ psycopg2==2.6.1 \
     --hash=sha256:6acf9abbbe757ef75dc2ecd9d91ba749547941abaffbe69ff2086a9e37d4904c
 
 # Async task management
-celery==3.1.19 \
-    --hash=sha256:434b4e62308428b0e83fbcd1cebb8853beb230237b1b23484063fcf1ff610b6e \
-    --hash=sha256:bd6a21290c822ecf78947a7dbc8b2270d88a5fa08a7a2bfcd908bb3d5ed66b71
+celery==3.1.22 \
+    --hash=sha256:4fd6fd2d096dcf2f0c19e0f15ea3520fd6a1f57a33791484edb0cf33495b9159 \
+    --hash=sha256:7e511421f967dee31756626e611d56aa1eb5b48383d3274f0a320b0254636a84
 
 # Modified Preorder Tree Traversal
-django-mptt==0.8.0 \
-    --hash=sha256:98687f1a25687f53e38f32884f6d589c95e421400ec75f68f3262a75b9b1b6e4 \
-    --hash=sha256:4cd88980f3d66ec021f9cdafcaa92d9f831b5f397679ac40302159d69eaef17a
+django-mptt==0.8.3 \
+    --hash=sha256:9c66647f5e8b1296c714e0654390fe16dd5ab0b73b8f112fb58560b8ba16cc48 \
+    --hash=sha256:e8ea471b0ad4a80772b7c19f4c95f91f41c0bc52be9a119e35d410c8eacd53ac
 
 # Sorted ManyToManyField
 # No longer used, but present in webplatformcompat/migrations/0001_initial.py
