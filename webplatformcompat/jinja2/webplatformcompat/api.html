@@ -1,0 +1,28 @@
+{% extends "webplatformcompat/base.html" %}
+{% block title %}Browser Compatibility API - API entrypoints{% endblock %}
+
+{% block head_title %}API entrypoints{% endblock %}
+{% block body_title %}API entrypoints{% endblock %}
+
+{% block content %}
+<p>
+    The <strong>browsercompat</strong> API is available in these versions,
+    which have the same data in different formats:
+<p>
+<dl>
+  <dt><a href="v2">v2</a> (Recommended)</dt>
+  <dd>
+    Implements the
+    <a href="http://jsonapi.org/format/1.0/">JSON API v1.0</a> specification.
+    See
+    <a href="http://browsercompat.readthedocs.org/en/latest/v2/intro.html">the documentation</a>
+    for details.
+  </dd>
+  <dt><a href="v1">v1</a> (Deprecated)</dt>
+  <dd>
+    Implements the deprecated JSON API Release Candidate 1 (RC1) specification. See
+    <a href="http://browsercompat.readthedocs.org/en/latest/v1/intro.html">the documentation</a>
+    for details.
+  </dd>
+</dl>
+{% endblock %}

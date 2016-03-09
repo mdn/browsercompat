@@ -22,8 +22,9 @@ webplatformcompat_urlpatterns = patterns(
         name='browse'),
     url(r'^api-auth/', include('rest_framework.urls',
         namespace='rest_framework')),
-    url(r'^api/$', RedirectView.as_view(url='/api/v1/', permanent=False),
-        name='api_root'),
+    url(r'^api/$', TemplateView.as_view(
+        template_name='webplatformcompat/api.html'),
+        name='api'),
     url(r'^api/v1/', include(v1_router.urls, namespace='v1')),
     url(r'^api/v2/', include(v2_router.urls, namespace='v2')),
     url(r'^importer$', RedirectView.as_view(
