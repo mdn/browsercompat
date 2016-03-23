@@ -2,7 +2,6 @@
 """Tests for API serializers."""
 
 from django.contrib.auth import get_user_model
-from rest_framework.exceptions import ValidationError
 
 from webplatformcompat.models import (
     Browser, Feature, Maturity, Reference, Section, Specification, Version)
@@ -86,7 +85,6 @@ class TestBrowserSerializer(TestCase):
     def test_set_current_history_to_null_fails(self):
         self.browser.name = {'en': 'Browser'}
         self.browser.save()
-        current_history_id = self.browser.history.all()[0].history_id
 
         data = {'history_current': None}
         serializer = BrowserSerializer(self.browser, data=data, partial=True)
@@ -307,6 +305,7 @@ class TestHistoricalFeatureSerializer(TestCase):
         representation = serializer.to_representation(history)
         links = representation['archived_representation']['links']
         self.assertEqual(links['parent'], str(parent.pk))
+
 
 class TestHistoricalMaturitySerializer(TestCase):
     """Test HistoricalMaturitySerializer."""
