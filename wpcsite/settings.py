@@ -50,6 +50,7 @@ EMAIL_USE_TLS - 1 to use TLS SMTP connection, usually on port 587
 EXTRA_INSTALLED_APPS - comma-separated list of apps to add to INSTALLED_APPS
 FXA_OAUTH_ENDPOINT - Override for Firefox Account OAuth2 endpoint
 FXA_PROFILE_ENDPOINT - Override for Firefox Account profile endpoint
+FXA_SCOPE - Override default OAuth2 scope
 MDN_ALLOWED_URL_PREFIXES - comma-separated list of URL prefixes allowed by
     the scraper
 MDN_SHOW_REPARSE - 1 to show Reparse button, defaults to DEBUG
@@ -147,6 +148,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.fxa',
     'corsheaders',
     'django_extensions',
     'django_jinja',
@@ -158,7 +160,6 @@ INSTALLED_APPS = [
     'puente',
 
     'bcauth',
-    'bcauth.socialaccount.providers.fxa',
     'mdn',
     'webplatformcompat',
 ]
@@ -458,6 +459,10 @@ CORS_ALLOW_CREDENTIALS = True
 # django-allauth
 SOCIALACCOUNT_PROVIDERS = {
     'fxa': {
+        'SCOPE': config(
+            'FXA_SCOPE',
+            default='profile:uid,profile:email',
+            cast=cast_list),
         'OAUTH_ENDPOINT': config(
             'FXA_OAUTH_ENDPOINT',
             default='https://oauth.accounts.firefox.com/v1'),

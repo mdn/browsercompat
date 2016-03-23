@@ -92,8 +92,8 @@ https://github.com/erikrose/parsimonious/archive/20863d86a.zip#egg=parsimonious 
     --hash=sha256:40100b15c58ca2509ce75cc82d046cf906aef7382439dfff513b19e176db08ee
 
 # Social loging support (Firefox Accounts)
-django-allauth==0.24.1 \
-    --hash=sha256:229a6a5a63ff55f9eb46d4dae3863ba775735bf60bfc16bf4e2042f214f18e1d
+django-allauth==0.25.2 \
+    --hash=sha256:382632fc4e85d577bcb4a747dcd0fff0b4893fffe275922e8489855608f50252
 
 # Unicode-aware CSVs
 unicodecsv==0.14.1 \
@@ -102,7 +102,6 @@ unicodecsv==0.14.1 \
 # OAuth2 provider for clients
 django-oauth-toolkit==0.10.0 \
     --hash=sha256:22dcf08674a0b7d7fa7e8abd97d9df9884c1222de3f148473d60d2d7e2ed399a
-
 
 # Templates and localization
 django-jinja==2.1.2 \
