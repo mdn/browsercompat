@@ -82,6 +82,16 @@ class TestBrowserSerializer(TestCase):
         new_order = list(new_browser.versions.values_list('pk', flat=True))
         self.assertEqual(new_order, set_order)
 
+    def test_set_current_history_to_null_fails(self):
+        self.browser.name = {'en': 'Browser'}
+        self.browser.save()
+
+        data = {'history_current': None}
+        serializer = BrowserSerializer(self.browser, data=data, partial=True)
+        self.assertFalse(serializer.is_valid())
+        expected = {'history_current': ['Invalid history ID for this object']}
+        self.assertEqual(serializer.errors, expected)
+
 
 class TestFeatureSerializer(TestCase):
     """Test FeatureSerializer."""

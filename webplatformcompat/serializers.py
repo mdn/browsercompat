@@ -118,25 +118,29 @@ class HistoricalModelSerializer(
     def to_internal_value(self, data):
         """If history_current in data, load historical data into instance."""
         if data and 'history_current' in data:
-            history_id = int(data['history_current'])
-            current_history = self.instance.history.all()[0]
-            if current_history.history_id != history_id:
-                try:
-                    historical = self.instance.history.get(
-                        history_id=history_id)
-                except self.instance.history.model.DoesNotExist:
-                    err = 'Invalid history ID for this object'
-                    raise ValidationError({'history_current': [err]})
-                else:
-                    for field in historical._meta.fields:
-                        if field.attname in self.omit_historical_fields:
-                            continue
-                        attname = field.attname
-                        hist_value = getattr(historical, attname)
-                        data_name = attname
-                        if data_name.endswith('_id'):
-                            data_name = data_name[:-len('_id')]
-                        data[data_name] = hist_value
+            if data['history_current'] is not None:
+                history_id = int(data['history_current'])
+                current_history = self.instance.history.all()[0]
+                if current_history.history_id != history_id:
+                    try:
+                        historical = self.instance.history.get(
+                            history_id=history_id)
+                    except self.instance.history.model.DoesNotExist:
+                        err = 'Invalid history ID for this object'
+                        raise ValidationError({'history_current': [err]})
+                    else:
+                        for field in historical._meta.fields:
+                            if field.attname in self.omit_historical_fields:
+                                continue
+                            attname = field.attname
+                            hist_value = getattr(historical, attname)
+                            data_name = attname
+                            if data_name.endswith('_id'):
+                                data_name = data_name[:-len('_id')]
+                            data[data_name] = hist_value
+            else:
+                err = 'Invalid history ID for this object'
+                raise ValidationError({'history_current': [err]})
         return super(HistoricalModelSerializer, self).to_internal_value(data)
 
 
