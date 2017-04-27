@@ -1,6 +1,8 @@
 Installation
 ============
 
+.. Note:: This project has been cancelled, and this information is historical.
+
 Install Django Project
 ----------------------
 For detailed local installation instructions, including OS-specific

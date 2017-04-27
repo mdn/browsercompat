@@ -1,6 +1,8 @@
 v1 BrowserCompat API
 ====================
 
+.. Note:: This project has been cancelled, and this information is historical.
+
 The v1 API was designed to store and maintain information about web technologies,
 such as HTML and CSS, in the manner used on MDN_.  This takes the form of
 **Specification** tables, which detail the specifications for technologies,

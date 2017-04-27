@@ -1,5 +1,8 @@
 Issues
 ======
+
+.. Note:: This project has been cancelled, and this information is historical.
+
 The near-term goal is that compatibility data lives in the API rather than on
 the MDN page, and MDN contributors maintain this data in the API instead of
 editing wiki pages. As this plan is executed, limitations are discovered in
@@ -97,6 +100,70 @@ This includes, but is not limited to:
   and standardization supporters, and can be implemented as separate
   applications using the compatibility API.
 
+Bugzilla Archive
+----------------
+BrowserCompat bugs were tracked ib Bugzilla, and closed WONTFIX.  These were
+the open bugs at the time the project was cancelled:
+
+* 996570_: Create a data store for compatibility data
+    * 1078699_: Resources are accessible by slug
+    * 1153329_: Rename project to match browsercompat.org
+    * 1159344_: Reverting a browser should attempt to revert versions order
+    * 1159349_: Allow reverting deletes
+        * 1229785_: No HTTP 410 error page
+    * 1159363_: Add Location header to resource-creating POST responses
+    * 1168455_: Add general email server to browsercompat.herokuapp.com
+    * 1170214_: Limit notes to HTML subset
+    * 1171988_: Restrict API actions by role
+    * 1181140_: [Compat Data][Importer] Improve MDN importer, Round 3
+        * 1134584_: Firefox OS 1.0.1 is not being accepted as a valid version
+            * 1230584_: Improve browsable API for creating and updating resources
+        * 1180573_: Standardized flag is wrong
+        * 1198985_: Adjust handling of <pre> tags with brush class
+    * 1195467_: A version should be unique for a browser
+    * 1197210_: Allow adding new MDN feature pages
+    * 1199483_: Implement Correct Labels on Chrome Browser Table
+        * 1240101_: C&M GUI - display and edit browser and version
+            * 1195467_: A version should be unique for a browser
+    * 1219915_: [Compat] Create macros to import "requires_config" correctly
+    * 1219927_: [Compat] Create macros to import "alternate_name" correctly
+    * 1219945_: [Compat] Create macros to import "protected" correctly
+    * 1224345_: Validation errors on view_feature become ISEs
+        * 1230306_: Switch to database-independant IDs
+    * 1230592_: Logging into API should return to the pre-login page
+    * 1230615_: Add /Add-ons to MDN feature set
+    * 1240757_: Implement v1/v2 API
+        * 1195518_: upload_data tool fails with data_id collision on existing database
+        * 1229170_: [stage] visiting /v1/view_features/fox causes a SystemExit exception
+            * 1230584_: Improve browsable API for creating and updating resources
+        * 1230306_: Switch to database-independant IDs
+        * 1230584_: Improve browsable API for creating and updating resources
+        * 1230597_: Add permission for changing slugs
+        * 1242981_: Use instance cache for v2 API related links
+        * 1251252_: Allow empty Section names
+    * 1240785_: Convert required feature.slug to optional feature.aliases
+        * 1230597_: Add permission for changing slugs
+    * 1242606_: Some pages not re-imported by import_mdn tool
+    * 1242960_: Restrict DELETE on changesets
+    * 1242982_: Use instance cache for v2 relationship links
+    * 1243225_: Fully implement the JSON API v1.0 specification as the v2 API
+        * 1240757_: Implement v1/v2 API
+        * 1242649_: Error responses should use "source" attribute, JSON Pointers
+            * 1240757_: Implement v1/v2 API
+        * 1242664_: Implement POST/DELETE for updating to-many relations
+        * 1242703_: Pagination links are in wrong place for /api/v2/view_features/<id>?child_pages=1
+        * 1242959_: v2 API should not support PUT
+            * 1230584_: Improve browsable API for creating and updating resources
+        * 1243190_: Support "include" parameter
+        * 1243195_: Support "sort" parameter
+        * 1243205_: Support updates through related links in a v2 API
+        * 1243217_: Return 409 Conflict when type and id do not match URL in v2 API
+        * 1252973_: Support "fields" parameter
+    * 1243399_: Automate MDN data scraping
+        * 1247974_: [Importer] Scrape Mozilla/Firefox_OS/API directory
+    * 1244702_: C&M GUI - Provide a basic auth UI for admin
+    * 1246192_: Extract localizable strings from API user interfaces
+
 .. _`bug 1078699`: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699#c2
 .. _`bug 1128525`: https://bugzilla.mozilla.org/show_bug.cgi?id=1128525
 .. _`bug 1230306`: https://bugzilla.mozilla.org/show_bug.cgi?id=1230306
@@ -117,3 +184,62 @@ This includes, but is not limited to:
 .. _`Presto history`: http://www.opera.com/docs/history/presto/
 .. _`Release History of IE`: http://en.wikipedia.org/wiki/Internet_Explorer_1#Release_history_for_desktop_Windows_OS_version
 .. _`Safari version history`: http://en.wikipedia.org/wiki/Safari_version_history#Release_history
+
+.. _996570: https://bugzilla.mozilla.org/show_bug.cgi?id=996570
+.. _1078699: https://bugzilla.mozilla.org/show_bug.cgi?id=1078699
+.. _1153329: https://bugzilla.mozilla.org/show_bug.cgi?id=1153329
+.. _1159344: https://bugzilla.mozilla.org/show_bug.cgi?id=1159344
+.. _1159349: https://bugzilla.mozilla.org/show_bug.cgi?id=1159349
+.. _1229785: https://bugzilla.mozilla.org/show_bug.cgi?id=1229785
+.. _1159363: https://bugzilla.mozilla.org/show_bug.cgi?id=1159363
+.. _1168455: https://bugzilla.mozilla.org/show_bug.cgi?id=1168455
+.. _1170214: https://bugzilla.mozilla.org/show_bug.cgi?id=1170214
+.. _1171988: https://bugzilla.mozilla.org/show_bug.cgi?id=1171988
+.. _1181140: https://bugzilla.mozilla.org/show_bug.cgi?id=1181140
+.. _1134584: https://bugzilla.mozilla.org/show_bug.cgi?id=1134584
+.. _1230584: https://bugzilla.mozilla.org/show_bug.cgi?id=1230584
+.. _1180573: https://bugzilla.mozilla.org/show_bug.cgi?id=1180573
+.. _1198985: https://bugzilla.mozilla.org/show_bug.cgi?id=1198985
+.. _1195467: https://bugzilla.mozilla.org/show_bug.cgi?id=1195467
+.. _1197210: https://bugzilla.mozilla.org/show_bug.cgi?id=1197210
+.. _1199483: https://bugzilla.mozilla.org/show_bug.cgi?id=1199483
+.. _1240101: https://bugzilla.mozilla.org/show_bug.cgi?id=1240101
+.. _1195467: https://bugzilla.mozilla.org/show_bug.cgi?id=1195467
+.. _1219915: https://bugzilla.mozilla.org/show_bug.cgi?id=1219915
+.. _1219927: https://bugzilla.mozilla.org/show_bug.cgi?id=1219927
+.. _1219945: https://bugzilla.mozilla.org/show_bug.cgi?id=1219945
+.. _1224345: https://bugzilla.mozilla.org/show_bug.cgi?id=1224345
+.. _1230306: https://bugzilla.mozilla.org/show_bug.cgi?id=1230306
+.. _1230592: https://bugzilla.mozilla.org/show_bug.cgi?id=1230592
+.. _1230615: https://bugzilla.mozilla.org/show_bug.cgi?id=1230615
+.. _1240757: https://bugzilla.mozilla.org/show_bug.cgi?id=1240757
+.. _1195518: https://bugzilla.mozilla.org/show_bug.cgi?id=1195518
+.. _1229170: https://bugzilla.mozilla.org/show_bug.cgi?id=1229170
+.. _1230584: https://bugzilla.mozilla.org/show_bug.cgi?id=1230584
+.. _1230306: https://bugzilla.mozilla.org/show_bug.cgi?id=1230306
+.. _1230584: https://bugzilla.mozilla.org/show_bug.cgi?id=1230584
+.. _1230597: https://bugzilla.mozilla.org/show_bug.cgi?id=1230597
+.. _1242981: https://bugzilla.mozilla.org/show_bug.cgi?id=1242981
+.. _1251252: https://bugzilla.mozilla.org/show_bug.cgi?id=1251252
+.. _1240785: https://bugzilla.mozilla.org/show_bug.cgi?id=1240785
+.. _1230597: https://bugzilla.mozilla.org/show_bug.cgi?id=1230597
+.. _1242606: https://bugzilla.mozilla.org/show_bug.cgi?id=1242606
+.. _1242960: https://bugzilla.mozilla.org/show_bug.cgi?id=1242960
+.. _1242982: https://bugzilla.mozilla.org/show_bug.cgi?id=1242982
+.. _1243225: https://bugzilla.mozilla.org/show_bug.cgi?id=1243225
+.. _1240757: https://bugzilla.mozilla.org/show_bug.cgi?id=1240757
+.. _1242649: https://bugzilla.mozilla.org/show_bug.cgi?id=1242649
+.. _1240757: https://bugzilla.mozilla.org/show_bug.cgi?id=1240757
+.. _1242664: https://bugzilla.mozilla.org/show_bug.cgi?id=1242664
+.. _1242703: https://bugzilla.mozilla.org/show_bug.cgi?id=1242703
+.. _1242959: https://bugzilla.mozilla.org/show_bug.cgi?id=1242959
+.. _1230584: https://bugzilla.mozilla.org/show_bug.cgi?id=1230584
+.. _1243190: https://bugzilla.mozilla.org/show_bug.cgi?id=1243190
+.. _1243195: https://bugzilla.mozilla.org/show_bug.cgi?id=1243195
+.. _1243205: https://bugzilla.mozilla.org/show_bug.cgi?id=1243205
+.. _1243217: https://bugzilla.mozilla.org/show_bug.cgi?id=1243217
+.. _1252973: https://bugzilla.mozilla.org/show_bug.cgi?id=1252973
+.. _1243399: https://bugzilla.mozilla.org/show_bug.cgi?id=1243399
+.. _1247974: https://bugzilla.mozilla.org/show_bug.cgi?id=1247974
+.. _1244702: https://bugzilla.mozilla.org/show_bug.cgi?id=1244702
+.. _1246192: https://bugzilla.mozilla.org/show_bug.cgi?id=1246192

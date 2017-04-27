@@ -1,6 +1,8 @@
 Services
 ========
 
+.. Note:: This project has been cancelled, and this information is historical.
+
 A **Service** provides server functionality beyond basic manipulation of
 resources.
 
