@@ -1,6 +1,8 @@
 v2 BrowserCompat API
 ====================
 
+.. Note:: This project has been cancelled, and this information is historical.
+
 The v2 BrowserCompat API is designed to store and maintain information about
 web technologies, such as HTML and CSS, in the manner used on MDN_.  This takes
 the form of **Specification** tables, which detail the specifications for

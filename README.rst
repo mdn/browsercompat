@@ -20,11 +20,11 @@ BrowserCompat API
 
 .. Omit badges from docs
 
-The Browser Compatibility API will support compatibility data on the `Mozilla
-Developer Network`_.  This currently takes the form of browser compatibility
-tables, such as the one on the `CSS display property`_ page.  The API will
-centralize this data, and allow it to be kept consistent across languages and
-presentations.
+The Browser Compatibility API was a project to support compatibility data on
+the `Mozilla Developer Network`_.  This currently takes the form of browser
+compatibility tables, such as the one on the `CSS display property`_ page.  The
+API would centralize this data, and allow it to be kept consistent across
+languages and presentations.
 
 .. _Mozilla Developer Network: https://developer.mozilla.org
 .. _CSS display property: https://developer.mozilla.org/en-US/docs/Web/CSS/display#Browser_compatibility
@@ -36,37 +36,25 @@ documented on the MozillaWiki_.
 
 Status
 ------
+This project has been cancelled.  The have been no code changes since March
+2016. In April 2017, we started the process of removing integration from MDN
+and decommisioning the API server.  See the `issues page`_ for the status
+as of March 2016.
 
-The beta v1 API is being served at https://browsercompat.herokuapp.com/api/v1/.
-Alpha users are using the importer_ to find and fix data issues on MDN. A small
-number of pages on MDN have been converted to use API-backed compatibility
-tables. Beta users can view the new tables, and non-beta users see the
-traditional wiki-backed tables.  As the beta is expanded to more pages and more
-users, the API is changed to handle new use cases. See the `issues page`_ for
-details of planned changes.
+As of 2017, these are the current MDN data projects:
 
-The v1 API uses release candidate 1 (RC1) of the JSON API specification, which
-was released July 2014, but is currently undocumented. See the `v1 API docs`_
-for details of the API implementation.
+* https://github.com/mdn/browser-compat-data
+* https://github.com/mdn/data
 
-.. _`importer`: https://browsercompat.herokuapp.com/importer
-.. _`v1 API docs`: v1/intro.html
 .. _`issues page`: issues.html
-.. _`JSON API v1.0`: https://jsonapi.org/format/1.0/
-.. _`Ember.js`: http://emberjs.com
 
 Development
 -----------
 
 :Code:           https://github.com/mdn/browsercompat
-:Server:         https://browsercompat.herokuapp.com (based on `mdn/browsercompat-data`_)
-:Issues:         https://bugzilla.mozilla.org/buglist.cgi?quicksearch=compat-data (tracking bug)
-
-                 https://bugzilla.mozilla.org/showdependencytree.cgi?id=996570&hide_resolved=1 (blocking issues for v1)
+:Data:           https://github.com/mdn/browsercompat-data
 :Dev Docs:       https://browsercompat.readthedocs.org
 
                  https://github.com/mdn/browsercompat/wiki
 :Mailing list:   https://lists.mozilla.org/listinfo/dev-mdn
 :IRC:            irc://irc.mozilla.org/mdndev
-
-.. _`mdn/browsercompat-data`: https://github.com/mdn/browsercompat-data

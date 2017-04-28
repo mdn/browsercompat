@@ -2,6 +2,8 @@
 Contributing
 ============
 
+.. Note:: This project has been cancelled, and this information is historical.
+
 Contributions should follow the `MDN Contribution Guidelines`_, and follow the
 standards of this project:
 

@@ -1,6 +1,8 @@
 Technologies
 ------------
 
+.. Note:: This project has been cancelled, and this information is historical.
+
 The technologies used to implement the API include:
 
 * `Django`_, a web framework

@@ -1,6 +1,8 @@
 Tools
 =====
 
+.. Note:: This project has been cancelled, and this information is historical.
+
 Some potentially useful scripts can be found in the /tools folder:
 
 download_data.py
